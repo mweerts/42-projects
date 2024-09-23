@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/10 11:46:57 by maxweert          #+#    #+#             */
-/*   Updated: 2024/09/16 13:28:36 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/09/10 12:49:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,10 +87,9 @@ char	*ft_convert_base(char *nbr, char *base_from, char *base_to)
 	return (ft_itoa_base(ft_atoi_base(nbr, base_from), base_to));
 }
 
+// #include <stdio.h>
 
- #include <stdio.h>
-
- int main()
- {
- 	printf("%s", ft_convert_base("00", "0123456789", "0123456789"));
- }
+// int main()
+// {
+// 	printf("%s", ft_convert_base("1234", "0123456789", "0123456789"));
+// }

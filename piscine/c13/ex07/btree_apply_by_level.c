@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/18 16:12:05 by maxweert          #+#    #+#             */
-/*   Updated: 2024/09/18 20:21:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/09/23 19:56:04 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	btree_apply_by_level(t_btree *root,
 	}
 }
 
-
+/*
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,3 +161,4 @@ int main()
 
 	btree_apply_by_level(root, &func);
 }
+*/
