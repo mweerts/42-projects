@@ -1,3 +1,8 @@
+COLOUR_GREEN=$'\x1b[32m
+COLOUR_RED=$'\x1b[31m
+BOLD = \x1b[1m
+COLOUR_END=$'\x1b[0m
+
 NAME = libft.a
 CC = cc 
 CFLAGS = -Wall -Wextra -Werror
@@ -37,34 +42,46 @@ SRCS = 	ft_isalpha.c \
 		ft_putnbr_fd.c
 		
 		
-BONUS = ft_lstnew_bonus.c \
-		ft_lstadd_front_bonus.c \
-		ft_lstsize_bonus.c \
-		ft_lstlast_bonus.c \
-		ft_lstadd_back_bonus.c \
-		ft_lstdelone_bonus.c \
-		ft_lstclear_bonus.c \
-		ft_lstiter_bonus.c \
-		ft_lstmap_bonus.c
+SRCS_BONUS =	ft_lstnew_bonus.c \
+				ft_lstadd_front_bonus.c \
+				ft_lstsize_bonus.c \
+				ft_lstlast_bonus.c \
+				ft_lstadd_back_bonus.c \
+				ft_lstdelone_bonus.c \
+				ft_lstclear_bonus.c \
+				ft_lstiter_bonus.c \
+				ft_lstmap_bonus.c
 
 OBJS = $(SRCS:.c=.o)
-OBJS_BONUS = $(BONUS:.c=.o)
+BONUS_OBJS = $(SRCS_BONUS:.c=.o)
+
+ifdef WITH_BONUS
+OBJS_LIST = $(OBJS) $(BONUS_OBJS)
+else
+OBJS_LIST = $(OBJS)
+endif
 
 all: $(NAME)
 
-$(NAME) : 	$(OBJS)
-			ar rcs $(NAME) $(OBJS)
+$(NAME) : 	$(OBJS_LIST)
+			@echo "$(COLOUR_GREEN)$(BOLD)Creating libft$(COLOUR_END)"
+			@ar rcs $(NAME) $(OBJS_LIST)
 
 %.o:%.c
-		$(CC) $(CFLAGS) -c $< -o $@
+		@echo "$(COLOUR_GREEN)Compiling $<$(COLOUR_END)"
+		@$(CC) $(CFLAGS) -c $< -o $@
 
 clean: 
-		rm -rf $(OBJS) $(OBJS_BONUS)
+		@echo "$(COLOUR_RED)$(BOLD)Deleting objects files$(COLOUR_END)"
+		@rm -rf $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-		rm -rf $(NAME)
+		@echo "$(COLOUR_RED)$(BOLD)Deleting \"libft.a\"$(COLOUR_END)"
+		@rm -rf $(NAME)
 
 re: fclean all
 
-bonus:	$(OBJS) $(OBJS_BONUS)
-		ar rcs $(NAME) $(OBJS) $(OBJS_BONUS)
+bonus:
+	@make WITH_BONUS=1 all
+
+.PHONY: all clean fclean re bonus
