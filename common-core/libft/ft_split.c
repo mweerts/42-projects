@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 13:37:37 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/10 14:03:29 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/10 15:56:35 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,20 @@ static size_t	ft_count_words(const char *s, char c)
 	return (count);
 }
 
+static char	**ft_free_tab(char **tab, size_t len)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < len)
+	{
+		free(tab[i]);
+		i++;
+	}
+	free(tab);
+	return (NULL);
+}
+
 char	**ft_split(const char *s, char c)
 {
 	size_t	i;
@@ -40,7 +54,6 @@ char	**ft_split(const char *s, char c)
 	char	**ret;
 
 	i = 0;
-	j = 0;
 	k = 0;
 	tab_len = ft_count_words(s, c);
 	ret = ft_calloc(tab_len + 1, sizeof(char *));
@@ -54,17 +67,9 @@ char	**ft_split(const char *s, char c)
 		while (s[i] && s[i] != c)
 			i++;
 		ret[k] = ft_substr(s, j, i - j);
+		if (!ret[k])
+			return (ft_free_tab(ret, k));
 		k++;
 	}
 	return (ret);
 }
-
-// #include <stdio.h>
-// int main()
-// {
-// 	char **tab;
-
-// 	tab = ft_split(" test       efwffeewfwef       salut     ", ' ');
-// 	for (int i =0; tab[i]; i++)
-// 		printf("%s\n", tab[i]);
-// }
