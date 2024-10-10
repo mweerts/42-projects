@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/09 21:01:51 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/09 21:15:50 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/10 12:16:30 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,5 @@ char	*ft_strnstr(const char *s1, const char *s2, size_t n)
 			return ((char *)&s1[i]);
 		i++;
 	}
-	return (0);
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/09 20:50:08 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/09 20:54:41 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/10 12:17:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,5 +27,5 @@ void	*ft_memchr(const void *s, int c, size_t n)
 			return ((void *)&tmp[i]);
 		i++;
 	}
-	return (0);
+	return (NULL);
 }

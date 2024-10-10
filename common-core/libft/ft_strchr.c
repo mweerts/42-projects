@@ -6,13 +6,15 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/09 20:24:06 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/09 20:30:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/10 12:44:20 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
+
 char	*ft_strchr(const char *s, int c)
 {
-	int		i;
+	size_t	i;
 	char	chr;
 
 	i = 0;
@@ -25,5 +27,5 @@ char	*ft_strchr(const char *s, int c)
 	}
 	if (s[i] == chr)
 		return ((char *)&s[i]);
-	return (0);
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/09 23:40:09 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/10 00:35:17 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/10 12:17:21 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_calloc(size_t count, size_t size)
 
 	ret = malloc(count * size);
 	if (!ret)
-		return (0);
+		return (NULL);
 	ft_bzero(ret, count * size);
 	return ((void *)ret);
 }

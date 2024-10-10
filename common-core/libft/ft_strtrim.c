@@ -1,47 +1,43 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_atoi.c                                          :+:      :+:    :+:   */
+/*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/09 21:16:17 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/10 12:43:50 by maxweert         ###   ########.fr       */
+/*   Created: 2024/10/10 12:41:05 by maxweert          #+#    #+#             */
+/*   Updated: 2024/10/10 12:57:14 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	ft_isspace(int c)
+static int	ft_isinset(char c, const char *set)
 {
-	if (c == ' ' || c == '\f' || c == '\n'
-		|| c == '\r' || c == '\t' || c == '\v')
-		return (1);
+	size_t	i;
+
+	i = 0;
+	while (set[i])
+	{
+		if (c == set[i])
+			return (1);
+		i++;
+	}
 	return (0);
 }
 
-int	ft_atoi(const char *str)
+char	*ft_strtrim(const char *s1, const char *set)
 {
-	int		ret;
-	int		sign;
 	size_t	i;
+	size_t	j;
+	char	*ret;
 
-	ret = 0;
-	sign = 1;
 	i = 0;
-	while (str[i] && ft_isspace(str[i]))
+	j = ft_strlen(s1);
+	while (s1[i] && ft_isinset(s1[i], set))
 		i++;
-	if (str[i] == '-' || str[i] == '+')
-	{
-		if (str[i] == '-')
-			sign = -1;
-		i++;
-	}
-	while (str[i] && ft_isdigit(str[i]))
-	{
-		ret = (ret * 10) + str[i] - '0';
-		i++;
-	}
-	ret *= sign;
+	while (j > 0 && ft_isinset(s1[j - 1], set))
+		j--;
+	ret = ft_substr(s1, i, j - i);
 	return (ret);
 }
