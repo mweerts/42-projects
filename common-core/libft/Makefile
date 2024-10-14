@@ -1,7 +1,7 @@
-COLOUR_GREEN=$'\x1b[32m
-COLOUR_RED=$'\x1b[31m
-BOLD = \x1b[1m
-COLOUR_END=$'\x1b[0m
+BOLD = \033[1m
+COLOUR_GREEN=\033[0;32m
+COLOUR_RED=\033[0;31m
+COLOUR_END=\033[0m
 
 NAME = libft.a
 CC = cc 
