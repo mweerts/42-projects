@@ -6,11 +6,29 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:52 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/16 17:06:30 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/16 23:30:48 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+char	*ft_strchr(const char *s, int c)
+{
+	size_t	i;
+	char	chr;
+
+	i = 0;
+	chr = (char)c;
+	while (s[i])
+	{
+		if (s[i] == chr)
+			return ((char *)&s[i]);
+		i++;
+	}
+	if (s[i] == chr)
+		return ((char *)&s[i]);
+	return (NULL);
+}
 
 void	*ft_calloc(size_t count, size_t size)
 {
@@ -21,7 +39,7 @@ void	*ft_calloc(size_t count, size_t size)
 	if (!ret)
 		return (NULL);
 	i = 0;
-	while (i < size)
+	while (i < count * size)
 	{
 		ret[i] = 0;
 		i++;
@@ -39,37 +57,27 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-static size_t	ft_strlcat(char *dst, const char *src, size_t size)
+char	*ft_strjoin(const char *s1, const char *s2)
 {
 	size_t	i;
 	size_t	j;
-
-	i = 0;
-	j = 0;
-	while (dst[i] && i < size)
-		i++;
-	if (i == size)
-		return (i + ft_strlen(src));
-	while (src[j] && i + j + 1 < size)
-	{
-		dst[i + j] = src[j];
-		j++;
-	}
-	dst[i + j] = '\0';
-	return (i + ft_strlen(src));
-}
-
-char	*ft_strjoin(const char *s1, const char *s2)
-{
-	size_t	total_len;
 	char	*ret;
 
-	total_len = ft_strlen(s1) + ft_strlen(s2) + 1;
-	ret = ft_calloc(total_len, sizeof(char));
+	ret = ft_calloc(ft_strlen(s1) + ft_strlen(s2) + 1, sizeof(char));
 	if (!ret)
 		return (NULL);
-	ft_strlcat(ret, s1, total_len);
-	ft_strlcat(ret, s2, total_len);
+	i = 0;
+	j = 0;
+	while (s1 && s1[i])
+	{
+		ret[i] = s1[i];
+		i++;
+	}
+	while (s2 && s2[j])
+	{
+		ret[i + j] = s2[j];
+		j++;
+	}
 	return (ret);
 }
 
