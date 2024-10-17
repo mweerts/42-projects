@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:55 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/17 21:04:53 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/17 21:30:45 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,6 @@ static char	*set_line(char **line)
 	if ((*line)[i] == '\0' || (*line)[i + 1] == '\0')
 		return (NULL);
 	left = ft_substr(*line, i + 1, ft_strlen(*line) - i);
-	if (!left)
-	{
-		free(*line);
-		*line = NULL;
-		return (NULL);
-	}
 	tmp = *line;
 	*line = ft_substr(tmp, 0, i + 1);
 	free(tmp);
@@ -51,15 +45,12 @@ static char	*read_fd(int fd, char *left, char *buffer)
 	char	*tmp;
 	int		rd;
 
-	if (left && ft_strchr(left, '\n'))
-		return (left);
 	while (1)
 	{
 		rd = read(fd, buffer, BUFFER_SIZE);
 		if (rd < 0)
 		{
 			free(left);
-			left = NULL;
 			return (NULL);
 		}
 		if (rd == 0)
@@ -69,10 +60,9 @@ static char	*read_fd(int fd, char *left, char *buffer)
 			left = ft_calloc(1, sizeof(char));
 		if (!left)
 			return (NULL);
-		tmp = left;
-		left = ft_strjoin(left, buffer);
-		free(tmp);
-		tmp = NULL;
+		tmp = ft_strjoin(left, buffer);
+		free(left);
+		left = tmp;
 		if (ft_strchr(buffer, '\n'))
 			break ;
 	}
@@ -85,13 +75,8 @@ char	*get_next_line(int fd)
 	char		*line;
 	char		*buffer;
 
-	buffer = NULL;
 	if (fd < 0)
-	{
-		free(left);
-		left = NULL;
 		return (NULL);
-	}
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 	{
