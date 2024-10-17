@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:55 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/17 13:50:46 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/17 21:04:53 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ static char	*set_line(char **line)
 	left = ft_substr(*line, i + 1, ft_strlen(*line) - i);
 	if (!left)
 	{
+		free(*line);
 		*line = NULL;
 		return (NULL);
 	}
@@ -37,7 +38,11 @@ static char	*set_line(char **line)
 	*line = ft_substr(tmp, 0, i + 1);
 	free(tmp);
 	if (!(*line))
+	{
+		free(left);
+		left = NULL;
 		return (NULL);
+	}
 	return (left);
 }
 
@@ -80,6 +85,7 @@ char	*get_next_line(int fd)
 	char		*line;
 	char		*buffer;
 
+	buffer = NULL;
 	if (fd < 0)
 	{
 		free(left);
@@ -88,13 +94,21 @@ char	*get_next_line(int fd)
 	}
 	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
+	{
+		free(left);
+		left = NULL;
 		return (NULL);
+	}
 	line = read_fd(fd, left, buffer);
 	free(buffer);
 	buffer = NULL;
 	left = set_line(&line);
 	if (!line || line[0] == '\0')
+	{
+		free(left);
+		left = NULL;
 		return (NULL);
+	}
 	return (line);
 }
 
