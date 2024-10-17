@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:52 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/16 23:30:48 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/17 13:18:01 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,5 +99,6 @@ char	*ft_substr(const char *s, unsigned int start, size_t len)
 		ret[i] = s[start + i];
 		i++;
 	}
+	ret[i] = '\0';
 	return (ret);
 }

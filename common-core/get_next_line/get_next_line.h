@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:57 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/16 23:17:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/17 13:40:24 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include <fcntl.h>
 # include <unistd.h>
 
-# define BUFFER_SIZE 100
+//# define BUFFER_SIZE 1
 # define FD_MAX 1024
 
 char	*get_next_line(int fd);
