@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 15:51:07 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/10 18:32:44 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/21 11:14:43 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@ t_list	*ft_lstnew(void *content)
 {
 	t_list	*lst;
 
-	lst = malloc(sizeof(t_list));
 	if (!lst)
 		return (NULL);
+	lst = malloc(sizeof(t_list));
 	lst->content = content;
 	lst->next = NULL;
 	return (lst);
