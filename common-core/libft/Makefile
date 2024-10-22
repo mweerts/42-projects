@@ -64,7 +64,7 @@ endif
 all: $(NAME)
 
 $(NAME) : 	$(OBJS_LIST)
-			@echo "$(COLOUR_GREEN)$(BOLD)Creating libft$(COLOUR_END)"
+			@echo "$(COLOUR_GREEN)$(BOLD)[LIBFT] Creating libft.a$(COLOUR_END)"
 			@ar rcs $(NAME) $(OBJS_LIST)
 
 %.o:%.c
@@ -72,16 +72,16 @@ $(NAME) : 	$(OBJS_LIST)
 		@$(CC) $(CFLAGS) -c $< -o $@
 
 clean: 
-		@echo "$(COLOUR_RED)$(BOLD)Deleting objects files$(COLOUR_END)"
+		@echo "$(COLOUR_RED)$(BOLD)[LIBFT] Deleting objects files$(COLOUR_END)"
 		@rm -rf $(OBJS) $(BONUS_OBJS)
 
 fclean: clean
-		@echo "$(COLOUR_RED)$(BOLD)Deleting \"libft.a\"$(COLOUR_END)"
+		@echo "$(COLOUR_RED)$(BOLD)[LIBFT] Deleting \"libft.a\"$(COLOUR_END)"
 		@rm -rf $(NAME)
 
 re: fclean all
 
 bonus:
-	@make WITH_BONUS=1 all
+	@make WITH_BONUS=1 all --no-print-directory
 
 .PHONY: all clean fclean re bonus
