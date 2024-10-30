@@ -1,25 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_isinset.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/08 18:27:40 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/26 22:52:53 by maxweert         ###   ########.fr       */
+/*   Created: 2024/10/26 19:19:05 by maxweert          #+#    #+#             */
+/*   Updated: 2024/10/26 19:20:33 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-size_t	ft_strlen(const char *str)
+int	ft_isinset(int c, const char *set)
 {
 	size_t	i;
 
-	i = 0;
-	if (!str)
+	if (!set)
 		return (0);
-	while (str[i])
+	i = 0;
+	while (set[i])
+	{
+		if (c == set[i])
+			return (1);
 		i++;
-	return (i);
+	}
+	return (0);
 }

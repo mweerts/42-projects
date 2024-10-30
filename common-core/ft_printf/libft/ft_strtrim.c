@@ -6,25 +6,11 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 12:41:05 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/10 12:57:14 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:22:00 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-static int	ft_isinset(char c, const char *set)
-{
-	size_t	i;
-
-	i = 0;
-	while (set[i])
-	{
-		if (c == set[i])
-			return (1);
-		i++;
-	}
-	return (0);
-}
 
 char	*ft_strtrim(const char *s1, const char *set)
 {

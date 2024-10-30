@@ -1,25 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_utils.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/08 18:27:40 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/26 22:52:53 by maxweert         ###   ########.fr       */
+/*   Created: 2024/10/27 03:01:29 by maxweert          #+#    #+#             */
+/*   Updated: 2024/10/30 00:15:30 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "ft_printf.h"
 
-size_t	ft_strlen(const char *str)
+int	ft_max(int nargs, ...)
 {
-	size_t	i;
+	int		max;
+	int		curr;
+	int		i;
+	va_list	ap;
 
+	va_start(ap, nargs);
 	i = 0;
-	if (!str)
-		return (0);
-	while (str[i])
+	max = INT_MIN;
+	while (i < nargs)
+	{
+		curr = va_arg(ap, int);
+		if (curr > max)
+			max = curr;
 		i++;
-	return (i);
+	}
+	return (max);
+}
+
+void	ft_swap(char *a, char *b)
+{
+	int	tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
 }

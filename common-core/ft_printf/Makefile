@@ -6,7 +6,16 @@ COLOUR_END=\033[0m
 NAME = libftprintf.a
 CC = cc 
 CFLAGS = -Wall -Wextra -Werror
-SRCS = 	ft_printf.c
+SRCS = 	ft_printf.c \
+		ft_parsing.c \
+		ft_utils.c \
+		ft_print_chr.c \
+		ft_print_str.c \
+		ft_print_int.c \
+		ft_print_uint.c \
+		ft_print_hex.c \
+		ft_print_ptr.c \
+		ft_print_percent.c 
 OBJS = $(SRCS:.c=.o)
 
 LIBFT = ./libft/libft.a
@@ -19,7 +28,7 @@ $(LIBFT):
 
 $(NAME) : 	$(OBJS)
 			@cp $(LIBFT) ./$(NAME)
-			@echo "$(COLOUR_GREEN)$(BOLD)[FT_PRINTF] Creating libftprintf$(COLOUR_END)"
+			@echo "$(COLOUR_GREEN)$(BOLD)[FT_PRINTF] Creating libftprintf.a$(COLOUR_END)"
 			@ar rs $(NAME) $(OBJS)
 
 %.o:%.c
@@ -37,6 +46,8 @@ fclean: clean
 		@echo "$(COLOUR_RED)$(BOLD)[FT_PRINTF] Deleting \"libftprintf.a\"$(COLOUR_END)"
 		@rm -rf $(NAME)
 
+bonus: all
+
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus
