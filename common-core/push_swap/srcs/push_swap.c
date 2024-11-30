@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 16:56:23 by maxweert          #+#    #+#             */
-/*   Updated: 2024/11/30 17:27:35 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/11/30 18:22:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ int	main(int argc, char **argv)
 	if (argc < 2)
 		return (0);
 	data.op_lst = NULL;
+	data.stack_a.stack = NULL;
+	data.stack_b.stack = NULL;
 	ft_parsing(&data, argc, argv);
 	chunk.size = data.stack_a.size;
 	chunk.pos = TOP_A;
