@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 14:34:58 by maxweert          #+#    #+#             */
-/*   Updated: 2024/11/30 17:04:28 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/11/30 17:35:51 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,21 +22,6 @@ typedef enum e_pos
 	BOTTOM_A,
 	BOTTOM_B
 }	t_pos;
-
-typedef enum e_op
-{
-	pa,
-	pb,
-	sa,
-	sb,
-	ss,
-	ra,
-	rb,
-	rr,
-	rra,
-	rrb,
-	rrr
-}	t_op;
 
 typedef struct s_stack
 {
