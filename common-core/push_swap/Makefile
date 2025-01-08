@@ -49,7 +49,6 @@ $(LIBFT):
 			@make -C $(DIR_LIBFT) --no-print-directory
 
 $(BONUS_NAME) :	$(BONUS_OBJS)
-				@cp $(LIBFT) ./$(BONUS_NAME)
 				@echo "$(COLOUR_GREEN)$(BOLD)[FDF] Creating $(BONUS_NAME)$(COLOUR_END)"
 				@$(CC) $(CFLAGS) $(BONUS_OBJS) $(LIBFT) -I $(INCLUDES) -o $(BONUS_NAME)
 
