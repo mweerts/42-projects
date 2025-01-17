@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:57 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/17 21:34:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/25 13:13:11 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,10 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 1024
 # endif
+# if BUFFER_SIZE > 1048576
+#  undef BUFFER_SIZE
+#  define BUFFER_SIZE 1048576 /* 1 MB */
+# endif 
 # define FD_MAX 1024
 
 char	*get_next_line(int fd);

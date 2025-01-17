@@ -6,11 +6,11 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/16 15:21:52 by maxweert          #+#    #+#             */
-/*   Updated: 2024/10/17 21:34:06 by maxweert         ###   ########.fr       */
+/*   Updated: 2024/10/22 21:55:25 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_strchr(const char *s, int c)
 {
