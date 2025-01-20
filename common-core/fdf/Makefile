@@ -42,7 +42,7 @@ $(NAME) : 	$(OBJS)
 clean: 
 		@make clean -C $(DIR_LIBFT) --no-print-directory
 		@echo "$(COLOUR_RED)$(BOLD)[FDF] Deleting objects files$(COLOUR_END)"
-		@rm -rf $(OBJS)
+		rm -rf $(OBJS)
 
 fclean: 
 		@rm -rf $(OBJS)
