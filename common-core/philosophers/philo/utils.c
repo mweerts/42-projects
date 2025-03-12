@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:42:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/12 14:55:03 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/12 19:49:51 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,13 @@ int	free_data(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < data->nb_philos)
+	while (i < data->nb_philos && data->philo_arr)
 	{
-		if (data->philo_arr && data->philo_arr[i].left_fork)
+		if (data->philo_arr[i].left_fork)
 		{
+			pthread_mutex_destroy(data->philo_arr[i].left_fork);
 			free(data->philo_arr[i].left_fork);
 			data->philo_arr[i].left_fork = NULL;
-		}
-		if (data->philo_arr && data->philo_arr[i].right_fork)
-		{
-			free(data->philo_arr[i].right_fork);
-			data->philo_arr[i].right_fork = NULL;
 		}
 		i++;
 	}
@@ -61,5 +57,38 @@ int	free_data(t_data *data)
 		free(data->philo_arr);
 		data->philo_arr = NULL;
 	}
+	pthread_mutex_destroy(&data->write_mutex);
+	pthread_mutex_destroy(&data->eat_mutex);
+	pthread_mutex_destroy(&data->dead_mutex);
 	return (1);
+}
+
+int	ft_usleep(size_t ms)
+{
+	size_t	start;
+
+	start = get_current_time();
+	while ((get_current_time() - start) < ms)
+		usleep(500);
+	return (0);
+}
+
+int	get_current_time(void)
+{
+	struct timeval	tv;
+
+	if (gettimeofday(&tv, NULL) == -1)
+		return (printf("Error: Error getting time of the day.\n"), -1);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
+}
+
+void	print_action(t_philo *philo, char *str)
+{
+	int	time;
+
+	pthread_mutex_lock(philo->write_mutex);
+	time = get_current_time() - philo->creation_time;
+	if (!dead_check(philo))
+		printf(GREEN"[%d]"RESET" %d %s\n", time, philo->id, str);
+	pthread_mutex_unlock(philo->write_mutex);
 }

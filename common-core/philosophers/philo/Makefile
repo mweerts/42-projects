@@ -9,8 +9,8 @@ CFLAGS = #-Wall -Wextra -Werror
 SRCS = 	main.c \
 		init.c \
 		utils.c \
-		routines.c
-
+		philo.c \
+		monitoring.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
