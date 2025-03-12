@@ -5,8 +5,11 @@ COLOUR_END=\033[0m
 
 NAME = philo
 CC = cc 
-CFLAGS = -Wall -Wextra -Werror
-SRCS = 	philo.c
+CFLAGS = #-Wall -Wextra -Werror
+SRCS = 	main.c \
+		init.c \
+		utils.c \
+		routines.c
 
 OBJS = $(SRCS:.c=.o)
 
@@ -14,11 +17,11 @@ all: $(NAME)
 
 $(NAME) : 	$(OBJS)
 			@echo "$(COLOUR_GREEN)$(BOLD)[PHILOSOPHERS] Creating philo$(COLOUR_END)"
-			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+			@$(CC) $(CFLAGS) $(OBJS) -pthread -o $(NAME)
 
 %.o:%.c
 		@echo "$(COLOUR_GREEN)Compiling $<$(COLOUR_END)"
-		@$(CC) $(CFLAGS) -I . -c $< -o $@
+		@$(CC) $(CFLAGS) -I . -pthread -c $< -o $@
 
 clean: 
 		@echo "$(COLOUR_RED)$(BOLD)[PHILOSOPHERS] Deleting objects files$(COLOUR_END)"

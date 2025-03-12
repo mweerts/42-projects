@@ -1,20 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo.c                                            :+:      :+:    :+:   */
+/*   routines.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 12:08:10 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/12 12:08:11 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/12 14:02:55 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/12 14:51:46 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+void	*philo_routine(void *data)
 {
-	(void)argc;
-	(void)argv;
 	printf("OK");
+	return (NULL);
+}
+
+void	*monitoring_routine(void *data)
+{
+	return (NULL);
 }
