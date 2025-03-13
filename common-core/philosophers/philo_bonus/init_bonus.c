@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:20:34 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 17:10:27 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:53:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,28 +22,28 @@ static int	init_processes(t_data *data)
 		data->philo_arr[i].pid = fork();
 		if (data->philo_arr[i].pid == 0)
 		{
-			philo_routine((void *)&data->philo_arr[i]);
-			exit (0);
+			philo_routine(data->philo_arr + i);
+			exit(0);
 		}
 		i++;
-		usleep(100);
 	}
+	waitpid(-1, NULL, 0);
 	return (1);
 }
 
-static int	init_semaphores(t_data *data) 
+static int	init_semaphores(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	sem_unlink("eat");
-	sem_unlink("write");
-	sem_unlink("dead");
+	sem_unlink("eat_sem");
+	sem_unlink("write_sem");
+	sem_unlink("dead_sem");
 	sem_unlink("forks");
-	data->eat_sem = sem_open("eat", O_CREAT, 0600, 1);
-	data->write_sem = sem_open("write", O_CREAT, 0600, 1);
-	data->dead_sem = sem_open("dead", O_CREAT, 0600, 1);
-	data->forks = sem_open("forks", O_CREAT, 0600, data->nb_philos);
+	data->eat_sem = sem_open("eat_sem", O_CREAT, 0644, 1);
+	data->write_sem = sem_open("write_sem", O_CREAT, 0644, 1);
+	data->dead_sem = sem_open("dead_sem", O_CREAT, 0644, 1);
+	data->forks = sem_open("forks", O_CREAT, 0644, data->nb_philos);
 	while (i < data->nb_philos)
 	{
 		data->philo_arr[i].eat_sem = data->eat_sem;

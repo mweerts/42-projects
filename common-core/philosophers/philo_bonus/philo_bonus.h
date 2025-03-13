@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 15:44:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:51:40 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <fcntl.h>
 # include <signal.h>
 # include <sys/types.h>
+# include <sys/wait.h>
 
 typedef struct s_philo
 {
@@ -73,7 +74,7 @@ int		ft_usleep(size_t milliseconds);
 
 // ROUTINES
 
-void	*philo_routine(void *ptr);
+void	philo_routine(t_philo *philo);
 void	*monitoring_routine(void *ptr);
 int		dead_check(t_philo *philo);
 

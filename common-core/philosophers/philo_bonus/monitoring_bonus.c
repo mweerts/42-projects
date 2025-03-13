@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 19:54:11 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 15:37:25 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 23:35:54 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@
 // 		if (check_all_have_eat(data))
 // 		{
 // 			pthread_mutex_lock(&data->write_mutex);
-// 			printf(GREEN"\
+// 			printf(GREEN"
 // All philosophers ate at least %d times.\n"RESET, data->nb_meals);
 // 			pthread_mutex_unlock(&data->write_mutex);
 // 			break ;

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:42:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 17:41:27 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:43:16 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,14 @@ void	print_action(t_philo *philo, char *str, int green)
 
 	sem_wait(philo->write_sem);
 	time = get_current_time() - philo->creation_time;
-	if (!dead_check(philo))
-	{
-		if (green)
-			printf(GREEN"%d"RESET" %d %s\n", time, philo->id + 1, str);
-		else
-			printf(RED"%d"RESET" %d %s\n", time, philo->id + 1, str);
-	}
+	(void)green;
+	printf(GREEN "%d" RESET " %d %s\n", time, philo->id + 1, str);
+	// if (!dead_check(philo))
+	// {
+	// 	if (green)
+	// 		printf(GREEN"%d"RESET" %d %s\n", time, philo->id + 1, str);
+	// 	else
+	// 		printf(RED"%d"RESET" %d %s\n", time, philo->id + 1, str);
+	// }
 	sem_post(philo->write_sem);
 }

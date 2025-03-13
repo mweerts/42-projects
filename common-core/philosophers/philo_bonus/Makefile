@@ -17,7 +17,7 @@ all: $(NAME)
 
 $(NAME) : 	$(OBJS)
 			@echo "$(COLOUR_GREEN)$(BOLD)[PHILOSOPHERS] Creating philo$(COLOUR_END)"
-			@$(CC) $(CFLAGS) $(OBJS) -pthread -o $(NAME)
+			@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
 
 %.o:%.c
 		@echo "$(COLOUR_GREEN)Compiling $<$(COLOUR_END)"

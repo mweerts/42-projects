@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:10 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/12 19:13:01 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/14 00:07:07 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,4 +21,5 @@ int	main(int argc, char **argv)
 	if (!init_data(argc, argv, &data))
 		return (0);
 	free_data(&data);
+	return (0);
 }
