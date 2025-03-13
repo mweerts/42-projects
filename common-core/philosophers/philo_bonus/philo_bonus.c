@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:02:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 14:33:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:23:29 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,23 +14,23 @@
 
 int	dead_check(t_philo *philo)
 {
-	pthread_mutex_lock(philo->dead_mutex);
+	sem_wait(philo->dead_sem);
 	if (*philo->dead == 1)
-		return (pthread_mutex_unlock(philo->dead_mutex), 1);
-	pthread_mutex_unlock(philo->dead_mutex);
+		return (sem_post(philo->dead_sem), 1);
+	sem_post(philo->dead_sem);
 	return (0);
 }
 
 static void	eat_sleep_and_think(t_philo *philo)
 {
 	print_action(philo, "is eating.", 1);
-	pthread_mutex_lock(philo->eat_mutex);
+	sem_wait(philo->eat_sem);
 	philo->last_meal = get_current_time();
 	philo->meals_eaten += 1;
-	pthread_mutex_unlock(philo->eat_mutex);
+	sem_post(philo->eat_sem);
 	ft_usleep(philo->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	sem_post(philo->forks);
+	sem_post(philo->forks);
 	print_action(philo, "is sleeping.", 1);
 	ft_usleep(philo->time_to_sleep);
 	print_action(philo, "is thinking.", 1);
@@ -38,20 +38,10 @@ static void	eat_sleep_and_think(t_philo *philo)
 
 static void	take_forks(t_philo *philo)
 {
-	if (philo->id % 2)
-	{
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork.", 1);
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork.", 1);
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork.", 1);
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork.", 1);
-	}
+	sem_wait(philo->forks);
+	print_action(philo, "has taken a fork.", 1);
+	sem_wait(philo->forks);
+	print_action(philo, "has taken a fork.", 1);
 }
 
 void	*philo_routine(void *ptr)
@@ -59,18 +49,11 @@ void	*philo_routine(void *ptr)
 	t_philo	*philo;
 
 	philo = (t_philo *)ptr;
-	if (philo->nb_philos == 1)
-	{
-		pthread_mutex_lock(philo->right_fork),
-		print_action(philo, "has taken a fork.", 1);
-		ft_usleep(philo->time_to_die);
-		pthread_mutex_unlock(philo->right_fork);
-		return (NULL);
-	}
 	while (dead_check(philo) == 0)
 	{
 		take_forks(philo);
 		eat_sleep_and_think(philo);
 	}
+	printf("OK\n");
 	return (NULL);
 }

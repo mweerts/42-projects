@@ -6,68 +6,53 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:20:34 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 14:32:44 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:10:27 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-static int	init_threads(t_data *data)
+static int	init_processes(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	if (pthread_create(&data->monitoring_thread, NULL, monitoring_routine,
-			data) != 0)
-		return (printf("Error: Failed to create monitoring thread.\n"), 0);
 	while (i < data->nb_philos)
 	{
-		if (pthread_create(&data->philo_arr[i].thread, NULL, philo_routine,
-				&data->philo_arr[i]) != 0)
-			return (free_data(data), printf("\
-Error: Failed to create philosopher thread.\n"), 0);
+		data->philo_arr[i].pid = fork();
+		if (data->philo_arr[i].pid == 0)
+		{
+			philo_routine((void *)&data->philo_arr[i]);
+			exit (0);
+		}
 		i++;
-	}
-	if (pthread_join(data->monitoring_thread, NULL) != 0)
-		return (printf("Error: Error joining thread.\n"), free_data(data), 0);
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		if (pthread_join(data->philo_arr[i].thread, NULL) != 0)
-			return (printf("Error: Error joining thread.\n"), free_data(data),
-				0);
-		i++;
+		usleep(100);
 	}
 	return (1);
 }
 
-static int	init_mutex(t_data *data)
+static int	init_semaphores(t_data *data) 
 {
 	int	i;
 
 	i = 0;
-	pthread_mutex_init(&data->write_mutex, NULL);
-	pthread_mutex_init(&data->eat_mutex, NULL);
-	pthread_mutex_init(&data->dead_mutex, NULL);
+	sem_unlink("eat");
+	sem_unlink("write");
+	sem_unlink("dead");
+	sem_unlink("forks");
+	data->eat_sem = sem_open("eat", O_CREAT, 0600, 1);
+	data->write_sem = sem_open("write", O_CREAT, 0600, 1);
+	data->dead_sem = sem_open("dead", O_CREAT, 0600, 1);
+	data->forks = sem_open("forks", O_CREAT, 0600, data->nb_philos);
 	while (i < data->nb_philos)
 	{
-		data->philo_arr[i].left_fork = malloc(sizeof(pthread_mutex_t));
-		if (!data->philo_arr[i].left_fork)
-			return (free_data(data), 0);
-		pthread_mutex_init(data->philo_arr[i].left_fork, NULL);
-		data->philo_arr[i].write_mutex = &data->write_mutex;
-		data->philo_arr[i].eat_mutex = &data->eat_mutex;
-		data->philo_arr[i].dead_mutex = &data->dead_mutex;
+		data->philo_arr[i].eat_sem = data->eat_sem;
+		data->philo_arr[i].write_sem = data->write_sem;
+		data->philo_arr[i].dead_sem = data->dead_sem;
+		data->philo_arr[i].forks = data->forks;
 		i++;
 	}
-	i = 0;
-	while (i < data->nb_philos)
-	{
-		data->philo_arr[i].right_fork = data->philo_arr[(i + 1)
-			% data->nb_philos].left_fork;
-		i++;
-	}
-	return (init_threads(data));
+	return (init_processes(data));
 }
 
 static int	init_philos(t_data *data)
@@ -82,8 +67,6 @@ static int	init_philos(t_data *data)
 	{
 		data->philo_arr[i].id = i;
 		data->philo_arr[i].meals_eaten = 0;
-		data->philo_arr[i].left_fork = NULL;
-		data->philo_arr[i].right_fork = NULL;
 		data->philo_arr[i].creation_time = get_current_time();
 		data->philo_arr[i].last_meal = get_current_time();
 		data->philo_arr[i].time_to_eat = data->time_to_eat;
@@ -91,9 +74,10 @@ static int	init_philos(t_data *data)
 		data->philo_arr[i].time_to_die = data->time_to_die;
 		data->philo_arr[i].dead = &data->dead;
 		data->philo_arr[i].nb_philos = data->nb_philos;
+		data->philo_arr[i].pid = -1;
 		i++;
 	}
-	return (init_mutex(data));
+	return (init_semaphores(data));
 }
 
 int	init_data(int argc, char **argv, t_data *data)

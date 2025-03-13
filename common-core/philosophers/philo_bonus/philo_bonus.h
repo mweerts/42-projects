@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 14:33:21 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 15:44:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,10 @@
 # include <limits.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <semaphore.h>
+# include <fcntl.h>
+# include <signal.h>
+# include <sys/types.h>
 
 typedef struct s_philo
 {
@@ -35,12 +39,11 @@ typedef struct s_philo
 	int				creation_time;
 	int				*dead;
 	int				nb_philos;
-	pthread_t		thread;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*write_mutex;
-	pthread_mutex_t	*eat_mutex;
-	pthread_mutex_t	*dead_mutex;
+	int				pid;
+	sem_t			*forks;
+	sem_t			*eat_sem;
+	sem_t			*write_sem;
+	sem_t			*dead_sem;
 }	t_philo;
 
 typedef struct s_data
@@ -52,10 +55,10 @@ typedef struct s_data
 	int				nb_meals;
 	int				dead;
 	t_philo			*philo_arr;
-	pthread_t		monitoring_thread;
-	pthread_mutex_t	write_mutex;
-	pthread_mutex_t	eat_mutex;
-	pthread_mutex_t	dead_mutex;
+	sem_t			*forks;
+	sem_t			*eat_sem;
+	sem_t			*write_sem;
+	sem_t			*dead_sem;
 }	t_data;
 
 // INITIALISATION

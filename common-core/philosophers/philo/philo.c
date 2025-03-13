@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:02:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 14:29:43 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:35:40 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ int	dead_check(t_philo *philo)
 
 static void	eat_sleep_and_think(t_philo *philo)
 {
-	print_action(philo, "is eating.", 1);
 	pthread_mutex_lock(philo->eat_mutex);
 	philo->last_meal = get_current_time();
 	philo->meals_eaten += 1;
+	print_action(philo, "is eating.", 1);
 	pthread_mutex_unlock(philo->eat_mutex);
 	ft_usleep(philo->time_to_eat);
 	pthread_mutex_unlock(philo->left_fork);
@@ -34,24 +34,6 @@ static void	eat_sleep_and_think(t_philo *philo)
 	print_action(philo, "is sleeping.", 1);
 	ft_usleep(philo->time_to_sleep);
 	print_action(philo, "is thinking.", 1);
-}
-
-static void	take_forks(t_philo *philo)
-{
-	if (philo->id % 2)
-	{
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork.", 1);
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork.", 1);
-	}
-	else
-	{
-		pthread_mutex_lock(philo->left_fork);
-		print_action(philo, "has taken a fork.", 1);
-		pthread_mutex_lock(philo->right_fork);
-		print_action(philo, "has taken a fork.", 1);
-	}
 }
 
 void	*philo_routine(void *ptr)
@@ -69,7 +51,12 @@ void	*philo_routine(void *ptr)
 	}
 	while (dead_check(philo) == 0)
 	{
-		take_forks(philo);
+		if (philo->id % 2)
+			ft_usleep(1);
+		pthread_mutex_lock(philo->right_fork);
+		print_action(philo, "has taken a fork.", 1);
+		pthread_mutex_lock(philo->left_fork);
+		print_action(philo, "has taken a fork.", 1);
 		eat_sleep_and_think(philo);
 	}
 	return (NULL);

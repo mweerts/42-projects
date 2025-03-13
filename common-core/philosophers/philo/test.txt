@@ -1,0 +1,19 @@
+[32m0[0m 1 has taken a fork.
+[32m0[0m 1 has taken a fork.
+[32m0[0m 1 is eating.
+[32m200[0m 1 is sleeping.
+[32m200[0m 2 has taken a fork.
+[32m200[0m 2 has taken a fork.
+[32m200[0m 2 is eating.
+[32m400[0m 1 is thinking.
+[32m400[0m 2 is sleeping.
+[32m400[0m 1 has taken a fork.
+[32m400[0m 1 has taken a fork.
+[32m400[0m 1 is eating.
+[32m600[0m 2 is thinking.
+[32m600[0m 1 is sleeping.
+[32m601[0m 2 has taken a fork.
+[32m601[0m 2 has taken a fork.
+[32m601[0m 2 is eating.
+[32mAll philosophers ate at least 2 times.
+[0m

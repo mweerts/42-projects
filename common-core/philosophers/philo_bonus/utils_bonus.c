@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:42:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/13 14:33:33 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:41:27 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,9 @@ int	free_data(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < data->nb_philos && data->philo_arr)
+	while (i < data->nb_philos)
 	{
-		if (data->philo_arr[i].left_fork)
-		{
-			pthread_mutex_destroy(data->philo_arr[i].left_fork);
-			free(data->philo_arr[i].left_fork);
-			data->philo_arr[i].left_fork = NULL;
-		}
+		kill(data->philo_arr[i].pid, SIGKILL);
 		i++;
 	}
 	if (data->philo_arr)
@@ -57,9 +52,10 @@ int	free_data(t_data *data)
 		free(data->philo_arr);
 		data->philo_arr = NULL;
 	}
-	pthread_mutex_destroy(&data->write_mutex);
-	pthread_mutex_destroy(&data->eat_mutex);
-	pthread_mutex_destroy(&data->dead_mutex);
+	sem_close(data->eat_sem);
+	sem_close(data->write_sem);
+	sem_close(data->dead_sem);
+	sem_close(data->forks);
 	return (1);
 }
 
@@ -86,14 +82,14 @@ void	print_action(t_philo *philo, char *str, int green)
 {
 	int	time;
 
-	pthread_mutex_lock(philo->write_mutex);
+	sem_wait(philo->write_sem);
 	time = get_current_time() - philo->creation_time;
 	if (!dead_check(philo))
 	{
 		if (green)
-			printf(GREEN"[%d]"RESET" %d %s\n", time, philo->id, str);
+			printf(GREEN"%d"RESET" %d %s\n", time, philo->id + 1, str);
 		else
-			printf(RED"[%d]"RESET" %d %s\n", time, philo->id, str);
+			printf(RED"%d"RESET" %d %s\n", time, philo->id + 1, str);
 	}
-	pthread_mutex_unlock(philo->write_mutex);
+	sem_post(philo->write_sem);
 }
