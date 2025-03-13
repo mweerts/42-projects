@@ -6,11 +6,11 @@ COLOUR_END=\033[0m
 NAME = philo
 CC = cc 
 CFLAGS = -Wall -Wextra -Werror
-SRCS = 	main.c \
-		init.c \
-		utils.c \
-		philo.c \
-		monitoring.c
+SRCS = 	main_bonus.c \
+		init_bonus.c \
+		utils_bonus.c \
+		philo_bonus.c \
+		monitoring_bonus.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
