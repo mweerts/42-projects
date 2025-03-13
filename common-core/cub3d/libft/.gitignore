@@ -1,7 +1,4 @@
-cub3D
-objs
-testers
-parser
+so_long
 
 # Prerequisites
 *.d
@@ -24,6 +21,7 @@ parser
 # Libraries
 *.lib
 *.a
+**/*.a
 *.la
 *.lo
 
