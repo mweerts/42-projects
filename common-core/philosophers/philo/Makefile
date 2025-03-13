@@ -5,7 +5,7 @@ COLOUR_END=\033[0m
 
 NAME = philo
 CC = cc 
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -fsanitize=thread #-Wall -Wextra -Werror
 SRCS = 	main.c \
 		init.c \
 		utils.c \

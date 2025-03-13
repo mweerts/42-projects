@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/12 19:47:41 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/13 14:29:03 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int		init_data(int argc, char **argv, t_data *data);
 int		ft_atoi_custom(const char *str);
 int		free_data(t_data *data);
 int		get_current_time(void);
-void	print_action(t_philo *philo, char *str);
+void	print_action(t_philo *philo, char *str, int green);
 int		ft_usleep(size_t milliseconds);
 
 // ROUTINES
