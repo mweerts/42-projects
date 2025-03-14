@@ -48,10 +48,17 @@ SRC_PATH = ./srcs/
 OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
+#############################
+#		SOURCE FILES		#
+#############################
+
 SRC		= 	main.c \
 			parser/parser.c \
 			misc/error.c \
+			misc/debug.c \
 
+#############################
+			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
 INC		= -I $(INC_PATH) -I $(LIBFT_PATH) -I $(MLX_DIR)

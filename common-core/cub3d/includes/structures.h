@@ -13,8 +13,17 @@
 #ifndef STRUCTURES_H
 # define STRUCTURES_H
 
-#include "libft.h"
-#include "../minilibx-linux/mlx.h"
+# include "libft.h"
+
+typedef enum e_map_element
+{
+	EMPTY = '0',
+	OBSTACLE = '1',
+	EAST = 'E',
+	WEST = 'W',
+	NORTH = 'N',
+	SOUTH = 'S',
+}				t_map_element;
 
 typedef enum e_texture_wall
 {
@@ -56,6 +65,8 @@ typedef struct s_map
 {
 	int		width;
 	int		height;
+	int		floor_color;
+	int		ceiling_color;
 	char	**matrix;
 	char	orientation_start;
 }			t_map;
@@ -66,7 +77,7 @@ typedef struct s_data
 	void		*win;
 	t_img		img;
 	t_map		*map;
-	// t_texture	*textures[TEX_COUNT];
+	t_texture	*textures[TEX_COUNT];
 	int			max_row;
 	int			max_col;
 	// char		*err_msg;

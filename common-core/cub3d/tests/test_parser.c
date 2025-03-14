@@ -21,6 +21,7 @@ void data_init(t_data *data)
 	data->map = malloc(sizeof(t_map));
 	if (!data->map)
 		display_err_and_exit(NULL, data);
+	ft_memset(data->map, 0, sizeof(t_map));
 }
 
 int main(int ac, char **argv)
@@ -29,6 +30,8 @@ int main(int ac, char **argv)
 	(void)ac;
 	
 	data_init(&data);
-	parse_map(&data, ac, argv);
+	if (parse_arguments(&data, ac, argv))
+		display_err_and_exit(NULL, &data);
+		
 	return (0);
 }

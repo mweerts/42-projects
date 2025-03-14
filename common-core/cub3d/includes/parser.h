@@ -15,6 +15,6 @@
 
 #include "structures.h"
 
-int parse_map(t_data *data, int ac, char **av);
+int parse_arguments(t_data *data, int ac, char **av);
 
 #endif
