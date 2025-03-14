@@ -9,8 +9,7 @@ CFLAGS = -Wall -Wextra -Werror
 SRCS = 	main_bonus.c \
 		init_bonus.c \
 		utils_bonus.c \
-		philo_bonus.c \
-		monitoring_bonus.c
+		philo_bonus.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)

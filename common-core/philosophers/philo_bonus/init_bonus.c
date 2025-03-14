@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:20:34 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/14 00:53:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/14 16:34:57 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,21 @@ static int	init_processes(t_data *data)
 		data->philo_arr[i].pid = fork();
 		if (data->philo_arr[i].pid == 0)
 		{
-			philo_routine(data->philo_arr + i);
-			exit(0);
+			pthread_create(&data->dead_thread, NULL, dead_check, &data->philo_arr[i]);
+			pthread_detach(data->dead_thread);
+			while (1)
+				philo_routine(&data->philo_arr[i]);
 		}
+		usleep(100);
 		i++;
 	}
-	waitpid(-1, NULL, 0);
+	if (data->nb_meals > 0)
+	{
+		pthread_create(&data->eat_check_thread, NULL, eat_check, data);
+		pthread_detach(data->eat_check_thread);
+	}
+	sem_wait(data->stop_sem);
+	free_data(data);
 	return (1);
 }
 
@@ -40,9 +49,11 @@ static int	init_semaphores(t_data *data)
 	sem_unlink("write_sem");
 	sem_unlink("dead_sem");
 	sem_unlink("forks");
+	sem_unlink("stop_sem");
 	data->eat_sem = sem_open("eat_sem", O_CREAT, 0644, 1);
 	data->write_sem = sem_open("write_sem", O_CREAT, 0644, 1);
 	data->dead_sem = sem_open("dead_sem", O_CREAT, 0644, 1);
+	data->stop_sem = sem_open("stop_sem", O_CREAT, 0644, 0);
 	data->forks = sem_open("forks", O_CREAT, 0644, data->nb_philos);
 	while (i < data->nb_philos)
 	{
@@ -50,6 +61,7 @@ static int	init_semaphores(t_data *data)
 		data->philo_arr[i].write_sem = data->write_sem;
 		data->philo_arr[i].dead_sem = data->dead_sem;
 		data->philo_arr[i].forks = data->forks;
+		data->philo_arr[i].stop_sem = data->stop_sem;
 		i++;
 	}
 	return (init_processes(data));
@@ -72,9 +84,9 @@ static int	init_philos(t_data *data)
 		data->philo_arr[i].time_to_eat = data->time_to_eat;
 		data->philo_arr[i].time_to_sleep = data->time_to_sleep;
 		data->philo_arr[i].time_to_die = data->time_to_die;
-		data->philo_arr[i].dead = &data->dead;
 		data->philo_arr[i].nb_philos = data->nb_philos;
 		data->philo_arr[i].pid = -1;
+		data->philo_arr[i].nb_meals = data->nb_meals;
 		i++;
 	}
 	return (init_semaphores(data));
@@ -87,7 +99,6 @@ int	init_data(int argc, char **argv, t_data *data)
 
 	i = 0;
 	data->nb_meals = -1;
-	data->dead = 0;
 	while (++i < argc)
 	{
 		tmp = ft_atoi_custom(argv[i]);
