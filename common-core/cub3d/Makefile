@@ -41,7 +41,7 @@ endif
 ifeq ($(MODE), debug)
 	CFLAGS	+= -fsanitize=address -g -D DEBUG=true
 else ifeq ($(MODE), valgrind)
-	VALGRIND += valgrind --leak-check=full --show-leak-kinds=all --suppressions=leaks.supp
+	VALGRIND += valgrind --leak-check=full --show-leak-kinds=all
 endif
 
 SRC_PATH = ./srcs/
@@ -54,6 +54,7 @@ INC_PATH = ./includes/
 
 SRC		= 	main.c \
 			parser/parser.c \
+			parser/parse_colors.c \
 			misc/error.c \
 			misc/debug.c \
 
@@ -113,8 +114,8 @@ parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
 	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC)
 	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
-	$(if $(VALGRIND), $(VALGRIND))
 	@echo "$(GREEN)executing parser$(RESET)"
-	$ ./parser ./maps/map.cub
+	# $(if $(VALGRIND), $(VALGRIND))
+	$(VALGRIND) ./parser ./maps/map.cub
 
 .PHONY: all re clean fclean run parser

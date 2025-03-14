@@ -18,6 +18,8 @@ void	print_map_info(t_map *map)
 	ft_printf("\n=== Map Info ===\n");
 	ft_printf("Map width: %d\n", map->width);
 	ft_printf("Map height: %d\n", map->height);
+	ft_printf("Floor color: %d\n", map->floor_color);
+	ft_printf("Ceiling color: %d\n", map->ceiling_color);
 	// ft_printf("\n=============Matrix==========\n\n");
 	// print_matrix(data->map->matrix, data);
 	ft_printf(RESET);

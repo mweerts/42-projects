@@ -12,13 +12,16 @@
 
 #include "cub3D.h"
 
+void	cleanup_map(t_map *map)
+{
+	free(map);
+}
+
 void	cleanup_textures(t_data *data)
 {
 	int	i;
 
 	i = -1;
-	if (!data->textures)
-		return ;
 	while (++i < TEX_COUNT)
 	{
 		if (data->textures[i])
@@ -40,6 +43,7 @@ void	clean_up(t_data *data)
 	if (data->win)
 		mlx_destroy_image(data->mlx, data->img.img);
 	cleanup_textures(data);
+	cleanup_map(data->map);	
 	mlx_destroy_display(data->mlx);
 	free(data->mlx);
 }

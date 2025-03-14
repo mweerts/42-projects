@@ -44,3 +44,25 @@ char	*ft_strtrim(char const *s1, char const *set)
 		return (NULL);
 	return (new);
 }
+
+char	*ft_strtrim_n_free(char *s1, char const *set)
+{
+	char	*new;
+	size_t	start;
+	size_t	end;
+
+	start = 0;
+	end = ft_strlen(s1) - 1;
+	if (!s1)
+		return (NULL);
+	if (!set)
+		return (s1);
+	while (is_sep(s1[start], set))
+		start++;
+	while (is_sep(s1[end], set))
+		end--;
+	new = ft_substr(s1, start, end - start + 1);
+	if (!new)
+		return (NULL);
+	return (free(s1), new);
+}

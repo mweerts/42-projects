@@ -32,6 +32,6 @@ int main(int ac, char **argv)
 	data_init(&data);
 	if (parse_arguments(&data, ac, argv))
 		display_err_and_exit(NULL, &data);
-		
+	clean_up(&data);
 	return (0);
 }
