@@ -1,5 +1,6 @@
 -I./includes
 -I./libft
+-I./minilibx-linux
 -I/usr/local/include
 -I/usr/include
 -g

@@ -12,10 +12,23 @@
 
 #include "cub3D.h"
 
-int main(int ac, char **av)
+void data_init(t_data *data)
 {
+	ft_memset(data, 0, sizeof(t_data));
+	data->mlx = mlx_init();
+	if (!data->mlx)
+		display_err_and_exit(NULL, data);
+	data->map = malloc(sizeof(t_map));
+	if (!data->map)
+		display_err_and_exit(NULL, data);
+}
+
+int main(int ac, char **argv)
+{
+	t_data data;
 	(void)ac;
-	(void)av;
-	printf("test parser \n");
+	
+	data_init(&data);
+	parse_map(&data, ac, argv);
 	return (0);
 }

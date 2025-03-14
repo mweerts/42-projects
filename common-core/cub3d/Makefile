@@ -49,16 +49,18 @@ OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
 SRC		= 	main.c \
+			parser/parser.c \
+			misc/error.c \
 
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
-INC		= -I $(INC_PATH) -I $(LIBFT_PATH)
+INC		= -I $(INC_PATH) -I $(LIBFT_PATH) -I $(MLX_DIR)
 
 LIBFT_PATH = ./libft/
 LIBFT = ./libft/libft.a
+MLX_LIB = -L $(MLX_DIR) -lmlx
 
-all: $(OBJ_PATH) $(LIBFT) $(NAME)
-
+all: $(OBJ_PATH) $(LIBFT) $(NAME) $(MLX_LB)
 
 run : all
 	@./$(NAME) map.cub
@@ -74,6 +76,9 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_LIB) $(MLX) -o $@ $(INC)
 
+$(MLX_LB):
+	@make -C $(MLX_DIR)
+	
 # Libft rule
 $(LIBFT):
 	make -C $(LIBFT_PATH)
@@ -96,12 +101,13 @@ re: fclean all
 TEST_DIR = tests
 
 parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
-	mkdir -p $(TEST_DIR)
-	mkdir -p $(OBJ_PATH)/testing
-	$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC) $(MLX_LIB) $(MLX)
-	$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
+	@mkdir -p $(TEST_DIR)
+	@mkdir -p $(OBJ_PATH)/testing
+	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC)
+	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
 	$(if $(VALGRIND), $(VALGRIND))
-	$ ./parser
+	@echo "$(GREEN)executing parser$(RESET)"
+	$ ./parser ./maps/map.cub
 
 .PHONY: all re clean fclean run parser

@@ -13,4 +13,8 @@
 #ifndef PARSER_H
 # define PARSER_H
 
+#include "structures.h"
+
+int parse_map(t_data *data, int ac, char **av);
+
 #endif
