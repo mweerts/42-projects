@@ -5,29 +5,23 @@ COLOUR_END=\033[0m
 
 NAME = philo
 CC = cc 
-CFLAGS = -pthread -Wall -Wextra -Werror
-SRC = 	main.c \
-		parsing.c \
-		utils.c \
+CFLAGS = -Wall -Wextra -Werror
+SRCS = 	main.c \
 		init.c \
-		philo_routine.c \
-		monitoring_routine.c
-
-SRCSDIR = ./srcs/
-SRCS = $(addprefix $(SRCSDIR), $(SRC)) 	
-INCLUDES = ./includes
-
+		utils.c \
+		philo.c \
+		monitoring.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME) : 	$(OBJS)
 			@echo "$(COLOUR_GREEN)$(BOLD)[PHILOSOPHERS] Creating philo$(COLOUR_END)"
-			@$(CC) $(CFLAGS) $(OBJS) -I $(INCLUDES) -o $(NAME)
+			@$(CC) $(CFLAGS) $(OBJS) -pthread -o $(NAME)
 
 %.o:%.c
 		@echo "$(COLOUR_GREEN)Compiling $<$(COLOUR_END)"
-		@$(CC) $(CFLAGS) -I $(INCLUDES) -c $< -o $@
+		@$(CC) $(CFLAGS) -I . -pthread -c $< -o $@
 
 clean: 
 		@echo "$(COLOUR_RED)$(BOLD)[PHILOSOPHERS] Deleting objects files$(COLOUR_END)"

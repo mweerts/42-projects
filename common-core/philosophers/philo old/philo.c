@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:02:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/14 00:14:59 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/15 23:46:55 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int	dead_check(t_philo *philo)
 
 static void	eat_sleep_and_think(t_philo *philo)
 {
-	pthread_mutex_lock(philo->eat_mutex);
 	philo->last_meal = get_current_time();
+	pthread_mutex_lock(philo->eat_mutex);
 	philo->meals_eaten += 1;
 	print_action(philo, "is eating.", 1);
 	pthread_mutex_unlock(philo->eat_mutex);
