@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 21:36:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 23:11:30 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:13:19 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ t_philo	*init_philos(t_data *data)
 int	init_data(t_data *data, int argc, char **argv)
 {
 	data->nb_meals = -1;
-	data->stop = 0;
 	data->nb_philos = ft_atoi(argv[1]);
 	data->write_sem = NULL;
 	data->eat_sem = NULL;

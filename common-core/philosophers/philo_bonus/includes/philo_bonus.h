@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 22:32:28 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:13:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meals;
-	int				stop;
 	pthread_t		meals_monitor;
 	sem_t			*write_sem;
 	sem_t			*eat_sem;
