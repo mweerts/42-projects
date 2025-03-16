@@ -5,7 +5,7 @@ COLOUR_END=\033[0m
 
 NAME = philo_bonus
 CC = cc 
-CFLAGS = -pthread #-Wall -Wextra -Werror
+CFLAGS = -pthread -Wall -Wextra -Werror
 SRC = 	main_bonus.c \
 		parsing_bonus.c \
 		utils_bonus.c \

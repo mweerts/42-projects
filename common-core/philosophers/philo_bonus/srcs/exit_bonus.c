@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 22:05:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 23:09:58 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:27:04 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ void	free_all(t_philo *philos, t_data *data)
 void	kill_processes(t_philo *philos)
 {
 	int	i;
-	int	status;
 
 	i = 0;
 	while (i < philos->data->nb_philos)

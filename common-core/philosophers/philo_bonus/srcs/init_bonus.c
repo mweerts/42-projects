@@ -6,13 +6,13 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 21:36:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/17 00:13:19 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 00:22:35 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
-int	init_processes(t_philo	*philos, t_data *data)
+static int	init_philos_processes(t_philo *philos, t_data *data)
 {
 	int	i;
 
@@ -24,21 +24,34 @@ int	init_processes(t_philo	*philos, t_data *data)
 			return (printf(RED"Error: Fork failed.\n"RESET), 0);
 		if (philos[i].pid == 0)
 		{
-			if (pthread_create(&philos->dead_monitor, NULL, check_dead, &philos[i]) != 0)
-				return (printf(RED"Error: Failed to create dead monitoring thread.\n"RESET), 0);
+			if (pthread_create(&philos->dead_monitor,
+					NULL, check_dead, &philos[i]) != 0)
+				return (printf(RED"\
+Error: Failed to create dead monitoring thread.\n"RESET), 0);
 			if (pthread_detach(philos->dead_monitor) != 0)
-				return (printf(RED"Error: Failed to detach dead monitoring thread.\n"RESET), 0);
+				return (printf(RED"\
+Error: Failed to detach dead monitoring thread.\n"RESET), 0);
 			philo_routine(&philos[i]);
 			exit(0);
 		}
 		i++;
 	}
+	return (1);
+}
+
+int	init_processes(t_philo	*philos, t_data *data)
+{
+	if (!init_philos_processes(philos, data))
+		return (0);
 	if (data->nb_meals != -1)
 	{
-		if (pthread_create(&data->meals_monitor, NULL, check_meals, philos) != 0)
-			return (printf(RED"Error: Failed to create meals monitoring thread.\n"RESET), 0);
+		if (pthread_create(&data->meals_monitor,
+				NULL, check_meals, philos) != 0)
+			return (printf(RED"\
+Error: Failed to create meals monitoring thread.\n"RESET), 0);
 		if (pthread_detach(data->meals_monitor) != 0)
-			return (printf(RED"Error: Failed to detach meals monitoring thread.\n"RESET), 0);
+			return (printf(RED"\
+Error: Failed to detach meals monitoring thread.\n"RESET), 0);
 	}
 	return (1);
 }
