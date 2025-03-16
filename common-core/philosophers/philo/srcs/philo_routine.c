@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 21:02:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 00:31:21 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/16 14:57:48 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,16 @@ static void	philo_eat(t_philo *philo)
 	philo->meals_eaten += 1;
 	pthread_mutex_unlock(&philo->data->eat_m);
 	ft_usleep(philo->data->time_to_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	if (philo->id % 2)
+	{
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+	}
+	else
+	{
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->left_fork);
+	}
 }
 
 static void	philo_sleep(t_philo *philo)
