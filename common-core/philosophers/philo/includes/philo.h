@@ -6,16 +6,20 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 00:02:22 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 02:23:20 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
 
-# define RESET    "\033[0m"
-# define RED      "\033[31m"
-# define GREEN    "\033[32m"
+# define RESET		"\033[0m"
+# define RED		"\033[31m"
+# define GREEN		"\033[32m"
+# define YELLOW		"\033[33m"
+# define BLUE		"\033[34m"
+# define CYAN		"\033[36m"
+# define PURPLE		"\033[35m"
 
 # include <stdio.h>
 # include <unistd.h>

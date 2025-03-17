@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 13:42:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/15 23:41:58 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 02:23:14 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,15 @@ void	print_action(t_philo *philo, t_action action)
 		return ;
 	}
 	if (action == DEAD)
-		printf(RED"[%d] %d died.\n"RESET, time, philo->id);
+		printf(RED"[%d] %d died.💀\n"RESET, time, philo->id);
 	else if (action == FORK)
-		printf(GREEN"[%d] %d has taken a fork.\n"RESET, time, philo->id);
+		printf(YELLOW"[%d] %d has taken a fork.🍴\n"RESET, time, philo->id);
 	else if (action == EAT)
-		printf(GREEN"[%d] %d is eating.\n"RESET, time, philo->id);
+		printf(PURPLE"[%d] %d is eating.🍕\n"RESET, time, philo->id);
 	else if (action == SLEEP)
-		printf(GREEN"[%d] %d is sleeping.\n"RESET, time, philo->id);
+		printf(CYAN"[%d] %d is sleeping.💤\n"RESET, time, philo->id);
 	else if (action == THINK)
-		printf(GREEN"[%d] %d is thinking.\n"RESET, time, philo->id);
+		printf(BLUE"[%d] %d is thinking.💭\n"RESET, time, philo->id);
 	pthread_mutex_unlock(&philo->data->write_m);
 }
 
