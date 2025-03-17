@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 21:36:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/16 14:57:43 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 18:36:25 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ Error: Failed to create monitoring thread.\n"RESET), 0);
 	i = -1;
 	while (++i < data->nb_philos)
 	{
-		if (i % 2 == 0)
-			ft_usleep(1);
 		if (pthread_create(&philos[i].thread,
 				NULL, philo_routine, &philos[i]) != 0)
 			return (printf(RED"\

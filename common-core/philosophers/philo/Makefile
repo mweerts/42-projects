@@ -5,7 +5,7 @@ COLOUR_END=\033[0m
 
 NAME = philo
 CC = cc 
-CFLAGS = -pthread -Wall -Wextra -Werror
+CFLAGS = -g -pthread -Wall -Wextra -Werror
 SRC = 	main.c \
 		parsing.c \
 		utils.c \
