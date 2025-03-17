@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 21:36:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/17 00:22:35 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 03:05:59 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ Error: Failed to create dead monitoring thread.\n"RESET), 0);
 				return (printf(RED"\
 Error: Failed to detach dead monitoring thread.\n"RESET), 0);
 			philo_routine(&philos[i]);
-			exit(0);
 		}
 		i++;
 	}
@@ -63,11 +62,13 @@ int	init_semaphores(t_data *data)
 	sem_unlink("stop_sem");
 	sem_unlink("forks_sem");
 	sem_unlink("eat_full_sem");
+	sem_unlink("finish_sem");
 	data->write_sem = sem_open("write_sem", O_CREAT, 0644, 1);
 	data->eat_sem = sem_open("eat_sem", O_CREAT, 0644, 1);
 	data->stop_sem = sem_open("stop_sem", O_CREAT, 0644, 0);
 	data->forks_sem = sem_open("forks_sem", O_CREAT, 0644, data->nb_philos);
 	data->eat_full_sem = sem_open("eat_full_sem", O_CREAT, 0644, 0);
+	data->finish_sem = sem_open("finish_sem", O_CREAT, 0644, 1);
 	return (1);
 }
 
@@ -97,6 +98,7 @@ t_philo	*init_philos(t_data *data)
 int	init_data(t_data *data, int argc, char **argv)
 {
 	data->nb_meals = -1;
+	data->finish = 0;
 	data->nb_philos = ft_atoi(argv[1]);
 	data->write_sem = NULL;
 	data->eat_sem = NULL;

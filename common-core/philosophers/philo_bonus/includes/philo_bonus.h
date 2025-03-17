@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 12:08:22 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/17 02:20:45 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 02:56:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,12 +49,14 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				nb_meals;
+	int				finish;
 	pthread_t		meals_monitor;
 	sem_t			*write_sem;
 	sem_t			*eat_sem;
 	sem_t			*eat_full_sem;
 	sem_t			*stop_sem;
 	sem_t			*forks_sem;
+	sem_t			*finish_sem;
 }	t_data;
 
 typedef struct s_philo

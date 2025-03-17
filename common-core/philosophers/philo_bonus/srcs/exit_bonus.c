@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 22:05:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/17 00:27:04 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/17 02:54:08 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ void	free_all(t_philo *philos, t_data *data)
 		sem_close(data->forks_sem);
 	if (data->eat_full_sem && data->eat_full_sem != SEM_FAILED)
 		sem_close(data->eat_full_sem);
+	if (data->finish_sem && data->finish_sem != SEM_FAILED)
+		sem_close(data->finish_sem);
 	if (philos)
 		free(philos);
 }
