@@ -37,7 +37,7 @@
 # define MAGENTA "\033[35m"
 # define RESET "\033[0;37m"
 
-void	display_err_and_exit(const char *msg, t_data *data);
+void	exit_with_error(const char *msg, t_data *data);
 void	clean_up(t_data *data);
 
 //	debug	//

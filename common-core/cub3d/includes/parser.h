@@ -15,6 +15,9 @@
 
 #include "structures.h"
 
+# define ERR_RGB 2
+# define DONE 1
+
 /* Error Messages */
 # define ERR_MAP_TOO_BIG "Map too big for the screen resolution.\n"
 # define ERR_WRONG_EXTENSION "Map file extension is wrong (.cub expected).\n"
@@ -23,9 +26,14 @@
 # define ERR_INVALID_CHAR "The map has an invalid element.\n"
 # define ERR_NO_PLAYER_OR_EXIT "Invalid number of players on the map.\n"
 # define ERR_MAP_NOT_CLOSED "The map is not closed.\n"
-# define ERR_RGB_FORMAT "Wrong color format. Expected rgb (i.e 255,16,64).\n"
+# define MSG_ERR_RGB "Wrong color format. Expected rgb (i.e 255,16,64).\n"
+# define MSG_MISSING_PARAM "Some parameters are missing.\n"
 
 int parse_arguments(t_data *data, int ac, char **av);
-int	get_rgb_color(t_data *data, char *line, char elem);
+int	get_rgb_color(t_data *data, char *line);
+
+
+// utils 
+void	check_arguments(int ac, char **av, t_data *data);
 
 #endif

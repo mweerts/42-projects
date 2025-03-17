@@ -17,11 +17,14 @@ void data_init(t_data *data)
 	ft_memset(data, 0, sizeof(t_data));
 	data->mlx = mlx_init();
 	if (!data->mlx)
-		display_err_and_exit(NULL, data);
+		exit_with_error(NULL, data);
+	errno = 0;
 	data->map = malloc(sizeof(t_map));
 	if (!data->map)
-		display_err_and_exit(NULL, data);
+		exit_with_error(NULL, data);
 	ft_memset(data->map, 0, sizeof(t_map));
+	data->map->ceiling_color = -1;
+	data->map->floor_color = -1;
 }
 
 int main(int ac, char **argv)
@@ -31,7 +34,7 @@ int main(int ac, char **argv)
 	
 	data_init(&data);
 	if (parse_arguments(&data, ac, argv))
-		display_err_and_exit(NULL, &data);
+		exit_with_error(NULL, &data);
 	clean_up(&data);
 	return (0);
 }

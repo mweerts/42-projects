@@ -55,6 +55,9 @@ INC_PATH = ./includes/
 SRC		= 	main.c \
 			parser/parser.c \
 			parser/parse_colors.c \
+			parser/parse_file.c \
+			parser/textures.c \
+			parser/utils.c \
 			misc/error.c \
 			misc/debug.c \
 
@@ -115,7 +118,7 @@ parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
 	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
 	@echo "$(GREEN)executing parser$(RESET)"
-	# $(if $(VALGRIND), $(VALGRIND))
+# $(if $(VALGRIND), $(VALGRIND))
 	$(VALGRIND) ./parser ./maps/map.cub
 
 .PHONY: all re clean fclean run parser

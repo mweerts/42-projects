@@ -43,19 +43,19 @@ void	clean_up(t_data *data)
 	if (data->win)
 		mlx_destroy_image(data->mlx, data->img.img);
 	cleanup_textures(data);
-	cleanup_map(data->map);	
+	cleanup_map(data->map);
 	mlx_destroy_display(data->mlx);
 	free(data->mlx);
 }
 
-void	display_err_and_exit(const char *msg, t_data *data)
+void	exit_with_error(const char *msg, t_data *data)
 {
 	ft_printf_fd(2, YELLOW);
 	ft_printf_fd(2, "Error\n");
-	if (msg)
-		ft_printf_fd(2, "%s", msg, RESET);
-	else if (errno)
+	if (errno == ENOMEM)
 		perror(strerror(errno));
+	else if (msg)
+		ft_printf_fd(2, "%s", msg, RESET);
 	ft_printf_fd(2, RESET);
 	clean_up(data);
 	exit(EXIT_FAILURE);
