@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/19 16:37:00 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/19 17:19:42 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,5 @@ int main(int ac, char **av)
 	(void)av;
 	init_mlx(&data.mlx);
 	mlx_loop(data.mlx.mlx);
-	printf("test\n");
 	return (0);
 }
