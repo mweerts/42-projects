@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+         #
+#    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/13 19:03:40 by llebugle         ###   ########.fr        #
+#    Updated: 2025/03/19 16:35:13 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,8 @@ RESET	=\033[0m
 CC		= cc
 CFLAGS	= -Wextra -Wall -g
 VALGRIND =
-
+MLX_LIB = -L $(MLX_DIR) -lmlx
+MLX_FLAGS = -L./minilibx-linux/ -lmlx_Linux -lXext -lX11 -lm -lz
 ifeq ($(shell uname), Linux)
 	MLX_DIR = ./minilibx-linux
 	MLX_PATH = minilibx-linux/libmlx.a
@@ -49,10 +50,12 @@ OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
 SRC		= 	main.c \
+			display/init.c \
+			display/draw.c
 
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
-INC		= -I $(INC_PATH) -I $(LIBFT_PATH)
+INC		= -I $(INC_PATH) -I $(LIBFT_PATH) -I $(MLX_DIR)
 
 LIBFT_PATH = ./libft/
 LIBFT = ./libft/libft.a
@@ -66,6 +69,7 @@ run : all
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
 	mkdir -p $(OBJ_PATH)/parser
+	mkdir -p $(OBJ_PATH)/display
 	mkdir -p $(OBJ_PATH)/misc
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c

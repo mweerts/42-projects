@@ -1,35 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3D.h                                            :+:      :+:    :+:   */
+/*   display.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/19 15:59:34 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/19 16:38:31 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CUB3D_H
-# define CUB3D_H
+#ifndef DISPLAY_H
+# define DISPLAY_H
 
-# include "../libft/libft.h"
+// INIT
 
-# include "mlx.h"
-# include "parser.h"
-# include "structures.h"
-# include "display.h"
-# include "key_linux.h"
-# include <math.h>
-# include <errno.h>
-# include <fcntl.h>
-# include <limits.h>
-# include <stdbool.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <unistd.h>
+int	init_mlx(t_mlx *mlx);
 
-# define WIDTH 1920
-# define HEIGHT 1080
+// DRAW
+
+int	draw_pixel(t_img *img, int x, int y, int color);
+int	draw_line(t_img *img, t_coord p1, t_coord p2, int color);
 
 #endif
