@@ -6,11 +6,18 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/19 16:38:53 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/20 19:52:54 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+int	init_hooks(t_data *data)
+{
+	mlx_hook(data->mlx.win, 2, 1L << 0, &key_pressed, data);
+	mlx_hook(data->mlx.win, 17, 0L, &leave, data);
+	return (1);
+}
 
 static int	init_img(t_mlx *mlx)
 {

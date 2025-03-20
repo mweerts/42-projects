@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   events.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/20 19:53:43 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/20 19:59:53 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int main(int ac, char **av)
+int	leave(t_data *data)
 {
-	t_data data;
+	// free_all
+	(void)data;
+	exit(0);
+}
 
-	(void)ac;
-	(void)av;
-	init_mlx(&data.mlx);
-	init_hooks(&data);
-	mlx_loop(data.mlx.mlx);
+int	key_pressed(int keycode, t_data *data)
+{
+	if (keycode == K_ESC)
+		leave(data);
 	return (0);
 }

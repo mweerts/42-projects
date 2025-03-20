@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/19 16:35:13 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/20 19:54:04 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,8 @@ INC_PATH = ./includes/
 
 SRC		= 	main.c \
 			display/init.c \
-			display/draw.c
+			display/draw.c \
+			display/events.c
 
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
