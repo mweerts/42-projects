@@ -24,7 +24,7 @@
 # define ERR_NO_MAP "The Map couldn't be opened. Does it exist?\n"
 # define ERR_EMPTY_LINES "The map has empty lines.\n"
 # define ERR_NO_PLAYER_OR_EXIT "Invalid number of players on the map.\n"
-# define ERR_MAP_NOT_CLOSED "The map is not closed.\n"
+# define MSG_MAP_NOT_CLOSED "The map is not closed.\n"
 # define MSG_ERR_RGB "Invalid or missing colors. Example format : C 71,171,169.\n"
 # define MSG_INVALID_CHAR "The map has an invalid element.\n"
 # define MSG_MISSING_TEX "Some textures are missing or invalid.\n"

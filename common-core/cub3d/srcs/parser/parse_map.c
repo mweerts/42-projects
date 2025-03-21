@@ -46,7 +46,6 @@ static int	fill_matrix(t_map *map, char **matrix, char **line)
 	int	j;
 
 	j = 0;
-	
 	*matrix = malloc(sizeof(char) * map->width + 1);
 	if (!*matrix)
 		return (ERROR);
@@ -76,13 +75,51 @@ int	create_matrix(t_map *map, char **line)
 	while (i < map->height)
 	{
 		if (fill_matrix(map, matrix + i, line + i) == ERROR)
-			return (ft_free_tab(matrix), print_err(MSG_ERR_MALLOC), ERROR);
+			return (print_err(MSG_ERR_MALLOC), ERROR);
 		i++;
 	}
 	matrix[i] = NULL;
 	map->matrix = matrix;
 	return (0);
 }
+
+// int bfs(char **matrix, int x, int y)
+// {
+// 	int i;
+// 	int j;
+	
+// 	if (!matrix)
+// 		return (ERROR);
+// 	if (matrix[x])
+// 	return (0);
+// }
+
+// int	is_map_closed(t_map *map)
+// {
+// 	char	**cpy;
+// 	int		i;
+
+// 	// cpy = (char **)malloc(sizeof(char *) * (map->height + 1));
+// 	cpy = (char **)ft_calloc((map->height + 1), sizeof(char *));
+// 	if (!cpy)
+// 		return (print_err(MSG_ERR_MALLOC), ERROR);
+// 	i = 0;
+// 	while (i < map->height)
+// 	{
+// 		cpy[i] = ft_strdup(map->matrix[i]);
+// 		if (!cpy[i])
+// 			return (ft_free_tab(cpy), print_err(MSG_ERR_MALLOC), ERROR);
+// 		i++;
+// 	}
+// 	if (bfs(cpy, 0, 0) == ERROR)
+// 		return (ft_free_tab(cpy), print_err(MSG_MAP_NOT_CLOSED), ERROR);
+		
+// 		// i = -1;
+// 	// while (++i < map->height)
+// 	// 	printf("%s\n", cpy[i]);
+// 	ft_free_tab(cpy);
+// 	return (0);
+// }
 
 int	parse_map(t_data *data, char **line)
 {
@@ -95,7 +132,7 @@ int	parse_map(t_data *data, char **line)
 		return (ERROR);
 	if (create_matrix(data->map, line))
 		return (ERROR);
-	// if (!is_map_closed(data->map), line)
+	// if (!is_map_closed(data->map))
 	// 	return (ERROR);
 	return (0);
 }
