@@ -31,6 +31,8 @@
 
 int parse_arguments(t_data *data, int ac, char **av);
 int	get_rgb_color(t_data *data, char *line);
+int	parse_config(t_data *data, char *line);
+int	validate_config(t_data *data);
 
 
 // utils 

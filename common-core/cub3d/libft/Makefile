@@ -24,7 +24,7 @@ SRCS	= 	ft_isalpha.c		\
 			ft_memcmp.c 		\
 			ft_memmove.c 		\
 			ft_strchr.c 		\
-			ft_strcpy.c		\
+			ft_strcpy.c			\
 			ft_strlcpy.c		\
 			ft_strrchr.c		\
 			ft_toupper.c		\
@@ -69,6 +69,7 @@ SRCS	= 	ft_isalpha.c		\
 			ft_strstr.c			\
 			str_del_char.c		\
 			str_del_all_char.c	\
+			rgb_to_int.c		\
 
 OBJS	= $(SRCS:.c=.o)
 

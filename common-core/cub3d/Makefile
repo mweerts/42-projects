@@ -53,13 +53,13 @@ INC_PATH = ./includes/
 #############################
 
 SRC		= 	main.c \
+			parser/config.c \
 			parser/parser.c \
 			parser/process_file.c \
 			parser/textures.c \
 			parser/utils.c \
 			misc/error.c \
 			misc/debug.c \
-			parser/rgb_to_int.c \
 
 #############################
 			

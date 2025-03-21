@@ -96,6 +96,7 @@ char				*ft_strstr(char *str, char *to_find);
 char				*ft_strcpy(char *dest, char *src);
 char				*str_del_all_char(char *str, int c);
 char				*str_del_char(char *str, const char *char_to_del);
+int					rgb_to_int(char **rgb);
 
 #endif
 
