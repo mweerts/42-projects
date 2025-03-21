@@ -14,10 +14,10 @@
 # define CUB3D_H
 
 # include "../libft/libft.h"
+# include "key_linux.h"
 # include "mlx.h"
 # include "parser.h"
 # include "structures.h"
-# include "key_linux.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
@@ -41,11 +41,13 @@
 
 void	exit_with_error(const char *msg, t_data *data);
 void	clean_up(t_data *data);
+void	data_init(t_data *data);
 
 //	debug	//
 void	print_data(t_data *data);
 
 // error
-void print_err(char *msg);
+void	print_err(char *msg);
 
 #endif
+

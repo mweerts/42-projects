@@ -1,25 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/13 19:18:03 by llebugle         ###   ########.fr       */
+/*   Created: 2025/03/21 18:27:18 by llebugle          #+#    #+#             */
+/*   Updated: 2025/03/21 18:27:19 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int main(int ac, char **argv)
+void data_init(t_data *data)
 {
-	t_data data;
-	(void)ac;
-	
-	data_init(&data);
-	if (parse_arguments(&data, ac, argv))
-		exit_with_error(NULL, &data);
-	clean_up(&data);
-	return (0);
+	ft_memset(data, 0, sizeof(t_data));
+	data->mlx = mlx_init();
+	if (!data->mlx)
+		exit_with_error(NULL, data);
+	errno = 0;
+	data->map = malloc(sizeof(t_map));
+	if (!data->map)
+		exit_with_error(NULL, data);
+	ft_memset(data->map, 0, sizeof(t_map));
+	data->map->ceiling_color = -1;
+	data->map->floor_color = -1;
 }

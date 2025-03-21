@@ -59,6 +59,7 @@ SRC		= 	main.c \
 			parser/process_file.c \
 			parser/textures.c \
 			parser/utils.c \
+			misc/init.c \
 			misc/error.c \
 			misc/debug.c \
 
@@ -119,6 +120,11 @@ parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
 	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
 	@echo "$(GREEN)executing parser$(RESET)"
+	
+test: parser
+	@chmod +x $(TEST_DIR)/test_maps.sh
+	@$(TEST_DIR)/test_maps.sh
+
 # $(if $(VALGRIND), $(VALGRIND))
 	$(VALGRIND) ./parser ./maps/map.cub
 
