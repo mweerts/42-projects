@@ -23,6 +23,7 @@ void data_init(t_data *data)
 	if (!data->map)
 		exit_with_error(NULL, data);
 	ft_memset(data->map, 0, sizeof(t_map));
+	data->map->matrix = NULL;
 	data->map->ceiling_color = -1;
 	data->map->floor_color = -1;
 }

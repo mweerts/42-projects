@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= cub3D
+NAME	= cub3d
 
 # -----------------------------------Colors------------------------------------
 
@@ -76,7 +76,7 @@ MLX_LIB = -L $(MLX_DIR) -lmlx
 all: $(OBJ_PATH) $(LIBFT) $(NAME) $(MLX_LB)
 
 run : all
-	@./$(NAME) map.cub
+	@./$(NAME) test_maps/valid/map.cub
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)

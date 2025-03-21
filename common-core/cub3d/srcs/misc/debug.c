@@ -14,14 +14,25 @@
 
 void	print_map_info(t_map *map)
 {
+	int i;
+	
+	if (!map)
+		return ;
 	ft_printf(BLUE);
 	ft_printf("\n=== Map Info ===\n");
 	ft_printf("Map width: %d\n", map->width);
 	ft_printf("Map height: %d\n", map->height);
 	ft_printf("Floor color: %d\n", map->floor_color);
 	ft_printf("Ceiling color: %d\n", map->ceiling_color);
-	// ft_printf("\n=============Matrix==========\n\n");
-	// print_matrix(data->map->matrix, data);
+	ft_printf("Orientation start: %c\n", map->orientation_start);
+	ft_printf("Player start: [%d,%d]\n", map->player_start.y, map->player_start.x);
+	if (map->matrix)
+	{
+		i = -1;
+		ft_printf("\n=============Matrix==========\n\n");
+		while (map->matrix[++i])
+			ft_printf("%s\n", map->matrix[i]);
+	}
 	ft_printf(RESET);
 }
 
@@ -54,10 +65,7 @@ void	print_data(t_data *data)
 	print_tex_info(data);
 	ft_printf("==============================\n\n");
 	ft_printf(RESET);
-	
-	if (data->map)
-		print_map_info(data->map);
-	
+	print_map_info(data->map);
 	ft_printf("%s==============================\n\n%s", YELLOW, RESET);
 	
 }

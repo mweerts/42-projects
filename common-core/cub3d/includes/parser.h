@@ -28,6 +28,7 @@
 # define MSG_ERR_RGB "Invalid or missing colors. Example format : C 71,171,169.\n"
 # define MSG_INVALID_CHAR "The map has an invalid element.\n"
 # define MSG_MISSING_TEX "Some textures are missing or invalid.\n"
+# define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
 
 int parse_arguments(t_data *data, int ac, char **av);
 int	get_rgb_color(t_data *data, char *line);

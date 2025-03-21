@@ -20,6 +20,7 @@ int main(int ac, char **argv)
 	data_init(&data);
 	if (parse_arguments(&data, ac, argv))
 		exit_with_error(NULL, &data);
+	print_data(&data);
 	clean_up(&data);
 	return (0);
 }

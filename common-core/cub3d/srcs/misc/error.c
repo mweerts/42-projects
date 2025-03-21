@@ -14,6 +14,7 @@
 
 void	cleanup_map(t_map *map)
 {
+		ft_free_tab(map->matrix);
 	free(map);
 }
 

@@ -8,7 +8,6 @@ BLUE="\033[0;34m"
 RESET="\033[0m"
 MAGENTA="\033[35m"
 
-
 # Paths
 INVALID_MAPS_DIR="test_maps/invalid"
 VALID_MAPS_DIR="test_maps/valid"
@@ -25,9 +24,21 @@ mkdir -p "$INVALID_MAPS_DIR"
 mkdir -p "$VALID_MAPS_DIR"
 
 # Test results counters
+WARN_TESTS=0
 TOTAL_TESTS=0
 PASSED_TESTS=0
 FAILED_TESTS=0
+
+# Check if the -f or --failed-only flag is present
+# Default: hide successful tests
+SHOW_SUCCESSFUL=0
+
+# Check if the -a or --all flag is present
+for arg in "$@"; do
+  if [ "$arg" == "-a" ] || [ "$arg" == "--all" ]; then
+    SHOW_SUCCESSFUL=1
+  fi
+done
 
 # Function to print header
 print_header() {
@@ -41,32 +52,71 @@ run_test() {
     local map_file=$1
     local expected_exit_code=$2
     local test_type=$3
-
     ((TOTAL_TESTS++))
-    echo -e "${YELLOW}Testing map:${RESET} $map_file"
-    echo -e "${YELLOW}Expected exit code:${RESET} $expected_exit_code"
-
-    # Run the parser with the given map
-    $PARSER_PROGRAM "$map_file" >/dev/null 2>&1
+    
+    # Run with Valgrind and capture its output
+    VALGRIND_OUTPUT=$(valgrind --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --error-exitcode=99 $PARSER_PROGRAM "$map_file" 2>&1)
     local actual_exit_code=$?
-
-    echo -e "${YELLOW}Actual exit code:${RESET} $actual_exit_code"
-
-    # Verify the exit code
-    if [ $actual_exit_code -eq $expected_exit_code ]; then
-        echo -e "${GREEN}✓ Test PASSED${RESET}"
+    
+    # Check for memory leaks in Valgrind output
+    if echo "$VALGRIND_OUTPUT" | grep -q "ERROR SUMMARY: 0 errors"; then
+        local has_leaks=0
+    else
+        local has_leaks=1
+    fi
+    
+    # Handle error code differently if Valgrind detected errors
+    if [ $actual_exit_code -eq 99 ]; then
+        actual_exit_code=1  # Normalize to error
+    fi
+    
+    # Determine test status
+    local is_success=0
+    if [ $actual_exit_code -eq $expected_exit_code ] && [ $has_leaks -eq 0 ]; then
+        is_success=1
         ((PASSED_TESTS++))
+        echo -n "."  # Print a dot to show progress for successful test
+    elif [ $actual_exit_code -eq $expected_exit_code ] && [ $has_leaks -eq 1 ]; then
+        ((WARN_TESTS++))
+        echo -n "W"  # Print W for warnings (leaks)
+    else
+        ((FAILED_TESTS++))
+    fi
+    
+    # If hiding successful tests and this test succeeded, skip detailed output
+    if [ $SHOW_SUCCESSFUL -eq 0 ] && [ $is_success -eq 1 ]; then
+        return
+    fi
+    
+    # For failures, warnings, or when showing all tests, print detailed output
+    echo -e "\n${YELLOW}Testing map:${RESET} $map_file"
+    echo -e "${YELLOW}Expected exit code:${RESET} $expected_exit_code"
+    echo -e "${YELLOW}Actual exit code:${RESET} $actual_exit_code"
+    
+    if [ $has_leaks -eq 0 ]; then
+        echo -e "${GREEN}✓ No memory leaks detected${RESET}"
+    else
+        echo -e "${RED}✗ Memory leaks detected${RESET}"
+        echo -e "${RED}Valgrind leak summary:${RESET}"
+        echo "$VALGRIND_OUTPUT" | grep -A 1 "LEAK SUMMARY" | tail -2
+    fi
+    
+    if [ $actual_exit_code -eq $expected_exit_code ]; then
+        if [ $has_leaks -eq 0 ]; then
+            echo -e "${GREEN}✓ Test PASSED${RESET}"
+        else
+            echo -e "${YELLOW}⚠ Warning: Test passes functionally but has memory leaks${RESET}"
+        fi
     else
         echo -e "${RED}✗ Test FAILED${RESET}"
         echo -e "  ${RED}$test_type map should exit with code $expected_exit_code, but got $actual_exit_code${RESET}"
-        ((FAILED_TESTS++))
     fi
     echo -e "------------------------------------------------"
 }
 
 # Function to run all invalid map tests
 run_invalid_tests() {
-    echo -e "${BLUE}Running Invalid Map Tests...${RESET}\n"
+    echo -ne "${BLUE}Running Invalid Map Tests...${RESET}\n"
 
     # Check if there are any maps to test
     if [ ! "$(ls -A $INVALID_MAPS_DIR)" ]; then
@@ -80,11 +130,12 @@ run_invalid_tests() {
             run_test "$map_file" 1 "Invalid"
         fi
     done
+    echo
 }
 
 # Function to run all valid map tests
 run_valid_tests() {
-    echo -e "${BLUE}Running Valid Map Tests...${RESET}"
+    echo -ne "${BLUE}Running Valid Map Tests...${RESET}"
 
     # Check if there are any maps to test
     if [ ! "$(ls -A $VALID_MAPS_DIR)" ]; then
@@ -98,6 +149,7 @@ run_valid_tests() {
             run_test "$map_file" 0 "Valid"
         fi
     done
+    echo
 }
 
 # Function to create example invalid maps for testing
@@ -292,6 +344,7 @@ print_summary() {
     echo -e "${BLUE}================================================${RESET}"
     echo -e "${YELLOW}Total tests:${RESET} $TOTAL_TESTS"
     echo -e "${GREEN}Passed tests:${RESET} $PASSED_TESTS"
+    echo -e "${YELLOW}Warnings (passed with leaks): $WARN_TESTS${RESET}"
     echo -e "${RED}Failed tests:${RESET} $FAILED_TESTS"
     
     if [ $FAILED_TESTS -eq 0 ]; then

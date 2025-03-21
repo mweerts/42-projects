@@ -23,7 +23,7 @@ typedef enum e_map_element
 	WEST = 'W',
 	NORTH = 'N',
 	SOUTH = 'S',
-}				t_map_element;
+}					t_map_element;
 
 typedef enum e_texture_wall
 {
@@ -32,55 +32,63 @@ typedef enum e_texture_wall
 	TEX_EAST,
 	TEX_WEST,
 	TEX_COUNT,
-}			t_texture_wall;
+}					t_texture_wall;
+
+typedef struct s_screen_coord
+{
+	int				x;
+	int				y;
+}					t_screen_coord;
 
 typedef struct s_img
 {
-	void		*img;
-	char		*addr;
-	int			bits_per_pixel;
-	int			line_length;
-	int			endian;
-	int			width;
-	int			height;
-}				t_img;
+	void			*img;
+	char			*addr;
+	int				bits_per_pixel;
+	int				line_length;
+	int				endian;
+	int				width;
+	int				height;
+}					t_img;
 
 typedef struct s_texture
 {
-	t_img		img;
-	int			*data;
-	int			width;
-	int			height;
-	int			offset_x;
-	int			offset_y;
-}				t_texture;
+	t_img			img;
+	int				*data;
+	int				width;
+	int				height;
+	int				offset_x;
+	int				offset_y;
+}					t_texture;
 
 typedef struct s_pos
 {
-	int		x;
-	int		y;
-}			t_pos;
+	int				x;
+	int				y;
+}					t_pos;
 
 typedef struct s_map
 {
-	int		width;
-	int		height;
-	int		floor_color;
-	int		ceiling_color;
-	char	**matrix;
-	char	orientation_start;
-}			t_map;
+	int				width;
+	int				height;
+	int				floor_color;
+	int				ceiling_color;
+	char			**matrix;
+	char			orientation_start;
+	t_screen_coord	player_start;
+}					t_map;
 
 typedef struct s_data
 {
-	void		*mlx;
-	void		*win;
-	t_img		img;
-	t_map		*map;
-	t_texture	*textures[TEX_COUNT];
-	int			max_row;
-	int			max_col;
+	void			*mlx;
+	void			*win;
+	t_img			img;
+	t_map			*map;
+	t_texture		*textures[TEX_COUNT];
+	int				max_row;
+	int				max_col;
 	// char		*err_msg;
-}				t_data;
+}					t_data;
 
 #endif
+
