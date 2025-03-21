@@ -55,6 +55,7 @@ INC_PATH = ./includes/
 SRC		= 	main.c \
 			parser/config.c \
 			parser/parser.c \
+			parser/parse_map.c \
 			parser/process_file.c \
 			parser/textures.c \
 			parser/utils.c \
