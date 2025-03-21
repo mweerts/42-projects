@@ -48,6 +48,17 @@ void	clean_up(t_data *data)
 	free(data->mlx);
 }
 
+void print_err(char *msg)
+{
+	ft_printf_fd(STDERR_FILENO, YELLOW);
+	ft_printf_fd(STDERR_FILENO, "Error\n");
+	if (errno == ENOMEM)
+		perror(strerror(errno));
+	else if (msg)
+		ft_printf_fd(2, "%s", msg, RESET);
+	ft_printf_fd(2, RESET);
+}
+
 void	exit_with_error(const char *msg, t_data *data)
 {
 	ft_printf_fd(2, YELLOW);

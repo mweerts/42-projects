@@ -29,6 +29,7 @@
 /* Constants */
 # define SUCCESS 0
 # define ERROR 1
+# define MSG_ERR_MALLOC "No space left on device.\n"
 
 /* Colors */
 # define RED "\033[0;31m"
@@ -43,5 +44,8 @@ void	clean_up(t_data *data);
 
 //	debug	//
 void	print_data(t_data *data);
+
+// error
+void print_err(char *msg);
 
 #endif
