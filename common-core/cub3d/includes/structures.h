@@ -6,18 +6,12 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/23 22:17:50 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/23 23:31:08 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCTURES_H
 # define STRUCTURES_H
-
-typedef struct s_screen_coord
-{
-	int	x;
-	int	y;
-}	t_screen_coord;
 
 typedef struct s_img
 {
