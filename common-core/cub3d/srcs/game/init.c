@@ -6,11 +6,25 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 20:36:28 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/23 22:52:25 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+int	init_player(t_player *player)
+{
+	player->dir_x = 0;
+	player->dir_y = -1;
+	player->plane_x = 0.66;
+	player->plane_y = 0;
+	player->pos_x = 5;
+	player->pos_y = 5;
+	player->mv_forward = 0;
+	player->mv_lateral = 0;
+	player->mv_rotate = 0;
+	return (1);
+}
 
 int	init_hooks(t_data *data)
 {

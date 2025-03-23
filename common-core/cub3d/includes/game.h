@@ -1,20 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   display.h                                          :+:      :+:    :+:   */
+/*   game.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 20:36:04 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/23 21:21:38 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DISPLAY_H
-# define DISPLAY_H
+#ifndef GAME_H
+# define GAME_H
 
 // INIT
 
+int		init_player(t_player *player);
 int		init_mlx(t_mlx *s_mlx);
 int		init_img(t_mlx *s_mlx, t_img *s_img);
 int		init_hooks(t_data *data);

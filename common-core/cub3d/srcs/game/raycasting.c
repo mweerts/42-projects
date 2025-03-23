@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 20:41:26 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/23 22:50:35 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,13 @@ static void	dda(t_data *data, t_raycasting *ray)
 			ray->ray_y += ray->step_y;
 			ray->side = 1;
 		}
-		if (data->map.matrix[ray->ray_y][ray->ray_x] == 1)
+		if (data->map.matrix[ray->ray_y][ray->ray_x] > 0)
 			ray->hit = 1;
 	}
 	if (ray->side == 0)
-		ray->wall_distance = (ray->ray_x - data->player.pos_x + (1
-					- ray->step_x) / 2) / ray->ray_dir_x;
+		ray->wall_distance = ray->side_dist_x - ray->delta_dist_x;
 	else
-		ray->wall_distance = (ray->ray_y - data->player.pos_y + (1
-					- ray->step_y) / 2) / ray->ray_dir_y;
+		ray->wall_distance = ray->side_dist_y - ray->delta_dist_y;
 }
 
 int	raycasting(t_data *data)
@@ -88,9 +86,6 @@ int	raycasting(t_data *data)
 	int				draw_end;
 	int				line_height;
 
-	printf("forward : %d lateral : %d rotate : %d dir_x : %f dir_y : %f\n",
-		data->player.mv_forward, data->player.mv_lateral,
-		data->player.mv_rotate, data->player.dir_x, data->player.dir_y);
 	set_background(data);
 	compute_player_pos(data);
 	x = 0;
@@ -99,12 +94,14 @@ int	raycasting(t_data *data)
 		init_ray(data, &ray, x);
 		dda(data, &ray);
 		line_height = (int)(HEIGHT / ray.wall_distance);
+		if (line_height < 0)
+			line_height = HEIGHT;
 		draw_start = -line_height / 2 + HEIGHT / 2;
 		if (draw_start < 0)
 			draw_start = 0;
 		draw_end = line_height / 2 + HEIGHT / 2;
-		if (draw_end >= HEIGHT)
-			draw_end = HEIGHT - 1;
+		if (draw_end > HEIGHT)
+			draw_end = HEIGHT;
 		draw_vertical_line(&data->s_img, x, draw_start, draw_end, 0x00FFFF00);
 		x++;
 	}
