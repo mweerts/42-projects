@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 22:52:43 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:17:41 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,22 @@ void	compute_player_pos(t_data *data)
 	move_forward(data);
 	move_lateral(data);
 	move_rotate(data);
+}
+
+void	rotate_mouse(t_data *data, double rotdir)
+{
+	double	rot;
+	double	old_dir_x;
+	double	old_plane_x;
+
+	rot = ROT_SPEED * rotdir;
+	old_dir_x = data->player.dir_x;
+	data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y
+		* sin(rot);
+	data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
+	old_plane_x = data->player.plane_x;
+	data->player.plane_x = data->player.plane_x * cos(rot)
+		- data->player.plane_y * sin(rot);
+	data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y
+		* cos(rot);
 }

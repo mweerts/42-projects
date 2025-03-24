@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 21:21:38 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:13:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ int		init_hooks(t_data *data);
 // DRAW
 
 int		draw_pixel(t_img *s_img, int x, int y, int color);
-int		draw_line(t_img *s_img, t_screen_coord p1, t_screen_coord p2, int color);
 int		draw_vertical_line(t_img *s_img, int x, int start, int stop, int color);
 
 // EVENTS
@@ -31,6 +30,7 @@ int		draw_vertical_line(t_img *s_img, int x, int start, int stop, int color);
 int		leave(t_data *data);
 int		key_pressed(int keycode, t_data *data);
 int		key_released(int keycode, t_data *data);
+int		mouse_handler(int x, int y, t_data *data);
 
 // BACKGROUND
 
@@ -43,5 +43,6 @@ int		raycasting(t_data *data);
 // PLAYER
 
 void	compute_player_pos(t_data *data);
+void	rotate_mouse(t_data *data, double rotdir);
 
 #endif

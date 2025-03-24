@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/23 22:53:01 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:15:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,6 @@
 # define WIDTH 1920
 # define HEIGHT 1080
 # define MOVE_SPEED 0.05
-# define ROT_SPEED 0.05
+# define ROT_SPEED 0.02
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 20:36:45 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:16:36 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,20 @@ int	key_released(int keycode, t_data *data)
 		data->player.mv_rotate += 1;
 	if (keycode == K_AR_R)
 		data->player.mv_rotate += -1;
+	return (0);
+}
+
+int	mouse_handler(int x, int y, t_data *data)
+{
+	static int	old_x = WIDTH / 2;
+
+	(void)y;
+	if (x == old_x)
+		return (0);
+	else if (x < old_x)
+		rotate_mouse(data, -1);
+	else if (x > old_x)
+		rotate_mouse(data, 1);
+	old_x = x;
 	return (0);
 }

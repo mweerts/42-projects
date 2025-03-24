@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/23 23:29:22 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:07:17 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ int	init_hooks(t_data *data)
 {
 	mlx_hook(data->s_mlx.win, 2, 1L << 0, &key_pressed, data);
 	mlx_hook(data->s_mlx.win, 3, 1L << 1, &key_released, data);
+	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
 	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
 	return (1);
 }
