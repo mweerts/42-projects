@@ -49,19 +49,11 @@ SRC_PATH = ./srcs/
 OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
-<<<<<<< HEAD
 #############################
 #		SOURCE FILES		#
 #############################
-=======
+
 SRC		= 	main.c \
-			game/init.c \
-			game/draw.c \
-			game/events.c \
-			game/background.c \
-			game/raycasting.c \
-			game/move.c
->>>>>>> draw
 
 SRC		= 	main.c \
 			parser/config.c \
@@ -73,8 +65,12 @@ SRC		= 	main.c \
 			misc/init.c \
 			misc/error.c \
 			misc/debug.c \
-
-#############################
+			game/init.c \
+			game/draw.c \
+			game/events.c \
+			game/background.c \
+			game/raycasting.c \
+			game/move.c
 			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))

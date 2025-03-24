@@ -45,10 +45,12 @@ int main(int ac, char **av)
     //         data.map.matrix[i][j] = worldMap[i][j];
     //     }
     // }
+    data_init(&data);
+	init_mlx(&data.s_mlx);
 	if (parse_arguments(&data, ac, av))
 		exit_with_error(NULL, &data);
+	print_data(&data);
 	init_player(&data.player, data.map->player_start);
-	init_mlx(&data.s_mlx);
 	init_hooks(&data);
 	init_img(&data.s_mlx, &data.s_img);
 	mlx_loop_hook(data.s_mlx.mlx, raycasting, &data);

@@ -20,11 +20,11 @@ static void	move_forward(t_data *data)
 	if (data->player.mv_forward != 0)
 	{
 		step_x = data->player.dir_x * MOVE_SPEED * data->player.mv_forward;
-		if (data->map.matrix[(int)data->player.pos_y][(int)(data->player.pos_x
+		if (data->map->matrix[(int)data->player.pos_y][(int)(data->player.pos_x
 			+ step_x)] <= 0)
 			data->player.pos_x += step_x;
 		step_y = data->player.dir_y * MOVE_SPEED * data->player.mv_forward;
-		if (data->map.matrix[(int)(data->player.pos_y
+		if (data->map->matrix[(int)(data->player.pos_y
 				+ step_y)][(int)data->player.pos_x] <= 0)
 			data->player.pos_y += step_y;
 	}
@@ -38,11 +38,11 @@ static void	move_lateral(t_data *data)
 	if (data->player.mv_lateral != 0)
 	{
 		step_x = data->player.plane_x * MOVE_SPEED * data->player.mv_lateral;
-		if (data->map.matrix[(int)data->player.pos_y][(int)(data->player.pos_x
+		if (data->map->matrix[(int)data->player.pos_y][(int)(data->player.pos_x
 			+ step_x)] <= 0)
 			data->player.pos_x += step_x;
 		step_y = data->player.plane_y * MOVE_SPEED * data->player.mv_lateral;
-		if (data->map.matrix[(int)(data->player.pos_y
+		if (data->map->matrix[(int)(data->player.pos_y
 				+ step_y)][(int)(data->player.pos_x)] <= 0)
 			data->player.pos_y += step_y;
 	}
