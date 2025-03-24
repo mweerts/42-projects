@@ -52,19 +52,17 @@ static int	offset(char *line)
 
 	offset = 0;
 	if (ft_strncmp(line, "NO ", 3) == 0)
-		offset = 3;
+		offset = 2;
 	else if (ft_strncmp(line, "SO ", 3) == 0)
-		offset = 3;
+		offset = 2;
 	else if (ft_strncmp(line, "WE ", 3) == 0)
-		offset = 3;
+		offset = 2;
 	else if (ft_strncmp(line, "EA ", 3) == 0)
-		offset = 3;
-	else if (ft_strncmp(line, "EA ", 3) == 0)
-		offset = 3;
+		offset = 2;
 	else if (ft_strncmp(line, "F ", 2) == 0)
-		offset = 2;
+		offset = 1;
 	else if (ft_strncmp(line, "C ", 2) == 0)
-		offset = 2;
+		offset = 1;
 	while (line[offset] == ' ' || line[offset] == '\t')
 		offset++;
 	return (offset);
@@ -83,8 +81,6 @@ bool	get_textures_and_colors(t_data *data, char *line)
 		data->tex[TEX_SOUTH] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "WE ", 3) == 0)
 		data->tex[TEX_WEST] = load_texture(data->mlx, line + offset(line));
-	else if (ft_strncmp(line, "EA ", 3) == 0)
-		data->tex[TEX_EAST] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "EA ", 3) == 0)
 		data->tex[TEX_EAST] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "F ", 2) == 0)
