@@ -22,7 +22,7 @@
 
 /* Error Messages */
 # define ERR_MAP_TOO_BIG "Map too big for the screen resolution.\n"
-# define ERR_WRONG_EXTENSION "Map file extension is wrong (.cub expected).\n"
+# define MSG_WRONG_EXTENSION "Map file extension is wrong (.cub expected).\n"
 # define ERR_NO_MAP "The Map couldn't be opened. Does it exist?\n"
 # define ERR_EMPTY_LINES "The map has empty lines.\n"
 # define ERR_NO_PLAYER_OR_EXIT "Invalid number of players on the map.\n"
@@ -32,13 +32,15 @@
 # define MSG_MISSING_TEX "Some textures are missing or invalid.\n"
 # define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
 
-int		parse_arguments(t_data *data, int ac, char **av);
-int		get_rgb_color(t_data *data, char *line);
-int		parse_config(t_data *data, char *line);
-int		validate_config(t_data *data);
-void	check_arguments(int ac, char **av, t_data *data);
-
-// utils
-int		create_matrix(t_map *map, char **line);
+int			process_file(t_data *data, char *filepath);
+int			parse_arguments(t_data *data, int ac, char **av);
+int			get_rgb_color(t_data *data, char *line);
+int			parse_config(t_data *data, char *line);
+int			validate_config(t_data *data);
+int			check_arguments(int ac, char **av, t_data *data);
+int			parse_map(t_data *data, char **line);
+int			create_matrix(t_map *map, char **line);
+t_texture	*load_texture(void *mlx, char *path);
 
 #endif
+

@@ -98,12 +98,11 @@ $(LIBFT):
 
 clean:
 	rm -rf $(OBJ_PATH)
-	rm -f $(TEST_PARSER)
 	make -C $(LIBFT_PATH) clean
 
 fclean: clean
 	rm -f $(NAME)
-#	rm -rf $(TESTER_DIR)
+	rm -f $(TEST_PARSER)
 	make -C $(LIBFT_PATH) fclean
 
 re: fclean all

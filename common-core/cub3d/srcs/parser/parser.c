@@ -12,24 +12,24 @@
 
 #include "cub3D.h"
 
-int		process_file(t_data *data, char *filepath);
-
-void	check_arguments(int ac, char **av, t_data *data)
+int	check_arguments(int ac, char **av, t_data *data)
 {
 	int	len;
 
 	if (ac < 2)
-		exit_with_error("The map is missing.\n", data);
+		return (print_err("The map is missing.\n"), ERROR);
 	if (ac > 2)
-		exit_with_error("Too many arguments.\n", data);
+		return (print_err("Too many arguments.\n"), ERROR);
 	len = ft_strlen(av[1]);
 	if (len < 4 || !ft_strnstr(&av[1][len - 4], ".cub", 4))
-		exit_with_error(ERR_WRONG_EXTENSION, data);
+		return (print_err(MSG_WRONG_EXTENSION), ERROR);
+	return (0);
 }
 
 int	parse_arguments(t_data *data, int ac, char **av)
 {
-	check_arguments(ac, av, data);
+	if (check_arguments(ac, av, data) == ERROR)
+		return (clean_up(data), exit(ERROR), ERROR);
 	mlx_get_screen_size(data->mlx, &(data->max_col), &(data->max_row));
 	if (process_file(data, av[1]) == ERROR)
 	{
@@ -38,4 +38,3 @@ int	parse_arguments(t_data *data, int ac, char **av)
 	}
 	return (0);
 }
-

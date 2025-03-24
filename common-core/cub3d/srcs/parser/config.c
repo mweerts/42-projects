@@ -12,8 +12,6 @@
 
 #include "cub3D.h"
 
-t_texture	*load_texture(void *mlx, char *path);
-
 int	get_rgb_color(t_data *data, char *line)
 {
 	int		color;
@@ -82,7 +80,6 @@ int	parse_config(t_data *data, char *line)
 	if (!trimmed)
 		return (-1);
 	status = get_textures_and_colors(data, trimmed);
-	// printf("%s\n", trimmed);
 	free(trimmed);
 	return (status);
 }

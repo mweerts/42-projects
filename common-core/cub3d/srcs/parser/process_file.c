@@ -12,9 +12,6 @@
 
 #include "cub3D.h"
 
-int parse_map(t_data *data, char **line);
-
-
 int	parse_file(t_data *data, char **line)
 {
 	int	i;
@@ -38,10 +35,11 @@ int	parse_file(t_data *data, char **line)
 	return (0);
 }
 
-char	*store_file(t_data *data, int fd)
+char	**read_file(t_data *data, int fd)
 {
 	char	*line;
 	char	*file;
+	char	**tab;
 	int		done;
 
 	file = ft_strdup("");
@@ -54,21 +52,9 @@ char	*store_file(t_data *data, int fd)
 			break ;
 		file = ft_strjoin_n_free(file, line);
 		if (!file)
-			return (NULL);
+			return (free(line), NULL);
 		free(line);
-		line = NULL;
 	}
-	return (file);
-}
-
-char	**read_file(t_data *data, int fd)
-{
-	char	*file;
-	char	**tab;
-
-	file = store_file(data, fd);
-	if (!file)
-		return (print_err(MSG_ERR_MALLOC), NULL);
 	tab = ft_split(file, '\n');
 	free(file);
 	return (tab);
@@ -91,4 +77,3 @@ int	process_file(t_data *data, char *filepath)
 	ft_free_tab(tab);
 	return (0);
 }
-

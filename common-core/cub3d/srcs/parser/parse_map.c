@@ -41,25 +41,25 @@ static int	get_map_size(t_map *map, char **line)
 	return (map->height = i, 0);
 }
 
-int flood_fill(t_map *map, char **matrix, int x, int y)
+int	flood_fill(t_map *map, char **matrix, int x, int y)
 {
-	int result;
-	
-    if (x < 0 || y < 0 || x >= map->height || y >= map->width)
-        return (ERROR);
-    if (matrix[x][y] == OBSTACLE || matrix[x][y] == VISITED)
-        return (SUCCESS);
-    matrix[x][y] = VISITED;
-    result = SUCCESS;
-    if (flood_fill(map, matrix, x + 1, y) == ERROR)
-        result = ERROR;
-    if (flood_fill(map, matrix, x, y + 1) == ERROR)
-        result = ERROR;
-    if (flood_fill(map, matrix, x - 1, y) == ERROR)
-        result = ERROR;
-    if (flood_fill(map, matrix, x, y - 1) == ERROR)
-        result = ERROR;    
-    return (result);
+	int	result;
+
+	if (x < 0 || y < 0 || x >= map->height || y >= map->width)
+		return (ERROR);
+	if (matrix[x][y] == OBSTACLE || matrix[x][y] == VISITED)
+		return (SUCCESS);
+	matrix[x][y] = VISITED;
+	result = SUCCESS;
+	if (flood_fill(map, matrix, x + 1, y) == ERROR)
+		result = ERROR;
+	if (flood_fill(map, matrix, x, y + 1) == ERROR)
+		result = ERROR;
+	if (flood_fill(map, matrix, x - 1, y) == ERROR)
+		result = ERROR;
+	if (flood_fill(map, matrix, x, y - 1) == ERROR)
+		result = ERROR;
+	return (result);
 }
 
 int	is_map_closed(t_map *map)
@@ -99,4 +99,3 @@ int	parse_map(t_data *data, char **line)
 		return (ERROR);
 	return (0);
 }
-
