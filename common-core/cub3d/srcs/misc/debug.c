@@ -27,7 +27,6 @@ void	print_matrix(int **matrix, int height, int width)
 	}
 }
 
-
 void	print_map_info(t_map *map)
 {
 	int i;
@@ -84,5 +83,4 @@ void	print_data(t_data *data)
 	ft_printf(RESET);
 	print_map_info(data->map);
 	ft_printf("%s==============================\n\n%s", YELLOW, RESET);
-	
 }

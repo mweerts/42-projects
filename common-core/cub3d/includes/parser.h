@@ -42,4 +42,3 @@ int			create_matrix(t_map *map, char **line);
 t_texture	*load_texture(void *mlx, char *path);
 
 #endif
-

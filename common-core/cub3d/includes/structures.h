@@ -118,8 +118,11 @@ typedef struct s_map
 typedef struct s_data
 {
 	t_mlx			s_mlx;
+	void			*mlx;
+	void			*win;
 	t_player		player;
 	t_img			s_img;
+	t_img			img;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	int				max_row;
