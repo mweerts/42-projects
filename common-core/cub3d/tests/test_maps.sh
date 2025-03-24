@@ -11,7 +11,7 @@ MAGENTA="\033[35m"
 # Paths
 INVALID_MAPS_DIR="test_maps/invalid"
 VALID_MAPS_DIR="test_maps/valid"
-PARSER_PROGRAM="./parser"
+PARSER_PROGRAM="./tests/parser"
 
 # Texture paths - change these to your actual texture paths
 NORTH_TEXTURE="./assets/north_wall.xpm"
@@ -135,7 +135,7 @@ run_invalid_tests() {
 
 # Function to run all valid map tests
 run_valid_tests() {
-    echo -ne "${BLUE}Running Valid Map Tests...${RESET}"
+    echo -e "${BLUE}Running Valid Map Tests...${RESET}"
 
     # Check if there are any maps to test
     if [ ! "$(ls -A $VALID_MAPS_DIR)" ]; then

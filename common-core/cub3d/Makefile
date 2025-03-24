@@ -98,6 +98,7 @@ $(LIBFT):
 
 clean:
 	rm -rf $(OBJ_PATH)
+	rm -f $(TEST_PARSER)
 	make -C $(LIBFT_PATH) clean
 
 fclean: clean
@@ -112,12 +113,13 @@ re: fclean all
 #############################
 
 TEST_DIR = tests
+TEST_PARSER = tests/parser
 
-parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
+parser: $(LIBFT) $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
 	@mkdir -p $(TEST_DIR)
 	@mkdir -p $(OBJ_PATH)/testing
 	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC)
-	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
+	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o $(TEST_PARSER) $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
 	@echo "$(GREEN)executing parser$(RESET)"
 	
@@ -126,6 +128,6 @@ test: parser
 	@$(TEST_DIR)/test_maps.sh
 
 # $(if $(VALGRIND), $(VALGRIND))
-	$(VALGRIND) ./parser ./maps/map.cub
+#	$(VALGRIND) ./parser ./maps/map.cub
 
 .PHONY: all re clean fclean run parser
