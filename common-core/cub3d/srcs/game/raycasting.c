@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/24 16:56:13 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 22:24:12 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static void	init_side_and_step(t_data *data, t_raycasting *ray)
 
 static void	init_ray(t_data *data, t_raycasting *ray, int x)
 {
-	ray->camera_x = 2 * x / (double)data->map->width - 1;
+	ray->camera_x = 2 * x / (double)WIDTH - 1;
 	ray->ray_dir_x = data->player.dir_x + data->player.plane_x * ray->camera_x;
 	ray->ray_dir_y = data->player.dir_y + data->player.plane_y * ray->camera_x;
 	ray->ray_x = (int)data->player.pos_x;
@@ -89,19 +89,19 @@ int	raycasting(t_data *data)
 	set_background(data);
 	compute_player_pos(data);
 	x = 0;
-	while (x < data->map->height)
+	while (x < WIDTH)
 	{
 		init_ray(data, &ray, x);
 		dda(data, &ray);
-		line_height = (int)(data->map->width / ray.wall_distance);
+		line_height = (int)(HEIGHT / ray.wall_distance);
 		if (line_height < 0)
-			line_height = data->map->width;
-		draw_start = -line_height / 2 + data->map->width / 2;
+			line_height = HEIGHT;
+		draw_start = -line_height / 2 + HEIGHT / 2;
 		if (draw_start < 0)
 			draw_start = 0;
-		draw_end = line_height / 2 + data->map->width / 2;
-		if (draw_end > data->map->width)
-			draw_end = data->map->width;
+		draw_end = line_height / 2 + HEIGHT / 2;
+		if (draw_end > HEIGHT)
+			draw_end = HEIGHT;
 		draw_vertical_line(&data->s_img, x, draw_start, draw_end, 0x00FFFF00);
 		x++;
 	}
