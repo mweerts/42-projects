@@ -110,7 +110,7 @@ typedef struct s_map
 	int				height;
 	int				floor_color;
 	int				ceiling_color;
-	char			**matrix;
+	int				**matrix;
 	char			orientation_start;
 	t_screen_coord	player_start;
 }					t_map;

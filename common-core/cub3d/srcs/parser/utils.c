@@ -12,35 +12,35 @@
 
 #include "cub3D.h"
 
-static int	fill_matrix(t_map *map, char **matrix, char **line)
+static int	fill_matrix(t_map *map, int **matrix, char **line)
 {
 	int	j;
 
 	j = 0;
-	*matrix = malloc(sizeof(char) * map->width + 1);
+	*matrix = malloc(sizeof(int) * map->width);
 	if (!*matrix)
 		return (ERROR);
 	while ((*line)[j])
 	{
 		if ((*line)[j] == ' ' || (*line)[j] == '\t')
-			(*matrix)[j] = '0';
+			(*matrix)[j] = 0;
 		else
-			(*matrix)[j] = (*line)[j];
+			(*matrix)[j] = (int)(*line)[j];
 		j++;
 	}
 	while (j < map->width)
-		(*matrix)[j++] = '0';
-	(*matrix)[j] = '\0';
+		(*matrix)[j++] = 0;
+	// (*matrix)[j] = '\0';
 	return (0);
 }
 
 int	create_matrix(t_map *map, char **line)
 {
 	int		i;
-	char	**matrix;
+	int	**matrix;
 
 	i = 0;
-	matrix = (char **)malloc(sizeof(char *) * (map->height + 1));
+	matrix = (int **)malloc(sizeof(int *) * (map->height));
 	if (!matrix)
 		return (print_err(MSG_ERR_MALLOC), ERROR);
 	while (i < map->height)
@@ -49,7 +49,7 @@ int	create_matrix(t_map *map, char **line)
 			return (print_err(MSG_ERR_MALLOC), ERROR);
 		i++;
 	}
-	matrix[i] = NULL;
+	// matrix[i] = NULL;
 	map->matrix = matrix;
 	return (0);
 }

@@ -55,6 +55,9 @@ void	print_data(t_data *data);
 
 // error
 void	print_err(char *msg);
+void	free_matrix(int **matrix, int i);
+void	print_matrix(int **matrix, int height, int width);
+
 
 #endif
 

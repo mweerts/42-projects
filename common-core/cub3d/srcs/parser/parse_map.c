@@ -41,7 +41,7 @@ static int	get_map_size(t_map *map, char **line)
 	return (map->height = i, 0);
 }
 
-int	flood_fill(t_map *map, char **matrix, int x, int y)
+int	flood_fill(t_map *map, int **matrix, int x, int y)
 {
 	int	result;
 
@@ -64,23 +64,30 @@ int	flood_fill(t_map *map, char **matrix, int x, int y)
 
 int	is_map_closed(t_map *map)
 {
-	char	**cpy;
+	int	**cpy;
 	int		i;
-
-	cpy = (char **)ft_calloc((map->height + 1), sizeof(char *));
+	int		j;
+	
+	cpy = (int **)ft_calloc((map->height + 1), sizeof(int *));
 	if (!cpy)
 		return (print_err(MSG_ERR_MALLOC), ERROR);
 	i = 0;
 	while (i < map->height)
 	{
-		cpy[i] = ft_strdup(map->matrix[i]);
+		j = 0;
+		cpy[i] = (int *)ft_calloc(map->width, sizeof(int));
 		if (!cpy[i])
-			return (ft_free_tab(cpy), print_err(MSG_ERR_MALLOC), ERROR);
+			return (free_matrix(cpy, i), print_err(MSG_ERR_MALLOC), ERROR);
+		while (j < map->width)
+		{
+			cpy[i][j] = map->matrix[i][j];
+			j++;
+		}
 		i++;
 	}
 	if (flood_fill(map, cpy, map->player_start.x, map->player_start.y) == ERROR)
-		return (ft_free_tab(cpy), print_err(MSG_MAP_NOT_CLOSED), ERROR);
-	ft_free_tab(cpy);
+		return (free_matrix(cpy, map->height), print_err(MSG_MAP_NOT_CLOSED), ERROR);
+	free_matrix(cpy, map->height);
 	return (0);
 }
 

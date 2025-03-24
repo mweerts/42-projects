@@ -12,9 +12,24 @@
 
 #include "cub3D.h"
 
+void	free_matrix(int **matrix, int i)
+{
+	if (!matrix || !*matrix)
+		return ;
+	if (!i)
+	{
+		free(matrix);
+		return ;
+	}
+	while (i--)
+		if (matrix[i])
+			free(matrix[i]);
+	free(matrix);
+}
+
 void	cleanup_map(t_map *map)
 {
-		ft_free_tab(map->matrix);
+	free_matrix(map->matrix, map->height);
 	free(map);
 }
 
