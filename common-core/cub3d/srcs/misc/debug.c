@@ -35,8 +35,8 @@ void	print_map_info(t_map *map)
 		return ;
 	ft_printf(BLUE);
 	ft_printf("\n=== Map Info ===\n");
-	ft_printf("Map width: %d\n", map->width);
 	ft_printf("Map height: %d\n", map->height);
+	ft_printf("Map width: %d\n", map->width);
 	ft_printf("Floor color: %d\n", map->floor_color);
 	ft_printf("Ceiling color: %d\n", map->ceiling_color);
 	ft_printf("Orientation start: %c\n", map->orientation_start);
