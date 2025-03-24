@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/24 16:52:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:53:24 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	init_player(t_player *player, t_coord pos, char start_position)
 	player->mv_forward = 0;
 	player->mv_lateral = 0;
 	player->mv_rotate = 0;
-	set_player_direction(start_position);
+	set_player_direction(player, start_position);
 	return (1);
 }
 
