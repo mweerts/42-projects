@@ -28,6 +28,8 @@ int	parse_file(t_data *data, char **line)
 			break ;
 		i++;
 	}
+	// print_data(data);
+	
 	if (validate_config(data) == ERROR)
 		return (ERROR);
 	if (parse_map(data, line + i) == ERROR)
