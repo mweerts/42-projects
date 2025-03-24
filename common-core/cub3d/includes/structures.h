@@ -34,6 +34,12 @@ typedef enum e_texture_wall
 	TEX_COUNT,
 }					t_texture_wall;
 
+typedef struct s_mlx
+{
+	void			*mlx;
+	void			*win;
+}					t_mlx;
+
 typedef struct s_screen_coord
 {
 	int				x;
@@ -67,6 +73,37 @@ typedef struct s_pos
 	int				y;
 }					t_pos;
 
+typedef struct s_player
+{
+	double			pos_x;
+	double			pos_y;
+	double			dir_x;
+	double			dir_y;
+	double			plane_x;
+	double			plane_y;
+	int				mv_forward;
+	int				mv_lateral;
+	int				mv_rotate;
+}					t_player;
+
+typedef struct s_raycasting
+{
+	double			camera_x;
+	double			ray_dir_x;
+	double			ray_dir_y;
+	int				ray_x;
+	int				ray_y;
+	int				hit;
+	int				side;
+	double			side_dist_x;
+	double			side_dist_y;
+	double			delta_dist_x;
+	double			delta_dist_y;
+	int				step_x;
+	int				step_y;
+	double			wall_distance;
+}					t_raycasting;
+
 typedef struct s_map
 {
 	int				width;
@@ -80,14 +117,13 @@ typedef struct s_map
 
 typedef struct s_data
 {
-	void			*mlx;
-	void			*win;
-	t_img			img;
+	t_mlx			s_mlx;
+	t_player		player;
+	t_img			s_img;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	int				max_row;
 	int				max_col;
-	// char		*err_msg;
 }					t_data;
 
 #endif

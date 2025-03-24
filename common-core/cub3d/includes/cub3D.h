@@ -18,6 +18,9 @@
 # include "mlx.h"
 # include "parser.h"
 # include "structures.h"
+# include "game.h"
+# include "key_linux.h"
+# include <math.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
@@ -30,6 +33,10 @@
 # define SUCCESS 0
 # define ERROR 1
 # define MSG_ERR_MALLOC "No space left on device.\n"
+# define WIDTH 1920
+# define HEIGHT 1080
+# define MOVE_SPEED 0.05
+# define ROT_SPEED 0.02
 
 /* Colors */
 # define RED "\033[0;31m"
