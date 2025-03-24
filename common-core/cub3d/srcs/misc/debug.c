@@ -43,10 +43,10 @@ void	print_tex_info(t_data *data)
 	i = -1;
 	while (++i < TEX_COUNT)
 	{
-		if (data->textures[i])
+		if (data->tex[i])
 		{
-			if (data->textures[i]->data)
-				ft_printf("Tex[%d] -> size[%d:%d]\n", i, data->textures[i]->width, data->textures[i]->height);
+			if (data->tex[i]->data)
+				ft_printf("Tex[%d] -> size[%d:%d]\n", i, data->tex[i]->width, data->tex[i]->height);
 		}
 	}
 	

@@ -84,7 +84,7 @@ typedef struct s_data
 	void			*win;
 	t_img			img;
 	t_map			*map;
-	t_texture		*textures[TEX_COUNT];
+	t_texture		*tex[TEX_COUNT];
 	int				max_row;
 	int				max_col;
 	// char		*err_msg;

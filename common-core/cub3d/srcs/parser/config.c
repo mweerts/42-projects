@@ -37,7 +37,7 @@ int	validate_config(t_data *data)
 	i = 0;
 	while (i < TEX_COUNT)
 	{
-		if (!data->textures[i])
+		if (!data->tex[i])
 			return (print_err(MSG_MISSING_TEX), ERROR);
 		i++;
 	}
@@ -46,24 +46,51 @@ int	validate_config(t_data *data)
 	return (0);
 }
 
+static int	offset(char *line)
+{
+	int	offset;
+
+	offset = 0;
+	if (ft_strncmp(line, "NO ", 3) == 0)
+		offset = 3;
+	else if (ft_strncmp(line, "SO ", 3) == 0)
+		offset = 3;
+	else if (ft_strncmp(line, "WE ", 3) == 0)
+		offset = 3;
+	else if (ft_strncmp(line, "EA ", 3) == 0)
+		offset = 3;
+	else if (ft_strncmp(line, "EA ", 3) == 0)
+		offset = 3;
+	else if (ft_strncmp(line, "F ", 2) == 0)
+		offset = 2;
+	else if (ft_strncmp(line, "C ", 2) == 0)
+		offset = 2;
+	while (line[offset] == ' ' || line[offset] == '\t')
+		offset++;
+	return (offset);
+}
+
 bool	get_textures_and_colors(t_data *data, char *line)
 {
+	int	i;
+
+	i = 0;
 	if (!line)
 		return (0);
 	if (ft_strncmp(line, "NO ", 3) == 0)
-		data->textures[TEX_NORTH] = load_texture(data->mlx, line + 3);
+		data->tex[TEX_NORTH] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "SO ", 3) == 0)
-		data->textures[TEX_SOUTH] = load_texture(data->mlx, line + 3);
+		data->tex[TEX_SOUTH] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "WE ", 3) == 0)
-		data->textures[TEX_WEST] = load_texture(data->mlx, line + 3);
+		data->tex[TEX_WEST] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "EA ", 3) == 0)
-		data->textures[TEX_EAST] = load_texture(data->mlx, line + 3);
+		data->tex[TEX_EAST] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "EA ", 3) == 0)
-		data->textures[TEX_EAST] = load_texture(data->mlx, line + 3);
+		data->tex[TEX_EAST] = load_texture(data->mlx, line + offset(line));
 	else if (ft_strncmp(line, "F ", 2) == 0)
-		data->map->floor_color = get_rgb_color(line + 2);
+		data->map->floor_color = get_rgb_color(line + offset(line));
 	else if (ft_strncmp(line, "C ", 2) == 0)
-		data->map->ceiling_color = get_rgb_color(line + 2);
+		data->map->ceiling_color = get_rgb_color(line + offset(line));
 	else
 		return (DONE);
 	return (0);
@@ -83,3 +110,4 @@ int	parse_config(t_data *data, char *line)
 	free(trimmed);
 	return (status);
 }
+

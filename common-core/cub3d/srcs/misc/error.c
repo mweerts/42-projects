@@ -25,12 +25,12 @@ void	cleanup_textures(t_data *data)
 	i = -1;
 	while (++i < TEX_COUNT)
 	{
-		if (data->textures[i])
+		if (data->tex[i])
 		{
-			if (data->textures[i]->data)
-				free(data->textures[i]->data);
-			free(data->textures[i]);
-			data->textures[i] = NULL;
+			if (data->tex[i]->data)
+				free(data->tex[i]->data);
+			free(data->tex[i]);
+			data->tex[i] = NULL;
 		}
 	}
 }
