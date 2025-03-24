@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/19 16:35:13 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/23 21:21:58 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,9 +49,19 @@ SRC_PATH = ./srcs/
 OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
+<<<<<<< HEAD
 #############################
 #		SOURCE FILES		#
 #############################
+=======
+SRC		= 	main.c \
+			game/init.c \
+			game/draw.c \
+			game/events.c \
+			game/background.c \
+			game/raycasting.c \
+			game/move.c
+>>>>>>> draw
 
 SRC		= 	main.c \
 			parser/config.c \
@@ -82,7 +92,7 @@ run : all
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
 	mkdir -p $(OBJ_PATH)/parser
-	mkdir -p $(OBJ_PATH)/display
+	mkdir -p $(OBJ_PATH)/game
 	mkdir -p $(OBJ_PATH)/misc
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/19 15:59:34 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 01:15:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@
 # define HEIGHT 1080
 # define MOVE_SPEED 0.05
 # define ROT_SPEED 0.02
+<<<<<<< HEAD
 
 /* Colors */
 # define RED "\033[0;31m"
@@ -60,4 +61,6 @@ void	print_matrix(int **matrix, int height, int width);
 
 
 #endif
+=======
+>>>>>>> draw
 

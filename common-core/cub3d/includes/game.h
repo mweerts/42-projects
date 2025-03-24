@@ -13,8 +13,6 @@
 #ifndef GAME_H
 # define GAME_H
 
-#include "structures.h"
-
 // INIT
 
 int		init_player(t_player *player);
