@@ -99,4 +99,3 @@ char				*str_del_char(char *str, const char *char_to_del);
 int					rgb_to_int(char **rgb);
 
 #endif
-

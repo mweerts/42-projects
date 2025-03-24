@@ -1,6 +1,6 @@
 NO ./assets/north_wall.xpm
-SO ./assets/south_wall.xpm
 WE ./assets/west_wall.xpm
+SO ./assets/south_wall.xpm
 EA ./assets/east_wall.xpm
 
 F 220,100,0

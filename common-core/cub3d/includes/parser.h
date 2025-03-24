@@ -34,10 +34,9 @@
 
 int			process_file(t_data *data, char *filepath);
 int			parse_arguments(t_data *data, int ac, char **av);
-int			get_rgb_color(t_data *data, char *line);
 int			parse_config(t_data *data, char *line);
 int			validate_config(t_data *data);
-int			check_arguments(int ac, char **av, t_data *data);
+int			check_arguments(int ac, char **av);
 int			parse_map(t_data *data, char **line);
 int			create_matrix(t_map *map, char **line);
 t_texture	*load_texture(void *mlx, char *path);

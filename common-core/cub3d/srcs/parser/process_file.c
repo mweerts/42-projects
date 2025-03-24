@@ -35,12 +35,11 @@ int	parse_file(t_data *data, char **line)
 	return (0);
 }
 
-char	**read_file(t_data *data, int fd)
+char	**read_file(int fd)
 {
 	char	*line;
 	char	*file;
 	char	**tab;
-	int		done;
 
 	file = ft_strdup("");
 	if (!file)
@@ -68,7 +67,7 @@ int	process_file(t_data *data, char *filepath)
 	fd = open(filepath, O_RDONLY);
 	if (fd < 0)
 		return (print_err(ERR_NO_MAP), ERROR);
-	tab = read_file(data, fd);
+	tab = read_file(fd);
 	if (!tab)
 		return (close(fd), ERROR);
 	if (parse_file(data, tab) == ERROR)

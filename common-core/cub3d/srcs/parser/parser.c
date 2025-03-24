@@ -12,7 +12,7 @@
 
 #include "cub3D.h"
 
-int	check_arguments(int ac, char **av, t_data *data)
+int	check_arguments(int ac, char **av)
 {
 	int	len;
 
@@ -28,7 +28,7 @@ int	check_arguments(int ac, char **av, t_data *data)
 
 int	parse_arguments(t_data *data, int ac, char **av)
 {
-	if (check_arguments(ac, av, data) == ERROR)
+	if (check_arguments(ac, av) == ERROR)
 		return (clean_up(data), exit(ERROR), ERROR);
 	mlx_get_screen_size(data->mlx, &(data->max_col), &(data->max_row));
 	if (process_file(data, av[1]) == ERROR)

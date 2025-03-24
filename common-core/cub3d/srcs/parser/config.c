@@ -12,7 +12,7 @@
 
 #include "cub3D.h"
 
-int	get_rgb_color(t_data *data, char *line)
+static int	get_rgb_color(char *line)
 {
 	int		color;
 	char	**rgb;
@@ -61,9 +61,9 @@ bool	get_textures_and_colors(t_data *data, char *line)
 	else if (ft_strncmp(line, "EA ", 3) == 0)
 		data->textures[TEX_EAST] = load_texture(data->mlx, line + 3);
 	else if (ft_strncmp(line, "F ", 2) == 0)
-		data->map->floor_color = get_rgb_color(data, line + 2);
+		data->map->floor_color = get_rgb_color(line + 2);
 	else if (ft_strncmp(line, "C ", 2) == 0)
-		data->map->ceiling_color = get_rgb_color(data, line + 2);
+		data->map->ceiling_color = get_rgb_color(line + 2);
 	else
 		return (DONE);
 	return (0);
