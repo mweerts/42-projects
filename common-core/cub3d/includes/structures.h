@@ -18,6 +18,8 @@
 typedef enum e_map_element
 {
 	EMPTY = '0',
+	PORTAIL_OPEN = 'P',
+	PORTAIL_CLOSE = 'X',
 	OBSTACLE = '1',
 	EAST = 'E',
 	WEST = 'W',

@@ -65,6 +65,7 @@ int	mouse_handler(int x, int y, t_data *data)
 		rotate_mouse(data, -1);
 	else if (x > old_x)
 		rotate_mouse(data, 1);
+	mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
 	old_x = x;
 	return (0);
 }
