@@ -13,7 +13,7 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "../libft/libft.h"
+# include "libft.h"
 # include "key_linux.h"
 # include "mlx.h"
 # include "parser.h"
@@ -37,7 +37,6 @@
 # define HEIGHT 1080
 # define MOVE_SPEED 0.05
 # define ROT_SPEED 0.02
-<<<<<<< HEAD
 
 /* Colors */
 # define RED "\033[0;31m"
@@ -61,6 +60,3 @@ void	print_matrix(int **matrix, int height, int width);
 
 
 #endif
-=======
->>>>>>> draw
-

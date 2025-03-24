@@ -13,9 +13,11 @@
 #ifndef GAME_H
 # define GAME_H
 
+#include "structures.h"
+
 // INIT
 
-int		init_player(t_player *player);
+int		init_player(t_player *player, t_screen_coord pos);
 int		init_mlx(t_mlx *s_mlx);
 int		init_img(t_mlx *s_mlx, t_img *s_img);
 int		init_hooks(t_data *data);

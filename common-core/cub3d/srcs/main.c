@@ -34,19 +34,20 @@ int worldMap[mapWidth][mapHeight]=
 int main(int ac, char **av)
 {
 	t_data data;
-
 	(void)ac;
-	(void)av;
-	data.map.ceiling_color = 0x000000FF;
-	data.map.floor_color = 0xFFFF0000;
-    for (int i = 0; i < mapWidth; i++)
-    {
-        for (int j = 0; j < mapHeight; j++)
-        {
-            data.map.matrix[i][j] = worldMap[i][j];
-        }
-    }
-	init_player(&data.player);
+	
+	// data.map.ceiling_color = 0x000000FF;
+	// data.map.floor_color = 0xFFFF0000;
+    // for (int i = 0; i < mapWidth; i++)
+    // {
+    //     for (int j = 0; j < mapHeight; j++)
+    //     {
+    //         data.map.matrix[i][j] = worldMap[i][j];
+    //     }
+    // }
+	if (parse_arguments(&data, ac, av))
+		exit_with_error(NULL, &data);
+	init_player(&data.player, data.map->player_start);
 	init_mlx(&data.s_mlx);
 	init_hooks(&data);
 	init_img(&data.s_mlx, &data.s_img);

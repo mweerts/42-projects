@@ -24,9 +24,9 @@ int	set_background(t_data *data)
 		while (x < WIDTH)
 		{
 			if (y > (HEIGHT / 2))
-				draw_pixel(&data->s_img, x, y, data->map.floor_color);
+				draw_pixel(&data->s_img, x, y, data->map->floor_color);
 			else
-				draw_pixel(&data->s_img, x, y, data->map.ceiling_color);
+				draw_pixel(&data->s_img, x, y, data->map->ceiling_color);
 			x++;
 		}
 		y++;

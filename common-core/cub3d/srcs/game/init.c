@@ -12,14 +12,14 @@
 
 #include "cub3D.h"
 
-int	init_player(t_player *player)
+int	init_player(t_player *player, t_screen_coord pos)
 {
 	player->dir_x = 0;
 	player->dir_y = -1;
 	player->plane_x = 0.66;
 	player->plane_y = 0;
-	player->pos_x = 5;
-	player->pos_y = 5;
+	player->pos_x = pos.x;
+	player->pos_y = pos.y;
 	player->mv_forward = 0;
 	player->mv_lateral = 0;
 	player->mv_rotate = 0;
