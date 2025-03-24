@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/23 21:21:58 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/24 16:16:28 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,8 +79,9 @@ INC		= -I $(INC_PATH) -I $(LIBFT_PATH) -I $(MLX_DIR)
 LIBFT_PATH = ./libft/
 LIBFT = ./libft/libft.a
 MLX_LIB = -L $(MLX_DIR) -lmlx
+MLX_LB = $(MLX_DIR)/libmlx.a
 
-all: $(OBJ_PATH) $(LIBFT) $(NAME) $(MLX_LB)
+all:  $(OBJ_PATH) $(LIBFT) $(MLX_LB) $(NAME) 
 
 run : all
 	@./$(NAME) test_maps/valid/map.cub
@@ -98,7 +99,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_LIB) $(MLX) -o $@ $(INC)
 
 $(MLX_LB):
-	@make -C $(MLX_DIR)
+	@make -C $(MLX_DIR) --no-print-directory
 	
 # Libft rule
 $(LIBFT):
