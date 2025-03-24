@@ -12,6 +12,22 @@
 
 #include "cub3D.h"
 
+void	print_matrix(int **matrix, int height, int width)
+{
+	int	i;
+	int	j;
+
+	i = -1;
+	while (++i < height)
+	{
+		j = -1;
+		while (++j < width)
+			ft_printf("%c", (char)matrix[i][j]);
+		ft_printf("\n");
+	}
+}
+
+
 void	print_map_info(t_map *map)
 {
 	int i;
@@ -28,10 +44,11 @@ void	print_map_info(t_map *map)
 	ft_printf("Player start: [%d,%d]\n", map->player_start.y, map->player_start.x);
 	if (map->matrix)
 	{
-		i = -1;
-		ft_printf("\n=============Matrix==========\n\n");
-		while (map->matrix[++i])
-			ft_printf("%s\n", map->matrix[i]);
+		ft_printf("\n======== Matrix ========\n\n");
+		print_matrix(map->matrix, map->height, map->width);
+		// i = -1;
+		// while (map->matrix[++i])
+		// 	ft_printf("%s\n", map->matrix[i]);
 	}
 	ft_printf(RESET);
 }
