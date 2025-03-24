@@ -12,7 +12,50 @@
 
 #include "cub3D.h"
 
-static int	get_map_size(t_map *map, char **line)
+static int	fill_matrix(t_map *map, int **matrix, char **line)
+{
+	int	j;
+
+	j = 0;
+	*matrix = malloc(sizeof(int) * map->width);
+	if (!*matrix)
+		return (ERROR);
+	while ((*line)[j])
+	{
+		if ((*line)[j] == ' ' || (*line)[j] == '\t')
+			(*matrix)[j] = 0;
+		else if((*line)[j] == 'E' || (*line)[j] == 'S' || (*line)[j] == 'N' || (*line)[j] == 'W')
+			(*matrix)[j] = 0;	
+		else
+			(*matrix)[j] = (*line)[j] - 48;
+		j++;
+	}
+	while (j < map->width)
+		(*matrix)[j++] = 0;
+	return (0);
+}
+
+int	create_matrix(t_map *map, char **line)
+{
+	int		i;
+	int	**matrix;
+
+	i = 0;
+	matrix = (int **)malloc(sizeof(int *) * (map->height));
+	if (!matrix)
+		return (print_err(MSG_ERR_MALLOC), ERROR);
+	while (i < map->height)
+	{
+		if (fill_matrix(map, matrix + i, line + i) == ERROR)
+			return (print_err(MSG_ERR_MALLOC), ERROR);
+		i++;
+	}
+	map->matrix = matrix;
+	return (0);
+}
+
+
+int	get_map_size(t_map *map, char **line)
 {
 	int	i;
 	int	j;
@@ -90,21 +133,5 @@ int	is_map_closed(t_map *map)
 	if (flood_fill(map, cpy, map->player_start.y, map->player_start.x) == ERROR)
 		return (free_matrix(cpy, map->height), print_err(MSG_MAP_NOT_CLOSED), ERROR);
 	free_matrix(cpy, map->height);
-	return (0);
-}
-
-int	parse_map(t_data *data, char **line)
-{
-	int	i;
-
-	i = 0;
-	if (!line || !line[0])
-		return (ERROR);
-	if (get_map_size(data->map, line))
-		return (ERROR);
-	if (create_matrix(data->map, line))
-		return (ERROR);
-	if (is_map_closed(data->map))
-		return (ERROR);
 	return (0);
 }

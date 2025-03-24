@@ -39,7 +39,10 @@ int			parse_config(t_data *data, char *line);
 int			validate_config(t_data *data);
 int			check_arguments(int ac, char **av);
 int			parse_map(t_data *data, char **line);
+int			get_map_size(t_map *map, char **line);
 int			create_matrix(t_map *map, char **line);
+int			is_map_closed(t_map *map);
 t_texture	*load_texture(void *mlx, char *path);
 
 #endif
+

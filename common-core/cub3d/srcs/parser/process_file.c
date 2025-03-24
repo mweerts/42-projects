@@ -12,6 +12,22 @@
 
 #include "cub3D.h"
 
+int	parse_map(t_data *data, char **line)
+{
+	int	i;
+
+	i = 0;
+	if (!line || !line[0])
+		return (ERROR);
+	if (get_map_size(data->map, line))
+		return (ERROR);
+	if (create_matrix(data->map, line))
+		return (ERROR);
+	if (is_map_closed(data->map))
+		return (ERROR);
+	return (0);
+}
+
 int	parse_file(t_data *data, char **line)
 {
 	int	i;
@@ -28,8 +44,8 @@ int	parse_file(t_data *data, char **line)
 			break ;
 		i++;
 	}
-	print_data(data);
-	
+	// print_data(data);
+
 	if (validate_config(data) == ERROR)
 		return (ERROR);
 	if (parse_map(data, line + i) == ERROR)

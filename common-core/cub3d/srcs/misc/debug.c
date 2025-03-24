@@ -22,7 +22,7 @@ void	print_matrix(int **matrix, int height, int width)
 	{
 		j = -1;
 		while (++j < width)
-			ft_printf("%c", (char)matrix[i][j]);
+			ft_printf("%d", matrix[i][j]);
 		ft_printf("\n");
 	}
 }
@@ -30,7 +30,7 @@ void	print_matrix(int **matrix, int height, int width)
 void	print_map_info(t_map *map)
 {
 	int i;
-	
+
 	if (!map)
 		return ;
 	ft_printf(BLUE);
@@ -65,7 +65,7 @@ void	print_tex_info(t_data *data)
 				ft_printf("Tex[%d] -> size[%d:%d]\n", i, data->tex[i]->width, data->tex[i]->height);
 		}
 	}
-	
+
 }
 void	print_data(t_data *data)
 {
