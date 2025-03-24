@@ -12,13 +12,15 @@
 
 #include "cub3D.h"
 
-int main(int ac, char **av)
+int main(int ac, char **argv)
 {
 	t_data data;
-
 	(void)ac;
-	(void)av;
-	init_mlx(&data.mlx);
-	mlx_loop(data.mlx.mlx);
+	
+	data_init(&data);
+	if (parse_arguments(&data, ac, argv))
+		exit_with_error(NULL, &data);
+	print_data(&data);
+	clean_up(&data);
 	return (0);
 }

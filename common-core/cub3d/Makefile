@@ -10,7 +10,7 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= cub3D
+NAME	= cub3d
 
 # -----------------------------------Colors------------------------------------
 
@@ -42,29 +42,42 @@ endif
 ifeq ($(MODE), debug)
 	CFLAGS	+= -fsanitize=address -g -D DEBUG=true
 else ifeq ($(MODE), valgrind)
-	VALGRIND += valgrind --leak-check=full --show-leak-kinds=all --suppressions=leaks.supp
+	VALGRIND += valgrind --leak-check=full --show-leak-kinds=all
 endif
 
 SRC_PATH = ./srcs/
 OBJ_PATH = ./objs/
 INC_PATH = ./includes/
 
-SRC		= 	main.c \
-			display/init.c \
-			display/draw.c
+#############################
+#		SOURCE FILES		#
+#############################
 
+SRC		= 	main.c \
+			parser/config.c \
+			parser/parser.c \
+			parser/parse_map.c \
+			parser/process_file.c \
+			parser/textures.c \
+			parser/utils.c \
+			misc/init.c \
+			misc/error.c \
+			misc/debug.c \
+
+#############################
+			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
 INC		= -I $(INC_PATH) -I $(LIBFT_PATH) -I $(MLX_DIR)
 
 LIBFT_PATH = ./libft/
 LIBFT = ./libft/libft.a
+MLX_LIB = -L $(MLX_DIR) -lmlx
 
-all: $(OBJ_PATH) $(LIBFT) $(NAME)
-
+all: $(OBJ_PATH) $(LIBFT) $(NAME) $(MLX_LB)
 
 run : all
-	@./$(NAME) map.cub
+	@./$(NAME) test_maps/valid/map.cub
 
 $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)
@@ -78,6 +91,9 @@ $(OBJ_PATH)%.o: $(SRC_PATH)%.c
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(MLX_LIB) $(MLX) -o $@ $(INC)
 
+$(MLX_LB):
+	@make -C $(MLX_DIR)
+	
 # Libft rule
 $(LIBFT):
 	make -C $(LIBFT_PATH)
@@ -88,7 +104,7 @@ clean:
 
 fclean: clean
 	rm -f $(NAME)
-#	rm -rf $(TESTER_DIR)
+	rm -f $(TEST_PARSER)
 	make -C $(LIBFT_PATH) fclean
 
 re: fclean all
@@ -98,14 +114,21 @@ re: fclean all
 #############################
 
 TEST_DIR = tests
+TEST_PARSER = tests/parser
 
-parser: $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
-	mkdir -p $(TEST_DIR)
-	mkdir -p $(OBJ_PATH)/testing
-	$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC) $(MLX_LIB) $(MLX)
-	$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o parser $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
+parser: $(LIBFT) $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
+	@mkdir -p $(TEST_DIR)
+	@mkdir -p $(OBJ_PATH)/testing
+	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC)
+	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o $(TEST_PARSER) $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
-	$(if $(VALGRIND), $(VALGRIND))
-	$ ./parser
+	@echo "$(GREEN)executing parser$(RESET)"
+	
+test: parser
+	@chmod +x $(TEST_DIR)/test_maps.sh
+	@$(TEST_DIR)/test_maps.sh
+
+# $(if $(VALGRIND), $(VALGRIND))
+#	$(VALGRIND) ./parser ./maps/map.cub
 
 .PHONY: all re clean fclean run parser

@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test_parser.c                                      :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/13 19:30:15 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/13 19:30:16 by llebugle         ###   ########.fr       */
+/*   Created: 2025/03/21 18:27:18 by llebugle          #+#    #+#             */
+/*   Updated: 2025/03/21 18:27:19 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int	main(int ac, char **av)
+void data_init(t_data *data)
 {
-	t_data data;
-	
-	if (ac != 2)
-	{
-		ft_printf_fd(2, "Error\nUsage: ./cub3d <map_file.cub>\n");
-		return (1);
-	}
-	data_init(&data);
-	if (parse_arguments(&data, ac, av))
-		exit_with_error(NULL, &data);
-	clean_up(&data);
-	return (0);
+	ft_memset(data, 0, sizeof(t_data));
+	data->mlx = mlx_init();
+	if (!data->mlx)
+		exit_with_error(NULL, data);
+	errno = 0;
+	data->map = malloc(sizeof(t_map));
+	if (!data->map)
+		exit_with_error(NULL, data);
+	ft_memset(data->map, 0, sizeof(t_map));
+	data->map->matrix = NULL;
+	data->map->ceiling_color = -1;
+	data->map->floor_color = -1;
 }

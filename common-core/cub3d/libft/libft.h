@@ -19,6 +19,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdbool.h>
 # include <unistd.h>
 
 # define FD_MAX 1024
@@ -60,6 +61,7 @@ char				*ft_strdup(const char *s);
 char				*ft_substr(char const *s, unsigned int start, size_t len);
 char				*ft_strjoin(char const *s1, char const *s2);
 char				*ft_strtrim(char const *s1, char const *set);
+char				*ft_strtrim_n_free(char *s1, char const *set);
 char				**ft_split(char const *s, char c);
 char				*ft_itoa(int n);
 char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
@@ -94,5 +96,6 @@ char				*ft_strstr(char *str, char *to_find);
 char				*ft_strcpy(char *dest, char *src);
 char				*str_del_all_char(char *str, int c);
 char				*str_del_char(char *str, const char *char_to_del);
+int					rgb_to_int(char **rgb);
 
 #endif
