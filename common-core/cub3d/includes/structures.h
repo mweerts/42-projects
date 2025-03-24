@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/23 23:31:08 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:42:56 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ typedef enum e_texture_wall
 	TEX_COUNT,
 }					t_texture_wall;
 
-typedef struct s_screen_coord
+typedef struct s_coord
 {
 	int				x;
 	int				y;
-}					t_screen_coord;
+}					t_coord;
 
 typedef struct s_img
 {
@@ -106,7 +106,7 @@ typedef struct s_map
 	int				ceiling_color;
 	int				**matrix;
 	char			orientation_start;
-	t_screen_coord	player_start;
+	t_coord	player_start;
 }					t_map;
 
 typedef struct s_mlx

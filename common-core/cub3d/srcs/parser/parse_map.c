@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_map.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 17:51:21 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/21 17:51:23 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:43:31 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static int	get_map_size(t_map *map, char **line)
 				if (map->orientation_start)
 					return (print_err(MSG_TOO_MANY_PLAYER), ERROR);
 				map->orientation_start = line[i][j];
-				map->player_start = (t_screen_coord){i, j};
+				map->player_start = (t_coord){i, j};
 			}
 			if (ft_is_charset(line[i][j], "01EWNS \t") == false)
 				return (print_err(MSG_INVALID_CHAR), ERROR);

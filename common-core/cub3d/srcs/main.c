@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/23 22:51:49 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:37:21 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ int main(int ac, char **av)
 	print_data(&data);
 	init_player(&data.player, data.map->player_start);
 	init_hooks(&data);
-	init_img(&data.s_mlx, &data.s_img);
+	if (!init_img(&data.s_mlx, &data.s_img))
+		return (EXIT_FAILURE);
 	mlx_loop_hook(data.s_mlx.mlx, raycasting, &data);
 	mlx_loop(data.s_mlx.mlx);
 	return (0);

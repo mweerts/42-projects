@@ -6,13 +6,13 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/24 01:07:17 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:43:43 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-int	init_player(t_player *player, t_screen_coord pos)
+int	init_player(t_player *player, t_coord pos)
 {
 	player->dir_x = 0;
 	player->dir_y = -1;
