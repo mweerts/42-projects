@@ -23,14 +23,13 @@ static int	fill_matrix(t_map *map, int **matrix, char **line)
 	while ((*line)[j])
 	{
 		if ((*line)[j] == ' ' || (*line)[j] == '\t')
-			(*matrix)[j] = 0;
+			(*matrix)[j] = EMPTY;
 		else
 			(*matrix)[j] = (int)(*line)[j];
 		j++;
 	}
 	while (j < map->width)
 		(*matrix)[j++] = 0;
-	// (*matrix)[j] = '\0';
 	return (0);
 }
 
