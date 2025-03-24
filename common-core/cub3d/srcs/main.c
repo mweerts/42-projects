@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 16:37:21 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 16:45:39 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int main(int ac, char **av)
 	if (parse_arguments(&data, ac, av))
 		exit_with_error(NULL, &data);
 	print_data(&data);
-	init_player(&data.player, data.map->player_start);
+	init_player(&data.player, data.map->player_start, data.map->orientation_start);
 	init_hooks(&data);
 	if (!init_img(&data.s_mlx, &data.s_img))
 		return (EXIT_FAILURE);
