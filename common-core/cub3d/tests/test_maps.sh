@@ -31,7 +31,7 @@ FAILED_TESTS=0
 
 # Check if the -f or --failed-only flag is present
 # Default: hide successful tests
-SHOW_SUCCESSFUL=0
+SHOW_SUCCESSFUL=1
 
 # Check if the -a or --all flag is present
 for arg in "$@"; do

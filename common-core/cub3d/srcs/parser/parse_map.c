@@ -81,8 +81,8 @@ int	get_map_size(t_map *map, char **line)
 			map->width = j;
 		i++;
 	}
-	// if (!map->orientation_start)
-	// 	return (print_err(MSG_NO_PLAYER), ERROR);
+	if (!map->orientation_start)
+		return (print_err(MSG_NO_PLAYER), ERROR);
 	return (map->height = i, 0);
 }
 
