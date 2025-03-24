@@ -2,7 +2,7 @@ cub3D
 cub3d
 objs
 testers
-./parser
+tests/parser
 
 # Prerequisites
 *.d
