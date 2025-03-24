@@ -31,6 +31,7 @@
 # define MSG_INVALID_CHAR "The map has an invalid element.\n"
 # define MSG_MISSING_TEX "Some textures are missing or invalid.\n"
 # define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
+# define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
 
 int			process_file(t_data *data, char *filepath);
 int			parse_arguments(t_data *data, int ac, char **av);
