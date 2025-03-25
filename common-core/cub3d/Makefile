@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/25 18:44:20 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/25 20:02:44 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,6 +64,7 @@ SRC		= 	main.c \
 			misc/error.c \
 			misc/debug.c \
 			misc/clean.c \
+			misc/utils.c \
 			game/init.c \
 			game/events.c \
 			game/move.c \

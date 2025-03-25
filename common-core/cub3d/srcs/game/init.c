@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:42:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 19:25:47 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ void	init_data(t_data *data)
 	data->map->matrix = NULL;
 	data->map->ceiling_color = -1;
 	data->map->floor_color = -1;
+	data->s_fps.delta_time = 0;
+	data->s_fps.frames = 0;
+	data->s_fps.last_time = get_current_time();
 }
 
 static void	init_fov(t_player *player, char start_position)
