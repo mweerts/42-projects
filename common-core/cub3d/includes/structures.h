@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 01:57:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:58:50 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,11 +29,11 @@ typedef enum e_map_element
 
 typedef enum e_texture_wall
 {
-	TEX_NORTH,
-	TEX_SOUTH,
-	TEX_EAST,
-	TEX_WEST,
-	TEX_COUNT,
+	TEX_NORTH = 0,
+	TEX_SOUTH = 1,
+	TEX_EAST = 2,
+	TEX_WEST = 3,
+	TEX_COUNT = 4,
 }					t_texture_wall;
 
 typedef struct s_coord

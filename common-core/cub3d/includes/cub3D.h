@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 01:57:13 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:58:37 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 # define TEX_HEIGHT 64
 # define MOVE_SPEED 0.05
 # define ROT_SPEED 0.02
+# define FOV_RATIO 0.66
 
 /* Colors */
 # define RED "\033[0;31m"

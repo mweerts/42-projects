@@ -6,33 +6,33 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 01:59:44 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:53:35 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	set_player_direction(t_player *player, char start_position)
+static void	set_fov(t_player *player, char start_position)
 {
 	if (start_position == 'N')
 	{
 		player->dir_y = -1;
-		player->plane_x = 0.66;
+		player->plane_x = 1 * FOV_RATIO;
 	}
 	if (start_position == 'S')
 	{
 		player->dir_y = 1;
-		player->plane_x = -0.66;
+		player->plane_x = -1 * FOV_RATIO;
 	}
 	if (start_position == 'W')
 	{
 		player->dir_x = -1;
-		player->plane_y = -0.66;
+		player->plane_y = -1 * FOV_RATIO;
 	}
 	if (start_position == 'E')
 	{
 		player->dir_x = 1;
-		player->plane_y = 0.66;
+		player->plane_y = 1 * FOV_RATIO;
 	}
 }
 
@@ -45,9 +45,9 @@ int	init_player(t_player *player, t_coord pos, char start_position)
 	player->mv_rotate = 0;
 	player->dir_x = 0;
 	player->dir_y = 0;
+	player->plane_x = 0;
 	player->plane_y = 0;
-	player->plane_y = 0;
-	set_player_direction(player, start_position);
+	set_fov(player, start_position);
 	return (1);
 }
 

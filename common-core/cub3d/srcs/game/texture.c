@@ -6,13 +6,31 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 22:25:28 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 01:59:18 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 15:57:54 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	draw_line(t_data *data, t_raycasting *ray, int x)
+static void	set_texture_index(t_raycasting *ray)
+{
+	if (ray->side == 1)
+	{
+		if (ray->ray_dir_y >= 0)
+			ray->wall.tex_index = TEX_SOUTH;
+		else
+			ray->wall.tex_index = TEX_NORTH;
+	}
+	else
+	{
+		if (ray->ray_dir_x >= 0)
+			ray->wall.tex_index = TEX_EAST;
+		else
+			ray->wall.tex_index = TEX_WEST;
+	}
+}
+
+static void	draw_tex_column(t_data *data, t_raycasting *ray, int x)
 {
 	int				y;
 	int				color;
@@ -51,6 +69,6 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 	ray->wall.step = 1.0 * TEX_HEIGHT / ray->wall.line_height;
 	ray->wall.tex_pos = (ray->wall.draw_start - HEIGHT / 2
 			+ ray->wall.line_height / 2) * ray->wall.step;
-	ray->wall.tex_index = 0;
-	draw_line(data, ray, x);
+	set_texture_index(ray);
+	draw_tex_column(data, ray, x);
 }
