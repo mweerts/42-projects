@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 18:27:18 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/21 18:27:19 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:38:45 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,6 @@
 void data_init(t_data *data)
 {
 	ft_memset(data, 0, sizeof(t_data));
-	data->mlx = mlx_init();
-	if (!data->mlx)
-		exit_with_error(NULL, data);
 	errno = 0;
 	data->map = malloc(sizeof(t_map));
 	if (!data->map)

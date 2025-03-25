@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   textures.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 16:30:25 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/17 16:30:26 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:57:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,5 @@ t_texture	*load_texture(void *mlx, char *path)
 	tmp = -1;
 	while (++tmp < tex->width * tex->height)
 		tex->data[tmp] = ((int *)tex->img.addr)[tmp];
-	return (mlx_destroy_image(mlx, tex->img.img), tex);
+	return (tex);
 }

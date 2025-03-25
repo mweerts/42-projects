@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:55:58 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/14 17:55:59 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:40:19 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,6 @@ void	print_matrix(int **matrix, int height, int width)
 
 void	print_map_info(t_map *map)
 {
-	int i;
-
 	if (!map)
 		return ;
 	ft_printf(BLUE);
@@ -45,7 +43,7 @@ void	print_map_info(t_map *map)
 	{
 		ft_printf("\n======== Matrix ========\n\n");
 		print_matrix(map->matrix, map->height, map->width);
-		// i = -1;
+		// int i = -1;
 		// while (map->matrix[++i])
 		// 	ft_printf("%s\n", map->matrix[i]);
 	}
@@ -76,8 +74,8 @@ void	print_data(t_data *data)
 	ft_printf("\n=== Window Info ===\n");
 	ft_printf("Max Row: %d\n", data->max_row);
 	ft_printf("Max Col: %d\n", data->max_col);
-	ft_printf("MLX Pointer: %p\n", data->mlx);
-	ft_printf("Window Pointer: %p\n", data->win);
+	ft_printf("MLX Pointer: %p\n", data->s_mlx.mlx);
+	ft_printf("Window Pointer: %p\n", data->s_mlx.win);
 	print_tex_info(data);
 	ft_printf("==============================\n\n");
 	ft_printf(RESET);

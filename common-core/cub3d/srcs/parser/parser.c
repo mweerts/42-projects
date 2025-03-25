@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 15:57:32 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/14 15:57:36 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:39:04 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	parse_arguments(t_data *data, int ac, char **av)
 {
 	if (check_arguments(ac, av) == ERROR)
 		return (clean_up(data), exit(ERROR), ERROR);
-	mlx_get_screen_size(data->mlx, &(data->max_col), &(data->max_row));
+	mlx_get_screen_size(data->s_mlx.mlx, &(data->max_col), &(data->max_row));
 	if (process_file(data, av[1]) == ERROR)
 	{
 		clean_up(data);

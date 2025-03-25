@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   config.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:57:10 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/21 16:57:19 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:39:23 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,13 +76,13 @@ bool	get_textures_and_colors(t_data *data, char *line)
 	if (!line)
 		return (0);
 	if (ft_strncmp(line, "NO ", 3) == 0)
-		data->tex[TEX_NORTH] = load_texture(data->mlx, line + offset(line));
+		data->tex[TEX_NORTH] = load_texture(data->s_mlx.mlx, line + offset(line));
 	else if (ft_strncmp(line, "SO ", 3) == 0)
-		data->tex[TEX_SOUTH] = load_texture(data->mlx, line + offset(line));
+		data->tex[TEX_SOUTH] = load_texture(data->s_mlx.mlx, line + offset(line));
 	else if (ft_strncmp(line, "WE ", 3) == 0)
-		data->tex[TEX_WEST] = load_texture(data->mlx, line + offset(line));
+		data->tex[TEX_WEST] = load_texture(data->s_mlx.mlx, line + offset(line));
 	else if (ft_strncmp(line, "EA ", 3) == 0)
-		data->tex[TEX_EAST] = load_texture(data->mlx, line + offset(line));
+		data->tex[TEX_EAST] = load_texture(data->s_mlx.mlx, line + offset(line));
 	else if (ft_strncmp(line, "F ", 2) == 0)
 		data->map->floor_color = get_rgb_color(line + offset(line));
 	else if (ft_strncmp(line, "C ", 2) == 0)

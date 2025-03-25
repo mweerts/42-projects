@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 16:42:56 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:38:00 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,20 @@ typedef struct s_player
 	int				mv_rotate;
 }					t_player;
 
+typedef struct s_wall
+{
+	double			wall_distance;
+	double			wall_x;
+	int				tex_x;
+	int				tex_y;
+	double			step;
+	double			tex_pos;
+	int				line_height;
+	int				draw_start;
+	int				draw_end;
+	int				tex_index;
+}	t_wall;
+
 typedef struct s_raycasting
 {
 	double			camera_x;
@@ -97,7 +111,7 @@ typedef struct s_raycasting
 	double			delta_dist_y;
 	int				step_x;
 	int				step_y;
-	double			wall_distance;
+	t_wall			wall;
 }					t_raycasting;
 
 typedef struct s_map
@@ -120,8 +134,6 @@ typedef struct s_mlx
 typedef struct s_data
 {
 	t_mlx			s_mlx;
-	void			*mlx;
-	void			*win;
 	t_player		player;
 	t_img			s_img;
 	t_img			img;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:21:13 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/14 16:21:16 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/24 23:39:52 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,14 +54,14 @@ void	clean_up(t_data *data)
 {
 	if (!data)
 		return ;
-	if (data->win && data->img.img)
-		mlx_destroy_window(data->mlx, data->win);
-	if (data->win)
-		mlx_destroy_image(data->mlx, data->img.img);
+	if (data->s_mlx.win && data->img.img)
+		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
+	if (data->s_mlx.win)
+		mlx_destroy_image(data->s_mlx.mlx, data->img.img);
 	cleanup_textures(data);
 	cleanup_map(data->map);
-	mlx_destroy_display(data->mlx);
-	free(data->mlx);
+	mlx_destroy_display(data->s_mlx.mlx);
+	free(data->s_mlx.mlx);
 }
 
 void print_err(char *msg)

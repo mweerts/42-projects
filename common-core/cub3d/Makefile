@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/24 16:51:49 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/25 00:11:41 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,6 +70,7 @@ SRC		= 	main.c \
 			game/events.c \
 			game/background.c \
 			game/raycasting.c \
+			game/texture.c \
 			game/move.c
 			
 OBJ		= $(SRC:.c=.o)

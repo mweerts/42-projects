@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 01:15:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 00:55:42 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,9 @@
 # define MSG_ERR_MALLOC "No space left on device.\n"
 # define WIDTH 1920
 # define HEIGHT 1080
-# define MOVE_SPEED 0.05
+# define TEX_WIDTH 64
+# define TEX_HEIGHT 64
+# define MOVE_SPEED 0.01
 # define ROT_SPEED 0.02
 
 /* Colors */

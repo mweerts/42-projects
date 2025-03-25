@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/24 22:24:12 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 00:54:50 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,18 +73,17 @@ static void	dda(t_data *data, t_raycasting *ray)
 			ray->hit = 1;
 	}
 	if (ray->side == 0)
-		ray->wall_distance = ray->side_dist_x - ray->delta_dist_x;
+		ray->wall.wall_distance = (ray->ray_x - data->player.pos_x + (1 - ray->step_x) / 2) / ray->ray_dir_x;
 	else
-		ray->wall_distance = ray->side_dist_y - ray->delta_dist_y;
+		ray->wall.wall_distance = (ray->ray_y - data->player.pos_y + (1 - ray->step_y) / 2) / ray->ray_dir_y;
+	if (ray->wall.wall_distance < 0.001)
+		ray->wall.wall_distance = 0.001;
 }
 
 int	raycasting(t_data *data)
 {
 	t_raycasting	ray;
 	int				x;
-	int				draw_start;
-	int				draw_end;
-	int				line_height;
 
 	set_background(data);
 	compute_player_pos(data);
@@ -93,16 +92,14 @@ int	raycasting(t_data *data)
 	{
 		init_ray(data, &ray, x);
 		dda(data, &ray);
-		line_height = (int)(HEIGHT / ray.wall_distance);
-		if (line_height < 0)
-			line_height = HEIGHT;
-		draw_start = -line_height / 2 + HEIGHT / 2;
-		if (draw_start < 0)
-			draw_start = 0;
-		draw_end = line_height / 2 + HEIGHT / 2;
-		if (draw_end > HEIGHT)
-			draw_end = HEIGHT;
-		draw_vertical_line(&data->s_img, x, draw_start, draw_end, 0x00FFFF00);
+		ray.wall.line_height = (int)(HEIGHT / ray.wall.wall_distance);
+		ray.wall.draw_start = -ray.wall.line_height / 2 + HEIGHT / 2;
+		if (ray.wall.draw_start < 0)
+			ray.wall.draw_start = 0;
+		ray.wall.draw_end = ray.wall.line_height / 2 + HEIGHT / 2;
+		if (ray.wall.draw_end > HEIGHT)
+			ray.wall.draw_end = HEIGHT;
+		compute_tex(data, &ray, x);
 		x++;
 	}
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
