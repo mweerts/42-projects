@@ -1,25 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw.c                                             :+:      :+:    :+:   */
+/*   display.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 00:21:55 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/25 18:11:08 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3D.h"
+#ifndef DISPLAY_H
+# define DISPLAY_H
 
-int	draw_pixel(t_img *s_img, int x, int y, int color)
-{
-	char	*dst;
+// DRAW
 
-	if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
-		return (0);
-	dst = s_img->addr + (y * s_img->line_length
-			+ x * (s_img->bits_per_pixel / 8));
-	*(unsigned int *)dst = color;
-	return (1);
-}
+int		draw_pixel(t_img *s_img, int x, int y, int color);
+int		set_background(t_data *data);
+
+// RAYCASTING
+
+int		raycasting(t_data *data);
+
+// TEXTURE
+
+void	compute_tex(t_data *data, t_raycasting *ray, int x);
+
+#endif

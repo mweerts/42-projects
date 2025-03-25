@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/25 00:11:41 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/25 18:09:57 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,12 +66,11 @@ SRC		= 	main.c \
 			misc/error.c \
 			misc/debug.c \
 			game/init.c \
-			game/draw.c \
 			game/events.c \
-			game/background.c \
-			game/raycasting.c \
-			game/texture.c \
-			game/move.c
+			game/move.c \
+			display/draw.c \
+			display/raycasting.c \
+			display/texture.c \
 			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
@@ -91,6 +90,7 @@ $(OBJ_PATH):
 	mkdir -p $(OBJ_PATH)/parser
 	mkdir -p $(OBJ_PATH)/game
 	mkdir -p $(OBJ_PATH)/misc
+	mkdir -p $(OBJ_PATH)/display
 
 $(OBJ_PATH)%.o: $(SRC_PATH)%.c
 	$(CC) $(CFLAGS) -c $< -o $@ $(INC)
