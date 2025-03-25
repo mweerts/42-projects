@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 14:58:50 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:16:22 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,6 @@ typedef struct s_data
 	t_mlx			s_mlx;
 	t_player		player;
 	t_img			s_img;
-	t_img			img;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	int				max_row;
