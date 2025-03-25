@@ -6,13 +6,26 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 15:53:35 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:42:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	set_fov(t_player *player, char start_position)
+void	init_data(t_data *data)
+{
+	ft_memset(data, 0, sizeof(t_data));
+	errno = 0;
+	data->map = malloc(sizeof(t_map));
+	if (!data->map)
+		exit_with_error(NULL, data);
+	ft_memset(data->map, 0, sizeof(t_map));
+	data->map->matrix = NULL;
+	data->map->ceiling_color = -1;
+	data->map->floor_color = -1;
+}
+
+static void	init_fov(t_player *player, char start_position)
 {
 	if (start_position == 'N')
 	{
@@ -47,7 +60,7 @@ int	init_player(t_player *player, t_coord pos, char start_position)
 	player->dir_y = 0;
 	player->plane_x = 0;
 	player->plane_y = 0;
-	set_fov(player, start_position);
+	init_fov(player, start_position);
 	return (1);
 }
 
@@ -57,24 +70,6 @@ int	init_hooks(t_data *data)
 	mlx_hook(data->s_mlx.win, 3, 1L << 1, &key_released, data);
 	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
 	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
-	return (1);
-}
-
-int	init_img(t_mlx *s_mlx, t_img *s_img)
-{
-	s_img->img = mlx_new_image(s_mlx->mlx, WIDTH, HEIGHT);
-	if (!s_img->img)
-	{
-		ft_putstr_fd("error: Image initialization failed.", 2);
-		return (0);
-	}
-	s_img->addr = mlx_get_data_addr(s_img->img, &s_img->bits_per_pixel,
-			&s_img->line_length, &s_img->endian);
-	if (!s_img->addr)
-	{
-		ft_putstr_fd("error: Image initialization failed.", 2);
-		return (0);
-	}
 	return (1);
 }
 

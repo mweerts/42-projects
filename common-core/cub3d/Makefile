@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/25 18:24:24 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/25 18:44:20 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,13 +61,13 @@ SRC		= 	main.c \
 			parser/parse_map.c \
 			parser/process_file.c \
 			parser/textures.c \
-			parser/utils.c \
-			misc/init.c \
 			misc/error.c \
 			misc/debug.c \
+			misc/clean.c \
 			game/init.c \
 			game/events.c \
 			game/move.c \
+			display/init.c \
 			display/draw.c \
 			display/raycasting.c \
 			display/texture.c \

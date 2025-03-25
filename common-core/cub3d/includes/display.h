@@ -6,12 +6,17 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:23:56 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:42:27 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef DISPLAY_H
 # define DISPLAY_H
+
+// INIT
+
+void	init_ray(t_data *data, t_raycasting *ray, int x);
+int		init_img(t_mlx *s_mlx, t_img *s_img);
 
 // DRAW
 

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 18:28:40 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:45:52 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,15 +54,18 @@
 # define RESET "\033[0;37m"
 
 void	exit_with_error(const char *msg, t_data *data);
-void	clean_up(t_data *data);
-void	data_init(t_data *data);
+void	init_data(t_data *data);
 
 //	debug	//
 void	print_data(t_data *data);
 
 // error
 void	print_err(char *msg);
-void	free_matrix(int **matrix, int i);
 void	print_matrix(int **matrix, int height, int width);
+
+// CLEAN
+
+void	clean_up(t_data *data);
+void	free_matrix(int **matrix, int i);
 
 #endif
