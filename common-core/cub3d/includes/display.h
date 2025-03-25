@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:42:27 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:26:28 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ int		init_img(t_mlx *s_mlx, t_img *s_img);
 
 void	draw_pixel(t_img *s_img, int x, int y, int color);
 void	set_background(t_data *data);
+void	draw_game(t_data *data);
 
 // RAYCASTING
 
-int		draw_game(t_data *data);
+int		raycasting(t_data *data);
 
 // TEXTURE
 
@@ -33,6 +34,6 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x);
 
 // HUD
 
-void	set_hud(t_data *data);
+void	set_cross(t_data *data);
 
 #endif

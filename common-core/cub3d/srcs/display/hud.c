@@ -6,13 +6,13 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:12:39 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 19:33:09 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:25:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	set_cross(t_data *data)
+void	set_cross(t_data *data)
 {
 	int	i;
 	int	x;
@@ -38,9 +38,4 @@ static void	set_cross(t_data *data)
 		draw_pixel(&data->s_img, x, y + i, CROSS_COLOR);
 		i++;
 	}
-}
-
-void	set_hud(t_data *data)
-{
-	set_cross(data);
 }

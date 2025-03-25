@@ -6,11 +6,32 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:27:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:28:23 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+void	draw_game(t_data *data)
+{
+	char	*tmp;
+
+	tmp = NULL;
+	set_background(data);
+	raycasting(data);
+	count_fps(data);
+	set_cross(data);
+	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
+		0, 0);
+	tmp = ft_itoa(data->s_fps.fps);
+	if (tmp)
+	{
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, 50, 50, 0xFFFFFFFF,
+			tmp);
+		free(tmp);
+		tmp = NULL;
+	}
+}
 
 void	set_background(t_data *data)
 {
