@@ -6,13 +6,13 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 20:28:23 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:34:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-void	draw_game(t_data *data)
+int	draw_game(t_data *data)
 {
 	char	*tmp;
 
@@ -31,6 +31,7 @@ void	draw_game(t_data *data)
 		free(tmp);
 		tmp = NULL;
 	}
+	return (1);
 }
 
 void	set_background(t_data *data)
