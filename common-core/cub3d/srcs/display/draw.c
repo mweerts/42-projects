@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:14:29 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:27:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ void	set_background(t_data *data)
 		y++;
 	}
 }
-
 
 void	draw_pixel(t_img *s_img, int x, int y, int color)
 {

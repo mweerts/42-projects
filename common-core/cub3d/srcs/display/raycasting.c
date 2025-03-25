@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 15:58:52 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 18:24:14 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ static void	dda(t_data *data, t_raycasting *ray)
 		ray->wall.wall_distance = 0.001;
 }
 
-int	raycasting(t_data *data)
+int	draw_game(t_data *data)
 {
 	t_raycasting	ray;
 	int				x;
@@ -104,6 +104,7 @@ int	raycasting(t_data *data)
 		compute_tex(data, &ray, x);
 		x++;
 	}
+	set_hud(data);
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	return (1);
