@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 20:04:13 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:09:07 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ int	draw_game(t_data *data)
 	set_hud(data);
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
-	count_fps(data);	
-	
+	count_fps(data);
 	return (1);
 }

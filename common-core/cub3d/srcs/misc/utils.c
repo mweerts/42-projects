@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:24:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 20:05:08 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 20:08:45 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void	count_fps(t_data *data)
 	tmp = ft_itoa(data->s_fps.fps);
 	if (tmp)
 	{
-		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, 50, 50, 0xFFFFFFFF, tmp);
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, 50, 50, 0xFFFFFFFF,
+			tmp);
 		free(tmp);
 		tmp = NULL;
 	}
