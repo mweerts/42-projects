@@ -6,17 +6,36 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 22:25:28 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 00:14:41 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:59:18 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
+static void	draw_line(t_data *data, t_raycasting *ray, int x)
+{
+	int				y;
+	int				color;
+	int				tex_i;
+	unsigned char	*src;
+
+	y = ray->wall.draw_start;
+	tex_i = ray->wall.tex_index;
+	while (y < ray->wall.draw_end)
+	{
+		ray->wall.tex_y = (int)ray->wall.tex_pos & (TEX_HEIGHT - 1);
+		ray->wall.tex_pos += ray->wall.step;
+		src = (unsigned char *)&data->tex[tex_i]->img.addr[ray->wall.tex_y
+			* data->tex[tex_i]->img.line_length + ray->wall.tex_x
+			* (data->tex[tex_i]->img.bits_per_pixel / 8)];
+		color = *(unsigned int *)src;
+		draw_pixel(&data->s_img, x, y, color);
+		y++;
+	}
+}
+
 void	compute_tex(t_data *data, t_raycasting *ray, int x)
 {
-	int				color;
-	unsigned char	*pixel;
-
 	if (ray->side == 0)
 		ray->wall.wall_x = data->player.pos_y + ray->wall.wall_distance
 			* ray->ray_dir_y;
@@ -33,14 +52,5 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 	ray->wall.tex_pos = (ray->wall.draw_start - HEIGHT / 2
 			+ ray->wall.line_height / 2) * ray->wall.step;
 	ray->wall.tex_index = 0;
-	for (int y = ray->wall.draw_start; y < ray->wall.draw_end; y++)
-	{
-		ray->wall.tex_y = (int)ray->wall.tex_pos & (TEX_HEIGHT - 1);
-		ray->wall.tex_pos += ray->wall.step;
-		pixel = (unsigned char *)&data->tex[1]->img.addr[(ray->wall.tex_y
-				* TEX_WIDTH + ray->wall.tex_x)
-			* (data->tex[1]->img.bits_per_pixel / 8)];
-		color = (pixel[2] << 16) | (pixel[1] << 8) | pixel[0];
-		draw_pixel(&data->s_img, x, y, color);
-	}
+	draw_line(data, ray, x);
 }

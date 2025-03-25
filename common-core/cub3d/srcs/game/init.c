@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 01:00:34 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:59:44 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ static void	set_player_direction(t_player *player, char start_position)
 		player->dir_y = -1;
 		player->plane_x = 0.66;
 	}
-		player->plane_x = 0.66;
 	if (start_position == 'S')
 	{
 		player->dir_y = 1;

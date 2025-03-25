@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 00:54:50 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:59:26 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,11 @@ static void	dda(t_data *data, t_raycasting *ray)
 			ray->hit = 1;
 	}
 	if (ray->side == 0)
-		ray->wall.wall_distance = (ray->ray_x - data->player.pos_x + (1 - ray->step_x) / 2) / ray->ray_dir_x;
+		ray->wall.wall_distance = (ray->ray_x - data->player.pos_x + (1
+					- ray->step_x) / 2) / ray->ray_dir_x;
 	else
-		ray->wall.wall_distance = (ray->ray_y - data->player.pos_y + (1 - ray->step_y) / 2) / ray->ray_dir_y;
+		ray->wall.wall_distance = (ray->ray_y - data->player.pos_y + (1
+					- ray->step_y) / 2) / ray->ray_dir_y;
 	if (ray->wall.wall_distance < 0.001)
 		ray->wall.wall_distance = 0.001;
 }

@@ -6,14 +6,12 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 00:22:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:57:30 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GAME_H
 # define GAME_H
-
-#include "structures.h"
 
 // INIT
 

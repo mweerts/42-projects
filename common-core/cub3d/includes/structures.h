@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 23:38:00 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:57:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ typedef struct s_map
 	int				ceiling_color;
 	int				**matrix;
 	char			orientation_start;
-	t_coord	player_start;
+	t_coord			player_start;
 }					t_map;
 
 typedef struct s_mlx

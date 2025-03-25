@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:41 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/13 19:05:42 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/25 01:57:56 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 # define ERR_EMPTY_LINES "The map has empty lines.\n"
 # define ERR_NO_PLAYER_OR_EXIT "Invalid number of players on the map.\n"
 # define MSG_MAP_NOT_CLOSED "The map is not closed.\n"
-# define MSG_ERR_RGB "Invalid or missing colors. Example format : C 71,171,169.\n"
+# define MSG_ERR_RGB "Invalid or missing colors.\
+Example format : C 71,171,169.\n"
 # define MSG_INVALID_CHAR "The map has an invalid element.\n"
 # define MSG_MISSING_TEX "Some textures are missing or invalid.\n"
 # define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
@@ -45,4 +46,3 @@ int			is_map_closed(t_map *map);
 t_texture	*load_texture(void *mlx, char *path);
 
 #endif
-
