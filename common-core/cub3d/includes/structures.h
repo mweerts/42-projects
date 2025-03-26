@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/26 20:14:29 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:37:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ typedef struct s_wall
 	int				line_height;
 	int				draw_start;
 	int				draw_end;
-	int				tex_index;
+	t_texture		*tex;
 }	t_wall;
 
 typedef struct s_raycasting
@@ -145,6 +145,7 @@ typedef struct	s_portal
 {
 	pthread_t		thread;
 	pthread_mutex_t	mutex;
+	pthread_mutex_t	stop_mutex;
 	t_texture		*frames[NB_FRAMES];
 	int				curr_frame;
 	int				stop;

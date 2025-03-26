@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:44:08 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 19:41:24 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:58:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	cleanup_textures(t_data *data)
 	int	i;
 
 	i = -1;
-	while (++i < TEX_COUNT)
+	while (++i < TEX_COUNT - 1)
 	{
 		if (data->tex[i])
 		{
@@ -51,6 +51,16 @@ static void	cleanup_textures(t_data *data)
 			data->tex[i] = NULL;
 		}
 	}
+	i = -1;
+	while (++i < NB_FRAMES)
+	{
+		if (data->portal.frames[i]->data)
+			free(data->portal.frames[i]->data);
+		if (data->portal.frames[i]->img.img)
+			mlx_destroy_image(data->s_mlx.mlx, data->portal.frames[i]->img.img);
+		free(data->portal.frames[i]);
+		data->portal.frames[i] = NULL;
+	}
 }
 
 void	clean_up(t_data *data)
@@ -58,12 +68,13 @@ void	clean_up(t_data *data)
 	if (!data)
 		return ;
 	pthread_mutex_destroy(&data->portal.mutex);
-	if (data->s_mlx.win)
-		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
-	if (data->s_mlx.win && data->s_img.img)
-		mlx_destroy_image(data->s_mlx.mlx, data->s_img.img);
+	pthread_mutex_destroy(&data->portal.stop_mutex);
 	cleanup_textures(data);
 	cleanup_map(data->map);
+	if (data->s_mlx.win && data->s_img.img)
+		mlx_destroy_image(data->s_mlx.mlx, data->s_img.img);
+	if (data->s_mlx.win)
+		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
 	mlx_destroy_display(data->s_mlx.mlx);
 	free(data->s_mlx.mlx);
 }

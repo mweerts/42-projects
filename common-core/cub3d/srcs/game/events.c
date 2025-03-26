@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 19:47:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 23:59:46 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 int	leave(t_data *data)
 {
 	data->portal.stop = 1;
+	pthread_mutex_lock(&data->portal.stop_mutex);
+	pthread_mutex_unlock(&data->portal.stop_mutex);
+	ft_usleep(50);
 	clean_up(data);
 	exit(0);
 }
@@ -57,14 +60,11 @@ int	key_released(int keycode, t_data *data)
 
 int	mouse_handler(int x, int y, t_data *data)
 {
-	static int	old_x = WIDTH / 2;
-
 	(void)y;
 	if (x < WIDTH / 2)
 		rotate_mouse(data, -1);
 	else if (x > WIDTH / 2)
 		rotate_mouse(data, 1);
 	mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
-	old_x = x;
 	return (0);
 }
