@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 19:42:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:38:20 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,6 +138,12 @@ typedef struct s_fps
 	int		delta_time;
 	int		fps;
 }	t_fps;
+
+typedef struct	s_portal
+{
+	int			nb_frames;
+	t_texture	frames[24];
+}	t_portal;
 
 typedef struct s_data
 {

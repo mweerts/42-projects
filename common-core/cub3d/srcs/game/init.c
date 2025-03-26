@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 15:34:50 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:40:34 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,6 @@ int	init_player(t_player *player, t_coord pos, char start_position)
 	return (1);
 }
 
-int	init_hooks(t_data *data)
-{
-	mlx_hook(data->s_mlx.win, 2, 1L << 0, &key_pressed, data);
-	mlx_hook(data->s_mlx.win, 3, 1L << 1, &key_released, data);
-	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
-	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
-	return (1);
-}
-
 int	init_mlx(t_mlx *s_mlx)
 {
 	s_mlx->mlx = mlx_init();
@@ -86,6 +77,11 @@ int	init_mlx(t_mlx *s_mlx)
 		ft_putstr_fd("error: MLX initialization failed.", 2);
 		return (0);
 	}
+	return (1);
+}
+
+int	init_win(t_mlx *s_mlx)
+{
 	s_mlx->win = mlx_new_window(s_mlx->mlx, WIDTH, HEIGHT, "cub3D");
 	if (!s_mlx->win)
 	{
