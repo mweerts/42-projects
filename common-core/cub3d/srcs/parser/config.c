@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:57:10 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 23:39:23 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:28:40 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	validate_config(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < TEX_COUNT)
+	while (i < TEX_COUNT - 1)
 	{
 		if (!data->tex[i])
 			return (print_err(MSG_MISSING_TEX), ERROR);

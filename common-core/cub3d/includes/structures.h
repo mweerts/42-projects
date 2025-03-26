@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/26 15:38:20 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 20:14:29 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define STRUCTURES_H
 
 # include "libft.h"
+
+# define NB_FRAMES 24
 
 typedef enum e_map_element
 {
@@ -32,6 +34,7 @@ typedef enum e_texture_wall
 	TEX_SOUTH,
 	TEX_EAST,
 	TEX_WEST,
+	TEX_PORTAL,
 	TEX_COUNT,
 }					t_texture_wall;
 
@@ -140,8 +143,11 @@ typedef struct s_fps
 
 typedef struct	s_portal
 {
-	int			nb_frames;
-	t_texture	frames[24];
+	pthread_t		thread;
+	pthread_mutex_t	mutex;
+	t_texture		*frames[NB_FRAMES];
+	int				curr_frame;
+	int				stop;
 }	t_portal;
 
 typedef struct s_data
@@ -152,6 +158,7 @@ typedef struct s_data
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	t_fps			s_fps;
+	t_portal		portal;
 	int				max_row;
 	int				max_col;
 }					t_data;

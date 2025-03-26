@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:51:24 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 19:51:39 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:17:46 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,6 @@ void	free_matrix(int **matrix, int i);
 
 int		get_current_time(void);
 void	count_fps(t_data *data);
+int		ft_usleep(size_t ms);
 
 #endif

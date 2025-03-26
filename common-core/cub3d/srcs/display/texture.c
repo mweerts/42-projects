@@ -6,15 +6,17 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 22:25:28 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 15:03:03 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:20:39 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	set_texture_index(t_raycasting *ray)
+static void	set_texture_index(t_data *data, t_raycasting *ray)
 {
-	if (ray->side == 1)
+	if (data->map->matrix[ray->ray_y][ray->ray_x] == 2)
+		ray->wall.tex_index = TEX_PORTAL;
+	else if (ray->side == 1)
 	{
 		if (ray->ray_dir_y >= 0)
 			ray->wall.tex_index = TEX_SOUTH;
@@ -55,7 +57,7 @@ static void	draw_tex_column(t_data *data, t_raycasting *ray, int x)
 
 void	compute_tex(t_data *data, t_raycasting *ray, int x)
 {
-	set_texture_index(ray);
+	set_texture_index(data, ray);
 	if (ray->side == 0)
 		ray->wall.wall_x = data->player.pos_y + ray->wall.wall_distance
 			* ray->ray_dir_y;

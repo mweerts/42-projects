@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 14:39:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:47:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 int	leave(t_data *data)
 {
-	(void)data;
+	data->portal.stop = 1;
+	clean_up(data);
 	exit(0);
 }
 

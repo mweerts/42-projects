@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:44:08 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 15:35:38 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:41:24 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ void	clean_up(t_data *data)
 {
 	if (!data)
 		return ;
+	pthread_mutex_destroy(&data->portal.mutex);
 	if (data->s_mlx.win)
 		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
 	if (data->s_mlx.win && data->s_img.img)

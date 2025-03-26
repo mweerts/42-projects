@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:24:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 20:26:51 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 19:17:34 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,14 @@ void	count_fps(t_data *data)
 		data->s_fps.last_time = get_current_time();
 		data->s_fps.frames = 0;
 	}
+}
+
+int	ft_usleep(size_t ms)
+{
+	size_t	start;
+
+	start = get_current_time();
+	while ((get_current_time() - start) < ms)
+		usleep(500);
+	return (0);
 }
