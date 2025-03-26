@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:04:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 23:59:51 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 00:30:49 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ static int	init_frames(t_data *data)
 	data->portal.frames[9] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_09.xpm");
 	data->portal.frames[10] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_10.xpm");
 	data->portal.frames[11] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_11.xpm");
-
 	data->portal.frames[12] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_12.xpm");
 	data->portal.frames[13] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_13.xpm");
 	data->portal.frames[14] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_14.xpm");
 	data->portal.frames[15] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_15.xpm");
+	return (0);
 	data->portal.frames[16] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_16.xpm");
 	data->portal.frames[17] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_17.xpm");
 	data->portal.frames[18] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_18.xpm");
