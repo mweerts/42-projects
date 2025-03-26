@@ -1,9 +1,9 @@
 NO ./assets/north_wall.xpm
-    EA ./assets/east_wall.xpm
- SO ./assets/south_wall.xpm
+EA ./assets/east_wall.xpm
+SO ./assets/south_wall.xpm
 WE ./assets/west_wall.xpm
 
-F 153,   100,0
+F 153,100,0
 C 71,171,169
 
 111111111111111111111111

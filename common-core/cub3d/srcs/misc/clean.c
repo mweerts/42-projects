@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:44:08 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/25 18:46:37 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/26 15:35:38 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ void	clean_up(t_data *data)
 {
 	if (!data)
 		return ;
-	if (data->s_mlx.win && data->s_img.img)
-		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
 	if (data->s_mlx.win)
+		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
+	if (data->s_mlx.win && data->s_img.img)
 		mlx_destroy_image(data->s_mlx.mlx, data->s_img.img);
 	cleanup_textures(data);
 	cleanup_map(data->map);
