@@ -21,7 +21,8 @@ int	main(int ac, char **av)
 		ft_printf_fd(2, "Error\nUsage: ./cub3d <map_file.cub>\n");
 		return (1);
 	}
-	data_init(&data);
+	init_data(&data);
+	init_mlx(&data.s_mlx);
 	if (parse_arguments(&data, ac, av))
 		exit_with_error(NULL, &data);
 	clean_up(&data);

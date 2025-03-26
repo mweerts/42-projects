@@ -18,8 +18,7 @@
 typedef enum e_map_element
 {
 	EMPTY = '0',
-	PORTAIL_OPEN = 'P',
-	PORTAIL_CLOSE = 'X',
+	PORTAL = 'P',
 	OBSTACLE = '1',
 	EAST = 'E',
 	WEST = 'W',
@@ -29,11 +28,11 @@ typedef enum e_map_element
 
 typedef enum e_texture_wall
 {
-	TEX_NORTH = 0,
-	TEX_SOUTH = 1,
-	TEX_EAST = 2,
-	TEX_WEST = 3,
-	TEX_COUNT = 4,
+	TEX_NORTH,
+	TEX_SOUTH,
+	TEX_EAST,
+	TEX_WEST,
+	TEX_COUNT,
 }					t_texture_wall;
 
 typedef struct s_coord

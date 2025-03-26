@@ -44,6 +44,9 @@ static void	cleanup_textures(t_data *data)
 		{
 			if (data->tex[i]->data)
 				free(data->tex[i]->data);
+			if (data->tex[i]->img.img)
+				mlx_destroy_image(data->s_mlx.mlx, data->tex[i]->img.img);
+			data->tex[i]->img.img = NULL;
 			free(data->tex[i]);
 			data->tex[i] = NULL;
 		}
