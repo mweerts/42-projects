@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:04:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 03:17:47 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:03:37 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@ void	*anim_routine(void *ptr)
 	{
 		if (pthread_mutex_trylock(&data->portal.mutex) == 0)
 		{
-			//data->portal.curr_frame = (data->portal.curr_frame + 1) % NB_FRAMES;
-			data->tex[TEX_PORTAL] = data->portal.frames[data->portal.curr_frame];
+			if (data->portal.open == false)
+			{			
+				data->portal.frame_i = (data->portal.frame_i + 1) % NB_FRAMES;
+				data->portal.curr_frame = data->portal.frames[data->portal.frame_i];
+			}
 			pthread_mutex_unlock(&data->portal.mutex);
 			ft_usleep(1000 / NB_FRAMES);
 		}
@@ -33,7 +36,7 @@ void	*anim_routine(void *ptr)
 
 static int	init_frames(t_data *data)
 {
-	data->portal.frames[0] = load_texture(data->s_mlx.mlx, "./assets/portal/portal_test.xpm");
+	data->portal.frames[0] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_00.xpm");
 	data->portal.frames[1] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_01.xpm");
 	data->portal.frames[2] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_02.xpm");
 	data->portal.frames[3] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_03.xpm");
@@ -57,15 +60,15 @@ static int	init_frames(t_data *data)
 	data->portal.frames[21] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_21.xpm");
 	data->portal.frames[22] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_22.xpm");
 	data->portal.frames[23] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_23.xpm");
-	
-	data->tex[TEX_PORTAL] = data->portal.frames[data->portal.curr_frame];
+	data->portal.curr_frame = data->portal.frames[data->portal.frame_i];
 	return (1);
 }
 
 int	init_portal(t_data *data)
 {
-	data->portal.curr_frame = 0;
+	data->portal.frame_i = 0;
 	data->portal.stop = 0;
+	data->portal.open = false;
 	if (!init_frames(data))
 		return (ft_putstr_fd(RED"error: failed to init frames.\n"RESET, 2), 0);
 	if (pthread_mutex_init(&data->portal.mutex, NULL))

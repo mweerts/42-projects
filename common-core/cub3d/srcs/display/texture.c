@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 22:25:28 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 23:51:16 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 16:58:01 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static void	set_texture_index(t_data *data, t_raycasting *ray)
 {
 	if (data->map->matrix[ray->ray_y][ray->ray_x] == 2)
-		ray->wall.tex = data->portal.frames[data->portal.curr_frame];
+		ray->wall.tex = data->portal.curr_frame;
 	else if (ray->side == 1)
 	{
 		if (ray->ray_dir_y >= 0)

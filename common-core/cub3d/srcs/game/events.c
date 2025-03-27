@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 23:59:46 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:22:51 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ int	mouse_handler(int x, int y, t_data *data)
 {
 	(void)y;
 	if (x < WIDTH / 2)
-		rotate_mouse(data, -1);
+		rotate_mouse(data, -1, x);
 	else if (x > WIDTH / 2)
-		rotate_mouse(data, 1);
+		rotate_mouse(data, 1, x);
 	mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
 	return (0);
 }

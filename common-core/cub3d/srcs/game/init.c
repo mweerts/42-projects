@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 00:15:12 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:02:55 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 void	init_data(t_data *data)
 {
 	ft_memset(data, 0, sizeof(t_data));
-	printf("%p\n", data->s_mlx.mlx);
 	errno = 0;
 	data->map = malloc(sizeof(t_map));
 	if (!data->map)
