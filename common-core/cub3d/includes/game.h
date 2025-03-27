@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:22:07 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:45:29 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ int		mouse_handler(int x, int y, t_data *data);
 // PLAYER
 
 void	compute_player_pos(t_data *data);
-void	rotate_mouse(t_data *data, double rotdir, int mouse_x);
+void	rotate_mouse(t_data *data, int mouse_x);
 
 #endif

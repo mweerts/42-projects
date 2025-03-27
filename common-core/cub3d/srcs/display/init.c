@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:36:48 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 00:30:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:46:44 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int	init_img(t_mlx *s_mlx, t_img *s_img)
 		ft_putstr_fd("error: Image initialization failed.", 2);
 		return (0);
 	}
+	mlx_mouse_move(s_mlx->mlx, s_mlx->win, WIDTH / 2, HEIGHT / 2);
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:24:42 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:44:25 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,16 +85,13 @@ void	compute_player_pos(t_data *data)
 	move_rotate(data);
 }
 
-void	rotate_mouse(t_data *data, double rotdir, int mouse_x)
+void	rotate_mouse(t_data *data, int mouse_x)
 {
 	double	rot;
 	double	old_dir_x;
 	double	old_plane_x;
-	double	sensibility;
 
-	sensibility = 0.0010;
-	rot = ((double)mouse_x - (double)WIDTH / 2) * sensibility;
-	// rot = ROT_SPEED * rotdir;
+	rot = ((double)mouse_x - (double)WIDTH / 2) * MOUSE_SENSIBILITY;
 	old_dir_x = data->player.dir_x;
 	data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y
 		* sin(rot);

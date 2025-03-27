@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:22:51 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:45:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,15 @@ int	key_pressed(int keycode, t_data *data)
 		data->player.mv_rotate += -1;
 	if (keycode == K_AR_R)
 		data->player.mv_rotate += 1;
+	if (keycode == K_M)
+	{
+		data->mouse_off ^= 1;
+		printf("test %d\n", data->mouse_off);
+		if (data->mouse_off)
+			mlx_mouse_show(data->s_mlx.mlx, data->s_mlx.win);
+		else
+			mlx_mouse_hide(data->s_mlx.mlx, data->s_mlx.win);
+	}
 	return (0);
 }
 
@@ -61,10 +70,12 @@ int	key_released(int keycode, t_data *data)
 int	mouse_handler(int x, int y, t_data *data)
 {
 	(void)y;
+	if (data->mouse_off)
+		return (0);
 	if (x < WIDTH / 2)
-		rotate_mouse(data, -1, x);
+		rotate_mouse(data, x);
 	else if (x > WIDTH / 2)
-		rotate_mouse(data, 1, x);
+		rotate_mouse(data, x);
 	mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
 	return (0);
 }

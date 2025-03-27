@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 17:00:26 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:37:31 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,6 +161,7 @@ typedef struct s_data
 	t_texture		*tex[TEX_COUNT];
 	t_fps			s_fps;
 	t_portal		portal;
+	int				mouse_off;
 	int				max_row;
 	int				max_col;
 }					t_data;
