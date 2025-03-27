@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 17:11:45 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 17:25:07 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@
 
 # define WIDTH 1280
 # define HEIGHT 720
-# define MOVE_SPEED 0.001
+# define MOVE_SPEED 0.05
 # define ROT_SPEED 0.05
 # define FOV_RATIO 0.66
 # define CROSS_SIZE 10
