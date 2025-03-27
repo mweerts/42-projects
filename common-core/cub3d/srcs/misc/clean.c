@@ -58,7 +58,7 @@ static void	cleanup_textures(t_data *data)
 	int	i;
 
 	i = -1;
-	while (++i < TEX_COUNT - 1)
+	while (++i < TEX_COUNT)
 	{
 		if (data->tex[i])
 		{

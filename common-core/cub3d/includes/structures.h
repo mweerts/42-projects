@@ -34,7 +34,6 @@ typedef enum e_texture_wall
 	TEX_SOUTH,
 	TEX_EAST,
 	TEX_WEST,
-	TEX_PORTAL,
 	TEX_COUNT,
 }					t_texture_wall;
 

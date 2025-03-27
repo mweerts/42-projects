@@ -34,6 +34,11 @@
 # include <pthread.h>
 # include <semaphore.h>
 
+#ifndef BONUS
+# define BONUS 1
+#endif
+
+
 /* Constants */
 # define SUCCESS 0
 # define ERROR 1

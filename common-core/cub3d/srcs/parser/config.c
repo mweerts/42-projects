@@ -35,10 +35,10 @@ int	validate_config(t_data *data)
 	int	i;
 
 	i = 0;
-	while (i < TEX_COUNT - 1)
+	while (i < TEX_COUNT)
 	{
 		if (!data->tex[i])
-			return (print_err(MSG_MISSING_TEX), ERROR);
+			return (printf("%d\n", i), print_err(MSG_MISSING_TEX), ERROR);
 		i++;
 	}
 	if (data->map->floor_color < 0 || data->map->ceiling_color < 0)
