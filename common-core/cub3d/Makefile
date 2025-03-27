@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/26 19:33:28 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/27 23:19:38 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -68,12 +68,13 @@ SRC		= 	main.c \
 			game/init.c \
 			game/events.c \
 			game/move.c \
+			game/portal.c \
+			game/teleport.c \
 			display/init.c \
 			display/draw.c \
 			display/raycasting.c \
 			display/texture.c \
-			display/hud.c \
-			display/portal.c
+			display/hud.c 
 			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))

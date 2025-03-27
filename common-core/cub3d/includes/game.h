@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:45:29 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 00:33:24 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,5 +31,15 @@ int		mouse_handler(int x, int y, t_data *data);
 
 void	compute_player_pos(t_data *data);
 void	rotate_mouse(t_data *data, int mouse_x);
+
+// PORTAL
+
+int		init_portal_frames(t_data *data);
+int		init_portal(t_data *data);
+void	interact_portals(t_data *data);
+
+// TELEPORT
+
+void	teleport(t_data *data, double old_x, double old_y);
 
 #endif
