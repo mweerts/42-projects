@@ -80,6 +80,8 @@ typedef struct s_minimap
 	int				radius;
 	int				center_x;
 	int				center_y;
+	float			scale_factor;
+	int				max_view_distance;
 }					t_minimap;
 
 typedef struct s_img
