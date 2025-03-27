@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 17:04:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 01:17:45 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 03:17:47 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	*anim_routine(void *ptr)
 	{
 		if (pthread_mutex_trylock(&data->portal.mutex) == 0)
 		{
-			data->portal.curr_frame = (data->portal.curr_frame + 1) % NB_FRAMES;
+			//data->portal.curr_frame = (data->portal.curr_frame + 1) % NB_FRAMES;
 			data->tex[TEX_PORTAL] = data->portal.frames[data->portal.curr_frame];
 			pthread_mutex_unlock(&data->portal.mutex);
 			ft_usleep(1000 / NB_FRAMES);
@@ -33,7 +33,7 @@ void	*anim_routine(void *ptr)
 
 static int	init_frames(t_data *data)
 {
-	data->portal.frames[0] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_00.xpm");
+	data->portal.frames[0] = load_texture(data->s_mlx.mlx, "./assets/portal/portal_test.xpm");
 	data->portal.frames[1] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_01.xpm");
 	data->portal.frames[2] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_02.xpm");
 	data->portal.frames[3] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_03.xpm");
