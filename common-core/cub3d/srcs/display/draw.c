@@ -54,7 +54,7 @@ int	draw_game(t_data *data)
 	set_background(data);
 	raycasting(data);
 	count_fps(data);
-	set_cross(data);
+	render_hud(data);
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	draw_fps(data);
@@ -92,4 +92,15 @@ void	draw_pixel(t_img *s_img, int x, int y, int color)
 	dst = s_img->addr + (y * s_img->line_length + x * (s_img->bits_per_pixel
 				/ 8));
 	*(unsigned int *)dst = color;
+}
+
+void	draw_pixel_light(t_img *s_img, int x, int y, int color)
+{
+	char	*dst;
+
+	if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
+		return ;
+	dst = s_img->addr + (y * s_img->line_length
+			+ x * (s_img->bits_per_pixel / 8));
+	*(unsigned int *)dst = color / 8;
 }

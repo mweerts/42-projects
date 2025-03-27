@@ -39,3 +39,12 @@ void	set_cross(t_data *data)
 		i++;
 	}
 }
+
+int render_minimap(t_data *data);
+
+int render_hud(t_data *data)
+{
+	set_cross(data);
+	render_minimap(data);
+	return (0);
+}

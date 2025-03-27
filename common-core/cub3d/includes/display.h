@@ -41,5 +41,6 @@ void	set_cross(t_data *data);
 
 int		init_portal(t_data *data);
 void	interact_portals(t_data *data);
+int 	render_hud(t_data *data);
 
 #endif
