@@ -26,6 +26,7 @@ void	init_data(t_data *data)
 	data->s_fps.delta_time = 0;
 	data->s_fps.frames = 0;
 	data->s_fps.last_time = get_current_time();
+	init_minimap(&data->minimap);
 }
 
 static void	init_fov(t_player *player, char start_position)

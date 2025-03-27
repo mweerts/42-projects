@@ -70,8 +70,10 @@ SRC		= 	main.c \
 			game/move.c \
 			display/init.c \
 			display/draw.c \
+			display/draw_line.c \
 			display/raycasting.c \
 			display/minimap.c \
+			display/minimap_utils.c \
 			display/texture.c \
 			display/hud.c \
 			display/portal.c
