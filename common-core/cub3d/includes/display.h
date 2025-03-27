@@ -39,5 +39,6 @@ void	set_cross(t_data *data);
 // PORTAL
 
 int		init_portal(t_data *data);
+int 	render_hud(t_data *data);
 
 #endif
