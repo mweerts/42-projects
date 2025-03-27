@@ -6,13 +6,13 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 19:15:06 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:23:15 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static void	dda(t_data *data, t_raycasting *ray)
+void	dda(t_data *data, t_raycasting *ray)
 {
 	while (ray->hit == 0)
 	{
@@ -28,7 +28,7 @@ static void	dda(t_data *data, t_raycasting *ray)
 			ray->ray_y += ray->step_y;
 			ray->side = 1;
 		}
-		if (data->map->matrix[ray->ray_y][ray->ray_x] > 0)
+		if (data->map->matrix[ray->ray_y][ray->ray_x] != 0)
 			ray->hit = 1;
 	}
 	if (ray->side == 0)

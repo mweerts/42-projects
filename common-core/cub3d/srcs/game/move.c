@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:44:25 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:59:56 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,12 @@ static void	move_lateral(t_data *data)
 		if (data->player.pos_x + step_x > 1.0 && data->player.pos_x
 			+ step_x < data->map->width - 1)
 			if (data->map->matrix[(int)data->player.pos_y][(int)(data->player.pos_x
-					+ step_x)] <= 0)
+					+ step_x)] == 0)
 				data->player.pos_x += step_x;
 		if (data->player.pos_y + step_y > 1.0 && data->player.pos_y
 			+ step_y < data->map->height - 1)
 			if (data->map->matrix[(int)(data->player.pos_y
-					+ step_y)][(int)(data->player.pos_x)] <= 0)
+					+ step_y)][(int)(data->player.pos_x)] == 0)
 				data->player.pos_y += step_y;
 	}
 }

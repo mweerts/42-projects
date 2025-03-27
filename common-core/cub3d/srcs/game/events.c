@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 17:45:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 18:10:44 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,15 @@ int	leave(t_data *data)
 	ft_usleep(50);
 	clean_up(data);
 	exit(0);
+}
+
+static void	toggle_mouse(t_data *data)
+{
+	data->mouse_off ^= 1;
+	if (data->mouse_off)
+		mlx_mouse_show(data->s_mlx.mlx, data->s_mlx.win);
+	else
+		mlx_mouse_hide(data->s_mlx.mlx, data->s_mlx.win);
 }
 
 int	key_pressed(int keycode, t_data *data)
@@ -39,14 +48,9 @@ int	key_pressed(int keycode, t_data *data)
 	if (keycode == K_AR_R)
 		data->player.mv_rotate += 1;
 	if (keycode == K_M)
-	{
-		data->mouse_off ^= 1;
-		printf("test %d\n", data->mouse_off);
-		if (data->mouse_off)
-			mlx_mouse_show(data->s_mlx.mlx, data->s_mlx.win);
-		else
-			mlx_mouse_hide(data->s_mlx.mlx, data->s_mlx.win);
-	}
+		toggle_mouse(data);
+	if (keycode == K_E)
+		interact_portals(data);
 	return (0);
 }
 

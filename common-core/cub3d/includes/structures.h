@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 17:37:31 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:02:30 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,6 @@ typedef struct	s_portal
 	t_texture		*curr_frame;
 	int				frame_i;
 	int				stop;
-	bool			open;
 }	t_portal;
 
 typedef struct s_data

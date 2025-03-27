@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 17:44:37 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:04:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@
 # define FOV_RATIO 0.66
 # define CROSS_SIZE 10
 # define CROSS_COLOR 0xFFFFFFFF
+# define TEXT_COLOR 0xFFFFFFFF
 
 /* Colors */
 # define RED "\033[0;31m"

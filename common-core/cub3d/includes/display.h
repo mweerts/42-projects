@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 19:24:58 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 19:23:32 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ int		draw_game(t_data *data);
 // RAYCASTING
 
 int		raycasting(t_data *data);
+void	dda(t_data *data, t_raycasting *ray);
 
 // TEXTURE
 
@@ -39,5 +40,6 @@ void	set_cross(t_data *data);
 // PORTAL
 
 int		init_portal(t_data *data);
+void	interact_portals(t_data *data);
 
 #endif
