@@ -45,6 +45,8 @@ void	render_in_minimap(t_data *data, t_minimap *minimap, int i, int j)
 	}
 }
 
+void render_map_elements(t_data *data, t_minimap *minimap);
+
 void	set_minimap(t_data *data)
 {
 	t_minimap	*minimap;
