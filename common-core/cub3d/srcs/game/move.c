@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/24 01:17:41 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/27 01:27:44 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,17 @@ static void	move_forward(t_data *data)
 	if (data->player.mv_forward != 0)
 	{
 		step_x = data->player.dir_x * MOVE_SPEED * data->player.mv_forward;
-		if (data->map->matrix[(int)data->player.pos_y][(int)(data->player.pos_x
-			+ step_x)] <= 0)
-			data->player.pos_x += step_x;
 		step_y = data->player.dir_y * MOVE_SPEED * data->player.mv_forward;
-		if (data->map->matrix[(int)(data->player.pos_y
-				+ step_y)][(int)data->player.pos_x] <= 0)
-			data->player.pos_y += step_y;
+		if (data->player.pos_x + step_x > 1.0 && data->player.pos_x
+			+ step_x < data->map->width - 1)
+			if (data->map->matrix[(int)data->player.pos_y]
+				[(int)(data->player.pos_x + step_x)] <= 0)
+				data->player.pos_x += step_x;
+		if (data->player.pos_y + step_y > 1.0 && data->player.pos_y
+			+ step_y < data->map->height - 1)
+			if (data->map->matrix[(int)(data->player.pos_y
+					+ step_y)][(int)data->player.pos_x] <= 0)
+				data->player.pos_y += step_y;
 	}
 }
 
@@ -38,13 +42,17 @@ static void	move_lateral(t_data *data)
 	if (data->player.mv_lateral != 0)
 	{
 		step_x = data->player.plane_x * MOVE_SPEED * data->player.mv_lateral;
-		if (data->map->matrix[(int)data->player.pos_y][(int)(data->player.pos_x
-			+ step_x)] <= 0)
-			data->player.pos_x += step_x;
 		step_y = data->player.plane_y * MOVE_SPEED * data->player.mv_lateral;
-		if (data->map->matrix[(int)(data->player.pos_y
-				+ step_y)][(int)(data->player.pos_x)] <= 0)
-			data->player.pos_y += step_y;
+		if (data->player.pos_x + step_x > 1.0 && data->player.pos_x
+			+ step_x < data->map->width - 1)
+			if (data->map->matrix[(int)data->player.pos_y]
+				[(int)(data->player.pos_x + step_x)] <= 0)
+				data->player.pos_x += step_x;
+		if (data->player.pos_y + step_y > 1.0 && data->player.pos_y
+			+ step_y < data->map->height - 1)
+			if (data->map->matrix[(int)(data->player.pos_y
+					+ step_y)][(int)(data->player.pos_x)] <= 0)
+				data->player.pos_y += step_y;
 	}
 }
 
