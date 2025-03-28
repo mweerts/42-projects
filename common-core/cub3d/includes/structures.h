@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 00:30:08 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 01:34:10 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ typedef struct s_data
 	t_mlx			s_mlx;
 	t_player		player;
 	t_img			s_img;
+	t_img			minimap;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	t_fps			s_fps;

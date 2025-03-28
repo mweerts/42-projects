@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:24:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 19:17:34 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 01:29:46 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,3 +43,15 @@ int	ft_usleep(size_t ms)
 		usleep(500);
 	return (0);
 }
+
+void	draw_pixel(t_img *s_img, int x, int y, int color)
+{
+	char	*dst;
+
+	if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
+		return ;
+	dst = s_img->addr + (y * s_img->line_length + x * (s_img->bits_per_pixel
+				/ 8));
+	*(unsigned int *)dst = color;
+}
+

@@ -6,11 +6,41 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 19:53:38 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 02:33:12 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+
+void	draw_minimap(t_data *data)
+{
+	int	size = WIDTH / 8;
+	int	tile_size = size / 10;
+	double	tmp_x;
+	double	tmp_y;
+	
+	int	matrice[size][size];
+	double theta = atan2(data->player.dir_x, data->player.dir_y);
+	//printf("%f\n", data->player.dir_x);
+	for (int y = 0; y < size; y++)
+	{
+		tmp_y = data->player.pos_y + ((double)y / (double)tile_size - (((double)size / 2) / (double)tile_size));
+		for (int x = 0; x < size; x++)
+		{
+			tmp_x = data->player.pos_x + (x / (double)tile_size - (((double)size / 2) / (double)tile_size));
+			if (tmp_x >= 0 && tmp_y >= 0 && tmp_x < data->map->width && tmp_y < data->map->height && data->map->matrix[(int)tmp_y][(int)tmp_x] == 0)
+				draw_pixel(&data->minimap, x, y, 0xFF00FF00);
+			else if (tmp_x >= 0 && tmp_y >= 0 && tmp_x < data->map->width && tmp_y < data->map->height && (data->map->matrix[(int)tmp_y][(int)tmp_x] == 2 || data->map->matrix[(int)tmp_y][(int)tmp_x] == -2))
+				draw_pixel(&data->minimap, x, y, 0xFF0000FF);
+			else
+				draw_pixel(&data->minimap, x, y, 0xFFFF0000);
+		}
+	}
+	
+	double degree = 180.0 - (theta * (180.0 / 3.1415));
+	//printf("%f\n", degree);
+}
 
 static void	draw_fps(t_data *data)
 {
@@ -49,19 +79,6 @@ static void	draw_interact(t_data *data)
 	}
 }
 
-int	draw_game(t_data *data)
-{
-	set_background(data);
-	raycasting(data);
-	count_fps(data);
-	set_cross(data);
-	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
-		0, 0);
-	draw_fps(data);
-	draw_interact(data);
-	return (1);
-}
-
 void	set_background(t_data *data)
 {
 	int	x;
@@ -83,13 +100,18 @@ void	set_background(t_data *data)
 	}
 }
 
-void	draw_pixel(t_img *s_img, int x, int y, int color)
+int	draw_game(t_data *data)
 {
-	char	*dst;
-
-	if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
-		return ;
-	dst = s_img->addr + (y * s_img->line_length + x * (s_img->bits_per_pixel
-				/ 8));
-	*(unsigned int *)dst = color;
+	set_background(data);
+	raycasting(data);
+	count_fps(data);
+	set_cross(data);
+	draw_minimap(data);
+	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
+		0, 0);
+	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->minimap.img,
+		WIDTH - (WIDTH / 8) - 20, 20);
+	draw_fps(data);
+	draw_interact(data);
+	return (1);
 }
