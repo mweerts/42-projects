@@ -37,7 +37,10 @@ static void	draw_interact(t_data *data)
 
 int	draw_game(t_data *data)
 {
-	set_background(data);
+	if (BONUS)
+		set_textured_background(data);
+	else
+		set_background(data);
 	raycasting(data);
 	count_fps(data);
 	render_hud(data);
@@ -46,27 +49,6 @@ int	draw_game(t_data *data)
 	draw_fps(data);
 	draw_interact(data);
 	return (1);
-}
-
-void	set_background(t_data *data)
-{
-	int	x;
-	int	y;
-
-	y = 0;
-	while (y < HEIGHT)
-	{
-		x = 0;
-		while (x < WIDTH)
-		{
-			if (y > (HEIGHT / 2))
-				draw_pixel(&data->s_img, x, y, data->map->floor_color);
-			else
-				draw_pixel(&data->s_img, x, y, data->map->ceiling_color);
-			x++;
-		}
-		y++;
-	}
 }
 
 void	draw_pixel(t_img *s_img, int x, int y, int color)
@@ -86,8 +68,8 @@ void	draw_pixel_light(t_img *s_img, int x, int y, int color)
 
 	if (x < 0 || x > WIDTH || y < 0 || y > HEIGHT)
 		return ;
-	dst = s_img->addr + (y * s_img->line_length
-			+ x * (s_img->bits_per_pixel / 8));
+	dst = s_img->addr + (y * s_img->line_length + x * (s_img->bits_per_pixel
+				/ 8));
 	*(unsigned int *)dst = color / 8;
 }
 
@@ -124,3 +106,4 @@ void	draw_transparent_pixel(t_data *data, t_coord coord, int color,
 	background = *(unsigned int *)dst;
 	*(unsigned int *)dst = blend_color(background, color, alpha);
 }
+
