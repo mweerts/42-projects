@@ -57,9 +57,8 @@ SRC		= 	main.c \
 
 SRC		= 	main.c \
 			parser/config.c \
-			parser/parser.c \
+			parser/parse_file.c \
 			parser/parse_map.c \
-			parser/process_file.c \
 			parser/textures.c \
 			misc/error.c \
 			misc/debug.c \
@@ -134,7 +133,7 @@ TEST_PARSER = tests/parser
 parser: $(LIBFT) $(OBJ_PATH) $(filter-out $(OBJ_PATH)main.o, $(OBJS))
 	@mkdir -p $(TEST_DIR)
 	@mkdir -p $(OBJ_PATH)/testing
-	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC)
+	@$(CC) $(CFLAGS) -c $(TEST_DIR)/test_parser.c -o $(OBJ_PATH)testing/test_parser.o $(INC) -D BONUS=0
 	@$(CC) $(CFLAGS) $(filter-out $(OBJ_PATH)main.o, $(OBJS)) $(OBJ_PATH)testing/test_parser.o -o $(TEST_PARSER) $(INC) $(LIBFT) $(MLX_LIB) $(MLX)
 	@echo "$(BLUE)parser program compiled successfully!$(RESET)"
 	@echo "$(GREEN)executing parser$(RESET)"

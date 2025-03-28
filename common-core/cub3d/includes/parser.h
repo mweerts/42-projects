@@ -34,7 +34,6 @@ Example format : C 71,171,169.\n"
 # define MSG_TOO_MANY_PLAYER "Only one player is allowed.\n"
 # define MSG_NO_PLAYER "There is no player to play the game.\n"
 
-int			process_file(t_data *data, char *filepath);
 int			parse_arguments(t_data *data, int ac, char **av);
 int			parse_config(t_data *data, char *line);
 int			validate_config(t_data *data);
