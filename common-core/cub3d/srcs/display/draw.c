@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 17:56:31 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:54:40 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static void	draw_interact(t_data *data)
 
 int	draw_game(t_data *data)
 {
-	set_background(data);
+	set_textured_background(data);
 	raycasting(data);
 	count_fps(data);
 	set_cross(data);

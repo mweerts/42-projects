@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/24 22:25:28 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 18:47:41 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:44:50 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 		ray->wall.wall_x = data->player.pos_x + ray->wall.wall_distance
 			* ray->ray_dir_x;
 	ray->wall.wall_x -= floor(ray->wall.wall_x);
-	ray->wall.tex_x = (int)(ray->wall.wall_x * ray->wall.tex->width);
+	ray->wall.tex_x = (int)(ray->wall.wall_x * (double)ray->wall.tex->width);
 	if (ray->side == 0 && ray->ray_dir_x > 0)
 		ray->wall.tex_x = ray->wall.tex->width - ray->wall.tex_x - 1;
 	if (ray->side == 1 && ray->ray_dir_y < 0)

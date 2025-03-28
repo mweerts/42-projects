@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 18:40:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 00:11:11 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:36:12 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ int	parse_file(t_data *data, char **line)
 			break ;
 		i++;
 	}
+	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, "./assets/floor.xpm");
+	data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx,
+			"./assets/ceiling.xpm");
 	if (validate_config(data) == ERROR)
 		return (ERROR);
 	if (parse_map(data, line + i) == ERROR)

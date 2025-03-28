@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 17:55:58 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/24 23:40:19 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:36:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,12 @@ void	print_map_info(t_map *map)
 	ft_printf("Floor color: %d\n", map->floor_color);
 	ft_printf("Ceiling color: %d\n", map->ceiling_color);
 	ft_printf("Orientation start: %c\n", map->orientation_start);
-	ft_printf("Player start: [%d,%d]\n", map->player_start.x, map->player_start.y);
+	ft_printf("Player start: [%d,%d]\n", map->player_start.x,
+		map->player_start.y);
 	if (map->matrix)
 	{
 		ft_printf("\n======== Matrix ========\n\n");
 		print_matrix(map->matrix, map->height, map->width);
-		// int i = -1;
-		// while (map->matrix[++i])
-		// 	ft_printf("%s\n", map->matrix[i]);
 	}
 	ft_printf(RESET);
 }
@@ -60,11 +58,12 @@ void	print_tex_info(t_data *data)
 		if (data->tex[i])
 		{
 			if (data->tex[i]->data)
-				ft_printf("Tex[%d] -> size[%d:%d]\n", i, data->tex[i]->width, data->tex[i]->height);
+				ft_printf("Tex[%d] -> size[%d:%d]\n", i, data->tex[i]->width,
+					data->tex[i]->height);
 		}
 	}
-
 }
+
 void	print_data(t_data *data)
 {
 	if (!data)

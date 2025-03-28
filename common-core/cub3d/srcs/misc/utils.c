@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:24:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 01:29:46 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:03:50 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,3 @@ void	draw_pixel(t_img *s_img, int x, int y, int color)
 				/ 8));
 	*(unsigned int *)dst = color;
 }
-
