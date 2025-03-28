@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 19:02:30 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:55:56 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ typedef struct s_fps
 	int		fps;
 }	t_fps;
 
-typedef struct	s_portal
+typedef struct s_portal
 {
 	pthread_t		thread;
 	pthread_mutex_t	mutex;

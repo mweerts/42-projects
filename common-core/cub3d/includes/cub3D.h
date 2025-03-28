@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:14 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/27 19:04:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 15:44:49 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,10 @@
 
 # define WIDTH 1280
 # define HEIGHT 720
+# define MINMAP_SIZE WIDTH / 8
+# define MINMAP_RANGE 10
 # define MOVE_SPEED 0.05
-# define ROT_SPEED 0.05
+# define ROT_SPEED 0.01
 # define MOUSE_SENSIBILITY 0.0010
 # define FOV_RATIO 0.66
 # define CROSS_SIZE 10

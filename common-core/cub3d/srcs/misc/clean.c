@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:44:08 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 00:31:35 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 00:33:48 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static void	cleanup_map(t_map *map)
 	free(map);
 }
 
-static void	cleanup_portal(t_data *data)
+static void	cleanup_portal_frames(t_data *data)
 {
 	int	i;
 
@@ -79,7 +79,7 @@ void	clean_up(t_data *data)
 	pthread_mutex_destroy(&data->portal.mutex);
 	pthread_mutex_destroy(&data->portal.stop_mutex);
 	cleanup_textures(data);
-	cleanup_portal(data);
+	cleanup_portal_frames(data);
 	cleanup_map(data->map);
 	if (data->s_mlx.win && data->s_img.img)
 		mlx_destroy_image(data->s_mlx.mlx, data->s_img.img);

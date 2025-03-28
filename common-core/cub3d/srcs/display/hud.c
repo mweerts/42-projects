@@ -6,11 +6,25 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:12:39 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/26 23:21:16 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:55:05 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+void	draw_fps(t_data *data)
+{
+	char	*tmp;
+
+	tmp = ft_itoa(data->s_fps.fps);
+	if (tmp)
+	{
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, 50, 50, TEXT_COLOR,
+			tmp);
+		free(tmp);
+		tmp = NULL;
+	}
+}
 
 void	set_cross(t_data *data)
 {

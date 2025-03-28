@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_file.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/17 18:40:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/17 18:40:31 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/03/28 00:11:11 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,6 @@
 
 int	parse_map(t_data *data, char **line)
 {
-	int	i;
-
-	i = 0;
 	if (!line || !line[0])
 		return (ERROR);
 	if (get_map_size(data->map, line))
