@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/27 23:19:38 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/28 17:20:10 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,7 +74,8 @@ SRC		= 	main.c \
 			display/draw.c \
 			display/raycasting.c \
 			display/texture.c \
-			display/hud.c 
+			display/hud.c \
+			display/background.c
 			
 OBJ		= $(SRC:.c=.o)
 OBJS	= $(addprefix $(OBJ_PATH), $(OBJ))
