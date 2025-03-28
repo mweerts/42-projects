@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 01:34:10 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 16:10:45 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ typedef struct s_fps
 	int		fps;
 }	t_fps;
 
-typedef struct	s_portal
+typedef struct s_portal
 {
 	pthread_t		thread;
 	pthread_mutex_t	mutex;
@@ -151,16 +151,25 @@ typedef struct	s_portal
 	int				stop;
 }	t_portal;
 
+typedef struct s_minimap
+{
+	t_img		s_img;
+	int			tile_size;
+	double		tmp_x;
+	double		tmp_y;
+	double		angle;
+}	t_minimap;
+
 typedef struct s_data
 {
 	t_mlx			s_mlx;
 	t_player		player;
 	t_img			s_img;
-	t_img			minimap;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	t_fps			s_fps;
 	t_portal		portal;
+	t_minimap		minimap;
 	int				mouse_off;
 	int				max_row;
 	int				max_col;

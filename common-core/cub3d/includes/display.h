@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 01:29:53 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 15:49:48 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x);
 
 // HUD
 
+void	draw_fps(t_data *data);
 void	set_cross(t_data *data);
+void	draw_minimap(t_data *data);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 01:37:09 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 16:08:10 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int	main(int ac, char **av)
 		return (clean_up(&data), EXIT_FAILURE);
 	if (!init_portal(&data))
 		return (clean_up(&data), EXIT_FAILURE);
-	data.minimap.img = mlx_new_image(data.s_mlx.mlx, WIDTH / 8, WIDTH / 8);
-	data.minimap.addr = mlx_get_data_addr(data.minimap.img, &data.minimap.bits_per_pixel, &data.minimap.line_length, &data.minimap.endian);
+	data.minimap.s_img.img = mlx_new_image(data.s_mlx.mlx, WIDTH / 8, WIDTH / 8);
+	data.minimap.s_img.addr = mlx_get_data_addr(data.minimap.s_img.img, &data.minimap.s_img.bits_per_pixel, &data.minimap.s_img.line_length, &data.minimap.s_img.endian);
 	mlx_mouse_hide(data.s_mlx.mlx, data.s_mlx.win);
 	mlx_mouse_move(data.s_mlx.mlx, data.s_mlx.win, WIDTH / 2, HEIGHT / 2);
 	init_hooks(&data);
