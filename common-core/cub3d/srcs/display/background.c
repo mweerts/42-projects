@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 17:03:56 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 17:30:18 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:37:38 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ void	set_background(t_data *data)
 
 void	set_textured_background(t_data *data)
 {
-	for(int y = 0; y < HEIGHT / 2; y++)
+	for(int y = HEIGHT / 2; y < HEIGHT; y++)
     {
+		
       // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
       float rayDirX0 = data->player.dir_x - data->player.plane_x;
       float rayDirY0 = data->player.dir_y - data->player.plane_y;
@@ -80,13 +81,12 @@ void	set_textured_background(t_data *data)
         int color;
 
         // floor
-		unsigned char *src = (unsigned char *)&data->tex[0]->img.addr[ty * data->tex[0]->img.line_length + tx * (data->tex[0]->img.bits_per_pixel / 8)];
+		unsigned char *src = (unsigned char *)&data->tex[TEX_FLOOR]->img.addr[ty * data->tex[TEX_FLOOR]->img.line_length + tx * (data->tex[TEX_FLOOR]->img.bits_per_pixel / 8)];
 		color = *(unsigned int *)src;
         draw_pixel(&data->s_img, x, y, color);
 
         //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-
-		src = (unsigned char *)&data->tex[1]->img.addr[ty * data->tex[1]->img.line_length + tx * (data->tex[1]->img.bits_per_pixel / 8)];
+		src = (unsigned char *)&data->tex[TEX_CEILING]->img.addr[ty * data->tex[TEX_CEILING]->img.line_length + tx * (data->tex[TEX_CEILING]->img.bits_per_pixel / 8)];
 		color = *(unsigned int *)src;
         draw_pixel(&data->s_img, x, HEIGHT - y - 1, color);	
       }
