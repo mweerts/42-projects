@@ -72,8 +72,11 @@ SRC		= 	main.c \
 			game/teleport.c \
 			display/init.c \
 			display/draw.c \
+			display/draw_line.c \
 			display/raycasting.c \
 			display/minimap.c \
+			display/minimap_utils.c \
+			display/minimap_player.c \
 			display/texture.c \
 			display/hud.c \
 			display/background.c

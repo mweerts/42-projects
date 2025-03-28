@@ -43,6 +43,47 @@ typedef struct s_coord
 	int				y;
 }					t_coord;
 
+typedef struct s_rgb
+{
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+}					t_rgb;
+
+typedef struct s_triangle
+{
+	int				tip_x;
+	int				tip_y;
+	int				left_x;
+	int				left_y;
+	int				right_x;
+	int				right_y;
+	float			dir_x;
+	float			dir_y;
+}					t_triangle;
+
+typedef struct s_line
+{
+	t_coord	current;
+	t_coord	end;
+	int		dx;
+	int		dy;
+	int		sx;
+	int		sy;
+	int		err;
+	int		e2;
+	int		done;
+} t_line;
+
+typedef struct s_minimap
+{
+	int				radius;
+	int				center_x;
+	int				center_y;
+	float			scale_factor;
+	int				max_view_distance;
+}					t_minimap;
+
 typedef struct s_img
 {
 	void			*img;
@@ -95,7 +136,7 @@ typedef struct s_wall
 	int				draw_start;
 	int				draw_end;
 	t_texture		*tex;
-}	t_wall;
+}					t_wall;
 
 typedef struct s_raycasting
 {
@@ -134,11 +175,11 @@ typedef struct s_mlx
 
 typedef struct s_fps
 {
-	int		frames;
-	int		last_time;
-	int		delta_time;
-	int		fps;
-}	t_fps;
+	int				frames;
+	int				last_time;
+	int				delta_time;
+	int				fps;
+}					t_fps;
 
 typedef struct s_portal
 {
@@ -149,7 +190,7 @@ typedef struct s_portal
 	t_texture		*curr_frame;
 	int				frame_i;
 	int				stop;
-}	t_portal;
+}					t_portal;
 
 typedef struct s_data
 {
@@ -162,7 +203,9 @@ typedef struct s_data
 	t_portal		portal;
 	int				mouse_off;
 	int				max_row;
+	t_minimap		minimap;
 	int				max_col;
 }					t_data;
 
 #endif
+
