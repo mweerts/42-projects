@@ -6,11 +6,42 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:43:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 02:33:12 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 03:26:13 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
+
+void rotate_matrix(int size, int src[size][size], int dest[size][size], double rad) {
+    double cos_theta = cos(rad);
+    double sin_theta = sin(rad);
+
+    int centerX = size / 2;
+    int centerY = size / 2;
+
+    // Initialisation de la matrice destination
+    for (int i = 0; i < size; i++)
+        for (int j = 0; j < size; j++)
+            dest[i][j] = 0; // Valeur par défaut (peut être autre chose)
+
+    // Parcourir chaque pixel de la matrice destination
+    for (int y_new = 0; y_new < size; y_new++) {
+        for (int x_new = 0; x_new < size; x_new++) {
+            // Calcul des coordonnées inverses dans l'image d'origine
+            double x_old = cos_theta * (x_new - centerX) + sin_theta * (y_new - centerY) + centerX;
+            double y_old = -sin_theta * (x_new - centerX) + cos_theta * (y_new - centerY) + centerY;
+
+            // Arrondir aux indices entiers valides
+            int x_src = (int)round(x_old);
+            int y_src = (int)round(y_old);
+
+            // Vérifier si les indices sont valides avant d'affecter
+            if (x_src >= 0 && x_src < size && y_src >= 0 && y_src < size) {
+                dest[y_new][x_new] = src[y_src][x_src];
+            }
+        }
+    }
+}
 
 
 void	draw_minimap(t_data *data)
@@ -19,10 +50,11 @@ void	draw_minimap(t_data *data)
 	int	tile_size = size / 10;
 	double	tmp_x;
 	double	tmp_y;
-	
+	double rad = atan2(data->player.dir_x, -data->player.dir_y);
 	int	matrice[size][size];
-	double theta = atan2(data->player.dir_x, data->player.dir_y);
-	//printf("%f\n", data->player.dir_x);
+	int	matrice_dest[size][size];
+	
+	printf("%f\n", rad);
 	for (int y = 0; y < size; y++)
 	{
 		tmp_y = data->player.pos_y + ((double)y / (double)tile_size - (((double)size / 2) / (double)tile_size));
@@ -30,16 +62,17 @@ void	draw_minimap(t_data *data)
 		{
 			tmp_x = data->player.pos_x + (x / (double)tile_size - (((double)size / 2) / (double)tile_size));
 			if (tmp_x >= 0 && tmp_y >= 0 && tmp_x < data->map->width && tmp_y < data->map->height && data->map->matrix[(int)tmp_y][(int)tmp_x] == 0)
-				draw_pixel(&data->minimap, x, y, 0xFF00FF00);
+				matrice[x][y] = 0xFF00FF00;
 			else if (tmp_x >= 0 && tmp_y >= 0 && tmp_x < data->map->width && tmp_y < data->map->height && (data->map->matrix[(int)tmp_y][(int)tmp_x] == 2 || data->map->matrix[(int)tmp_y][(int)tmp_x] == -2))
-				draw_pixel(&data->minimap, x, y, 0xFF0000FF);
+				matrice[x][y] = 0xFF0000FF;
 			else
-				draw_pixel(&data->minimap, x, y, 0xFFFF0000);
+				matrice[x][y] = 0xFFFF0000;
 		}
 	}
-	
-	double degree = 180.0 - (theta * (180.0 / 3.1415));
-	//printf("%f\n", degree);
+	rotate_matrix(size, matrice, matrice_dest, rad);
+	for (int y = 0; y < size; y++)
+		for (int x = 0; x < size; x++)
+			draw_pixel(&data->minimap, x, y, matrice_dest[x][y]);
 }
 
 static void	draw_fps(t_data *data)
