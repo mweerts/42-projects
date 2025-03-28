@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 02:01:09 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:44:02 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@ static void	move_forward(t_data *data)
 
 	if (data->player.mv_forward != 0)
 	{
-		step_x = data->player.dir_x * MOVE_SPEED * data->player.mv_forward;
-		step_y = data->player.dir_y * MOVE_SPEED * data->player.mv_forward;
+		step_x = data->player.dir_x * MOVE_SPEED * data->player.run
+			* data->player.mv_forward;
+		step_y = data->player.dir_y * MOVE_SPEED * data->player.run
+			* data->player.mv_forward;
 		tmp = data->player.pos_x + step_x;
 		if (tmp > 1.0 && tmp < data->map->width - 1)
 			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] <= 0)
@@ -41,8 +43,10 @@ static void	move_lateral(t_data *data)
 
 	if (data->player.mv_lateral != 0)
 	{
-		step_x = data->player.plane_x * MOVE_SPEED * data->player.mv_lateral;
-		step_y = data->player.plane_y * MOVE_SPEED * data->player.mv_lateral;
+		step_x = data->player.plane_x * MOVE_SPEED * data->player.run
+			* data->player.mv_lateral;
+		step_y = data->player.plane_y * MOVE_SPEED * data->player.run
+			* data->player.mv_lateral;
 		tmp = data->player.pos_x + step_x;
 		if (tmp > 1.0 && tmp < data->map->width - 1)
 			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] <= 0)
@@ -86,8 +90,8 @@ void	compute_player_pos(t_data *data)
 	move_forward(data);
 	move_lateral(data);
 	move_rotate(data);
-	if (data->map->matrix[(int)data->player.pos_y]
-		[(int)data->player.pos_x] == -2)
+	if (data->map->matrix[(int)data->player.pos_y][(int)data->player.pos_x] ==
+		-2)
 		teleport(data, old_x, old_y);
 }
 

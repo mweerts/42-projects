@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 01:58:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/15 01:58:18 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:43:22 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@
 
 # define K_SP 32
 # define K_ESC 65307
+# define K_SHIFT 65507
 
 /*
 ** Mouse
