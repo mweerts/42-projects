@@ -35,7 +35,7 @@ void	set_background(t_data *data)
 
 void	set_textured_background(t_data *data)
 {
-	for(int y = 0; y < HEIGHT / 2; y++)
+	for(int y = 0; y < HEIGHT; y++)
     {
       // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
       float rayDirX0 = data->player.dir_x - data->player.plane_x;

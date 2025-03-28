@@ -39,8 +39,8 @@ typedef enum e_texture_wall
 
 typedef struct s_coord
 {
-	int				x;
-	int				y;
+	double				x;
+	double				y;
 }					t_coord;
 
 typedef struct s_rgb
@@ -80,8 +80,9 @@ typedef struct s_minimap
 	int				radius;
 	int				center_x;
 	int				center_y;
-	float			scale_factor;
-	int				max_view_distance;
+	double			scale_factor;
+	double			max_view_distance;
+	double			ratio;
 }					t_minimap;
 
 typedef struct s_img

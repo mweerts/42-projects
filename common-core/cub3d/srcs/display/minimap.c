@@ -25,7 +25,10 @@ void	init_minimap(t_minimap *minimap)
 	// This determines how much map area to show relative to minimap size
 	minimap->scale_factor = (float)minimap->radius / 8.0f;
 	// Maximum distance from player to show map elements (in map units)
-	minimap->max_view_distance = minimap->radius / minimap->scale_factor;
+	minimap->max_view_distance = (double)minimap->radius / (double)minimap->scale_factor;
+	// Calculate the ratio between map coordinates and screen pixels
+	minimap->ratio = (double)minimap->radius / minimap->max_view_distance;
+	
 }
 
 void	render_in_minimap(t_data *data, t_minimap *minimap, int i, int j)

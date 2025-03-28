@@ -101,7 +101,7 @@ void	draw_transparent_pixel(t_data *data, t_coord coord, int color,
 
 	if (coord.x < 0 || coord.x >= WIDTH || coord.y < 0 || coord.y >= HEIGHT)
 		return ;
-	dst = data->s_img.addr + (coord.y * data->s_img.line_length + coord.x
+	dst = data->s_img.addr + ((int)coord.y * data->s_img.line_length + (int)coord.x
 			* (data->s_img.bits_per_pixel / 8));
 	background = *(unsigned int *)dst;
 	*(unsigned int *)dst = blend_color(background, color, alpha);
