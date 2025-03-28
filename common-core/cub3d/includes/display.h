@@ -15,7 +15,6 @@
 
 # define MINIMAP_OFFSET 20
 
-
 // INIT
 
 void	init_ray(t_data *data, t_raycasting *ray, int x);
@@ -26,7 +25,7 @@ int		init_img(t_mlx *s_mlx, t_img *s_img);
 void	set_background(t_data *data);
 int		draw_game(t_data *data);
 void	draw_transparent_pixel(t_data *data, t_coord coord, int color,
-		float alpha);
+			float alpha);
 
 // RAYCASTING
 
@@ -51,8 +50,10 @@ void	interact_portals(t_data *data);
 
 // minimap
 int		render_hud(t_data *data);
+void	render_minimap(t_data *data);
 void	init_minimap(t_minimap *minimap);
 void	draw_line(t_data *data, t_coord start, t_coord end, int color);
+int		render_player_in_minimap(t_data *data, t_minimap *minimap);
 
 #endif
 

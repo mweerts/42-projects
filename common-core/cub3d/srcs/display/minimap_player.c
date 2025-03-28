@@ -33,13 +33,11 @@ static void	calculate_triangle_points(t_minimap *minimap, t_triangle *t, int ps)
 	t->tip_y = minimap->center_y + (int)(t->dir_y * ps * 2);
 	perp_x = -t->dir_y;
 	perp_y = t->dir_x;
-
 	t->left_x = minimap->center_x + (int)(t->dir_x * ps * 0.3 + perp_x * ps);
 	t->left_y = minimap->center_y + (int)(t->dir_y * ps * 0.3 + perp_y * ps);
 	t->right_x = minimap->center_x + (int)(t->dir_x * ps * 0.3 - perp_x * ps);
 	t->right_y = minimap->center_y + (int)(t->dir_y * ps * 0.3 - perp_y * ps);
 }
-
 
 static void	draw_player_circle(t_data *data, t_minimap *minimap,
 		int player_size)
@@ -70,7 +68,7 @@ int	render_player_in_minimap(t_data *data, t_minimap *minimap)
 	t_triangle	t;
 	double		dir_length;
 
-	player_size = minimap->radius / 20.0f;
+	player_size = minimap->radius / 16.0f;
 	if (player_size < 1.0f)
 		player_size = 1.0f;
 	draw_player_circle(data, minimap, player_size);
