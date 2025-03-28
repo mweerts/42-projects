@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 17:55:56 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:40:49 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ typedef enum e_texture_wall
 	TEX_SOUTH,
 	TEX_EAST,
 	TEX_WEST,
+	TEX_FLOOR,
+	TEX_CEILING,
 	TEX_COUNT,
 }					t_texture_wall;
 
@@ -123,6 +125,7 @@ typedef struct s_player
 	int				mv_forward;
 	int				mv_lateral;
 	int				mv_rotate;
+	int				run;
 }					t_player;
 
 typedef struct s_wall

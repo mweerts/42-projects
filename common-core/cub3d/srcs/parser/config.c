@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/21 16:57:10 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 00:11:04 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:25:01 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	validate_config(t_data *data)
 	while (i < TEX_COUNT)
 	{
 		if (!data->tex[i])
-			return (printf("%d\n", i), print_err(MSG_MISSING_TEX), ERROR);
+			return (print_err(MSG_MISSING_TEX), ERROR);
 		i++;
 	}
 	if (data->map->floor_color < 0 || data->map->ceiling_color < 0)

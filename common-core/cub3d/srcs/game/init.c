@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 15:56:19 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:41:52 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ int	init_player(t_player *player, t_coord pos, char start_position)
 	player->dir_y = 0;
 	player->plane_x = 0;
 	player->plane_y = 0;
+	player->run = 1;
 	init_fov(player, start_position);
 	return (1);
 }

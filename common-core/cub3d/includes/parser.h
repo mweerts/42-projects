@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:41 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/25 01:57:56 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:56:36 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,5 +44,6 @@ int			get_map_size(t_map *map, char **line);
 int			create_matrix(t_map *map, char **line);
 int			is_map_closed(t_map *map);
 t_texture	*load_texture(void *mlx, char *path);
+int			flood_fill(t_map *map, int **matrix, int x, int y);
 
 #endif

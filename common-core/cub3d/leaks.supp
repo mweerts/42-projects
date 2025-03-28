@@ -1,0 +1,18 @@
+{
+   readline_leak
+   Memcheck:Leak
+   ...
+   fun:mlx_mouse_hide
+}
+{
+   readline_leak
+   Memcheck:Leak
+   ...
+   fun:*Xrm*
+}
+{
+   readline_leak
+   Memcheck:Leak
+   ...
+   fun:*dl*
+}
