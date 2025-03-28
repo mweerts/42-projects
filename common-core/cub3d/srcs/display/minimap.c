@@ -17,13 +17,13 @@ int		render_player_in_minimap(t_data *data, t_minimap *minimap);
 void	init_minimap(t_minimap *minimap)
 {
 	ft_memset(minimap, 0, sizeof(t_minimap));
-	if (WIDTH / 12 > 0)
+	if (WIDTH / 16 > 0)
 		minimap->radius = WIDTH / 16;
 	minimap->center_x = WIDTH - minimap->radius - MINIMAP_OFFSET;
 	minimap->center_y = HEIGHT - minimap->radius - MINIMAP_OFFSET;
 	// Calculate scale factor based on minimap radius
 	// This determines how much map area to show relative to minimap size
-	minimap->scale_factor = (float)minimap->radius / 12.0f;
+	minimap->scale_factor = (float)minimap->radius / 8.0f;
 	// Maximum distance from player to show map elements (in map units)
 	minimap->max_view_distance = minimap->radius / minimap->scale_factor;
 }
