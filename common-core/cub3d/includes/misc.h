@@ -30,9 +30,9 @@ void	free_matrix(int **matrix, int i);
 
 // UTILS
 
-int		get_current_time(void);
-void	count_fps(t_data *data);
-int		ft_usleep(size_t ms);
-int		is_portal(t_data *data, int x, int y, int portal_i);
-
+int				get_current_time(void);
+void			count_fps(t_data *data);
+int				ft_usleep(size_t ms);
+int				is_portal(t_data *data, int x, int y, int portal_i);
+unsigned char	*get_texture_pixel(t_texture *tex, int x, int y);
 #endif

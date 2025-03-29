@@ -52,6 +52,7 @@
 # define CROSS_SIZE 10
 # define CROSS_COLOR 0xFFFFFFFF
 # define TEXT_COLOR 0xFFFFFFFF
+# define ANIM_SPEED 5
 
 /* Colors */
 # define RED "\033[0;31m"

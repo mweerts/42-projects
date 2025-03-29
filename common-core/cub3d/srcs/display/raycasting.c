@@ -46,8 +46,8 @@ int	raycasting(t_data *data)
 	t_raycasting	ray;
 	int				x;
 
-	compute_player_pos(data);
 	x = 0;
+	compute_player_pos(data);
 	pthread_mutex_lock(&data->anim.mutex);
 	while (x < WIDTH)
 	{

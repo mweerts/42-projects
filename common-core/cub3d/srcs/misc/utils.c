@@ -52,3 +52,9 @@ int	is_portal(t_data *data, int x, int y, int portal_i)
 		return (1);
 	return (0);
 }
+
+unsigned char	*get_texture_pixel(t_texture *tex, int x, int y)
+{
+	return ((unsigned char *)&tex->img.addr[y * tex->img.line_length + x
+			* (tex->img.bits_per_pixel / 8)]);
+}

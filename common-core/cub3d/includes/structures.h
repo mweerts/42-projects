@@ -15,7 +15,7 @@
 
 # include "libft.h"
 
-# define NB_FRAMES 24
+# define NB_FRAMES 10
 
 typedef enum e_map_element
 {
@@ -139,6 +139,7 @@ typedef struct s_wall
 	int				line_height;
 	int				draw_start;
 	int				draw_end;
+	int				is_portal;
 	t_texture		*tex;
 }					t_wall;
 
