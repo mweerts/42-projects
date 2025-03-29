@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/29 20:14:43 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 22:10:03 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,4 +61,3 @@ int		init_portal_frames(t_data *data);
 int		init_portal(t_data *data);
 
 #endif
-

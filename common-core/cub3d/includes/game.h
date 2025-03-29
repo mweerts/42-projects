@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/29 20:13:59 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 22:10:08 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,8 @@ void	rotate_mouse(t_data *data, int mouse_x);
 
 int		mouse_click(int button, t_data *data);
 
-
 // TELEPORT
 
-int 	should_tp(t_data *data, double step_x, double step_y);
+int		should_tp(t_data *data, double step_x, double step_y);
 
 #endif

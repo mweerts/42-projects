@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/29 17:03:52 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 22:09:55 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ typedef enum e_texture_wall
 
 typedef struct s_coord
 {
-	double				x;
-	double				y;
+	double			x;
+	double			y;
 }					t_coord;
 
 typedef struct s_rgb
@@ -66,16 +66,16 @@ typedef struct s_triangle
 
 typedef struct s_line
 {
-	t_coord	current;
-	t_coord	end;
-	int		dx;
-	int		dy;
-	int		sx;
-	int		sy;
-	int		err;
-	int		e2;
-	int		done;
-} t_line;
+	t_coord			current;
+	t_coord			end;
+	int				dx;
+	int				dy;
+	int				sx;
+	int				sy;
+	int				err;
+	int				e2;
+	int				done;
+}					t_line;
 
 typedef struct s_minimap
 {
@@ -142,6 +142,16 @@ typedef struct s_wall
 	t_texture		*tex;
 }					t_wall;
 
+typedef struct s_ray_floor
+{
+	float			pos_z;
+	float			row_distance;
+	float			floor_step_x;
+	float			floor_step_y;
+	float			floor_x;
+	float			floor_y;
+}					t_ray_floor;
+
 typedef struct s_raycasting
 {
 	double			camera_x;
@@ -202,8 +212,7 @@ typedef struct s_portal
 	int				y;
 	int				old_tex;
 	t_map_element	orientation;
-}	t_portal;
-
+}					t_portal;
 
 typedef struct s_data
 {
@@ -224,4 +233,3 @@ typedef struct s_data
 }					t_data;
 
 #endif
-

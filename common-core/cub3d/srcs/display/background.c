@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 17:03:56 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:55:48 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 22:09:20 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,62 +33,75 @@ void	set_background(t_data *data)
 	}
 }
 
+static void	set_floor_and_ceiling_pixel(t_data *data, int x, int y,
+		t_ray_floor *ray)
+{
+	int				tx;
+	int				ty;
+	unsigned char	*src;
+	int				color;
+
+	tx = (int)(data->tex[TEX_FLOOR]->width * (ray->floor_x
+				- (int)ray->floor_x)) & (data->tex[TEX_FLOOR]->width - 1);
+	ty = (int)(data->tex[TEX_FLOOR]->height * (ray->floor_y
+				- (int)ray->floor_y)) & (data->tex[TEX_FLOOR]->height - 1);
+	src = (unsigned char *)&data->tex[TEX_FLOOR]->img.addr[ty
+		* data->tex[TEX_FLOOR]->img.line_length + tx
+		* (data->tex[TEX_FLOOR]->img.bits_per_pixel / 8)];
+	color = *(unsigned int *)src;
+	draw_pixel(&data->s_img, x, y, color);
+	src = (unsigned char *)&data->tex[TEX_CEILING]->img.addr[ty
+		* data->tex[TEX_CEILING]->img.line_length + tx
+		* (data->tex[TEX_CEILING]->img.bits_per_pixel / 8)];
+	color = *(unsigned int *)src;
+	draw_pixel(&data->s_img, x, HEIGHT - y - 1, color);
+}
+
+static void	compute_row_data(t_data *data, int y, t_ray_floor *ray)
+{
+	float	ray_dir_x0;
+	float	ray_dir_y0;
+	float	ray_dir_x1;
+	float	ray_dir_y1;
+	int		p;
+
+	ray_dir_x0 = data->player.dir_x - data->player.plane_x;
+	ray_dir_y0 = data->player.dir_y - data->player.plane_y;
+	ray_dir_x1 = data->player.dir_x + data->player.plane_x;
+	ray_dir_y1 = data->player.dir_y + data->player.plane_y;
+	p = y - HEIGHT / 2;
+	ray->pos_z = 0.5 * HEIGHT;
+	ray->row_distance = ray->pos_z / p;
+	ray->floor_step_x = ray->row_distance * (ray_dir_x1 - ray_dir_x0) / WIDTH;
+	ray->floor_step_y = ray->row_distance * (ray_dir_y1 - ray_dir_y0) / WIDTH;
+	ray->floor_x = data->player.pos_x + ray->row_distance * ray_dir_x0;
+	ray->floor_y = data->player.pos_y + ray->row_distance * ray_dir_y0;
+}
+
+static void	cast_floor_rays(t_data *data, int y)
+{
+	int			x;
+	t_ray_floor	ray;
+
+	compute_row_data(data, y, &ray);
+	x = 0;
+	while (x < WIDTH)
+	{
+		set_floor_and_ceiling_pixel(data, x, y, &ray);
+		ray.floor_x += ray.floor_step_x;
+		ray.floor_y += ray.floor_step_y;
+		x++;
+	}
+}
+
 void	set_textured_background(t_data *data)
 {
-	for(int y = HEIGHT / 2; y < HEIGHT; y++)
-    {
-		
-      // rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-      float rayDirX0 = data->player.dir_x - data->player.plane_x;
-      float rayDirY0 = data->player.dir_y - data->player.plane_y;
-      float rayDirX1 = data->player.dir_x + data->player.plane_x;
-      float rayDirY1 = data->player.dir_y + data->player.plane_y;
-		int texWidth = 64;
-		int texHeight = 64;
-      // Current y position compared to the center of the screen (the horizon)
-      int p = y - HEIGHT / 2;
+	int	y;
 
-      // Vertical position of the camera.
-      float posZ = 0.5 * HEIGHT;
-
-      // Horizontal distance from the camera to the floor for the current row.
-      // 0.5 is the z position exactly in the middle between floor and ceiling.
-      float rowDistance = posZ / p;
-
-      // calculate the real world step vector we have to add for each x (parallel to camera plane)
-      // adding step by step avoids multiplications with a weight in the inner loop
-      float floorStepX = rowDistance * (rayDirX1 - rayDirX0) / WIDTH;
-      float floorStepY = rowDistance * (rayDirY1 - rayDirY0) / WIDTH;
-
-      // real world coordinates of the leftmost column. This will be updated as we step to the right.
-      float floorX = data->player.pos_x + rowDistance * rayDirX0;
-      float floorY = data->player.pos_y + rowDistance * rayDirY0;
-
-      for(int x = 0; x < WIDTH; ++x)
-      {
-        // the cell coord is simply got from the integer parts of floorX and floorY
-        int cellX = (int)(floorX);
-        int cellY = (int)(floorY);
-
-        // get the texture coordinate from the fractional part
-        int tx = (int)(texWidth * (floorX - cellX)) & (texWidth - 1);
-        int ty = (int)(texHeight * (floorY - cellY)) & (texHeight - 1);
-
-        floorX += floorStepX;
-        floorY += floorStepY;
-
-        // choose texture and draw the pixel
-        int color;
-
-        // floor
-		unsigned char *src = (unsigned char *)&data->tex[TEX_FLOOR]->img.addr[ty * data->tex[TEX_FLOOR]->img.line_length + tx * (data->tex[TEX_FLOOR]->img.bits_per_pixel / 8)];
-		color = *(unsigned int *)src;
-        draw_pixel(&data->s_img, x, y, color);
-
-        //ceiling (symmetrical, at screenHeight - y - 1 instead of y)
-		src = (unsigned char *)&data->tex[TEX_CEILING]->img.addr[ty * data->tex[TEX_CEILING]->img.line_length + tx * (data->tex[TEX_CEILING]->img.bits_per_pixel / 8)];
-		color = *(unsigned int *)src;
-        draw_pixel(&data->s_img, x, HEIGHT - y - 1, color);	
-      }
-    }
+	y = HEIGHT / 2;
+	while (y < HEIGHT)
+	{
+		cast_floor_rays(data, y);
+		y++;
+	}
 }
