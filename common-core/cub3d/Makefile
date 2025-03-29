@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/29 17:06:05 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/29 22:16:57 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ RESET	=\033[0m
 
 # Compiler and compilation flags
 CC		= cc
-CFLAGS	= -Wextra -Wall -g
+CFLAGS	= -Wall -Wextra -Werror -Wunused-function -Wunused-variable -g
 VALGRIND =
 MLX_LIB = -L $(MLX_DIR) -lmlx
 MLX_FLAGS = -L./minilibx-linux/ -lmlx_Linux -lXext -lX11 -lm -lz
