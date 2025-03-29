@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:12:39 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 17:55:05 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:44:56 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	set_cross(t_data *data)
 	}
 }
 
-int render_hud(t_data *data)
+int	render_hud(t_data *data)
 {
 	set_cross(data);
 	render_minimap(data);

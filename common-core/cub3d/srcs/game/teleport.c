@@ -5,98 +5,92 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/27 23:18:59 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:15:40 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/29 19:10:00 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/29 20:07:53 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static int	is_tp_possible(t_map *map, int x, int y)
+static void	teleport(t_data *data, int portal_i)
 {
-	int	**cpy;
-	int	i;
-	int	j;
+	t_portal	*portal;
 
-	cpy = (int **)ft_calloc((map->height + 1), sizeof(int *));
-	if (!cpy)
-		return (print_err(MSG_ERR_MALLOC), -1);
-	i = -1;
-	while (++i < map->height)
+	if (portal_i == 1)
+		portal = &data->portal2;
+	else
+		portal = &data->portal1;
+	data->player.pos_x = portal->x + 0.5;
+	data->player.pos_y = portal->y + 0.5;
+	if (portal->orientation == WEST)
+		data->player.pos_x = portal->x + 1.5;
+	if (portal->orientation == EAST)
+		data->player.pos_x = portal->x - 0.5;
+	if (portal->orientation == NORTH)
+		data->player.pos_y = portal->y + 1.5;
+	if (portal->orientation == SOUTH)
+		data->player.pos_y = portal->y - 0.5;
+}
+
+static int	check_portal1(t_data *data, double step_x, double step_y)
+{
+	int	new_cell_x;
+	int	new_cell_y;
+
+	new_cell_x = (int)(data->player.pos_x + step_x);
+	new_cell_y = (int)(data->player.pos_y + step_y);
+	if (is_portal(data, data->player.pos_x + step_x, data->player.pos_y
+			+ step_y, 1))
 	{
-		cpy[i] = (int *)ft_calloc(map->width, sizeof(int));
-		if (!cpy[i])
-			return (free_matrix(cpy, i), print_err(MSG_ERR_MALLOC), -1);
-		j = -1;
-		while (++j < map->width)
-			cpy[i][j] = map->matrix[i][j];
+		if (new_cell_x < (int)data->player.pos_x
+			&& data->portal1.orientation == WEST)
+			return (printf("WEST\n"), teleport(data, 1), 1);
+		if (new_cell_x > (int)data->player.pos_x
+			&& data->portal1.orientation == EAST)
+			return (printf("EAST\n"), teleport(data, 1), 1);
+		if (new_cell_y < (int)data->player.pos_y
+			&& data->portal1.orientation == NORTH)
+			return (printf("NORTH\n"), teleport(data, 1), 1);
+		if (new_cell_y > (int)data->player.pos_y
+			&& data->portal1.orientation == SOUTH)
+			return (printf("SOUTH\n"), teleport(data, 1), 1);
 	}
-	if (flood_fill(map, cpy, y, x) == ERROR)
+	return (0);
+}
+
+static int	check_portal2(t_data *data, double step_x, double step_y)
+{
+	int	new_cell_x;
+	int	new_cell_y;
+
+	new_cell_x = (int)(data->player.pos_x + step_x);
+	new_cell_y = (int)(data->player.pos_y + step_y);
+	if (is_portal(data, data->player.pos_x + step_x, data->player.pos_y
+			+ step_y, 2))
+	{
+		if (new_cell_x < (int)data->player.pos_x
+			&& data->portal2.orientation == WEST)
+			return (printf("WEST\n"), teleport(data, 2), 1);
+		if (new_cell_x > (int)data->player.pos_x
+			&& data->portal2.orientation == EAST)
+			return (printf("EAST\n"), teleport(data, 2), 1);
+		if (new_cell_y < (int)data->player.pos_y
+			&& data->portal2.orientation == NORTH)
+			return (printf("NORTH\n"), teleport(data, 2), 1);
+		if (new_cell_y > (int)data->player.pos_y
+			&& data->portal2.orientation == SOUTH)
+			return (printf("SOUTH\n"), teleport(data, 2), 1);
+	}
+	return (0);
+}
+
+int	should_tp(t_data *data, double step_x, double step_y)
+{
+	if (data->portal1.x == -1 || data->portal2.x == -1)
 		return (0);
-	free_matrix(cpy, map->height);
-	return (1);
-}
-
-static int	teleport_x_axis(t_data *data, double old_x, int dir)
-{
-	int	x;
-	int	y;
-	int	count;
-
-	x = (int)data->player.pos_x;
-	y = (int)data->player.pos_y;
-	count = dir;
-	while (x + count > 1 && x + count < data->map->width - 1)
-	{
-		if (data->map->matrix[y][x + count] == 2 || data->map->matrix[y][x
-			+ count] == -2)
-			if (data->map->matrix[y][x + count + dir] == 0
-				&& is_tp_possible(data->map, x + count + dir, y))
-				return (data->player.pos_x += (double)(count + dir), 1);
-		count += dir;
-	}
-	if (x + dir > 1 && x + dir < data->map->width - 1
-		&& data->map->matrix[y][x + dir] == 0)
-		data->player.pos_x += (double)dir;
-	else
-		data->player.pos_x = old_x;
-	return (1);
-}
-
-static int	teleport_y_axis(t_data *data, double old_y, int dir)
-{
-	int	x;
-	int	y;
-	int	count;
-
-	x = (int)data->player.pos_x;
-	y = (int)data->player.pos_y;
-	count = dir;
-	while (y + count > 1 && y + count < data->map->height - 1)
-	{
-		if (data->map->matrix[y + count][x] == 2 || data->map->matrix[y
-			+ count][x] == -2)
-			if (data->map->matrix[y + count + dir][x] == 0
-				&& is_tp_possible(data->map, x, y + count + dir))
-				return (data->player.pos_y += (double)(count + dir), 1);
-		count += dir;
-	}
-	if (y + dir > 1 && y + dir < data->map->height - 1
-		&& data->map->matrix[y + dir][x] == 0)
-		data->player.pos_y += (double)dir;
-	else
-		data->player.pos_y = old_y;
-	return (1);
-}
-
-void	teleport(t_data *data, double old_x, double old_y)
-{
-	if ((int)old_x < (int)data->player.pos_x)
-		teleport_x_axis(data, old_x, 1);
-	else if ((int)old_x > (int)data->player.pos_x)
-		teleport_x_axis(data, old_x, -1);
-	else if ((int)old_y < (int)data->player.pos_y)
-		teleport_y_axis(data, old_y, 1);
-	else if ((int)old_y > (int)data->player.pos_y)
-		teleport_y_axis(data, old_y, -1);
+	if (check_portal1(data, step_x, step_y))
+		return (1);
+	if (check_portal2(data, step_x, step_y))
+		return (1);
+	return (0);
 }

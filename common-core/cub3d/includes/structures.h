@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:05:30 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 20:40:49 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 17:03:52 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ typedef struct s_fps
 	int				fps;
 }					t_fps;
 
-typedef struct s_portal
+typedef struct s_anim
 {
 	pthread_t		thread;
 	pthread_mutex_t	mutex;
@@ -194,7 +194,16 @@ typedef struct s_portal
 	t_texture		*curr_frame;
 	int				frame_i;
 	int				stop;
-}					t_portal;
+}					t_anim;
+
+typedef struct s_portal
+{
+	int				x;
+	int				y;
+	int				old_tex;
+	t_map_element	orientation;
+}	t_portal;
+
 
 typedef struct s_data
 {
@@ -204,11 +213,14 @@ typedef struct s_data
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
 	t_fps			s_fps;
-	t_portal		portal;
+	t_anim			anim;
 	int				mouse_off;
 	int				max_row;
 	t_minimap		minimap;
 	int				max_col;
+	t_portal		portal1;
+	t_portal		portal2;
+	int				first_portal;
 }					t_data;
 
 #endif

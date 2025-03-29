@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:59:06 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:41:52 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:03:47 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	init_data(t_data *data)
 	data->s_fps.delta_time = 0;
 	data->s_fps.frames = 0;
 	data->s_fps.last_time = get_current_time();
+	data->portal1.x = -1;
+	data->portal2.x = -1;
 	init_minimap(&data->minimap);
 }
 

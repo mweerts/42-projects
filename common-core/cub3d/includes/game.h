@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 00:33:24 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:15:11 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int		leave(t_data *data);
 int		key_pressed(int keycode, t_data *data);
 int		key_released(int keycode, t_data *data);
 int		mouse_handler(int x, int y, t_data *data);
+int		mouse_click(int button, t_data *data);
 
 // PLAYER
 
@@ -34,12 +35,11 @@ void	rotate_mouse(t_data *data, int mouse_x);
 
 // PORTAL
 
-int		init_portal_frames(t_data *data);
-int		init_portal(t_data *data);
-void	interact_portals(t_data *data);
+int		mouse_click(int button, t_data *data);
+int		is_portal(t_data *data, int x, int y, int portal_i);
 
 // TELEPORT
 
-void	teleport(t_data *data, double old_x, double old_y);
+int 	should_tp(t_data *data, double step_x, double step_y);
 
 #endif

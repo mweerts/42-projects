@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:44:08 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 00:33:48 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 17:11:52 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,15 @@ static void	cleanup_portal_frames(t_data *data)
 	i = -1;
 	while (++i < NB_FRAMES)
 	{
-		if (data->portal.frames[i])
+		if (data->anim.frames[i])
 		{
-			if (data->portal.frames[i]->data)
-				free(data->portal.frames[i]->data);
-			if (data->portal.frames[i]->img.img)
+			if (data->anim.frames[i]->data)
+				free(data->anim.frames[i]->data);
+			if (data->anim.frames[i]->img.img)
 				mlx_destroy_image(data->s_mlx.mlx,
-					data->portal.frames[i]->img.img);
-			free(data->portal.frames[i]);
-			data->portal.frames[i] = NULL;
+					data->anim.frames[i]->img.img);
+			free(data->anim.frames[i]);
+			data->anim.frames[i] = NULL;
 		}
 	}
 }
@@ -76,8 +76,8 @@ void	clean_up(t_data *data)
 {
 	if (!data)
 		return ;
-	pthread_mutex_destroy(&data->portal.mutex);
-	pthread_mutex_destroy(&data->portal.stop_mutex);
+	pthread_mutex_destroy(&data->anim.mutex);
+	pthread_mutex_destroy(&data->anim.stop_mutex);
 	cleanup_textures(data);
 	cleanup_portal_frames(data);
 	cleanup_map(data->map);

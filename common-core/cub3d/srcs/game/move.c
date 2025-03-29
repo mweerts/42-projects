@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 17:38:02 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:44:02 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:13:21 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,15 @@ static void	move_forward(t_data *data)
 			* data->player.mv_forward;
 		step_y = data->player.dir_y * MOVE_SPEED * data->player.run
 			* data->player.mv_forward;
+		if (should_tp(data, step_x, step_y))
+			return ;
 		tmp = data->player.pos_x + step_x;
 		if (tmp > 1.0 && tmp < data->map->width - 1)
-			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] <= 0)
+			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] == 0)
 				data->player.pos_x += step_x;
 		tmp = data->player.pos_y + step_y;
 		if (tmp > 1.0 && tmp < data->map->height - 1)
-			if (data->map->matrix[(int)tmp][(int)data->player.pos_x] <= 0)
+			if (data->map->matrix[(int)tmp][(int)data->player.pos_x] == 0)
 				data->player.pos_y += step_y;
 	}
 }
@@ -47,13 +49,15 @@ static void	move_lateral(t_data *data)
 			* data->player.mv_lateral;
 		step_y = data->player.plane_y * MOVE_SPEED * data->player.run
 			* data->player.mv_lateral;
+		if (should_tp(data, step_x, step_y))
+			return ;
 		tmp = data->player.pos_x + step_x;
 		if (tmp > 1.0 && tmp < data->map->width - 1)
-			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] <= 0)
+			if (data->map->matrix[(int)data->player.pos_y][(int)tmp] == 0)
 				data->player.pos_x += step_x;
 		tmp = data->player.pos_y + step_y;
 		if (tmp > 1.0 && tmp < data->map->width - 1)
-			if (data->map->matrix[(int)tmp][(int)(data->player.pos_x)] <= 0)
+			if (data->map->matrix[(int)tmp][(int)(data->player.pos_x)] == 0)
 				data->player.pos_y += step_y;
 	}
 }
@@ -82,17 +86,9 @@ static void	move_rotate(t_data *data)
 
 void	compute_player_pos(t_data *data)
 {
-	double	old_x;
-	double	old_y;
-
-	old_x = data->player.pos_x;
-	old_y = data->player.pos_y;
 	move_forward(data);
 	move_lateral(data);
 	move_rotate(data);
-	if (data->map->matrix[(int)data->player.pos_y][(int)data->player.pos_x] ==
-		-2)
-		teleport(data, old_x, old_y);
 }
 
 void	rotate_mouse(t_data *data, int mouse_x)

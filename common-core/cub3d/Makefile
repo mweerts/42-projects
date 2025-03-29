@@ -6,7 +6,7 @@
 #    By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/13 19:03:36 by llebugle          #+#    #+#              #
-#    Updated: 2025/03/28 17:20:10 by maxweert         ###   ########.fr        #
+#    Updated: 2025/03/29 17:06:05 by maxweert         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -69,6 +69,7 @@ SRC		= 	main.c \
 			game/move.c \
 			game/portal.c \
 			game/teleport.c \
+			display/animation.c \
 			display/init.c \
 			display/draw.c \
 			display/draw_line.c \

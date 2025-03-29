@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/20 19:50:47 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:47:31 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:25:54 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int	leave(t_data *data)
 {
-	data->portal.stop = 1;
-	pthread_mutex_lock(&data->portal.stop_mutex);
-	pthread_mutex_unlock(&data->portal.stop_mutex);
+	data->anim.stop = 1;
+	pthread_mutex_lock(&data->anim.stop_mutex);
+	pthread_mutex_unlock(&data->anim.stop_mutex);
 	ft_usleep(50);
 	clean_up(data);
 	exit(0);
@@ -51,8 +51,6 @@ int	key_pressed(int keycode, t_data *data)
 		data->player.run = 2;
 	if (keycode == K_M)
 		toggle_mouse(data);
-	if (keycode == K_E)
-		interact_portals(data);
 	return (0);
 }
 
@@ -72,6 +70,10 @@ int	key_released(int keycode, t_data *data)
 		data->player.mv_rotate += -1;
 	if (keycode == K_SHIFT)
 		data->player.run = 1;
+	if (keycode == K_F)
+		mouse_click(1, data);
+	if (keycode == K_G)
+		mouse_click(2, data);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/23 15:01:55 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/27 19:23:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 17:12:08 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	raycasting(t_data *data)
 
 	compute_player_pos(data);
 	x = 0;
-	pthread_mutex_lock(&data->portal.mutex);
+	pthread_mutex_lock(&data->anim.mutex);
 	while (x < WIDTH)
 	{
 		init_ray(data, &ray, x);
@@ -63,6 +63,6 @@ int	raycasting(t_data *data)
 		compute_tex(data, &ray, x);
 		x++;
 	}
-	pthread_mutex_unlock(&data->portal.mutex);
+	pthread_mutex_unlock(&data->anim.mutex);
 	return (1);
 }

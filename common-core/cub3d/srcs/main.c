@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 19:18:02 by llebugle          #+#    #+#             */
-/*   Updated: 2025/03/28 20:30:15 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 16:25:17 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@ static void	init_hooks(t_data *data)
 	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
 	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
 	mlx_loop_hook(data->s_mlx.mlx, &draw_game, data);
+	//mlx_mouse_hook(data->s_mlx.mlx, mouse_click, data);
 }
 
 int	main(int ac, char **av)

@@ -5,113 +5,102 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/26 17:04:19 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 00:33:12 by maxweert         ###   ########.fr       */
+/*   Created: 2025/03/29 17:05:29 by maxweert          #+#    #+#             */
+/*   Updated: 2025/03/29 19:38:49 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3D.h"
 
-static int	check_frames_init(t_data *data)
+int	is_portal(t_data *data, int x, int y, int portal_i)
 {
-	int	i;
+	if (portal_i == 1 && x == data->portal1.x && y == data->portal1.y)
+		return (1);
+	if (portal_i == 2 && x == data->portal2.x && y == data->portal2.y)
+		return (1);
+	return (0);
+}
 
-	i = 0;
-	while (i < NB_FRAMES)
+static t_map_element	get_portal_direction(t_raycasting *ray, int button)
+{
+	if (ray->side == 1)
 	{
-		if (data->portal.frames[i] == NULL)
-			return (0);
-		i++;
+		if ((ray->ray_dir_y >= 0 && button == 1) || (ray->ray_dir_y < 0
+				&& button == 2))
+			return (SOUTH);
+		else
+			return (NORTH);
 	}
-	return (1);
-}
-
-int	init_portal_frames(t_data *data)
-{
-	t_texture	**frames;
-
-	frames = data->portal.frames;
-	frames[0] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_00.xpm");
-	frames[1] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_01.xpm");
-	frames[2] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_02.xpm");
-	frames[3] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_03.xpm");
-	frames[4] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_04.xpm");
-	frames[5] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_05.xpm");
-	frames[6] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_06.xpm");
-	frames[7] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_07.xpm");
-	frames[8] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_08.xpm");
-	frames[9] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_09.xpm");
-	frames[10] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_10.xpm");
-	frames[11] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_11.xpm");
-	frames[12] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_12.xpm");
-	frames[13] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_13.xpm");
-	frames[14] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_14.xpm");
-	frames[15] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_15.xpm");
-	frames[16] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_16.xpm");
-	frames[17] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_17.xpm");
-	frames[18] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_18.xpm");
-	frames[19] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_19.xpm");
-	frames[20] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_20.xpm");
-	frames[21] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_21.xpm");
-	frames[22] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_22.xpm");
-	frames[23] = load_texture(data->s_mlx.mlx, "./assets/portal/frame_23.xpm");
-	if (!check_frames_init(data))
-		return (ft_putstr_fd(RED"error: failed to init frames.\n"RESET, 2), 0);
-	data->portal.curr_frame = frames[0];
-	return (1);
-}
-
-void	*anim_routine(void *ptr)
-{
-	t_data	*data;
-
-	data = (t_data *)ptr;
-	while (data->portal.stop == 0)
+	else
 	{
-		if (pthread_mutex_trylock(&data->portal.mutex) == 0)
-		{
-			data->portal.frame_i = (data->portal.frame_i + 1) % NB_FRAMES;
-			data->portal.curr_frame = data->portal.frames[data->portal.frame_i];
-			pthread_mutex_unlock(&data->portal.mutex);
-			ft_usleep(1000 / NB_FRAMES);
-		}
+		if ((ray->ray_dir_x >= 0 && button == 1) || (ray->ray_dir_x < 0
+				&& button == 2))
+			return (EAST);
+		else
+			return (WEST);
 	}
-	pthread_mutex_unlock(&data->portal.stop_mutex);
-	return (NULL);
 }
 
-int	init_portal(t_data *data)
+static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 {
-	data->portal.frame_i = 0;
-	data->portal.stop = 0;
-	if (pthread_mutex_init(&data->portal.mutex, NULL))
-		return (ft_putstr_fd(RED"\
-error: failed to create animation mutex.\n"RESET, 2), 0);
-	if (pthread_mutex_init(&data->portal.stop_mutex, NULL))
-		return (ft_putstr_fd(RED"error: failed to create stop mutex.\n"RESET,
-				2), 0);
-	if (pthread_create(&data->portal.thread, NULL, anim_routine, data) != 0)
-		return (ft_putstr_fd(RED"\
-error: failed to create animation thread.\n"RESET, 2), 0);
-	pthread_mutex_lock(&data->portal.stop_mutex);
-	pthread_detach(data->portal.thread);
-	return (1);
+	int				**cpy;
+	int				i;
+	int				j;
+	t_map_element	dir;
+
+	cpy = (int **)ft_calloc((data->map->height + 1), sizeof(int *));
+	if (!cpy)
+		return (print_err(MSG_ERR_MALLOC), -1);
+	i = -1;
+	while (++i < data->map->height)
+	{
+		cpy[i] = (int *)ft_calloc(data->map->width, sizeof(int));
+		if (!cpy[i])
+			return (free_matrix(cpy, i), print_err(MSG_ERR_MALLOC), -1);
+		j = -1;
+		while (++j < data->map->width)
+			cpy[i][j] = data->map->matrix[i][j];
+	}
+	dir = get_portal_direction(ray, button);
+	if (dir == NORTH && !flood_fill(data->map, cpy, ray->ray_y + 1, ray->ray_x))
+		return (free_matrix(cpy, data->map->height), 1);
+	else if (dir == SOUTH && !flood_fill(data->map, cpy, ray->ray_y - 1, ray->ray_x))
+		return (free_matrix(cpy, data->map->height), 1);
+	else if (dir == WEST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x + 1))
+		return (free_matrix(cpy, data->map->height), 1);
+	else if (dir == EAST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x - 1))
+		return (free_matrix(cpy, data->map->height), 1);
+	return (free_matrix(cpy, data->map->height), 0);
 }
 
-void	interact_portals(t_data *data)
+static void	create_portal(t_data *data, t_raycasting *ray, int button)
 {
-	int				curr_x;
-	int				curr_y;
-	t_raycasting	ray;
+	if (data->first_portal == 0)
+	{
+		data->portal1.x = ray->ray_x;
+		data->portal1.y = ray->ray_y;
+		data->portal1.old_tex = data->map->matrix[data->portal1.y][data->portal1.x];
+		data->portal1.orientation = get_portal_direction(ray, button);
+	}
+	else if (data->first_portal == 1)
+	{
+		data->portal2.x = ray->ray_x;
+		data->portal2.y = ray->ray_y;
+		data->portal2.old_tex = data->map->matrix[data->portal2.y][data->portal2.x];
+		data->portal2.orientation = get_portal_direction(ray, button);
+	}
+	data->first_portal ^= 1;
+}
 
-	curr_x = (int)data->player.pos_x;
-	curr_y = (int)data->player.pos_y;
+int	mouse_click(int button, t_data *data)
+{
+	t_raycasting ray;
+
 	init_ray(data, &ray, WIDTH / 2);
 	dda(data, &ray);
-	if (abs(curr_x - ray.ray_x) <= 1 && abs(curr_y - ray.ray_y) <= 1)
-	{
-		if (data->map->matrix[ray.ray_y][ray.ray_x] == 2
-			|| data->map->matrix[ray.ray_y][ray.ray_x] == -2)
-			data->map->matrix[ray.ray_y][ray.ray_x] *= -1;
-	}
+
+	if (is_portal_possible(data, &ray, button))
+		create_portal(data, &ray, button);
+	printf("BUTTON : %d\n", button);
+	return (1);
 }

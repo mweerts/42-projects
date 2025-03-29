@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 17:20:55 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 19:15:03 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,24 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x);
 
 void	draw_fps(t_data *data);
 void	set_cross(t_data *data);
-void	draw_minimap(t_data *data);
+int		render_hud(t_data *data);
 
 // BACKGROUND
 
 void	set_textured_background(t_data *data);
 int		init_portal(t_data *data);
-void	interact_portals(t_data *data);
 
-// minimap
-int		render_hud(t_data *data);
+// MINIMAP
+
 void	render_minimap(t_data *data);
 void	init_minimap(t_minimap *minimap);
 void	draw_line(t_data *data, t_coord start, t_coord end, int color);
 int		render_player_in_minimap(t_data *data, t_minimap *minimap);
+
+// ANIMATION
+
+int		init_portal_frames(t_data *data);
+int		init_portal(t_data *data);
 
 #endif
 
