@@ -15,18 +15,18 @@
 
 //	DEBUG
 
-void	print_data(t_data *data);
-void	print_matrix(int **matrix, int height, int width);
+void			print_data(t_data *data);
+void			print_matrix(int **matrix, int height, int width);
 
 // ERROR
 
-void	print_err(char *msg);
-void	exit_with_error(const char *msg, t_data *data);
+void			print_err(char *msg);
+void			exit_with_error(const char *msg, t_data *data);
 
 // CLEAN
 
-void	clean_up(t_data *data);
-void	free_matrix(int **matrix, int i);
+void			clean_up(t_data *data);
+void			free_matrix(int **matrix, int i);
 
 // UTILS
 
