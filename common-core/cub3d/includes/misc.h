@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:51:24 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 01:29:59 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:14:39 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,6 @@ void	free_matrix(int **matrix, int i);
 int		get_current_time(void);
 void	count_fps(t_data *data);
 int		ft_usleep(size_t ms);
-void	draw_pixel(t_img *s_img, int x, int y, int color);
+int		is_portal(t_data *data, int x, int y, int portal_i);
 
 #endif

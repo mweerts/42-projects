@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 18:10:07 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/29 19:15:03 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:14:43 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ int		init_img(t_mlx *s_mlx, t_img *s_img);
 
 // DRAW
 
+void	draw_pixel(t_img *s_img, int x, int y, int color);
 void	set_background(t_data *data);
 int		draw_game(t_data *data);
 void	draw_transparent_pixel(t_data *data, t_coord coord, int color,

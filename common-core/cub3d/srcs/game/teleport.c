@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 19:10:00 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/29 20:07:53 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:16:00 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,16 +44,16 @@ static int	check_portal1(t_data *data, double step_x, double step_y)
 	{
 		if (new_cell_x < (int)data->player.pos_x
 			&& data->portal1.orientation == WEST)
-			return (printf("WEST\n"), teleport(data, 1), 1);
+			return (teleport(data, 1), 1);
 		if (new_cell_x > (int)data->player.pos_x
 			&& data->portal1.orientation == EAST)
-			return (printf("EAST\n"), teleport(data, 1), 1);
+			return (teleport(data, 1), 1);
 		if (new_cell_y < (int)data->player.pos_y
 			&& data->portal1.orientation == NORTH)
-			return (printf("NORTH\n"), teleport(data, 1), 1);
+			return (teleport(data, 1), 1);
 		if (new_cell_y > (int)data->player.pos_y
 			&& data->portal1.orientation == SOUTH)
-			return (printf("SOUTH\n"), teleport(data, 1), 1);
+			return (teleport(data, 1), 1);
 	}
 	return (0);
 }
@@ -70,16 +70,16 @@ static int	check_portal2(t_data *data, double step_x, double step_y)
 	{
 		if (new_cell_x < (int)data->player.pos_x
 			&& data->portal2.orientation == WEST)
-			return (printf("WEST\n"), teleport(data, 2), 1);
+			return (teleport(data, 2), 1);
 		if (new_cell_x > (int)data->player.pos_x
 			&& data->portal2.orientation == EAST)
-			return (printf("EAST\n"), teleport(data, 2), 1);
+			return (teleport(data, 2), 1);
 		if (new_cell_y < (int)data->player.pos_y
 			&& data->portal2.orientation == NORTH)
-			return (printf("NORTH\n"), teleport(data, 2), 1);
+			return (teleport(data, 2), 1);
 		if (new_cell_y > (int)data->player.pos_y
 			&& data->portal2.orientation == SOUTH)
-			return (printf("SOUTH\n"), teleport(data, 2), 1);
+			return (teleport(data, 2), 1);
 	}
 	return (0);
 }

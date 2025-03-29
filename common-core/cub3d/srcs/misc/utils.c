@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/25 19:24:31 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/28 20:38:12 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:13:51 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,14 @@ int	ft_usleep(size_t ms)
 	start = get_current_time();
 	while ((get_current_time() - start) < ms)
 		usleep(500);
+	return (0);
+}
+
+int	is_portal(t_data *data, int x, int y, int portal_i)
+{
+	if (portal_i == 1 && x == data->portal1.x && y == data->portal1.y)
+		return (1);
+	if (portal_i == 2 && x == data->portal2.x && y == data->portal2.y)
+		return (1);
 	return (0);
 }

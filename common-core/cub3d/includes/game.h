@@ -6,7 +6,7 @@
 /*   By: maxweert <maxweert@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 15:45:01 by maxweert          #+#    #+#             */
-/*   Updated: 2025/03/29 19:15:11 by maxweert         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:13:59 by maxweert         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	rotate_mouse(t_data *data, int mouse_x);
 // PORTAL
 
 int		mouse_click(int button, t_data *data);
-int		is_portal(t_data *data, int x, int y, int portal_i);
+
 
 // TELEPORT
 
