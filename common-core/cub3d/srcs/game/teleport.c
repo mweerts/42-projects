@@ -19,9 +19,8 @@ static void	rotate_teleport(t_data *data, t_map_element entry_orientation,
 	double	old_dir_x;
 	double	old_plane_x;
 
-	if (entry_orientation == exit_orientation)
-		rot = 3.1415;
-	else if ((entry_orientation == NORTH && exit_orientation == EAST)
+	rot = 3.1415;
+	if ((entry_orientation == NORTH && exit_orientation == EAST)
 		|| (entry_orientation == EAST && exit_orientation == SOUTH)
 		|| (entry_orientation == SOUTH && exit_orientation == WEST)
 		|| (entry_orientation == WEST && exit_orientation == NORTH))
