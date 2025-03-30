@@ -50,21 +50,45 @@ static int	is_portal_pos_free(t_data *data, t_raycasting *ray,
 	return (1);
 }
 
+// static int	is_destination_submap_ok(t_data *data, t_raycasting *ray,
+// 		t_map_element dir, int **cpy)
+// {
+// 	if (dir == NORTH && !flood_fill(data->map, cpy, ray->ray_y + 1, ray->ray_x))
+// 		return (free_matrix(cpy, data->map->height), 1);
+// 	else if (dir == SOUTH && !flood_fill(data->map, cpy, ray->ray_y - 1,
+// 			ray->ray_x))
+// 		return (free_matrix(cpy, data->map->height), 1);
+// 	else if (dir == WEST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x
+// 			+ 1))
+// 		return (free_matrix(cpy, data->map->height), 1);
+// 	else if (dir == EAST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x
+// 			- 1))
+// 		return (free_matrix(cpy, data->map->height), 1);
+// 	return (free_matrix(cpy, data->map->height), 0);
+// }
+
+int is_outside_map(t_map *map, int x, int y)
+{
+	if (x < 0 || y < 0 || x >= map->height || y >= map->width)
+		return (true);
+	return (false);
+}
+
 static int	is_destination_submap_ok(t_data *data, t_raycasting *ray,
 		t_map_element dir, int **cpy)
 {
-	if (dir == NORTH && !flood_fill(data->map, cpy, ray->ray_y + 1, ray->ray_x))
-		return (free_matrix(cpy, data->map->height), 1);
-	else if (dir == SOUTH && !flood_fill(data->map, cpy, ray->ray_y - 1,
+	if (dir == NORTH && !is_outside_map(data->map, ray->ray_y + 1, ray->ray_x))
+		return (1);
+	else if (dir == SOUTH && !is_outside_map(data->map, ray->ray_y - 1,
 			ray->ray_x))
-		return (free_matrix(cpy, data->map->height), 1);
-	else if (dir == WEST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x
+		return (1);
+	else if (dir == WEST && !is_outside_map(data->map, ray->ray_y, ray->ray_x
 			+ 1))
-		return (free_matrix(cpy, data->map->height), 1);
-	else if (dir == EAST && !flood_fill(data->map, cpy, ray->ray_y, ray->ray_x
+		return (1);
+	else if (dir == EAST && !is_outside_map(data->map, ray->ray_y, ray->ray_x
 			- 1))
-		return (free_matrix(cpy, data->map->height), 1);
-	return (free_matrix(cpy, data->map->height), 0);
+		return (1);
+	return (0);
 }
 
 static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
@@ -76,18 +100,6 @@ static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 	dir = get_portal_direction(ray, button);
 	if (!is_portal_pos_free(data, ray, dir))
 		return (0);
-	cpy = (int **)ft_calloc((data->map->height + 1), sizeof(int *));
-	if (!cpy)
-		return (print_err(MSG_ERR_MALLOC), -1);
-	i = -1;
-	while (++i < data->map->height)
-	{
-		cpy[i] = (int *)ft_calloc(data->map->width, sizeof(int));
-		if (!cpy[i])
-			return (free_matrix(cpy, i), print_err(MSG_ERR_MALLOC), -1);
-		cpy[i] = ft_memcpy(cpy[i], data->map->matrix[i], data->map->width
-				* sizeof(int));
-	}
 	return (is_destination_submap_ok(data, ray, dir, cpy));
 }
 
