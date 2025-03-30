@@ -68,17 +68,45 @@ static void	draw_tex_column(t_data *data, t_raycasting *ray, int x)
 		ray->wall.tex_y = (int)ray->wall.tex_pos & (ray->wall.tex->height - 1);
 		ray->wall.tex_pos += ray->wall.step;
 		if (ray->wall.is_portal)
-			tmp = *(unsigned int *)get_texture_pixel(data->anim.curr_frame,
-					ray->wall.tex_x, ray->wall.tex_y);
+			tmp = *(unsigned int *)get_texture_pixel(data->anim.curr_frame, ray->wall.tex_x * ( ray->wall.tex_x / data->anim.curr_frame->width), ray->wall.tex_y * ( ray->wall.tex_y / data->anim.curr_frame->height));
 		if (ray->wall.is_portal && ((tmp >> 24) & 0xFF) != 0xFF)
 			draw_pixel(&data->s_img, x, y, tmp);
 		else
 		{
 			color = *(unsigned int *)get_texture_pixel(ray->wall.tex,
-					ray->wall.tex_x, ray->wall.tex_y);
+				ray->wall.tex_x, ray->wall.tex_y);
 			draw_pixel(&data->s_img, x, y, color);
 		}
 		y++;
+	}
+}
+
+static void	draw_portal_column(t_data *data, t_raycasting *ray, int x)
+{
+	t_coord	coord;
+	int		color;
+
+	coord.y = ray->wall.draw_start;
+	coord.x = x;
+	ray->wall.tex = data->anim.curr_frame;
+	ray->wall.tex_x = (int)(ray->wall.wall_x * (double)ray->wall.tex->width);
+	if ((ray->side == 1 && ray->ray_dir_y < 0) || (ray->side == 0
+			&& ray->ray_dir_x > 0))
+		ray->wall.tex_x = ray->wall.tex->width - ray->wall.tex_x - 1;
+	ray->wall.step = 1.0 * ray->wall.tex->height / ray->wall.line_height;
+	ray->wall.tex_pos = (ray->wall.draw_start - HEIGHT / 2
+			+ ray->wall.line_height / 2) * ray->wall.step;
+	while (coord.y < ray->wall.draw_end)
+	{
+		ray->wall.tex_y = (int)ray->wall.tex_pos & (ray->wall.tex->height - 1);
+		ray->wall.tex_pos += ray->wall.step;
+		color = *(unsigned int *)get_texture_pixel(ray->wall.tex,
+				ray->wall.tex_x, ray->wall.tex_y);
+		if (((color >> 24) & 0xFF) == 0xFF)
+			draw_transparent_pixel(data, coord, color, 0.0);
+		else
+			draw_pixel(&data->s_img, coord.x, coord.y, color);
+		coord.y++;
 	}
 }
 
@@ -104,4 +132,6 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 	ray->wall.tex_pos = (ray->wall.draw_start - HEIGHT / 2
 			+ ray->wall.line_height / 2) * ray->wall.step;
 	draw_tex_column(data, ray, x);
+	//if (ray->wall.is_portal)
+		//draw_portal_column(data, ray, x);
 }
