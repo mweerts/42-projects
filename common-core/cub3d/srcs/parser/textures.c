@@ -14,10 +14,15 @@
 
 void	load_extra_textures(t_data *data)
 {
-	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx,
-			"./assets/blocks/floor.xpm");
-	data->tex[TEX_INTERRUPTOR] = load_texture(data->s_mlx.mlx,
-			"./assets/ceiling.xpm");
+	if (BONUS)
+	{
+		data->tex[TEX_NORTH] = load_texture(data->s_mlx.mlx, PINK_WALL);
+		data->tex[TEX_SOUTH] = load_texture(data->s_mlx.mlx, PINK_WALL);
+		data->tex[TEX_EAST] = load_texture(data->s_mlx.mlx, PINK_WALL);
+		data->tex[TEX_WEST] = load_texture(data->s_mlx.mlx, PINK_WALL);
+	}
+	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
+	data->tex[TEX_INTERRUPTOR] = load_texture(data->s_mlx.mlx, INTERRUPTOR);
 }
 
 t_texture	*load_texture(void *mlx, char *path)

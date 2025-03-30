@@ -13,7 +13,10 @@
 #ifndef ASSETS_H
 # define ASSETS_H
 
-# define PINK_WALL "assets/tiles/middle.xpm"
+# define PINK_WALL "assets/blocks/pink_wall.xpm"
+# define BLUE_WALL "assets/blocks/pink_wall.xpm"
+# define INTERRUPTOR "assets/blocks/interruptor.xpm"
+# define FLOOR "assets/blocks/floor.xpm"
 # define NIGHT "assets/blocks/night.xpm"
 
 #endif

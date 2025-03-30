@@ -31,6 +31,8 @@ static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 			matrix[y][x] = 0;
 		else if (ft_is_charset((line[y][x]), "EWNS") == true)
 			matrix[y][x] = 0;
+		else if (line[y][x] == 'C')
+			matrix[y][x] = 3;
 		else
 			matrix[y][x] = line[y][x] - 48;
 		x++;
