@@ -81,7 +81,7 @@ static void	render_gun(t_data *data)
 int	render_hud(t_data *data)
 {
 	set_cross(data);
-	// render_minimap(data);
+	render_minimap(data);
 	render_gun(data);
 	return (0);
 }
