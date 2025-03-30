@@ -97,10 +97,58 @@ void	draw_interact(t_data *data)
 	}
 }
 
+# define START_MSG_WIDTH 752
+# define START_MSG_HEIGHT 752
+
+void render_start(t_data *data)
+{
+    static int show_start_message = 1;
+    static int start_time = 0;
+    int current_time;
+    int x_pos = (WIDTH - START_MSG_HEIGHT) / 2;
+    int y_pos = (HEIGHT - START_MSG_HEIGHT) / 2;
+    
+    // Only show the start message for a limited time (e.g., 10 seconds)
+    // if (!start_time)
+    //     start_time = get_current_time();
+    
+    // current_time = get_current_time();
+    // if (current_time - start_time > 10000) // 10 seconds in milliseconds
+    // {
+    //     show_start_message = 0;
+    //     return;
+    // }
+    
+    if (show_start_message)
+    {
+        // Draw the texture to the screen
+        int y;
+        int x;
+        int color;
+        
+        for (y = 0; y < START_MSG_HEIGHT; y++)
+        {
+            for (x = 0; x < START_MSG_WIDTH; x++)
+            {
+                color = *(unsigned int *)get_texture_pixel(data->tex[TEX_START], x, y);
+                if (((color >> 24) & 0xFF) == 0xFF)
+                {
+                    draw_transparent_pixel(data, (t_coord){x_pos + x, y_pos + y}, color, 0.5);
+                }
+                else
+                {
+                    draw_pixel(&data->s_img, x_pos + x, y_pos + y, color);
+                }
+            }
+        }
+    }
+}
+
 int	render_hud(t_data *data)
 {
 	set_cross(data);
-	// render_minimap(data);
+	render_minimap(data);
+	render_start(data);
 	// render_gun(data);
 	return (0);
 }
