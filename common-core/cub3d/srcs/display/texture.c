@@ -60,15 +60,23 @@ static void	draw_tex_column(t_data *data, t_raycasting *ray, int x)
 {
 	int	y;
 	int	color;
+	int	tmp;
 
 	y = ray->wall.draw_start;
 	while (y < ray->wall.draw_end)
 	{
 		ray->wall.tex_y = (int)ray->wall.tex_pos & (ray->wall.tex->height - 1);
 		ray->wall.tex_pos += ray->wall.step;
-		color = *(unsigned int *)get_texture_pixel(ray->wall.tex,
+		if (ray->wall.is_portal)
+			tmp = *(unsigned int *)get_texture_pixel(data->anim.curr_frame, ray->wall.tex_x, ray->wall.tex_y);
+		if (ray->wall.is_portal && ((tmp >> 24) & 0xFF) != 0xFF)
+			draw_pixel(&data->s_img, x, y, tmp);
+		else
+		{
+			color = *(unsigned int *)get_texture_pixel(ray->wall.tex,
 				ray->wall.tex_x, ray->wall.tex_y);
-		draw_pixel(&data->s_img, x, y, color);
+			draw_pixel(&data->s_img, x, y, color);
+		}
 		y++;
 	}
 }
@@ -124,6 +132,6 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 	ray->wall.tex_pos = (ray->wall.draw_start - HEIGHT / 2
 			+ ray->wall.line_height / 2) * ray->wall.step;
 	draw_tex_column(data, ray, x);
-	if (ray->wall.is_portal)
-		draw_portal_column(data, ray, x);
+	//if (ray->wall.is_portal)
+		//draw_portal_column(data, ray, x);
 }

@@ -71,9 +71,9 @@ static void	render_gun(t_data *data)
 		while (++x < data->gun_tex->width)
 		{
 			color = *(unsigned int *)get_texture_pixel(data->gun_tex, x, y);
-			draw_transparent_pixel(data, (t_coord){WIDTH - data->gun_tex->width
-				- offset_x + x, HEIGHT - data->gun_tex->height + y + offset_y},
-				color, 1.0 - ((color >> 24) & 0xFF) / 255.0);
+			if (((color >> 24) & 0xFF) != 0xFF)
+				draw_pixel(&data->s_img, WIDTH - data->gun_tex->width
+				- offset_x + x, HEIGHT - data->gun_tex->height + y + offset_y, color);
 		}
 	}
 }
