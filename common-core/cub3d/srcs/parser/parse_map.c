@@ -12,18 +12,10 @@
 
 #include "cub3D.h"
 
-int is_on_edge(t_map *map, int x, int y)
+static int is_on_edge(t_map *map, int x, int y)
 {
-	return (x == 0 || y  == 0 || x == map->width -1 || y == map->height -1);
+	return (x == 0 || y == 0 || x == map->width - 1 || y == map->height - 1);
 }
-int is_wall_on_edge(t_map *map, char c, int x, int y)
-{
-	// printf("pos = [%d,%d], char = %c\n",y, x, c);
-	if ((c == '0' || c == ' ' || c == '\t') && is_on_edge(map, x, y))
-		return (true);
-	return (false);
-}
-
 
 static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 {
@@ -43,8 +35,6 @@ static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 				return (print_err(MSG_PLAYER_ON_EDGE), ERROR);
 			matrix[y][x] = 0;
 		}
-		else if (BONUS && is_wall_on_edge(map, line[y][x], x, y))
-				matrix[y][x] = 2;
 		else
 			matrix[y][x] = line[y][x] - 48;
 		x++;

@@ -12,6 +12,16 @@
 
 #include "cub3D.h"
 
+int	leave(t_data *data)
+{
+	data->anim.stop = 1;
+	pthread_mutex_lock(&data->anim.stop_mutex);
+	pthread_mutex_unlock(&data->anim.stop_mutex);
+	ft_usleep(50);
+	clean_up(data);
+	exit(0);
+}
+
 int	main(int ac, char **av)
 {
 	t_data data;
