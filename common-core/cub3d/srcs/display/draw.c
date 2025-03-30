@@ -24,6 +24,7 @@ int	draw_game(t_data *data)
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	draw_fps(data);
+	draw_interact(data);
 	return (1);
 }
 

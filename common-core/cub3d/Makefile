@@ -69,6 +69,7 @@ SRC		= 	main.c \
 			game/move.c \
 			game/portal.c \
 			game/teleport.c \
+			game/endgame.c \
 			display/animation.c \
 			display/init.c \
 			display/draw.c \

@@ -40,4 +40,8 @@ void	create_portal(t_data *data, t_raycasting *ray, int button);
 
 int		should_tp(t_data *data, double step_x, double step_y);
 
+// ENDGAME
+
+void	interact_interruptor(t_data *data);
+
 #endif

@@ -41,6 +41,7 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x);
 
 void	draw_fps(t_data *data);
 int		render_hud(t_data *data);
+void	draw_interact(t_data *data);
 
 // BACKGROUND
 

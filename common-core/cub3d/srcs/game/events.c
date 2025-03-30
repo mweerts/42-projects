@@ -53,6 +53,8 @@ int	key_pressed(int keycode, t_data *data)
 		data->player.run = 1.5;
 	if (keycode == K_M)
 		toggle_mouse(data);
+	if (keycode == K_E)
+		interact_interruptor(data);
 	return (0);
 }
 
