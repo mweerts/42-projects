@@ -50,11 +50,7 @@ static void	set_floor_and_ceiling_pixel(t_data *data, int x, int y,
 		* (data->tex[TEX_FLOOR]->img.bits_per_pixel / 8)];
 	color = *(unsigned int *)src;
 	draw_pixel(&data->s_img, x, y, color);
-	src = (unsigned char *)&data->tex[TEX_CEILING]->img.addr[ty
-		* data->tex[TEX_CEILING]->img.line_length + tx
-		* (data->tex[TEX_CEILING]->img.bits_per_pixel / 8)];
-	color = *(unsigned int *)src;
-	draw_pixel(&data->s_img, x, HEIGHT - y - 1, color);
+	draw_pixel(&data->s_img, x, HEIGHT - y - 1, 0x0);
 }
 
 static void	compute_row_data(t_data *data, int y, t_ray_floor *ray)

@@ -25,7 +25,7 @@ int		init_win(t_mlx *s_mlx);
 int		key_pressed(int keycode, t_data *data);
 int		key_released(int keycode, t_data *data);
 int		mouse_handler(int x, int y, t_data *data);
-int		mouse_click(int button, t_data *data);
+int		mouse_click(int button, int x, int y, t_data *data);
 
 // PLAYER
 

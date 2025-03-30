@@ -17,9 +17,11 @@ static void	rotate_teleport(t_data *data, t_map_element entry_orientation,
 {
 	double	rot;
 	double	old_dir_x;
-	double	old_plane_x;
+	double	old_px;
 
-	rot = 3.1415;
+	rot = 0;
+	if (entry_orientation == exit_orientation)
+		rot = 3.1415;
 	if ((entry_orientation == NORTH && exit_orientation == EAST)
 		|| (entry_orientation == EAST && exit_orientation == SOUTH)
 		|| (entry_orientation == SOUTH && exit_orientation == WEST)
@@ -34,11 +36,9 @@ static void	rotate_teleport(t_data *data, t_map_element entry_orientation,
 	data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y
 		* sin(rot);
 	data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
-	old_plane_x = data->player.plane_x;
-	data->player.plane_x = data->player.plane_x * cos(rot)
-		- data->player.plane_y * sin(rot);
-	data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y
-		* cos(rot);
+	old_px = data->player.plane_x;
+	data->player.plane_x = old_px * cos(rot) - data->player.plane_y * sin(rot);
+	data->player.plane_y = old_px * sin(rot) + data->player.plane_y * cos(rot);
 }
 
 static void	teleport(t_data *data, int portal_i,

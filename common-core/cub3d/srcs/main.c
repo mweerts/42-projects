@@ -29,7 +29,7 @@ static void	init_hooks(t_data *data)
 	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
 	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
 	mlx_loop_hook(data->s_mlx.mlx, &draw_game, data);
-	//mlx_mouse_hook(data->s_mlx.mlx, mouse_click, data);
+	mlx_mouse_hook(data->s_mlx.win, mouse_click, data);
 }
 
 int	main(int ac, char **av)

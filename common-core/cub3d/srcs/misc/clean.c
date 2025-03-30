@@ -70,9 +70,9 @@ static void	cleanup_textures(t_data *data)
 			data->tex[i] = NULL;
 		}
 	}
-	if (data->gun_tex->data)
+	if (data->gun_tex && data->gun_tex->data)
 		free(data->gun_tex->data);
-	if (data->gun_tex->img.img)
+	if (data->gun_tex && data->gun_tex->img.img)
 		mlx_destroy_image(data->s_mlx.mlx, data->gun_tex->img.img);
 	free(data->gun_tex);
 	data->gun_tex = NULL;

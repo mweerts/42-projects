@@ -12,10 +12,12 @@
 
 #include "cub3D.h"
 
-int	mouse_click(int button, t_data *data)
+int	mouse_click(int button, int x, int y, t_data *data)
 {
 	t_raycasting	ray;
 
+	(void)x;
+	(void)y;
 	init_ray(data, &ray, WIDTH / 2);
 	dda(data, &ray);
 	create_portal(data, &ray, button);
@@ -70,10 +72,6 @@ int	key_released(int keycode, t_data *data)
 		data->player.mv_rotate += -1;
 	if (keycode == K_SHIFT)
 		data->player.run = 1;
-	if (keycode == K_F)
-		mouse_click(1, data);
-	if (keycode == K_G)
-		mouse_click(2, data);
 	return (0);
 }
 
