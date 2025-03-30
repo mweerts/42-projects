@@ -46,8 +46,8 @@
 
 # define WIDTH 1600
 # define HEIGHT 900
-# define MOVE_SPEED 0.05
-# define ROT_SPEED 0.05
+# define MOVE_SPEED 0.07
+# define ROT_SPEED 0.07
 # define MOUSE_SENSIBILITY 0.0010
 # define FOV_RATIO 0.66
 # define CROSS_SIZE 10

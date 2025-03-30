@@ -125,7 +125,7 @@ typedef struct s_player
 	int				mv_forward;
 	int				mv_lateral;
 	int				mv_rotate;
-	int				run;
+	double				run;
 }					t_player;
 
 typedef struct s_wall

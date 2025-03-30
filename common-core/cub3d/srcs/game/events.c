@@ -48,7 +48,7 @@ int	key_pressed(int keycode, t_data *data)
 	if (keycode == K_AR_R)
 		data->player.mv_rotate += 1;
 	if (keycode == K_SHIFT)
-		data->player.run = 2;
+		data->player.run = 1.5;
 	if (keycode == K_M)
 		toggle_mouse(data);
 	return (0);
