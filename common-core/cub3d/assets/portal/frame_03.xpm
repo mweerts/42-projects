@@ -2,13 +2,13 @@
 static const char *frame_03[] = {
 /* columns rows colors chars-per-pixel */
 "64 64 8 1 ",
-"  c gray10",
-". c gray17",
-"X c gray24",
-"o c #565656",
-"O c #686868",
-"+ c gray56",
-"@ c gray76",
+"  c #0E0616",
+". c #1D1127",
+"X c #2C1A3D",
+"o c #402756",
+"O c #50306C",
+"+ c #6B3F93",
+"@ c #7A4CBA",
 "# c None",
 /* pixels */
 "################################################################",
