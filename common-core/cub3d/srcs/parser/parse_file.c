@@ -26,8 +26,6 @@ int	check_arguments(int ac, char **av)
 	return (0);
 }
 
-void load_extra_textures(t_data *data);
-
 int	parse_file(t_data *data, char **line)
 {
 	int	i;

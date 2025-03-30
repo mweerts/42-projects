@@ -12,7 +12,7 @@
 
 #include "cub3D.h"
 
-static int is_on_edge(t_map *map, int x, int y)
+static int	is_on_edge(t_map *map, int x, int y)
 {
 	return (x == 0 || y == 0 || x == map->width - 1 || y == map->height - 1);
 }
@@ -26,7 +26,7 @@ static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 	if (!matrix[y])
 		return (print_err(MSG_ERR_MALLOC), ERROR);
 	while (line[y][x])
-	{	
+	{
 		if (line[y][x] == ' ' || line[y][x] == '\t')
 			matrix[y][x] = 0;
 		else if (ft_is_charset((line[y][x]), "EWNS") == true)
@@ -63,7 +63,7 @@ int	create_matrix(t_map *map, char **line)
 	return (0);
 }
 
-int check_orientation(t_map *map, char c, t_coord pos)
+int	check_orientation(t_map *map, char c, t_coord pos)
 {
 	if (ft_is_charset(c, "EWNS") == true)
 	{
@@ -77,10 +77,10 @@ int check_orientation(t_map *map, char c, t_coord pos)
 
 int	validate_map(t_map *map, char **line)
 {
-	int	i;
-	int	j;
-	char *valid_chars;
-	
+	int		i;
+	int		j;
+	char	*valid_chars;
+
 	i = -1;
 	valid_chars = "01EWNS \t";
 	if (BONUS)

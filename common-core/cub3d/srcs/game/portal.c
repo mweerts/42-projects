@@ -17,7 +17,7 @@ static t_map_element	get_portal_direction(t_raycasting *ray, int button)
 	if (ray->side == 1)
 	{
 		if ((ray->ray_dir_y >= 0 && button == 1) || (ray->ray_dir_y < 0
-				&& button == 2))
+				&& button == 3))
 			return (SOUTH);
 		else
 			return (NORTH);
@@ -25,7 +25,7 @@ static t_map_element	get_portal_direction(t_raycasting *ray, int button)
 	else
 	{
 		if ((ray->ray_dir_x >= 0 && button == 1) || (ray->ray_dir_x < 0
-				&& button == 2))
+				&& button == 3))
 			return (EAST);
 		else
 			return (WEST);

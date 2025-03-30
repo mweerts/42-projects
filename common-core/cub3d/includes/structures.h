@@ -35,7 +35,6 @@ typedef enum e_texture_wall
 	TEX_EAST,
 	TEX_WEST,
 	TEX_FLOOR,
-	TEX_CEILING,
 	TEX_COUNT,
 }					t_texture_wall;
 
@@ -125,7 +124,7 @@ typedef struct s_player
 	int				mv_forward;
 	int				mv_lateral;
 	int				mv_rotate;
-	double				run;
+	double			run;
 }					t_player;
 
 typedef struct s_wall

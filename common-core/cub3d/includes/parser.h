@@ -45,5 +45,5 @@ int			create_matrix(t_map *map, char **line);
 int			is_map_closed(t_map *map);
 t_texture	*load_texture(void *mlx, char *path);
 int			flood_fill(t_map *map, int **matrix, int x, int y);
-
+void		load_extra_textures(t_data *data);
 #endif
