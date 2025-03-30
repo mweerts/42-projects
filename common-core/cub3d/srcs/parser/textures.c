@@ -12,6 +12,13 @@
 
 #include "cub3D.h"
 
+void load_extra_textures(t_data *data)
+{
+	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, "./assets/blocks/floor.xpm");
+	// data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx, NIGHT);
+	data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx, "./assets/blocks/night.xpm");
+}
+
 t_texture	*load_texture(void *mlx, char *path)
 {
 	t_texture	*tex;
