@@ -30,11 +30,7 @@ static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 		if (line[y][x] == ' ' || line[y][x] == '\t')
 			matrix[y][x] = 0;
 		else if (ft_is_charset((line[y][x]), "EWNS") == true)
-		{
-			if (is_on_edge(map, x, y) == true)
-				return (print_err(MSG_PLAYER_ON_EDGE), ERROR);
 			matrix[y][x] = 0;
-		}
 		else
 			matrix[y][x] = line[y][x] - 48;
 		x++;
@@ -69,6 +65,8 @@ int	check_orientation(t_map *map, char c, t_coord pos)
 	{
 		if (map->orientation_start)
 			return (print_err(MSG_TOO_MANY_PLAYER), ERROR);
+		if (is_on_edge(map, (int)pos.x, (int)pos.y) == true)
+			return (print_err(MSG_PLAYER_ON_EDGE), ERROR);
 		map->orientation_start = c;
 		map->player_start = pos;
 	}
@@ -77,10 +75,10 @@ int	check_orientation(t_map *map, char c, t_coord pos)
 
 int	validate_map(t_map *map, char **line)
 {
-	int		i;
-	int		j;
-	char	*valid_chars;
-
+	int	i;
+	int	j;
+	char *valid_chars;
+	
 	i = -1;
 	valid_chars = "01EWNS \t";
 	if (BONUS)
@@ -90,7 +88,8 @@ int	validate_map(t_map *map, char **line)
 		j = -1;
 		while (line[i][++j])
 		{
-			check_orientation(map, line[i][j], (t_coord){j, i});
+			if (check_orientation(map, line[i][j], (t_coord){j, i}) == ERROR)
+				return (ERROR);
 			if (ft_is_charset(line[i][j], valid_chars) == false)
 				return (print_err(MSG_INVALID_CHAR), ERROR);
 		}

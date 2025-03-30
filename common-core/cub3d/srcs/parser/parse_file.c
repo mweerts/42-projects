@@ -47,9 +47,9 @@ int	parse_file(t_data *data, char **line)
 		return (ERROR);
 	if (create_matrix(data->map, line + i) == ERROR)
 		return (ERROR);
-	if (validate_config(data) == ERROR)
-		return (ERROR);
 	if (is_map_closed(data->map))
+		return (ERROR);
+	if (validate_config(data) == ERROR)
 		return (ERROR);
 	return (0);
 }
