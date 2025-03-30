@@ -98,6 +98,7 @@ static int	process_file(t_data *data, char *filepath)
 
 int	parse_arguments(t_data *data, int ac, char **av)
 {
+	data->gun_tex = load_texture(data->s_mlx.mlx, "./assets/portal_gun.xpm");
 	if (check_arguments(ac, av) == ERROR)
 		return (clean_up(data), exit(ERROR), ERROR);
 	data->max_col = WIDTH;

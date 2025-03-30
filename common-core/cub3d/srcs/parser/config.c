@@ -41,6 +41,8 @@ int	validate_config(t_data *data)
 			return (print_err(MSG_MISSING_TEX), ERROR);
 		i++;
 	}
+	if (!data->gun_tex)
+		return (print_err(MSG_MISSING_TEX), ERROR);
 	if (!BONUS && (data->map->floor_color < 0 || data->map->ceiling_color < 0))
 		return (print_err(MSG_ERR_RGB), ERROR);
 	return (0);

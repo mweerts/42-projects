@@ -222,6 +222,7 @@ typedef struct s_data
 	t_img			s_img;
 	t_map			*map;
 	t_texture		*tex[TEX_COUNT];
+	t_texture		*gun_tex;
 	t_fps			s_fps;
 	t_anim			anim;
 	int				mouse_off;

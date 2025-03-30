@@ -26,7 +26,7 @@ void	draw_fps(t_data *data)
 	}
 }
 
-void	set_cross(t_data *data)
+static void	set_cross(t_data *data)
 {
 	int	i;
 	int	x;
@@ -54,9 +54,34 @@ void	set_cross(t_data *data)
 	}
 }
 
+static void	render_gun(t_data *data)
+{
+	int	x;
+	int	y;
+	int	color;
+	int	offset_x;
+	int	offset_y;
+
+	offset_x = WIDTH / 10;
+	offset_y = 200;
+	y = -1;
+	while (++y < data->gun_tex->height - offset_y)
+	{
+		x = -1;
+		while (++x < data->gun_tex->width)
+		{
+			color = *(unsigned int *)get_texture_pixel(data->gun_tex, x, y);
+			draw_transparent_pixel(data, (t_coord){WIDTH - data->gun_tex->width
+				- offset_x + x, HEIGHT - data->gun_tex->height + y + offset_y},
+				color, 1.0 - ((color >> 24) & 0xFF) / 255.0);
+		}
+	}
+}
+
 int	render_hud(t_data *data)
 {
 	set_cross(data);
 	render_minimap(data);
+	render_gun(data);
 	return (0);
 }

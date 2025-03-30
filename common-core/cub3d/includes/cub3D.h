@@ -46,7 +46,7 @@
 # define WIDTH 1280
 # define HEIGHT 720
 # define MOVE_SPEED 0.05
-# define ROT_SPEED 0.01
+# define ROT_SPEED 0.05
 # define MOUSE_SENSIBILITY 0.0010
 # define FOV_RATIO 0.66
 # define CROSS_SIZE 10
@@ -61,5 +61,9 @@
 # define BLUE "\033[34m"
 # define MAGENTA "\033[35m"
 # define RESET "\033[0;37m"
+
+// MAIN
+
+int		leave(t_data *data);
 
 #endif

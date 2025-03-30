@@ -12,14 +12,14 @@
 
 #include "cub3D.h"
 
-int	leave(t_data *data)
+int	mouse_click(int button, t_data *data)
 {
-	data->anim.stop = 1;
-	pthread_mutex_lock(&data->anim.stop_mutex);
-	pthread_mutex_unlock(&data->anim.stop_mutex);
-	ft_usleep(50);
-	clean_up(data);
-	exit(0);
+	t_raycasting	ray;
+
+	init_ray(data, &ray, WIDTH / 2);
+	dda(data, &ray);
+	create_portal(data, &ray, button);
+	return (1);
 }
 
 static void	toggle_mouse(t_data *data)

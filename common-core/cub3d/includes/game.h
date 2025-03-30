@@ -22,10 +22,10 @@ int		init_win(t_mlx *s_mlx);
 
 // EVENTS
 
-int		leave(t_data *data);
 int		key_pressed(int keycode, t_data *data);
 int		key_released(int keycode, t_data *data);
 int		mouse_handler(int x, int y, t_data *data);
+int		mouse_click(int button, t_data *data);
 
 // PLAYER
 
@@ -34,7 +34,7 @@ void	rotate_mouse(t_data *data, int mouse_x);
 
 // PORTAL
 
-int		mouse_click(int button, t_data *data);
+void	create_portal(t_data *data, t_raycasting *ray, int button);
 
 // TELEPORT
 

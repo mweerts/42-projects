@@ -32,6 +32,24 @@ static t_map_element	get_portal_direction(t_raycasting *ray, int button)
 	}
 }
 
+static int	is_portal_pos_free(t_data *data, t_raycasting *ray,
+		t_map_element dir)
+{
+	if (dir == NORTH && ray->ray_y + 1 < data->map->height
+		&& data->map->matrix[ray->ray_y + 1][ray->ray_x] != 0)
+		return (0);
+	if (dir == SOUTH && ray->ray_y - 1 > 0 && data->map->matrix[ray->ray_y
+			- 1][ray->ray_x] != 0)
+		return (0);
+	if (dir == WEST && ray->ray_x + 1 < data->map->width
+		&& data->map->matrix[ray->ray_y][ray->ray_x + 1] != 0)
+		return (0);
+	if (dir == EAST && ray->ray_x - 1 > 0
+		&& data->map->matrix[ray->ray_y][ray->ray_x - 1] != 0)
+		return (0);
+	return (1);
+}
+
 static int	is_destination_submap_ok(t_data *data, t_raycasting *ray,
 		t_map_element dir, int **cpy)
 {
@@ -53,9 +71,11 @@ static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 {
 	int				**cpy;
 	int				i;
-	int				j;
 	t_map_element	dir;
 
+	dir = get_portal_direction(ray, button);
+	if (!is_portal_pos_free(data, ray, dir))
+		return (0);
 	cpy = (int **)ft_calloc((data->map->height + 1), sizeof(int *));
 	if (!cpy)
 		return (print_err(MSG_ERR_MALLOC), -1);
@@ -65,16 +85,16 @@ static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 		cpy[i] = (int *)ft_calloc(data->map->width, sizeof(int));
 		if (!cpy[i])
 			return (free_matrix(cpy, i), print_err(MSG_ERR_MALLOC), -1);
-		j = -1;
-		while (++j < data->map->width)
-			cpy[i][j] = data->map->matrix[i][j];
+		cpy[i] = ft_memcpy(cpy[i], data->map->matrix[i], data->map->width
+				* sizeof(int));
 	}
-	dir = get_portal_direction(ray, button);
 	return (is_destination_submap_ok(data, ray, dir, cpy));
 }
 
-static void	create_portal(t_data *data, t_raycasting *ray, int button)
+void	create_portal(t_data *data, t_raycasting *ray, int button)
 {
+	if (!is_portal_possible(data, ray, button))
+		return ;
 	if (data->first_portal == 0)
 	{
 		data->portal1.x = ray->ray_x;
@@ -92,15 +112,4 @@ static void	create_portal(t_data *data, t_raycasting *ray, int button)
 		data->portal2.orientation = get_portal_direction(ray, button);
 	}
 	data->first_portal ^= 1;
-}
-
-int	mouse_click(int button, t_data *data)
-{
-	t_raycasting	ray;
-
-	init_ray(data, &ray, WIDTH / 2);
-	dda(data, &ray);
-	if (is_portal_possible(data, &ray, button))
-		create_portal(data, &ray, button);
-	return (1);
 }
