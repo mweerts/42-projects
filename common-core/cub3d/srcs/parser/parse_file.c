@@ -42,9 +42,9 @@ int	parse_file(t_data *data, char **line)
 			break ;
 		i++;
 	}
-	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, "./assets/floor.xpm");
-	data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx,
-			"./assets/ceiling.xpm");
+	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, "./assets/blocks/floor.xpm");
+	// data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx, NIGHT);
+	data->tex[TEX_CEILING] = load_texture(data->s_mlx.mlx, "./assets/blocks/night.xpm");
 	if (get_map_size(data->map, line + i) == ERROR)
 		return (ERROR);
 	if (create_matrix(data->map, line + i) == ERROR)

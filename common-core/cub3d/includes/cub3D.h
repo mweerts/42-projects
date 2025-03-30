@@ -14,6 +14,7 @@
 # define CUB3D_H
 
 # include "libft.h"
+# include "assets.h"
 # include "key_linux.h"
 # include "mlx.h"
 # include "parser.h"
@@ -43,8 +44,8 @@
 # define ERROR 1
 # define MSG_ERR_MALLOC "No space left on device.\n"
 
-# define WIDTH 1280
-# define HEIGHT 720
+# define WIDTH 1600
+# define HEIGHT 900
 # define MOVE_SPEED 0.05
 # define ROT_SPEED 0.05
 # define MOUSE_SENSIBILITY 0.0010

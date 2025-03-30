@@ -1,7 +1,7 @@
-NO ./assets/north_wall.xpm
-EA ./assets/east_wall.xpm
-SO ./assets/south_wall.xpm
-WE ./assets/west_wall.xpm
+NO assets/blocks/pink_wall.xpm
+EA assets/blocks/pink_wall.xpm
+SO assets/blocks/pink_wall.xpm
+WE assets/blocks/pink_wall.xpm
 
 F 153,100,0
 C 71,171,169
