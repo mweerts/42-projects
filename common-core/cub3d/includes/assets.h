@@ -18,6 +18,6 @@
 # define INTERRUPTOR "assets/blocks/interruptor.xpm"
 # define FLOOR "assets/blocks/floor.xpm"
 # define NIGHT "assets/blocks/night.xpm"
-# define START "assets/blocks/start_hud.xpm"
+# define HUD_START "assets/GUI/frame.xpm"
 
 #endif

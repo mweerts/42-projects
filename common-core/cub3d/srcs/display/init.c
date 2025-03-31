@@ -12,6 +12,19 @@
 
 #include "cub3D.h"
 
+void	init_minimap(t_minimap *minimap)
+{
+	ft_memset(minimap, 0, sizeof(t_minimap));
+	if (WIDTH / 16 > 0)
+		minimap->radius = WIDTH / 16;
+	minimap->center_x = WIDTH - minimap->radius - MINIMAP_OFFSET;
+	minimap->center_y = HEIGHT - minimap->radius - MINIMAP_OFFSET;
+	minimap->scale_factor = (float)minimap->radius / 8.0f;
+	minimap->max_view_distance = (double)minimap->radius
+		/ (double)minimap->scale_factor;
+	minimap->ratio = (double)minimap->radius / minimap->max_view_distance;
+}
+
 int	init_img(t_mlx *s_mlx, t_img *s_img)
 {
 	s_img->img = mlx_new_image(s_mlx->mlx, WIDTH, HEIGHT);

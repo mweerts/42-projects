@@ -24,7 +24,7 @@ int		init_img(t_mlx *s_mlx, t_img *s_img);
 
 void	draw_pixel(t_img *s_img, int x, int y, int color);
 void	set_background(t_data *data);
-int		draw_game(t_data *data);
+int		render_game(t_data *data);
 void	draw_transparent_pixel(t_data *data, t_coord coord, int color,
 			float alpha);
 
@@ -59,5 +59,8 @@ int		render_player_in_minimap(t_data *data, t_minimap *minimap);
 
 int		init_portal_frames(t_data *data);
 int		init_portal(t_data *data);
+void	render_time_left(t_data *data);
+int		blend_color(int background, int overlay, float alpha);
 
 #endif
+

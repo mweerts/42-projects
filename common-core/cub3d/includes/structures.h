@@ -14,6 +14,8 @@
 # define STRUCTURES_H
 
 # include "libft.h"
+# include <pthread.h>
+# include <sys/time.h>
 
 # define NB_FRAMES 10
 
@@ -232,6 +234,9 @@ typedef struct s_data
 	int				max_col;
 	t_portal		portal1;
 	t_portal		portal2;
+	int				started;
+	struct timeval	start_time;
+	long			time_left;
 	int				first_portal;
 }					t_data;
 

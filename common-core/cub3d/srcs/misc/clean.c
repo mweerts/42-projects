@@ -91,6 +91,6 @@ void	clean_up(t_data *data)
 		mlx_destroy_image(data->s_mlx.mlx, data->s_img.img);
 	if (data->s_mlx.win)
 		mlx_destroy_window(data->s_mlx.mlx, data->s_mlx.win);
-	mlx_destroy_display(data->s_mlx.mlx);
+	//mlx_destroy_display(data->s_mlx.mlx);
 	free(data->s_mlx.mlx);
 }

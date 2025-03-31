@@ -72,13 +72,15 @@ SRC		= 	main.c \
 			game/endgame.c \
 			display/animation.c \
 			display/init.c \
-			display/draw.c \
+			display/render.c \
 			display/draw_line.c \
 			display/raycasting.c \
 			display/minimap.c \
 			display/minimap_player.c \
 			display/texture.c \
 			display/hud.c \
+			display/utils.c \
+			display/draw_pixel.c \
 			display/background.c
 			
 OBJ		= $(SRC:.c=.o)

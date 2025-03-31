@@ -34,6 +34,8 @@
 # include <sys/time.h>
 # include <pthread.h>
 # include <semaphore.h>
+# include <X11/keysym.h>
+# include <X11/keysymdef.h>
 
 # ifndef BONUS
 #  define BONUS 1
@@ -54,6 +56,7 @@
 # define CROSS_COLOR 0xFFFFFFFF
 # define TEXT_COLOR 0xFFFFFFFF
 # define ANIM_SPEED 5
+# define TIME_LEFT_IN_MS 10 * 60 * 1000 
 
 /* Colors */
 # define RED "\033[0;31m"
