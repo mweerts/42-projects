@@ -16,6 +16,8 @@ int	check_arguments(int ac, char **av)
 {
 	int	len;
 
+	if (WIDTH < 1080 || HEIGHT < 720)
+		return (print_err("Window can't be less than 1080x720p.\n"), ERROR);
 	if (ac < 2)
 		return (print_err("The map is missing.\n"), ERROR);
 	if (ac > 2)
