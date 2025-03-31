@@ -12,6 +12,36 @@
 
 #include "cub3D.h"
 
+void	draw_texture(t_data *data, t_texture *tex, t_coord pos, float alpha)
+{
+	int	x;
+	int	y;
+	int	color;
+
+	y = 0;
+	while (y < tex->height)
+	{
+		x = 0;
+		while (x < tex->width)
+		{
+			color = *(unsigned int *)get_texture_pixel(tex, x, y);
+			if (((color >> 24) & 0xFF) == 0xFF)
+			{
+				if (alpha <= 1)
+					draw_transparent_pixel(data, (t_coord){pos.x + x, pos.y + y},
+						color, alpha);
+			}
+			else
+			{
+				draw_pixel(&data->s_img, (int)(pos.x + x), (int)(pos.y + y),
+					color);
+			}
+			x++;
+		}
+		y++;
+	}
+}
+
 void	draw_fps(t_data *data)
 {
 	char	*tmp;
@@ -26,33 +56,6 @@ void	draw_fps(t_data *data)
 	}
 }
 
-static void	set_cross(t_data *data)
-{
-	int	i;
-	int	x;
-	int	y;
-	int	size;
-
-	size = CROSS_SIZE;
-	if (size % 2 == 0)
-		size += 1;
-	x = WIDTH / 2 - size / 2;
-	y = HEIGHT / 2;
-	i = 0;
-	while (i < size)
-	{
-		draw_pixel(&data->s_img, x + i, y, POINTER_COLOR);
-		i++;
-	}
-	x = WIDTH / 2;
-	y = HEIGHT / 2 - size / 2;
-	i = 0;
-	while (i < size)
-	{
-		draw_pixel(&data->s_img, x, y + i, POINTER_COLOR);
-		i++;
-	}
-}
 
 static void	render_gun(t_data *data)
 {
@@ -97,33 +100,18 @@ void	draw_interact(t_data *data)
 	}
 }
 
-void render_start(t_data *data)
+void	render_start(t_data *data)
 {
-    int x_pos = (WIDTH - data->tex[TEX_START]->width) / 2;
-    int y_pos = (HEIGHT - data->tex[TEX_START]->height - 64) / 2;
-    
-    if (!data->started)
-    {
-        int y;
-        int x;
-        int color;
-        
-        for (y = 0; y < data->tex[TEX_START]->height && y < data->max_col; y++)
-        {
-            for (x = 0; x < data->tex[TEX_START]->width && x < data->max_col; x++)
-            {
-                color = *(unsigned int *)get_texture_pixel(data->tex[TEX_START], x, y);
-                if (((color >> 24) & 0xFF) == 0xFF)
-                {
-                    draw_transparent_pixel(data, (t_coord){x_pos + x, y_pos + y}, color, 0.4);
-                }
-                else
-                {
-                    draw_pixel(&data->s_img, x_pos + x, y_pos + y, color);
-                }
-            }
-        }
-    }
+	int	x_pos;
+	int	y_pos;
+		int y;
+		int x;
+		int color;
+
+	x_pos = (WIDTH - data->tex[TEX_START]->width) / 2;
+	y_pos = (HEIGHT - data->tex[TEX_START]->height - 64) / 2;
+	if (!data->started)
+		draw_texture(data, data->tex[TEX_START], (t_coord){x_pos, y_pos}, 0.4);
 }
 
 int	render_hud(t_data *data)
@@ -133,6 +121,9 @@ int	render_hud(t_data *data)
 	render_minimap(data);
 	render_start(data);
 	if (data->started)
+		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH - data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
+	if (data->started)
 		render_gun(data);
 	return (0);
 }
+

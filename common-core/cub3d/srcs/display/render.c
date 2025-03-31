@@ -12,7 +12,7 @@
 
 #include "cub3D.h"
 
-void	render_time_left(t_data *data)
+void	render_time_left(t_data *data, t_coord pos)
 {
 	char			time_str[16];
 	long			remaining_ms;
@@ -32,6 +32,8 @@ void	render_time_left(t_data *data)
 		/ 60000, (remaining_ms / 1000) % 60, remaining_ms % 1000);
 	p.x = data->minimap.center_x - 30;
 	p.y = data->minimap.center_y - data->minimap.radius - 15;
+	if (pos.x > 0 || pos.y > 0)
+		p = pos;
 	mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, p.x, p.y, 0xFFFFFF,
 		time_str);
 	mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, p.x, p.y + 1, 0xFFFFFF,
@@ -51,7 +53,10 @@ int	render_game(t_data *data)
 		0, 0);
 	draw_fps(data);
 	if (BONUS)
-		render_time_left(data);
+		render_time_left(data, (t_coord){WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width - 28,
+			(double)(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 2});
 	draw_interact(data);
 	return (1);
 }
+

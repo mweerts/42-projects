@@ -59,7 +59,7 @@ int		render_player_in_minimap(t_data *data, t_minimap *minimap);
 
 int		init_portal_frames(t_data *data);
 int		init_portal(t_data *data);
-void	render_time_left(t_data *data);
+void	render_time_left(t_data *data, t_coord pos);
 int		blend_color(int background, int overlay, float alpha);
 
 void	draw_mouse(t_data *data);

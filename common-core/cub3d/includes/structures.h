@@ -39,6 +39,7 @@ typedef enum e_texture_wall
 	TEX_FLOOR,
 	TEX_INTERRUPTOR,
 	TEX_START,
+	TEX_SMALL_FRAME,
 	TEX_COUNT,
 }					t_texture_wall;
 

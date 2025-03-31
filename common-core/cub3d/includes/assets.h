@@ -20,5 +20,6 @@
 # define FLOOR "assets/blocks/floor.xpm"
 # define NIGHT "assets/blocks/night.xpm"
 # define HUD_START "assets/GUI/frame.xpm"
+# define SMALL_FRAME "assets/GUI/small_frame.xpm"
 
 #endif
