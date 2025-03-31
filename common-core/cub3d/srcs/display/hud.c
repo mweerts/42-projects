@@ -41,7 +41,7 @@ static void	set_cross(t_data *data)
 	i = 0;
 	while (i < size)
 	{
-		draw_pixel(&data->s_img, x + i, y, CROSS_COLOR);
+		draw_pixel(&data->s_img, x + i, y, POINTER_COLOR);
 		i++;
 	}
 	x = WIDTH / 2;
@@ -49,7 +49,7 @@ static void	set_cross(t_data *data)
 	i = 0;
 	while (i < size)
 	{
-		draw_pixel(&data->s_img, x, y + i, CROSS_COLOR);
+		draw_pixel(&data->s_img, x, y + i, POINTER_COLOR);
 		i++;
 	}
 }
@@ -128,7 +128,8 @@ void render_start(t_data *data)
 
 int	render_hud(t_data *data)
 {
-	set_cross(data);
+	// set_cross(data);
+	draw_mouse(data);
 	render_minimap(data);
 	render_start(data);
 	if (data->started)

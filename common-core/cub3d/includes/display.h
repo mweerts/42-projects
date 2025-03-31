@@ -62,5 +62,7 @@ int		init_portal(t_data *data);
 void	render_time_left(t_data *data);
 int		blend_color(int background, int overlay, float alpha);
 
+void	draw_mouse(t_data *data);
+
 #endif
 
