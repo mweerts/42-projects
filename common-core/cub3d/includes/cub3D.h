@@ -47,7 +47,7 @@
 
 # define WIDTH 1600
 # define HEIGHT 900
-# define MOVE_SPEED 0.07
+# define MOVE_SPEED 0.02
 # define ROT_SPEED 0.05
 # define MOUSE_SENSIBILITY 0.0005
 # define FOV_RATIO 0.66
@@ -61,6 +61,7 @@
 # define LOOSE 2
 # define FRAME_MARGIN 50
 # define MAP_CELL_SIZE 14
+# define MAX_FPS 120
 
 /* Colors */
 # define RED "\033[0;31m"

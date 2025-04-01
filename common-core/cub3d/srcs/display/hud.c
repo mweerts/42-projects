@@ -16,6 +16,7 @@ void	draw_fps(t_data *data)
 {
 	char	*tmp;
 
+	//tmp = ft_itoa(1000 / (get_current_time() - data->last_frame_t));
 	tmp = ft_itoa(data->s_fps.fps);
 	if (tmp)
 	{

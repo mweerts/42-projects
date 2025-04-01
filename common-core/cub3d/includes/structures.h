@@ -259,6 +259,7 @@ typedef struct s_data
 	int				game_end;
 	int				first_portal;
 	int				show_map;
+	int				last_frame_t;
 }					t_data;
 
 #endif
