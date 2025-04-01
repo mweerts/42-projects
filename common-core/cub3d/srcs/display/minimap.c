@@ -45,7 +45,7 @@ static int	set_color(t_data *data, t_coord world, int y, int x)
 		return (-1);
 }
 
-static void	render_map_elements(t_data *data, t_minimap *minimap)
+void	render_elements_in_minimap(t_data *data, t_minimap *minimap)
 {
 	int		color;
 	t_coord	world;
@@ -88,6 +88,6 @@ void	render_minimap(t_data *data)
 		}
 		i++;
 	}
-	render_map_elements(data, &data->minimap);
+	render_elements_in_minimap(data, &data->minimap);
 	render_player_in_minimap(data, &data->minimap);
 }

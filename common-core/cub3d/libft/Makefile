@@ -66,10 +66,12 @@ SRCS	= 	ft_isalpha.c		\
 			ft_printf_fd.c		\
 			ft_is_charset.c		\
 			ft_free_tab.c		\
+			ft_free_tab.c		\
 			ft_strstr.c			\
 			str_del_char.c		\
 			str_del_all_char.c	\
 			rgb_to_int.c		\
+			ft_min_max.c		\
 
 OBJS	= $(SRCS:.c=.o)
 
