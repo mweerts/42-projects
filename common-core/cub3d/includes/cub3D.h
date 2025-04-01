@@ -54,15 +54,19 @@
 # define MOUSE_SENSIBILITY 0.0005
 # define FOV_RATIO 0.66
 # define POINTER_SIZE 12
-# define POINTER_COLOR 0xFFFFFFFF
-# define MAIN_BLUE 0x00DBDB
-# define TEXT_COLOR 0xFFFFFFFF
 # define ANIM_SPEED 5
 # define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000 
 # define WIN 1
 # define LOOSE 2
 # define FRAME_MARGIN 50
 # define MAP_CELL_SIZE 14
+
+/* Game color */
+# define MAIN_PINK 0xE621E6
+# define MAIN_DARK_PINK 0x9922A1
+# define MAIN_BLUE 0x00DBDB
+# define TEXT_COLOR 0xFFFFFFFF
+# define POINTER_COLOR 0xFFFFFFFF
 
 /* Colors */
 # define RED "\033[0;31m"

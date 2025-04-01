@@ -111,4 +111,3 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 			+ ray->wall.line_height / 2) * ray->wall.step;
 	draw_tex_column(data, ray, x);
 }
-
