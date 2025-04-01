@@ -22,7 +22,7 @@ void	interact_interruptor(t_data *data)
 	curr_y = (int)data->player.pos_y;
 	init_ray(data, &ray, WIDTH / 2);
 	dda(data, &ray);
-	if (abs(curr_x - ray.ray_x) <= 1 && abs(curr_y - ray.ray_y) <= 1)
+	if (abs(curr_x - ray.ray_x) <= 2 && abs(curr_y - ray.ray_y) <= 2)
 	{
 		if (data->map->matrix[ray.ray_y][ray.ray_x] == 2)
 		{

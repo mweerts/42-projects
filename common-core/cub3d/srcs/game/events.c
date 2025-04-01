@@ -35,6 +35,8 @@ static void	toggle_mouse(t_data *data)
 
 int	key_pressed(int keycode, t_data *data)
 {
+	if (!data->started)
+		toggle_mouse(data);
 	data->started = true;
 	if (data->start_time.tv_usec < 0)
 	{

@@ -29,6 +29,7 @@ void	init_data(t_data *data)
 	data->portal1.x = -1;
 	data->portal2.x = -1;
 	data->start_time.tv_usec = -1;
+	data->mouse_off = 1;
 	init_minimap(&data->minimap);
 }
 

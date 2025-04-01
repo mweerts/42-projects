@@ -57,8 +57,6 @@ int	main(int ac, char **av)
 		return (clean_up(&data), EXIT_FAILURE);
 	if (!init_portal(&data))
 		return (clean_up(&data), EXIT_FAILURE);
-	mlx_mouse_hide(data.s_mlx.mlx, data.s_mlx.win);
-	mlx_mouse_move(data.s_mlx.mlx, data.s_mlx.win, WIDTH / 2, HEIGHT / 2);
 	init_hooks(&data);
 	mlx_loop(data.s_mlx.mlx);
 	return (0);
