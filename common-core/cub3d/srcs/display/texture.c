@@ -88,7 +88,9 @@ void	compute_tex(t_data *data, t_raycasting *ray, int x)
 {
 	ray->wall.is_portal = 0;
 	if (data->map->matrix[ray->ray_y][ray->ray_x] == 2)
-		ray->wall.tex = data->tex[TEX_INTERRUPTOR];
+		ray->wall.tex = data->tex[TEX_CORE_DANGER];
+	if (data->map->matrix[ray->ray_y][ray->ray_x] == 3)
+		ray->wall.tex = data->tex[TEX_CORE];
 	else if (ray->side == 1)
 		set_texture_index1(data, ray);
 	else

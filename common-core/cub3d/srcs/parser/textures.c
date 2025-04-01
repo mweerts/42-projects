@@ -30,9 +30,11 @@ void	load_extra_textures(t_data *data)
 		}
 	}
 	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
+	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
 	data->tex[TEX_SMALL_FRAME] = load_texture(data->s_mlx.mlx, SMALL_FRAME);
 	data->tex[TEX_START] = load_texture(data->s_mlx.mlx, HUD_START);
-	data->tex[TEX_INTERRUPTOR] = load_texture(data->s_mlx.mlx, INTERRUPTOR);
+	data->tex[TEX_CORE_DANGER] = load_texture(data->s_mlx.mlx, CORE_DANGER);
+	data->tex[TEX_CORE] = load_texture(data->s_mlx.mlx, CORE);
 	data->tex[TEX_EMPTY_FRAME] = load_texture(data->s_mlx.mlx, EMPTY_FRAME);
 	data->tex[TEX_FRAME_DETAILS] = load_texture(data->s_mlx.mlx, FRAME_DETAILS);
 	data->tex[TEX_MISSION_FAILED] = load_texture(data->s_mlx.mlx,

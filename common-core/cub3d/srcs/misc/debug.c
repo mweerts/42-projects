@@ -38,6 +38,7 @@ void	print_map_info(t_map *map)
 	ft_printf("Floor color: %d\n", map->floor_color);
 	ft_printf("Ceiling color: %d\n", map->ceiling_color);
 	ft_printf("Orientation start: %c\n", map->orientation_start);
+	ft_printf("Nb cores: %d\n", map->nb_cores);
 	printf("Player start: [%f,%f]\n", map->player_start.x,
 		map->player_start.y);
 	if (map->matrix)

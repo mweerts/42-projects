@@ -32,7 +32,10 @@ static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 		else if (ft_is_charset((line[y][x]), "EWNS") == true)
 			matrix[y][x] = 0;
 		else if (line[y][x] == 'C')
+		{
+			map->nb_cores++;
 			matrix[y][x] = 2;
+		}
 		else
 			matrix[y][x] = line[y][x] - 48;
 		x++;
