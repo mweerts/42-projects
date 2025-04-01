@@ -91,13 +91,31 @@ int	key_released(int keycode, t_data *data)
 
 int	mouse_handler(int x, int y, t_data *data)
 {
+	static int	old_x = WIDTH / 2;
+	static int	reset = 0;
+	int			border;
+
+	border = WIDTH / 8;
 	(void)y;
-	if (data->mouse_off)
+	//if (data->mouse_off)
+		//return (0);
+	if (reset) 
+	{
+		if (x == WIDTH / 2 && y == HEIGHT / 2)
+			reset = 0;
 		return (0);
-	if (x < WIDTH / 2)
-		rotate_mouse(data, x);
-	else if (x > WIDTH / 2)
-		rotate_mouse(data, x);
-	mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
+	}
+	if (abs(x - old_x) > 1)
+	{
+		rotate_mouse(data, x, old_x);
+		old_x = x;
+	}
+	if (x < border || y < border || x > WIDTH - border || y > HEIGHT - border)
+	{
+		
+		mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
+		reset = 1;
+		old_x = WIDTH / 2;
+	}
 	return (0);
 }

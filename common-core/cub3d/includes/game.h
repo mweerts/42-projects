@@ -30,7 +30,7 @@ int		mouse_click(int button, int x, int y, t_data *data);
 // PLAYER
 
 void	compute_player_pos(t_data *data);
-void	rotate_mouse(t_data *data, int mouse_x);
+void	rotate_mouse(t_data *data, int mouse_x, int old_x);
 
 // PORTAL
 
