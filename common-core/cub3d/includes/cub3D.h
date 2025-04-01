@@ -59,6 +59,8 @@
 # define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000 
 # define WIN 1
 # define LOOSE 2
+# define FRAME_MARGIN 50
+# define MAP_CELL_SIZE 14
 
 /* Colors */
 # define RED "\033[0;31m"
