@@ -27,6 +27,7 @@ void	load_extra_textures(t_data *data)
 	data->tex[TEX_INTERRUPTOR] = load_texture(data->s_mlx.mlx, INTERRUPTOR);
 	data->tex[TEX_EMPTY_FRAME] = load_texture(data->s_mlx.mlx, EMPTY_FRAME);
 	data->tex[TEX_FRAME_DETAILS] = load_texture(data->s_mlx.mlx, FRAME_DETAILS);
+	data->tex[TEX_MISSION_FAILED] = load_texture(data->s_mlx.mlx, MISSION_FAILED);
 }
 
 t_texture	*load_texture(void *mlx, char *path)

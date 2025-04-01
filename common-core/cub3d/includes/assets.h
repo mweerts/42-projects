@@ -24,5 +24,6 @@
 # define MAP_FRAME "assets/GUI/map_frame.xpm"
 # define EMPTY_FRAME "assets/GUI/empty_frame.xpm"
 # define FRAME_DETAILS "assets/GUI/frame_details.xpm"
+# define MISSION_FAILED "assets/GUI/mission_failed.xpm"
 
 #endif

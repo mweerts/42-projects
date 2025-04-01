@@ -41,7 +41,7 @@ int	key_pressed(int keycode, t_data *data)
 		data->time_left = TIME_LEFT_IN_MS;
 		gettimeofday(&data->start_time, NULL);
 	}
-	if (keycode == K_ESC)
+	if (keycode == K_ESC || data->game_end == true)
 		leave(data);
 	if (keycode == K_W)
 		data->player.mv_forward += 1;
@@ -83,7 +83,7 @@ int	key_released(int keycode, t_data *data)
 	if (keycode == K_SHIFT)
 		data->player.run = 1;
 	if (keycode == K_TAB)
-		data->show_map = 1;
+		data->show_map = 0;
 	return (0);
 }
 

@@ -27,7 +27,8 @@ void	interact_interruptor(t_data *data)
 		if (data->map->matrix[ray.ray_y][ray.ray_x] == 2)
 		{
 			printf("YOU WIN !\n");
-			leave(data);
+			data->game_end = true;
+			// leave(data);
 		}
 	}
 }
