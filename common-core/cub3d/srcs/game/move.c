@@ -93,24 +93,20 @@ void	compute_player_pos(t_data *data)
 
 void	rotate_mouse(t_data *data, int mouse_x, int old_x)
 {
-  // Calculer la différence de position
-  double delta = mouse_x - old_x;
-    
-  // Appliquer un facteur d'amortissement pour des mouvements plus fluides
-  double smooth_factor = 0.5;
-  double rot = delta * MOUSE_SENSIBILITY * smooth_factor;
-  
-  // Limiter l'amplitude de rotation proportionnellement à la vitesse
-  double max_rot = 0.08;
-  if (rot > max_rot) rot = max_rot;
-  if (rot < -max_rot) rot = -max_rot;
-  
-  // Appliquer la rotation de manière standard
-  double old_dir_x = data->player.dir_x;
-  data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y * sin(rot);
-  data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
-  
-  double old_plane_x = data->player.plane_x;
-  data->player.plane_x = data->player.plane_x * cos(rot) - data->player.plane_y * sin(rot);
-  data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y * cos(rot);
+	double	delta;
+	double	rot;
+	double	old_dir_x;
+	double	old_plane_x;
+
+	delta = mouse_x - old_x;
+	rot = delta * MOUSE_SENSIBILITY;
+	old_dir_x = data->player.dir_x;
+	data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y
+		* sin(rot);
+	data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
+	old_plane_x = data->player.plane_x;
+	data->player.plane_x = data->player.plane_x * cos(rot)
+		- data->player.plane_y * sin(rot);
+	data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y
+		* cos(rot);
 }
