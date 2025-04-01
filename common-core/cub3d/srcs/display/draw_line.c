@@ -12,19 +12,12 @@
 
 #include "cub3D.h"
 
-static int	ft_abs(int n)
-{
-	if (n < 0)
-		return (-n);
-	return (n);
-}
-
 static void	init_line_params(t_line *line, t_coord start, t_coord end)
 {
 	line->current = start;
 	line->end = end;
-	line->dx = ft_abs(end.x - start.x);
-	line->dy = -(ft_abs(ft_abs(end.y - start.y)));
+	line->dx = abs(end.x - start.x);
+	line->dy = -(abs(end.y - start.y));
 	line->sx = -1;
 	if (start.x < end.x)
 		line->sx = 1;

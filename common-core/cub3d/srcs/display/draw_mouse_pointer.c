@@ -59,6 +59,8 @@ void	draw_mouse(t_data *data)
 	int		radius;
 	int		marker_length;
 
+	if (data->show_map)
+		return ;
 	center.x = (int)(WIDTH / 2);
 	center.y = (int)(HEIGHT / 2);
 	radius = POINTER_SIZE;

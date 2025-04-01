@@ -57,6 +57,8 @@
 # define TEXT_COLOR 0xFFFFFFFF
 # define ANIM_SPEED 5
 # define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000 
+# define WIN 1
+# define LOOSE 2
 
 /* Colors */
 # define RED "\033[0;31m"

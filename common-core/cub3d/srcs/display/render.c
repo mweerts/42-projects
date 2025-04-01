@@ -42,6 +42,8 @@ void	render_time_left(t_data *data, t_coord pos)
 
 int	render_game(t_data *data)
 {
+	if (data->started && data->time_left <= 0)
+		data->game_end = LOOSE;
 	if (BONUS)
 		set_textured_background(data);
 	else

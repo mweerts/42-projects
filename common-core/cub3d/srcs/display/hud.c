@@ -56,6 +56,8 @@ void	draw_interact(t_data *data)
 	int				curr_y;
 	t_raycasting	ray;
 
+	if (data->game_end)
+		return ;
 	curr_x = (int)data->player.pos_x;
 	curr_y = (int)data->player.pos_y;
 	init_ray(data, &ray, WIDTH / 2);

@@ -43,7 +43,7 @@ int	key_pressed(int keycode, t_data *data)
 		data->time_left = TIME_LEFT_IN_MS;
 		gettimeofday(&data->start_time, NULL);
 	}
-	if (keycode == K_ESC || data->game_end == true)
+	if (keycode == K_ESC)
 		leave(data);
 	if (keycode == K_W)
 		data->player.mv_forward += 1;

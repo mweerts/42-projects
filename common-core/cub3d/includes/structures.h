@@ -185,6 +185,7 @@ typedef struct s_map
 	int				floor_color;
 	int				ceiling_color;
 	int				**matrix;
+	int				nb_cores;
 	char			orientation_start;
 	t_coord			player_start;
 }					t_map;
