@@ -21,7 +21,7 @@ static void	set_texture_index1(t_data *data, t_raycasting *ray)
 					ray->ray_x, ray->ray_y, 2)
 				&& data->portal2.orientation == SOUTH))
 			ray->wall.is_portal = 1;
-		ray->wall.tex = data->tex[TEX_SOUTH];
+		ray->wall.tex = data->tex[TEX_NORTH];
 	}
 	else
 	{
@@ -30,7 +30,7 @@ static void	set_texture_index1(t_data *data, t_raycasting *ray)
 					ray->ray_x, ray->ray_y, 2)
 				&& data->portal2.orientation == NORTH))
 			ray->wall.is_portal = 1;
-		ray->wall.tex = data->tex[TEX_NORTH];
+		ray->wall.tex = data->tex[TEX_SOUTH];
 	}
 }
 
@@ -43,7 +43,7 @@ static void	set_texture_index2(t_data *data, t_raycasting *ray)
 					ray->ray_x, ray->ray_y, 2)
 				&& data->portal2.orientation == EAST))
 			ray->wall.is_portal = 1;
-		ray->wall.tex = data->tex[TEX_EAST];
+		ray->wall.tex = data->tex[TEX_WEST];
 	}
 	else
 	{
@@ -52,7 +52,7 @@ static void	set_texture_index2(t_data *data, t_raycasting *ray)
 					ray->ray_x, ray->ray_y, 2)
 				&& data->portal2.orientation == WEST))
 			ray->wall.is_portal = 1;
-		ray->wall.tex = data->tex[TEX_WEST];
+		ray->wall.tex = data->tex[TEX_EAST];
 	}
 }
 

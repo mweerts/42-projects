@@ -14,12 +14,20 @@
 
 void	load_extra_textures(t_data *data)
 {
-	if (BONUS)
+	int	i;
+
+	i = -1;
+	while (BONUS && ++i < 4)
 	{
-		data->tex[TEX_NORTH] = load_texture(data->s_mlx.mlx, PINK_WALL);
-		data->tex[TEX_SOUTH] = load_texture(data->s_mlx.mlx, PINK_WALL);
-		data->tex[TEX_EAST] = load_texture(data->s_mlx.mlx, PINK_WALL);
-		data->tex[TEX_WEST] = load_texture(data->s_mlx.mlx, PINK_WALL);
+		if (data->tex[i])
+		{
+			if (data->tex[i]->data)
+				free(data->tex[i]->data);
+			if (data->tex[i]->img.img)
+				mlx_destroy_image(data->s_mlx.mlx, data->tex[i]->img.img);
+			free(data->tex[i]);
+			data->tex[i] = load_texture(data->s_mlx.mlx, PINK_WALL);
+		}
 	}
 	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
 	data->tex[TEX_SMALL_FRAME] = load_texture(data->s_mlx.mlx, SMALL_FRAME);

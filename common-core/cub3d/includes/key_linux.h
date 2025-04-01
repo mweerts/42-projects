@@ -42,6 +42,7 @@
     # define K_AR_L 65361
     # define K_AR_R 65363
     # define K_SHIFT 65505
+    # define K_ESC 65307
     
 #endif
 
