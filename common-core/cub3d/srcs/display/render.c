@@ -52,10 +52,8 @@ int	render_game(t_data *data)
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	draw_fps(data);
-	if (BONUS)
-		render_time_left(data, (t_coord){WIDTH
-			- data->tex[TEX_SMALL_FRAME]->width - 28,
-			(double)(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 2});
+	render_time_left(data, (t_coord){WIDTH - data->tex[TEX_SMALL_FRAME]->width
+		- 28, ((double)(data->tex[TEX_SMALL_FRAME]->height) / 2) + 50 + 2});
 	draw_interact(data);
 	return (1);
 }

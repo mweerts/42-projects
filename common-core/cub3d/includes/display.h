@@ -27,6 +27,10 @@ void	set_background(t_data *data);
 int		render_game(t_data *data);
 void	draw_transparent_pixel(t_data *data, t_coord coord, int color,
 			float alpha);
+void	draw_mouse(t_data *data);
+void	draw_texture(t_data *data, t_texture *tex, t_coord pos, float alpha);
+void	draw_texture_centered(t_data *data, t_texture *tex, t_coord center, float alpha);
+
 
 // RAYCASTING
 
@@ -62,7 +66,6 @@ int		init_portal(t_data *data);
 void	render_time_left(t_data *data, t_coord pos);
 int		blend_color(int background, int overlay, float alpha);
 
-void	draw_mouse(t_data *data);
 
 #endif
 

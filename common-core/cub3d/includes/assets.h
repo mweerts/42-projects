@@ -21,5 +21,8 @@
 # define NIGHT "assets/blocks/night.xpm"
 # define HUD_START "assets/GUI/frame.xpm"
 # define SMALL_FRAME "assets/GUI/small_frame.xpm"
+# define MAP_FRAME "assets/GUI/map_frame.xpm"
+# define EMPTY_FRAME "assets/GUI/empty_frame.xpm"
+# define FRAME_DETAILS "assets/GUI/frame_details.xpm"
 
 #endif

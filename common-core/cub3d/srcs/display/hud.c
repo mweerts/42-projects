@@ -12,36 +12,6 @@
 
 #include "cub3D.h"
 
-void	draw_texture(t_data *data, t_texture *tex, t_coord pos, float alpha)
-{
-	int	x;
-	int	y;
-	int	color;
-
-	y = 0;
-	while (y < tex->height)
-	{
-		x = 0;
-		while (x < tex->width)
-		{
-			color = *(unsigned int *)get_texture_pixel(tex, x, y);
-			if (((color >> 24) & 0xFF) == 0xFF)
-			{
-				if (alpha <= 1)
-					draw_transparent_pixel(data, (t_coord){pos.x + x, pos.y + y},
-						color, alpha);
-			}
-			else
-			{
-				draw_pixel(&data->s_img, (int)(pos.x + x), (int)(pos.y + y),
-					color);
-			}
-			x++;
-		}
-		y++;
-	}
-}
-
 void	draw_fps(t_data *data)
 {
 	char	*tmp;
@@ -55,7 +25,6 @@ void	draw_fps(t_data *data)
 		tmp = NULL;
 	}
 }
-
 
 static void	render_gun(t_data *data)
 {
@@ -94,8 +63,8 @@ void	draw_interact(t_data *data)
 	if (abs(curr_x - ray.ray_x) <= 1 && abs(curr_y - ray.ray_y) <= 1)
 	{
 		if (data->map->matrix[ray.ray_y][ray.ray_x] == 2)
-			mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, (WIDTH / 2) - 75,
-				(HEIGHT / 2) - CROSS_SIZE, TEXT_COLOR,
+			mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, (WIDTH / 2) - 48,
+				(HEIGHT / 2) - POINTER_SIZE - 24, TEXT_COLOR,
 				"Press [E] to shut down power.");
 	}
 }
@@ -104,26 +73,32 @@ void	render_start(t_data *data)
 {
 	int	x_pos;
 	int	y_pos;
-		int y;
-		int x;
-		int color;
+	int	y;
+	int	x;
+	int	color;
 
 	x_pos = (WIDTH - data->tex[TEX_START]->width) / 2;
 	y_pos = (HEIGHT - data->tex[TEX_START]->height - 64) / 2;
 	if (!data->started)
-		draw_texture(data, data->tex[TEX_START], (t_coord){x_pos, y_pos}, 0.4);
+		draw_texture(data, data->tex[TEX_START], (t_coord){x_pos, y_pos}, 0.8);
 }
+
+void		show_map(t_data *data);
+
 
 int	render_hud(t_data *data)
 {
-	// set_cross(data);
 	draw_mouse(data);
-	render_minimap(data);
 	render_start(data);
 	if (data->started)
-		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH - data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
+		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
 	if (data->started)
 		render_gun(data);
+	if (data->show_map && data->started)
+		show_map(data);
+	if (!data->show_map && data->started)
+		render_minimap(data);
 	return (0);
 }
 

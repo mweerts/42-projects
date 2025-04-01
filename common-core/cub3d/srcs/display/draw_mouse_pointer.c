@@ -61,7 +61,7 @@ void	draw_mouse(t_data *data)
 
 	center.x = (int)(WIDTH / 2);
 	center.y = (int)(HEIGHT / 2);
-	radius = CROSS_SIZE + 2;
+	radius = POINTER_SIZE;
 	marker_length = radius / 2;
 	draw_halo_circle(data, center, radius);
 	draw_halo_markers(data, center, radius, marker_length);

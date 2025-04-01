@@ -57,6 +57,8 @@ int	key_pressed(int keycode, t_data *data)
 		data->player.mv_rotate += 1;
 	if (keycode == K_SHIFT)
 		data->player.run = 1.5;
+	if (keycode == K_TAB)
+		data->show_map = 1;
 	if (keycode == K_M)
 		toggle_mouse(data);
 	if (keycode == K_E)
@@ -80,6 +82,8 @@ int	key_released(int keycode, t_data *data)
 		data->player.mv_rotate += -1;
 	if (keycode == K_SHIFT)
 		data->player.run = 1;
+	if (keycode == K_TAB)
+		data->show_map = 1;
 	return (0);
 }
 

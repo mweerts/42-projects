@@ -71,9 +71,9 @@ int	render_player_in_minimap(t_data *data, t_minimap *minimap)
 	player_size = minimap->radius / 16.0f;
 	if (player_size < 1.0f)
 		player_size = 1.0f;
-	draw_player_circle(data, minimap, player_size);
+	draw_player_circle(data, &data->minimap, player_size);
 	calculate_direction(data, &t, &dir_length);
-	calculate_triangle_points(minimap, &t, player_size);
+	calculate_triangle_points(&data->minimap, &t, player_size);
 	draw_line(data, (t_coord){t.tip_x, t.tip_y}, (t_coord){t.left_x, t.left_y},
 		0xFF);
 	draw_line(data, (t_coord){t.tip_x, t.tip_y}, (t_coord){t.right_x,

@@ -74,8 +74,10 @@ SRC		= 	main.c \
 			display/init.c \
 			display/render.c \
 			display/draw_line.c \
+			display/draw_texture.c \
 			display/draw_mouse_pointer.c \
 			display/raycasting.c \
+			display/display_map.c \
 			display/minimap.c \
 			display/minimap_player.c \
 			display/texture.c \

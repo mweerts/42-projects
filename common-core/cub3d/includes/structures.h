@@ -40,6 +40,8 @@ typedef enum e_texture_wall
 	TEX_INTERRUPTOR,
 	TEX_START,
 	TEX_SMALL_FRAME,
+	TEX_EMPTY_FRAME,
+	TEX_FRAME_DETAILS,
 	TEX_COUNT,
 }					t_texture_wall;
 
@@ -239,6 +241,7 @@ typedef struct s_data
 	struct timeval	start_time;
 	long			time_left;
 	int				first_portal;
+	int				show_map;
 }					t_data;
 
 #endif
