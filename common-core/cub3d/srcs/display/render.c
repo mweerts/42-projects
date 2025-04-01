@@ -57,4 +57,3 @@ int	render_game(t_data *data)
 	draw_interact(data);
 	return (1);
 }
-

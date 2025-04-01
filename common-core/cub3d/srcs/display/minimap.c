@@ -91,4 +91,3 @@ void	render_minimap(t_data *data)
 	render_map_elements(data, &data->minimap);
 	render_player_in_minimap(data, &data->minimap);
 }
-

@@ -28,6 +28,7 @@ void	init_data(t_data *data)
 	data->s_fps.last_time = get_current_time();
 	data->portal1.x = -1;
 	data->portal2.x = -1;
+	data->start_time.tv_usec = -1;
 	init_minimap(&data->minimap);
 }
 

@@ -24,17 +24,17 @@ int	leave(t_data *data)
 
 static void	init_hooks(t_data *data)
 {
-	int key_press_mask;
-	int key_release_mask;
-	
+	int	key_press_mask;
+	int	key_release_mask;
+
 	key_press_mask = 1L << 0;
-    key_release_mask = 1L << 1;    
-    mlx_hook(data->s_mlx.win, 2, key_press_mask, &key_pressed, data);
-    mlx_hook(data->s_mlx.win, 3, key_release_mask, &key_released, data);
-    mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
-    mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
-    mlx_loop_hook(data->s_mlx.mlx, render_game, data);
-    mlx_mouse_hook(data->s_mlx.win, mouse_click, data);
+	key_release_mask = 1L << 1;
+	mlx_hook(data->s_mlx.win, 2, key_press_mask, &key_pressed, data);
+	mlx_hook(data->s_mlx.win, 3, key_release_mask, &key_released, data);
+	mlx_hook(data->s_mlx.win, 6, 1L << 6, &mouse_handler, data);
+	mlx_hook(data->s_mlx.win, 17, 0L, &leave, data);
+	mlx_loop_hook(data->s_mlx.mlx, render_game, data);
+	mlx_mouse_hook(data->s_mlx.win, mouse_click, data);
 }
 
 int	main(int ac, char **av)

@@ -17,34 +17,34 @@
 ** Keyboard LETTERS
 */
 
-#ifdef __APPLE__
-    /* macOS key codes */
-    # define K_ESC 53
-    # define K_W 13
-    # define K_A 0
-    # define K_S 1
-    # define K_D 2
-    # define K_AR_L 123
-    # define K_AR_R 124
-    # define K_SHIFT 56
-    # define K_M 46
-    # define K_E 14
-    # define K_TAB 48
-#else
-    /* Linux key codes */
-    # define K_W 119
-    # define K_TAB 65289
-    # define K_A 97
-    # define K_S 115
-    # define K_E 101
-    # define K_M 109
-    # define K_D 100
-    # define K_AR_L 65361
-    # define K_AR_R 65363
-    # define K_SHIFT 65505
-    # define K_ESC 65307
-    
-#endif
+# ifdef __APPLE__
+/* macOS key codes */
+#  define K_ESC 53
+#  define K_W 13
+#  define K_A 0
+#  define K_S 1
+#  define K_D 2
+#  define K_AR_L 123
+#  define K_AR_R 124
+#  define K_SHIFT 56
+#  define K_M 46
+#  define K_E 14
+#  define K_TAB 48
+# else
+/* Linux key codes */
+#  define K_W 119
+#  define K_TAB 65289
+#  define K_A 97
+#  define K_S 115
+#  define K_E 101
+#  define K_M 109
+#  define K_D 100
+#  define K_AR_L 65361
+#  define K_AR_R 65363
+#  define K_SHIFT 65505
+#  define K_ESC 65307
+
+# endif
 
 # define K_B 98
 # define K_C 99

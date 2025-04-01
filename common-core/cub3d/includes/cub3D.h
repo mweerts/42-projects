@@ -22,7 +22,6 @@
 # include "game.h"
 # include "display.h"
 # include "misc.h"
-# include "key_linux.h"
 # include <math.h>
 # include <errno.h>
 # include <fcntl.h>
@@ -57,7 +56,7 @@
 # define MAIN_BLUE 0x00DBDB
 # define TEXT_COLOR 0xFFFFFFFF
 # define ANIM_SPEED 5
-# define TIME_LEFT_IN_MS 10 * 60 * 1000 
+# define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000 
 
 /* Colors */
 # define RED "\033[0;31m"
@@ -68,7 +67,6 @@
 # define RESET "\033[0;37m"
 
 // MAIN
-
 int		leave(t_data *data);
 
 #endif

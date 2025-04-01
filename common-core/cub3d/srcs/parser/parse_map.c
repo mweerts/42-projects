@@ -77,10 +77,10 @@ int	check_orientation(t_map *map, char c, t_coord pos)
 
 int	validate_map(t_map *map, char **line)
 {
-	int	i;
-	int	j;
-	char *valid_chars;
-	
+	int		i;
+	int		j;
+	char	*valid_chars;
+
 	i = -1;
 	valid_chars = "01EWNS \t";
 	if (BONUS)

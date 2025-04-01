@@ -38,14 +38,15 @@ void	draw_texture(t_data *data, t_texture *tex, t_coord pos, float alpha)
 	}
 }
 
-/* 
+/*
 ** Function to draw a texture centered at given coordinates
 ** Useful for UI elements like crosshairs or reticles
 */
-void	draw_texture_centered(t_data *data, t_texture *tex, t_coord center, float alpha)
+void	draw_texture_centered(t_data *data, t_texture *tex, t_coord center,
+		float alpha)
 {
 	t_coord	pos;
-	
+
 	pos.x = center.x - (int)(tex->width / 2);
 	pos.y = center.y - (int)(tex->height / 2);
 	draw_texture(data, tex, pos, alpha);

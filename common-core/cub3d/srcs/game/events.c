@@ -36,7 +36,7 @@ static void	toggle_mouse(t_data *data)
 int	key_pressed(int keycode, t_data *data)
 {
 	data->started = true;
-	if (data->start_time.tv_usec <= 0)
+	if (data->start_time.tv_usec < 0)
 	{
 		data->time_left = TIME_LEFT_IN_MS;
 		gettimeofday(&data->start_time, NULL);
