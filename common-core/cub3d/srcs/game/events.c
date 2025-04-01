@@ -95,10 +95,10 @@ int	mouse_handler(int x, int y, t_data *data)
 	static int	reset = 0;
 	int			border;
 
-	border = WIDTH / 8;
+	border = WIDTH / 1.1;
 	(void)y;
-	if (data->mouse_off)
-		return (0);
+	// if (data->mouse_off)
+	// 	return (0);
 	if (reset) 
 	{
 		if (x == WIDTH / 2 && y == HEIGHT / 2)
