@@ -91,20 +91,19 @@ void	compute_player_pos(t_data *data)
 	move_rotate(data);
 }
 
-void	rotate_mouse(t_data *data, int mouse_x)
+void	rotate_mouse(t_data *data, int mouse_x, int old_x)
 {
-	double	rot;
-	double	old_dir_x;
-	double	old_plane_x;
+	double delta;
+	double rot;
+	double old_dir_x;
+	double old_plane_x;
 
-	rot = ((double)mouse_x - (double)WIDTH / 2) * MOUSE_SENSIBILITY;
-	old_dir_x = data->player.dir_x;
-	data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y
-		* sin(rot);
-	data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
-	old_plane_x = data->player.plane_x;
-	data->player.plane_x = data->player.plane_x * cos(rot)
-		- data->player.plane_y * sin(rot);
-	data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y
-		* cos(rot);
+  delta = mouse_x - old_x;
+  rot = delta * MOUSE_SENSIBILITY;
+  old_dir_x = data->player.dir_x;
+  data->player.dir_x = data->player.dir_x * cos(rot) - data->player.dir_y * sin(rot);
+  data->player.dir_y = old_dir_x * sin(rot) + data->player.dir_y * cos(rot);
+  old_plane_x = data->player.plane_x;
+  data->player.plane_x = data->player.plane_x * cos(rot) - data->player.plane_y * sin(rot);
+  data->player.plane_y = old_plane_x * sin(rot) + data->player.plane_y * cos(rot);
 }

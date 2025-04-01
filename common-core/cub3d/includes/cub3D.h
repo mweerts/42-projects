@@ -35,6 +35,8 @@
 # include <semaphore.h>
 # include <X11/keysym.h>
 # include <X11/keysymdef.h>
+#	include <X11/extensions/Xfixes.h>
+
 
 # ifndef BONUS
 #  define BONUS 1
