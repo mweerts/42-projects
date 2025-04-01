@@ -14,12 +14,12 @@
 # define LIBFT_H
 
 # include <stdarg.h>
+# include <stdbool.h>
 # include <stddef.h>
 # include <stdint.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-# include <stdbool.h>
 # include <unistd.h>
 
 # define FD_MAX 1024
@@ -97,5 +97,7 @@ char				*ft_strcpy(char *dest, char *src);
 char				*str_del_all_char(char *str, int c);
 char				*str_del_char(char *str, const char *char_to_del);
 int					rgb_to_int(char **rgb);
+double				ft_min(double x, double y);
+double				ft_max(double x, double y);
 
 #endif
