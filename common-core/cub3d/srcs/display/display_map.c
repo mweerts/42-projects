@@ -58,7 +58,7 @@ static void	draw_player(t_data *data, t_fullmap *map)
 		t.right_y}, 0xFF);
 }
 
-static void	draw_portal(t_data *data, t_fullmap *map, t_portal portal)
+static void	draw_portal_in_min(t_data *data, t_fullmap *map, t_portal portal)
 {
 	int		portal_size;
 	t_coord	portal_pos;
@@ -88,8 +88,8 @@ void	show_map(t_data *data)
 	init_fullmap(data, &map);
 	draw_map_cells(data, &map);
 	draw_player(data, &map);
-	draw_portal(data, &map, data->portal1);
-	draw_portal(data, &map, data->portal2);
+	draw_portal_in_min(data, &map, data->portal1);
+	draw_portal_in_min(data, &map, data->portal2);
 	pos.x = WIDTH / 2.0f - data->tex[TEX_EMPTY_FRAME]->width / 2.0f
 		+ data->tex[TEX_FRAME_DETAILS]->width / 2.0f;
 	pos.y = HEIGHT / 2.0f + data->tex[TEX_EMPTY_FRAME]->height / 2 + 32;

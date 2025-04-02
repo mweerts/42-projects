@@ -53,7 +53,9 @@ static int	set_color(t_data *data, t_coord pos)
 	if (data->map->matrix[(int)pos.y][(int)pos.x] == 1)
 		return (0xFFFFFF);
 	else if (data->map->matrix[(int)pos.y][(int)pos.x] == 2)
-		return (0xEAFA33);
+		return (MAIN_YELLOW);
+	else if (data->map->matrix[(int)pos.y][(int)pos.x] == 3)
+		return (MAIN_GREEN);
 	else if (data->map->matrix[(int)pos.y][(int)pos.x] == 0)
 		return (-1);
 	else

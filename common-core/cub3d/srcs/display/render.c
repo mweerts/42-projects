@@ -20,7 +20,7 @@ void	render_time_left(t_data *data, t_coord pos)
 	t_coord			p;
 	long			elapsed_ms;
 
-	if (!data->started)
+	if (!data->started || !BONUS)
 		return ;
 	gettimeofday(&current_time, NULL);
 	elapsed_ms = ((current_time.tv_sec - data->start_time.tv_sec) * 1000)
@@ -41,6 +41,30 @@ void	render_time_left(t_data *data, t_coord pos)
 	data->remaining_ms = remaining_ms;
 }
 
+void	render_collectible_left(t_data *data)
+{
+	char	*nb;
+	char	*str;
+
+	if (!data->started || !BONUS)
+		return ;
+	nb = ft_itoa(data->map->nb_cores);
+	if (nb)
+	{
+		str = ft_strjoin("Cores left: ", nb);
+		free(nb);
+		nb = NULL;
+		if (!str)
+			return ;
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width * 2 - 66,
+			(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 2, TEXT_COLOR, str);
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width * 2 - 66,
+			(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 3, TEXT_COLOR, str);
+	}
+}
+
 int	render_game(t_data *data)
 {
 	if (data->started && data->remaining_ms <= 0)
@@ -55,10 +79,9 @@ int	render_game(t_data *data)
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	draw_fps(data);
-	if (BONUS)
-		render_time_left(data, (t_coord){WIDTH
-			- data->tex[TEX_SMALL_FRAME]->width - 28,
-			((double)(data->tex[TEX_SMALL_FRAME]->height) / 2) + 50 + 2});
+	render_time_left(data, (t_coord){WIDTH - data->tex[TEX_SMALL_FRAME]->width
+		- 28, ((double)(data->tex[TEX_SMALL_FRAME]->height) / 2) + 50 + 2});
+	render_collectible_left(data);
 	draw_interact(data);
 	return (1);
 }
