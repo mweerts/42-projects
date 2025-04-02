@@ -258,6 +258,7 @@ typedef struct s_data
 	long			time_left;
 	int				game_end;
 	int				first_portal;
+	int				remaining_ms;
 	int				show_map;
 }					t_data;
 

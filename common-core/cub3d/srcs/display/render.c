@@ -38,11 +38,12 @@ void	render_time_left(t_data *data, t_coord pos)
 		time_str);
 	mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, p.x, p.y + 1, 0xFFFFFF,
 		time_str);
+	data->remaining_ms = remaining_ms;
 }
 
 int	render_game(t_data *data)
 {
-	if (data->started && data->time_left <= 0)
+	if (data->started && data->remaining_ms <= 0)
 		data->game_end = LOOSE;
 	if (BONUS)
 		set_textured_background(data);
