@@ -87,10 +87,8 @@ int	render_hud(t_data *data)
 {
 	draw_mouse(data);
 	render_start(data);
-	if (data->game_end == LOOSE)
-		render_mission_failed(data);
-	else if (data->game_end == WIN)
-		render_mission_complete(data);
+	if (data->game_end)
+		render_mission_status(data, data->game_end);
 	if (data->started)
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
@@ -102,3 +100,4 @@ int	render_hud(t_data *data)
 		render_minimap(data);
 	return (0);
 }
+

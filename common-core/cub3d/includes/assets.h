@@ -26,5 +26,6 @@
 # define EMPTY_FRAME "assets/GUI/empty_frame.xpm"
 # define FRAME_DETAILS "assets/GUI/frame_details.xpm"
 # define MISSION_FAILED "assets/GUI/mission_failed.xpm"
+# define MISSION_COMPLETE "assets/GUI/mission_complete.xpm"
 
 #endif

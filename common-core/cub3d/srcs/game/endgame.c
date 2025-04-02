@@ -36,36 +36,21 @@ void	interact_interruptor(t_data *data)
 		data->game_end = WIN;
 }
 
-void	render_mission_failed(t_data *data)
+void	render_mission_status(t_data *data, int status)
 {
 	int	x_pos;
 	int	y_pos;
-	int	y;
-	int	x;
 	int	color;
+	int tex;
 
-	x_pos = (WIDTH - data->tex[TEX_MISSION_FAILED]->width) / 2;
-	y_pos = (HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2;
+	tex = TEX_MISSION_FAILED;
+	if (status == WIN)
+		tex = TEX_MISSION_COMPLETE;
+	x_pos = (WIDTH - data->tex[tex]->width) / 2;
+	y_pos = (HEIGHT - data->tex[tex]->height) / 2;
 	if (!data->started)
-		draw_texture(data, data->tex[TEX_MISSION_FAILED],
-			(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_FAILED]->width)
-			/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2},
-			0);
-}
-
-void	render_mission_complete(t_data *data)
-{
-	int	x_pos;
-	int	y_pos;
-	int	y;
-	int	x;
-	int	color;
-
-	x_pos = (WIDTH - data->tex[TEX_MISSION_FAILED]->width) / 2;
-	y_pos = (HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2;
-	if (!data->started)
-		draw_texture(data, data->tex[TEX_MISSION_FAILED],
-			(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_FAILED]->width)
-			/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2},
+		draw_texture(data, data->tex[tex],
+			(t_coord){(double)(WIDTH - data->tex[tex]->width)
+			/ 2, (double)(HEIGHT - data->tex[tex]->height) / 2},
 			0);
 }

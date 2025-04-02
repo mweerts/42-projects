@@ -43,6 +43,7 @@ typedef enum e_texture_wall
 	TEX_SMALL_FRAME,
 	TEX_EMPTY_FRAME,
 	TEX_MISSION_FAILED,
+	TEX_MISSION_COMPLETE,
 	TEX_FRAME_DETAILS,
 	TEX_COUNT,
 }					t_texture_wall;

@@ -43,7 +43,6 @@ int		should_tp(t_data *data, double step_x, double step_y);
 // ENDGAME
 
 void	interact_interruptor(t_data *data);
-void	render_mission_failed(t_data *data);
-void	render_mission_complete(t_data *data);
+void	render_mission_status(t_data *data, int status);
 
 #endif
