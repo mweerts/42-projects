@@ -28,13 +28,8 @@ void	interact_interruptor(t_data *data)
 		{
 			data->map->nb_cores--;
 			data->map->matrix[ray.ray_y][ray.ray_x] = 3;
-			// leave(data);
 		}
-		// if (data->map->matrix[ray.ray_y][ray.ray_x] == 2)
-		// {
-		// 	printf("YOU WIN !\n");
-		// 	data->game_end = true;
-		// 	// leave(data);
-		// }
 	}
+	if (data->map->nb_cores == 0)
+		data->game_end = WIN;
 }
