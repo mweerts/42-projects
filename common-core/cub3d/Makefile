@@ -23,7 +23,7 @@ RESET	=\033[0m
 
 # Compiler and compilation flags
 CC		= cc
-CFLAGS	= -Wall -Wextra -Wunused-function -Wunused-variable -g -Ofast
+CFLAGS	= -Wall -Wextra -Werror -Wunused-function -Wunused-variable -g -Ofast
 VALGRIND =
 MLX_LIB = -L $(MLX_DIR) -lmlx
 MLX_FLAGS = -L./minilibx-linux/ -lmlx_Linux -lXext -lX11 -lm -lz
