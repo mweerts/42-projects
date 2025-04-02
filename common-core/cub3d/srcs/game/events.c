@@ -29,7 +29,7 @@ int	mouse_click(int button, int x, int y, t_data *data)
 static void	key_pressed_two(int keycode, t_data *data)
 {
 	if (keycode == K_SHIFT)
-		data->player.run = 1.5;
+		data->player.run = 1.8;
 	if (keycode == K_TAB)
 		data->show_map = 1;
 	if (keycode == K_M)

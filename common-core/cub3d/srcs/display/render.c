@@ -67,7 +67,7 @@ void	render_collectible_left(t_data *data)
 
 int	render_game(t_data *data)
 {
-	if (data->started && data->remaining_ms <= 0)
+	if (data->started && data->remaining_ms <= 0 && data->game_end != WIN)
 		data->game_end = LOOSE;
 	if (BONUS)
 		set_textured_background(data);

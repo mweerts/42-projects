@@ -86,14 +86,17 @@ int	render_hud(t_data *data)
 {
 	draw_mouse(data);
 	render_start(data);
-	if (data->game_end)
-		render_mission_status(data, data->game_end);
+	if (data->game_end == WIN)
+		render_mission_status(data, WIN);
+	else if (data->game_end == LOOSE)
+		render_mission_status(data, LOOSE);
 	if (BONUS && data->started)
+	{
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
-	if (data->started)
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width * 2 - 75, 50}, 1);
+	}
 	if (data->started)
 		render_gun(data);
 	if (data->show_map && data->started)
