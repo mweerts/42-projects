@@ -106,11 +106,19 @@ int	render_hud(t_data *data)
 {
 	draw_mouse(data);
 	render_start(data);
-	if (data->game_end == LOOSE)
-		draw_texture(data, data->tex[TEX_MISSION_FAILED],
-			(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_FAILED]->width)
-			/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2},
-			0.5);
+	if (data->game_end)
+	{
+		if (data->game_end == LOOSE)
+			draw_texture(data, data->tex[TEX_MISSION_FAILED],
+				(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_FAILED]->width)
+				/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_FAILED]->height)
+				/ 2}, 0.5);
+		else
+			draw_texture(data, data->tex[TEX_MISSION_COMPLETE],
+				(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_COMPLETE]->width)
+					/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_COMPLETE]->height)
+				/ 2}, 0.5);
+	}
 	else if (data->game_end == WIN)
 		printf("YOU WON!\n");
 	if (data->started)
@@ -124,3 +132,4 @@ int	render_hud(t_data *data)
 		render_minimap(data);
 	return (0);
 }
+

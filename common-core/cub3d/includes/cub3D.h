@@ -50,11 +50,11 @@
 # define HEIGHT 1080
 # define MOVE_SPEED 0.07
 # define ROT_SPEED 0.05
-# define MOUSE_SENSIBILITY 0.0005
+# define MOUSE_SENSIBILITY 0.0010
 # define FOV_RATIO 0.66
 # define POINTER_SIZE 12
 # define ANIM_SPEED 5
-# define TIME_LEFT_IN_MS 3 * 1000//600000 //10 * 60 * 1000 
+# define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000 
 # define WIN 1
 # define LOOSE 2
 # define FRAME_MARGIN 50
