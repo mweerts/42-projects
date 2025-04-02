@@ -260,7 +260,6 @@ typedef struct s_data
 	int				first_portal;
 	int				remaining_ms;
 	int				show_map;
-	int				last_frame_t;
 }					t_data;
 
 #endif
