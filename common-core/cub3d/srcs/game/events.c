@@ -24,13 +24,16 @@ int	mouse_click(int button, int x, int y, t_data *data)
 	return (1);
 }
 
-static void	toggle_mouse(t_data *data)
+static void	key_pressed_two(int keycode, t_data *data)
 {
-	data->mouse_off ^= 1;
-	if (data->mouse_off)
-		mlx_mouse_show(data->s_mlx.mlx, data->s_mlx.win);
-	else
-		mlx_mouse_hide(data->s_mlx.mlx, data->s_mlx.win);
+	if (keycode == K_SHIFT)
+		data->player.run = 1.5;
+	if (keycode == K_TAB)
+		data->show_map = 1;
+	if (keycode == K_M)
+		toggle_mouse(data);
+	if (keycode == K_E)
+		interact_interruptor(data);
 }
 
 int	key_pressed(int keycode, t_data *data)
@@ -57,14 +60,7 @@ int	key_pressed(int keycode, t_data *data)
 		data->player.mv_rotate += -1;
 	if (keycode == K_AR_R)
 		data->player.mv_rotate += 1;
-	if (keycode == K_SHIFT)
-		data->player.run = 1.5;
-	if (keycode == K_TAB)
-		data->show_map = 1;
-	if (keycode == K_M)
-		toggle_mouse(data);
-	if (keycode == K_E)
-		interact_interruptor(data);
+	key_pressed_two(keycode, data);
 	return (0);
 }
 
@@ -96,7 +92,6 @@ int	mouse_handler(int x, int y, t_data *data)
 	int			border;
 
 	border = WIDTH / 1.1;
-	(void)y;
 	if (data->mouse_off)
 		return (0);
 	if (reset)

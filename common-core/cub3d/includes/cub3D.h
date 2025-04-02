@@ -13,29 +13,28 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "libft.h"
 # include "assets.h"
+# include "display.h"
+# include "game.h"
 # include "key_linux.h"
+# include "libft.h"
+# include "misc.h"
 # include "mlx.h"
 # include "parser.h"
 # include "structures.h"
-# include "game.h"
-# include "display.h"
-# include "misc.h"
-# include <math.h>
+# include <X11/keysym.h>
+# include <X11/keysymdef.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
+# include <math.h>
+# include <pthread.h>
+# include <semaphore.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
-# include <unistd.h>
 # include <sys/time.h>
-# include <pthread.h>
-# include <semaphore.h>
-# include <X11/keysym.h>
-# include <X11/keysymdef.h>
-
+# include <unistd.h>
 
 # ifndef BONUS
 #  define BONUS 1
@@ -54,7 +53,7 @@
 # define FOV_RATIO 0.66
 # define POINTER_SIZE 12
 # define ANIM_SPEED 5
-# define TIME_LEFT_IN_MS 3 * 1000//600000 //10 * 60 * 1000 
+# define TIME_LEFT_IN_MS 600000 //10 * 60 * 1000
 # define WIN 1
 # define LOOSE 2
 # define FRAME_MARGIN 50
@@ -76,6 +75,6 @@
 # define RESET "\033[0;37m"
 
 // MAIN
-int		leave(t_data *data);
+int	leave(t_data *data);
 
 #endif

@@ -60,6 +60,7 @@ SRC		= 	main.c \
 			parser/parse_file.c \
 			parser/parse_map.c \
 			parser/textures.c \
+			parser/utils.c \
 			misc/error.c \
 			misc/debug.c \
 			misc/clean.c \

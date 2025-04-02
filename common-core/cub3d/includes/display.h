@@ -70,5 +70,6 @@ int		blend_color(int background, int overlay, float alpha);
 // UTILS
 void	calculate_triangle_points(t_coord center, t_triangle *t, int size);
 void	calculate_direction(t_data *data, t_triangle *t, double *dir_length);
+void	toggle_mouse(t_data *data);
 
 #endif

@@ -97,14 +97,14 @@ typedef struct s_minimap
 
 typedef struct s_fullmap
 {
-	t_coord map_area;
-	int cells_x;
-	int cells_y;
-	t_coord start;
-	double offset_x;
-	double offset_y;
-	int cell_size;
-	t_coord player_pos;
+	t_coord			map_area;
+	int				cells_x;
+	int				cells_y;
+	t_coord			start;
+	double			offset_x;
+	double			offset_y;
+	int				cell_size;
+	t_coord			player_pos;
 }					t_fullmap;
 
 typedef struct s_img
@@ -263,4 +263,3 @@ typedef struct s_data
 }					t_data;
 
 #endif
-

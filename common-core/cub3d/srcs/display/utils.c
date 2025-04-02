@@ -78,3 +78,12 @@ int	blend_color(int background, int overlay, float alpha)
 	b = (unsigned char)(bg.b * (1 - alpha) + ov.b * alpha);
 	return ((r << 16) | (g << 8) | b);
 }
+
+void	toggle_mouse(t_data *data)
+{
+	data->mouse_off ^= 1;
+	if (data->mouse_off)
+		mlx_mouse_show(data->s_mlx.mlx, data->s_mlx.win);
+	else
+		mlx_mouse_hide(data->s_mlx.mlx, data->s_mlx.win);
+}

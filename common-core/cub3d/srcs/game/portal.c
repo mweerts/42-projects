@@ -76,7 +76,6 @@ static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 	dir = get_portal_direction(ray, button);
 	if (data->map->matrix[ray->ray_y][ray->ray_x] != 1)
 		return (0);
-		
 	if (!is_portal_pos_free(data, ray, dir))
 		return (0);
 	cpy = (int **)ft_calloc((data->map->height + 1), sizeof(int *));

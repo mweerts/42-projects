@@ -46,4 +46,6 @@ int			is_map_closed(t_map *map);
 t_texture	*load_texture(void *mlx, char *path);
 int			flood_fill(t_map *map, int **matrix, int x, int y);
 void		load_extra_textures(t_data *data);
+int			check_orientation(t_map *map, char c, t_coord pos);
+int			flood_fill(t_map *map, int **matrix, int x, int y);
 #endif

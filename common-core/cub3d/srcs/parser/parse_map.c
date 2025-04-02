@@ -12,11 +12,6 @@
 
 #include "cub3D.h"
 
-static int	is_on_edge(t_map *map, int x, int y)
-{
-	return (x == 0 || y == 0 || x == map->width - 1 || y == map->height - 1);
-}
-
 static int	fill_matrix(t_map *map, int **matrix, char **line, int y)
 {
 	int	x;
@@ -64,20 +59,6 @@ int	create_matrix(t_map *map, char **line)
 	return (0);
 }
 
-int	check_orientation(t_map *map, char c, t_coord pos)
-{
-	if (ft_is_charset(c, "EWNS") == true)
-	{
-		if (map->orientation_start)
-			return (print_err(MSG_TOO_MANY_PLAYER), ERROR);
-		if (is_on_edge(map, (int)pos.x, (int)pos.y) == true)
-			return (print_err(MSG_PLAYER_ON_EDGE), ERROR);
-		map->orientation_start = c;
-		map->player_start = pos;
-	}
-	return (0);
-}
-
 int	validate_map(t_map *map, char **line)
 {
 	int		i;
@@ -104,27 +85,6 @@ int	validate_map(t_map *map, char **line)
 	if (!map->orientation_start)
 		return (print_err(MSG_NO_PLAYER), ERROR);
 	return (map->height = i, 0);
-}
-
-int	flood_fill(t_map *map, int **matrix, int x, int y)
-{
-	int	result;
-
-	if (x < 0 || y < 0 || x >= map->height || y >= map->width)
-		return (ERROR);
-	if (matrix[x][y] == OBSTACLE || matrix[x][y] == VISITED)
-		return (SUCCESS);
-	matrix[x][y] = VISITED;
-	result = SUCCESS;
-	if (flood_fill(map, matrix, x + 1, y) == ERROR)
-		result = ERROR;
-	if (flood_fill(map, matrix, x, y + 1) == ERROR)
-		result = ERROR;
-	if (flood_fill(map, matrix, x - 1, y) == ERROR)
-		result = ERROR;
-	if (flood_fill(map, matrix, x, y - 1) == ERROR)
-		result = ERROR;
-	return (result);
 }
 
 int	is_map_closed(t_map *map)
