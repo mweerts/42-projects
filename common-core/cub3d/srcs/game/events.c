@@ -45,7 +45,8 @@ int	key_pressed(int keycode, t_data *data)
 	data->started = true;
 	if (data->start_time.tv_usec < 0)
 	{
-		data->time_left = TIME_LEFT_IN_MS;
+		if (data->time_left < 1000)
+			data->time_left = TIME_LEFT_IN_MS;
 		gettimeofday(&data->start_time, NULL);
 	}
 	if (keycode == K_ESC)

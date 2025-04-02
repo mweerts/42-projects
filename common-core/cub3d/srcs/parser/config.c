@@ -68,6 +68,8 @@ static int	offset(char *line)
 		offset = 1;
 	else if (ft_strncmp(line, "C ", 2) == 0)
 		offset = 1;
+	else if (BONUS && ft_strncmp(line, "TIMER ", 6) == 0)
+		offset = 5;
 	while (line[offset] == ' ' || line[offset] == '\t')
 		offset++;
 	return (offset);
@@ -77,22 +79,24 @@ bool	get_textures_and_colors(t_data *data, char *line)
 {
 	if (!line)
 		return (0);
-	if (ft_strncmp(line, "NO ", 3) == 0)
+	if (ft_strncmp(line, "NO ", 3) == 0 && !data->tex[TEX_NORTH])
 		data->tex[TEX_NORTH] = load_texture(data->s_mlx.mlx, line
 				+ offset(line));
-	else if (ft_strncmp(line, "SO ", 3) == 0)
+	else if (ft_strncmp(line, "SO ", 3) == 0 && !data->tex[TEX_SOUTH])
 		data->tex[TEX_SOUTH] = load_texture(data->s_mlx.mlx, line
 				+ offset(line));
-	else if (ft_strncmp(line, "WE ", 3) == 0)
+	else if (ft_strncmp(line, "WE ", 3) == 0 && !data->tex[TEX_WEST])
 		data->tex[TEX_WEST] = load_texture(data->s_mlx.mlx, line
 				+ offset(line));
-	else if (ft_strncmp(line, "EA ", 3) == 0)
+	else if (ft_strncmp(line, "EA ", 3) == 0 && !data->tex[TEX_EAST])
 		data->tex[TEX_EAST] = load_texture(data->s_mlx.mlx, line
 				+ offset(line));
-	else if (ft_strncmp(line, "F ", 2) == 0)
+	else if (ft_strncmp(line, "F ", 2) == 0 && data->map->floor_color == -1)
 		data->map->floor_color = get_rgb_color(line + offset(line));
-	else if (ft_strncmp(line, "C ", 2) == 0)
+	else if (ft_strncmp(line, "C ", 2) == 0 && data->map->ceiling_color == -1)
 		data->map->ceiling_color = get_rgb_color(line + offset(line));
+	else if (BONUS && ft_strncmp(line, "TIMER ", 6) == 0)
+		data->time_left = ft_atol(line + offset(line)) * 1000;
 	else
 		return (DONE);
 	return (0);
