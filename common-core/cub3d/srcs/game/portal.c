@@ -16,16 +16,16 @@ static t_map_element	get_portal_direction(t_raycasting *ray, int button)
 {
 	if (ray->side == 1)
 	{
-		if ((ray->ray_dir_y >= 0 && button == 1) || (ray->ray_dir_y < 0
-				&& button == 3))
+		if ((ray->ray_dir_y >= 0 && button == M_CLK_L) || (ray->ray_dir_y < 0
+				&& button == M_CLK_R))
 			return (SOUTH);
 		else
 			return (NORTH);
 	}
 	else
 	{
-		if ((ray->ray_dir_x >= 0 && button == 1) || (ray->ray_dir_x < 0
-				&& button == 3))
+		if ((ray->ray_dir_x >= 0 && button == M_CLK_L) || (ray->ray_dir_x < 0
+				&& button == M_CLK_R))
 			return (EAST);
 		else
 			return (WEST);
@@ -54,7 +54,7 @@ static int	is_destination_submap_ok(t_data *data, t_raycasting *ray,
 		t_map_element dir, int **cpy)
 {
 	if (dir == NORTH && !flood_fill(data->map, cpy, ray->ray_y + 1, ray->ray_x))
-		return (free_matrix(cpy, data->map->height), 1);
+		return ( free_matrix(cpy, data->map->height), 1);
 	else if (dir == SOUTH && !flood_fill(data->map, cpy, ray->ray_y - 1,
 			ray->ray_x))
 		return (free_matrix(cpy, data->map->height), 1);
@@ -77,7 +77,9 @@ static int	is_portal_possible(t_data *data, t_raycasting *ray, int button)
 	if (data->map->matrix[ray->ray_y][ray->ray_x] != 1)
 		return (0);
 	if (!is_portal_pos_free(data, ray, dir))
-		return (0);
+		return (printf("PAS OK\n"), 0);
+	if (dir == WEST)
+		printf("%d %d\n", ray->ray_x, ray->ray_y);
 	cpy = (int **)ft_calloc((data->map->height + 1), sizeof(int *));
 	if (!cpy)
 		return (print_err(MSG_ERR_MALLOC), -1);

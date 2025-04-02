@@ -18,6 +18,8 @@ int	mouse_click(int button, int x, int y, t_data *data)
 
 	(void)x;
 	(void)y;
+	if (button != M_CLK_L && button != M_CLK_R)
+		return (0);
 	init_ray(data, &ray, WIDTH / 2);
 	dda(data, &ray);
 	create_portal(data, &ray, button);

@@ -48,7 +48,6 @@ int	main(int ac, char **av)
 		exit_with_error(NULL, &data);
 	if (!init_portal_frames(&data))
 		return (clean_up(&data), EXIT_FAILURE);
-	print_data(&data);
 	init_player(&data.player, data.map->player_start,
 		data.map->orientation_start);
 	if (!init_win(&data.s_mlx))
