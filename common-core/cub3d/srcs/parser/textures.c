@@ -12,12 +12,12 @@
 
 #include "cub3D.h"
 
-void	load_extra_textures(t_data *data)
+static void	free_old_tex(t_data *data)
 {
 	int	i;
 
 	i = -1;
-	while (BONUS && ++i < 4)
+	while (++i < 4)
 	{
 		if (data->tex[i])
 		{
@@ -29,7 +29,12 @@ void	load_extra_textures(t_data *data)
 			data->tex[i] = load_texture(data->s_mlx.mlx, PINK_WALL);
 		}
 	}
-	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
+}
+
+void	load_extra_textures(t_data *data)
+{
+	if (BONUS)
+		free_old_tex(data);
 	data->tex[TEX_FLOOR] = load_texture(data->s_mlx.mlx, FLOOR);
 	data->tex[TEX_SMALL_FRAME] = load_texture(data->s_mlx.mlx, SMALL_FRAME);
 	data->tex[TEX_START] = load_texture(data->s_mlx.mlx, HUD_START);
@@ -37,7 +42,8 @@ void	load_extra_textures(t_data *data)
 	data->tex[TEX_CORE] = load_texture(data->s_mlx.mlx, CORE);
 	data->tex[TEX_EMPTY_FRAME] = load_texture(data->s_mlx.mlx, EMPTY_FRAME);
 	data->tex[TEX_FRAME_DETAILS] = load_texture(data->s_mlx.mlx, FRAME_DETAILS);
-	data->tex[TEX_MISSION_COMPLETE] = load_texture(data->s_mlx.mlx, MISSION_COMPLETE);
+	data->tex[TEX_MISSION_COMPLETE] = load_texture(data->s_mlx.mlx,
+			MISSION_COMPLETE);
 	data->tex[TEX_MISSION_FAILED] = load_texture(data->s_mlx.mlx,
 			MISSION_FAILED);
 }

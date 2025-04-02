@@ -100,4 +100,3 @@ int	render_hud(t_data *data)
 		render_minimap(data);
 	return (0);
 }
-
