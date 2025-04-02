@@ -62,6 +62,7 @@ void	render_collectible_left(t_data *data)
 		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width * 2 - 66,
 			(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 3, TEXT_COLOR, str);
+		free(str);
 	}
 }
 

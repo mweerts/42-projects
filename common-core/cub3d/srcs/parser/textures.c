@@ -26,8 +26,8 @@ static void	free_old_tex(t_data *data)
 			if (data->tex[i]->img.img)
 				mlx_destroy_image(data->s_mlx.mlx, data->tex[i]->img.img);
 			free(data->tex[i]);
-			data->tex[i] = load_texture(data->s_mlx.mlx, PINK_WALL);
 		}
+		data->tex[i] = load_texture(data->s_mlx.mlx, PINK_WALL);
 	}
 }
 
