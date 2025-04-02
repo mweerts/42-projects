@@ -91,7 +91,6 @@ int	render_player_in_minimap(t_data *data, t_minimap *minimap)
 	return (0);
 }
 
-
 void	render_minimap(t_data *data)
 {
 	t_minimap	*minimap;

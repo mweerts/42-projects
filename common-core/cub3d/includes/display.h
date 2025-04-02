@@ -59,6 +59,7 @@ void	render_minimap(t_data *data);
 void	init_minimap(t_minimap *minimap);
 void	draw_line(t_data *data, t_coord start, t_coord end, int color);
 int		render_player_in_minimap(t_data *data, t_minimap *minimap);
+void	show_map(t_data *data);
 
 // ANIMATION
 
