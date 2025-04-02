@@ -41,6 +41,30 @@ void	render_time_left(t_data *data, t_coord pos)
 	data->remaining_ms = remaining_ms;
 }
 
+void	render_collectible_left(t_data *data)
+{
+	char	*nb;
+	char	*str;
+
+	if (!data->started || !BONUS)
+		return ;
+	nb = ft_itoa(data->map->nb_cores);
+	if (nb)
+	{
+		str = ft_strjoin("Cores left: ", nb);
+		free(nb);
+		nb = NULL;
+		if (!str)
+			return ;
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width * 2 - 66,
+			(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 2, TEXT_COLOR, str);
+		mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width * 2 - 66,
+			(data->tex[TEX_SMALL_FRAME]->height) / 2 + 50 + 3, TEXT_COLOR, str);
+	}
+}
+
 int	render_game(t_data *data)
 {
 	if (data->started && data->remaining_ms <= 0)
@@ -55,6 +79,7 @@ int	render_game(t_data *data)
 	mlx_put_image_to_window(data->s_mlx.mlx, data->s_mlx.win, data->s_img.img,
 		0, 0);
 	draw_fps(data);
+	render_collectible_left(data);
 	render_time_left(data, (t_coord){WIDTH - data->tex[TEX_SMALL_FRAME]->width
 		- 28, ((double)(data->tex[TEX_SMALL_FRAME]->height) / 2) + 50 + 2});
 	draw_interact(data);

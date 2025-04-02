@@ -38,9 +38,10 @@ static int	set_color(t_data *data, t_coord world, int y, int x)
 		return (-1);
 	if (data->map->matrix[(int)world.y][(int)world.x] == 1)
 		return (0xFFFFFF);
-	else if (data->map->matrix[(int)world.y][(int)world.x] == 2
-		|| data->map->matrix[(int)world.y][(int)world.x] == -2)
-		return (0x00FFFF);
+	else if (data->map->matrix[(int)world.y][(int)world.x] == 2)
+		return (MAIN_YELLOW);
+	else if (data->map->matrix[(int)world.y][(int)world.x] == 3)
+		return (MAIN_GREEN);
 	else
 		return (-1);
 }

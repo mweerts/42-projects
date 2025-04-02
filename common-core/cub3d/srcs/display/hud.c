@@ -92,6 +92,9 @@ int	render_hud(t_data *data)
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
 	if (data->started)
+		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
+			- data->tex[TEX_SMALL_FRAME]->width * 2 - 75, 50}, 1);
+	if (data->started)
 		render_gun(data);
 	if (data->show_map && data->started)
 		show_map(data);
