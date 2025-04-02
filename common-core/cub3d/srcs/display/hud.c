@@ -78,7 +78,7 @@ void	render_start(t_data *data)
 
 	x_pos = (WIDTH - data->tex[TEX_START]->width) / 2;
 	y_pos = (HEIGHT - data->tex[TEX_START]->height - 64) / 2;
-	if (!data->started)
+	if (BONUS && !data->started)
 		draw_texture(data, data->tex[TEX_START], (t_coord){x_pos, y_pos}, 0.8);
 }
 
@@ -88,7 +88,7 @@ int	render_hud(t_data *data)
 	render_start(data);
 	if (data->game_end)
 		render_mission_status(data, data->game_end);
-	if (data->started)
+	if (BONUS && data->started)
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);
 	if (data->started)

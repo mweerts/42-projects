@@ -131,6 +131,9 @@ fclean: clean
 
 re: fclean all
 
+bonus: CFLAGS += -D BONUS=1
+bonus: re
+
 #############################
 #			TESTS			#
 #############################
