@@ -48,7 +48,7 @@ void	render_mission_status(t_data *data, int status)
 		tex = TEX_MISSION_COMPLETE;
 	x_pos = (WIDTH - data->tex[tex]->width) / 2;
 	y_pos = (HEIGHT - data->tex[tex]->height) / 2;
-	if (!data->started)
+	if (data->started)
 		draw_texture(data, data->tex[tex],
 			(t_coord){(double)(WIDTH - data->tex[tex]->width)
 			/ 2, (double)(HEIGHT - data->tex[tex]->height) / 2},
