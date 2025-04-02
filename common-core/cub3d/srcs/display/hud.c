@@ -75,7 +75,6 @@ void	render_start(t_data *data)
 {
 	int	x_pos;
 	int	y_pos;
-	int	color;
 
 	x_pos = (WIDTH - data->tex[TEX_START]->width) / 2;
 	y_pos = (HEIGHT - data->tex[TEX_START]->height - 64) / 2;

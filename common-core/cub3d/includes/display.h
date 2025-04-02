@@ -73,4 +73,8 @@ void	calculate_triangle_points(t_coord center, t_triangle *t, int size);
 void	calculate_direction(t_data *data, t_triangle *t, double *dir_length);
 void	toggle_mouse(t_data *data);
 
+
+// FULLMAP
+void	draw_map_cells(t_data *data, t_fullmap *map);
+
 #endif

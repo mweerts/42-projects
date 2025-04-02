@@ -16,8 +16,8 @@ static void	init_line_params(t_line *line, t_coord start, t_coord end)
 {
 	line->current = start;
 	line->end = end;
-	line->dx = abs(end.x - start.x);
-	line->dy = -(abs(end.y - start.y));
+	line->dx = fabs(end.x - start.x);
+	line->dy = -(fabs(end.y - start.y));
 	line->sx = -1;
 	if (start.x < end.x)
 		line->sx = 1;

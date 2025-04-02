@@ -40,7 +40,6 @@ void	render_mission_status(t_data *data, int status)
 {
 	int	x_pos;
 	int	y_pos;
-	int	color;
 	int	tex;
 
 	tex = TEX_MISSION_FAILED;
