@@ -28,7 +28,7 @@ void	render_time_left(t_data *data, t_coord pos)
 	remaining_ms = 0;
 	if (data->time_left > elapsed_ms)
 		remaining_ms = data->time_left - elapsed_ms;
-	snprintf(time_str, sizeof(time_str), "%02ld:%02ld.%03ld", remaining_ms
+	snprintf(time_str, sizeof(time_str), "%02ld:%02ld:%03ld", remaining_ms
 		/ 60000, (remaining_ms / 1000) % 60, remaining_ms % 1000);
 	p.x = data->minimap.center_x - 30;
 	p.y = data->minimap.center_y - data->minimap.radius - 15;
@@ -38,11 +38,12 @@ void	render_time_left(t_data *data, t_coord pos)
 		time_str);
 	mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, p.x, p.y + 1, 0xFFFFFF,
 		time_str);
+	data->remaining_ms = remaining_ms;
 }
 
 int	render_game(t_data *data)
 {
-	if (data->started && data->time_left <= 0)
+	if (data->started && data->remaining_ms <= 0)
 		data->game_end = LOOSE;
 	if (BONUS)
 		set_textured_background(data);

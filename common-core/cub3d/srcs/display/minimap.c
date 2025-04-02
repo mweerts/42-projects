@@ -45,7 +45,7 @@ static int	set_color(t_data *data, t_coord world, int y, int x)
 		return (-1);
 }
 
-static void	render_map_elements(t_data *data, t_minimap *minimap)
+void	render_elements_in_minimap(t_data *data, t_minimap *minimap)
 {
 	int		color;
 	t_coord	world;
@@ -70,6 +70,28 @@ static void	render_map_elements(t_data *data, t_minimap *minimap)
 	}
 }
 
+int	render_player_in_minimap(t_data *data, t_minimap *minimap)
+{
+	int			player_size;
+	t_triangle	t;
+	double		dir_length;
+
+	player_size = minimap->radius / 16.0f;
+	if (player_size < 1.0f)
+		player_size = 1.0f;
+	draw_circle(data, (t_coord){data->minimap.center_x, data->minimap.center_y},
+		player_size, 0x8b45);
+	calculate_direction(data, &t, &dir_length);
+	calculate_triangle_points((t_coord){data->minimap.center_x,
+		data->minimap.center_y}, &t, player_size);
+	draw_line(data, (t_coord){t.tip_x, t.tip_y}, (t_coord){t.left_x, t.left_y},
+		0xFF);
+	draw_line(data, (t_coord){t.tip_x, t.tip_y}, (t_coord){t.right_x,
+		t.right_y}, 0xFF);
+	return (0);
+}
+
+
 void	render_minimap(t_data *data)
 {
 	t_minimap	*minimap;
@@ -88,6 +110,6 @@ void	render_minimap(t_data *data)
 		}
 		i++;
 	}
-	render_map_elements(data, &data->minimap);
+	render_elements_in_minimap(data, &data->minimap);
 	render_player_in_minimap(data, &data->minimap);
 }

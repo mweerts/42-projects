@@ -12,6 +12,53 @@
 
 #include "cub3D.h"
 
+void	calculate_direction(t_data *data, t_triangle *t, double *dir_length)
+{
+	t->dir_x = data->player.dir_x;
+	t->dir_y = data->player.dir_y;
+	*dir_length = sqrt(t->dir_x * t->dir_x + t->dir_y * t->dir_y) * 0.8;
+	if (*dir_length > 0)
+	{
+		t->dir_x /= *dir_length;
+		t->dir_y /= *dir_length;
+	}
+}
+
+void	draw_circle(t_data *data, t_coord center, int radius, int color)
+{
+	int	i;
+	int	j;
+
+	i = -radius;
+	while (i <= radius)
+	{
+		j = -radius;
+		while (j <= radius)
+		{
+			if (i * i + j * j <= radius * radius)
+				draw_transparent_pixel(data, (t_coord){center.x + j, center.y
+					+ i}, color, 0.8);
+			j++;
+		}
+		i++;
+	}
+}
+
+void	calculate_triangle_points(t_coord center, t_triangle *t, int size)
+{
+	double	perp_x;
+	double	perp_y;
+
+	t->tip_x = center.x + (int)(t->dir_x * size * 2);
+	t->tip_y = center.y + (int)(t->dir_y * size * 2);
+	perp_x = -t->dir_y;
+	perp_y = t->dir_x;
+	t->left_x = center.x + (int)(t->dir_x * size * 0.3 + perp_x * size);
+	t->left_y = center.y + (int)(t->dir_y * size * 0.3 + perp_y * size);
+	t->right_x = center.x + (int)(t->dir_x * size * 0.3 - perp_x * size);
+	t->right_y = center.y + (int)(t->dir_y * size * 0.3 - perp_y * size);
+}
+
 int	blend_color(int background, int overlay, float alpha)
 {
 	t_rgb			bg;

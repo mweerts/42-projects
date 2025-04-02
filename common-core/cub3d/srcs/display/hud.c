@@ -107,11 +107,13 @@ int	render_hud(t_data *data)
 {
 	draw_mouse(data);
 	render_start(data);
-	if (data->game_end)
+	if (data->game_end == LOOSE)
 		draw_texture(data, data->tex[TEX_MISSION_FAILED],
 			(t_coord){(double)(WIDTH - data->tex[TEX_MISSION_FAILED]->width)
 			/ 2, (double)(HEIGHT - data->tex[TEX_MISSION_FAILED]->height) / 2},
 			0.5);
+	else if (data->game_end == WIN)
+		printf("YOU WON!\n");
 	if (data->started)
 		draw_texture(data, data->tex[TEX_SMALL_FRAME], (t_coord){WIDTH
 			- data->tex[TEX_SMALL_FRAME]->width - 50, 50}, 1);

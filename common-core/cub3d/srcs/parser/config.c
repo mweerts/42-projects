@@ -45,6 +45,8 @@ int	validate_config(t_data *data)
 		return (print_err(MSG_MISSING_TEX), ERROR);
 	if (!BONUS && (data->map->floor_color < 0 || data->map->ceiling_color < 0))
 		return (print_err(MSG_ERR_RGB), ERROR);
+	if (BONUS && data->map->nb_cores <= 0)
+		return (print_err("There must be at least one core to deactivate.\n"), ERROR);
 	return (0);
 }
 

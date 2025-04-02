@@ -30,7 +30,7 @@ void	init_data(t_data *data)
 	data->portal2.x = -1;
 	data->start_time.tv_usec = -1;
 	data->mouse_off = 1;
-	data->last_frame_t = get_current_time();
+	data->remaining_ms = 1;
 	init_minimap(&data->minimap);
 }
 

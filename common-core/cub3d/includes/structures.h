@@ -95,18 +95,17 @@ typedef struct s_minimap
 	double			ratio;
 }					t_minimap;
 
-typedef struct s_show_map
+typedef struct s_fullmap
 {
-	t_coord	map_area;        // Top-left corner of the map display area
-	int		cells_x;         // Number of cells horizontally
-	int		cells_y;         // Number of cells vertically
-	double	start_map_x;     // Starting map X coordinate (top-left)
-	double	start_map_y;     // Starting map Y coordinate (top-left)
-	double	offset_x;        // Fractional X offset for smooth scrolling
-	double	offset_y;        // Fractional Y offset for smooth scrolling
-	int		cell_size;       // Size of each cell in pixels
-	t_coord	player_pos;      // Position of player on the map display
-}	t_show_map;
+	t_coord map_area;
+	int cells_x;
+	int cells_y;
+	t_coord start;
+	double offset_x;
+	double offset_y;
+	int cell_size;
+	t_coord player_pos;
+}					t_fullmap;
 
 typedef struct s_img
 {
@@ -250,6 +249,7 @@ typedef struct s_data
 	int				mouse_off;
 	int				max_row;
 	t_minimap		minimap;
+	t_minimap		full_map;
 	int				max_col;
 	t_portal		portal1;
 	t_portal		portal2;
@@ -258,6 +258,7 @@ typedef struct s_data
 	long			time_left;
 	int				game_end;
 	int				first_portal;
+	int				remaining_ms;
 	int				show_map;
 	int				last_frame_t;
 }					t_data;

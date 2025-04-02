@@ -97,9 +97,9 @@ int	mouse_handler(int x, int y, t_data *data)
 
 	border = WIDTH / 1.1;
 	(void)y;
-	// if (data->mouse_off)
-	// 	return (0);
-	if (reset) 
+	if (data->mouse_off)
+		return (0);
+	if (reset)
 	{
 		if (x == WIDTH / 2 && y == HEIGHT / 2)
 			reset = 0;
@@ -112,7 +112,6 @@ int	mouse_handler(int x, int y, t_data *data)
 	}
 	if (x < border || y < border || x > WIDTH - border || y > HEIGHT - border)
 	{
-		
 		mlx_mouse_move(data->s_mlx.mlx, data->s_mlx.win, WIDTH / 2, HEIGHT / 2);
 		reset = 1;
 		old_x = WIDTH / 2;

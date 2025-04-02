@@ -79,7 +79,6 @@ SRC		= 	main.c \
 			display/raycasting.c \
 			display/display_map.c \
 			display/minimap.c \
-			display/minimap_player.c \
 			display/texture.c \
 			display/hud.c \
 			display/utils.c \
