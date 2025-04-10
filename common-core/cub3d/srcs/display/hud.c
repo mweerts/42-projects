@@ -65,9 +65,9 @@ void	draw_interact(t_data *data)
 	if (abs(curr_x - ray.ray_x) <= 2 && abs(curr_y - ray.ray_y) <= 2)
 	{
 		if (data->map->matrix[ray.ray_y][ray.ray_x] == 2)
-			mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, (WIDTH / 2) - 48,
-				(HEIGHT / 2) - POINTER_SIZE - 24, TEXT_COLOR,
-				"Press [E] to shut down power.");
+			mlx_string_put(data->s_mlx.mlx, data->s_mlx.win, (WIDTH / 2)
+				- POINTER_SIZE - 64, (HEIGHT / 2) - POINTER_SIZE - 24,
+				TEXT_COLOR, "Press [E] to shut down power");
 	}
 }
 
