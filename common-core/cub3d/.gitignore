@@ -3,7 +3,7 @@ cub3d
 objs
 testers
 tests/parser
-#.vscode
+.vscode
 
 # Prerequisites
 *.d
