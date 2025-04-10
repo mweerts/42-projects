@@ -59,5 +59,5 @@ Maps use .cub files that can include the following parameters:
 
 ## Authors
 
-- **maxweert** - [GitHub profile](https://github.com/maxweert)
+- **maxweert** - [GitHub profile](https://github.com/mweerts)
 - **llebugle** - [GitHub profile](https://github.com/llebugle)
