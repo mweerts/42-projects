@@ -8,6 +8,13 @@ A ray-casting 3D maze exploration game inspired by Wolfenstein 3D, built using t
 
 cub3D is a first-person 3D maze explorer where players navigate through custom mazes while deactiving overheating cores. The game features a unique portal mechanic for teleportation, and a mission-based gameplay system.
 
+## Compilation and Execution
+
+```bash
+make
+./cub3d test_maps/fast.cub
+```
+
 ## Features
 
 - 3D ray-casting engine with textured walls, floors and ceilings
@@ -45,13 +52,6 @@ Maps use .cub files that can include the following parameters:
   - 0: Empty space
   - C: Core to collect
   - N/S/E/W: Player starting position and orientation
-
-## Compilation and Execution
-
-```bash
-make
-./cub3D tests_maps/fast.cub
-```
 
 ## Acknowledgments
 
