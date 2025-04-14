@@ -2,6 +2,8 @@
 
 PhoneBook::PhoneBook() : _currIndex(0), _nbContact(0) {}
 
+PhoneBook::~PhoneBook() {}
+
 static bool strIsNum(std::string str) {
     if (str.length() == 0)
         return (false);

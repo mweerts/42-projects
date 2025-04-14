@@ -10,10 +10,11 @@ class PhoneBook {
     int _nbContact;
 
    public:
-    PhoneBook();
-    void add();
-    void search();
-    void printMenu();
+    PhoneBook(void);
+    ~PhoneBook(void);
+    void add(void);
+    void search(void);
+    void printMenu(void);
 };
 
 #endif
