@@ -6,7 +6,7 @@ COLOUR_END=\033[0m
 NAME = phoneBook
 
 CC = c++
-CFLAGS = -std=c++98 -I $(INCLUDES) -g #-Wall -Wextra -Werror 
+CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror 
 
 INCLUDES = ./includes/
 
@@ -29,7 +29,7 @@ clean:
 
 fclean: 
 		rm -rf $(OBJS)
-		rm -rf $(EXEC)
+		rm -rf $(NAME)
 
 re: fclean all
 

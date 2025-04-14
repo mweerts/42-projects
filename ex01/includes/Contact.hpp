@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <stdlib.h>
 
 class Contact {
    private:
