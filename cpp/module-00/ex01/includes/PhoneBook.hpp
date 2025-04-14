@@ -13,6 +13,7 @@ class PhoneBook {
     PhoneBook();
     void add();
     void search();
+    void printMenu();
 };
 
 #endif
