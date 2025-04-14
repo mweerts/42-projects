@@ -3,10 +3,10 @@ COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_END=\033[0m
 
-NAME = a.out
+NAME = phoneBook
 
 CC = c++
-CFLAGS = -std=c++98 -I $(INCLUDES) -g#-Wall -Wextra -Werror 
+CFLAGS = -std=c++98 -I $(INCLUDES) -g #-Wall -Wextra -Werror 
 
 INCLUDES = ./includes/
 
