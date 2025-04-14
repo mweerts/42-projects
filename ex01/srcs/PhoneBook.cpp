@@ -83,27 +83,26 @@ void PhoneBook::printMenu() {
             std::cout << std::setw(10) << _contactArr[i].getNickName() << "|";
         std::cout << "\n";
     }
-	std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 static void printContact(Contact contact) {
-	std::cout << "\n";
+    std::cout << "\n";
     std::cout << "First Name : " << contact.getFirstName() << "\n";
     std::cout << "Last Name : " << contact.getLastName() << "\n";
     std::cout << "Nickname : " << contact.getNickName() << "\n";
     std::cout << "Phone Number : " << contact.getPhoneNumber() << "\n";
     std::cout << "Darkest Secret : " << contact.getDarkestSecret() << "\n";
-	std::cout << std::endl;
+    std::cout << std::endl;
 }
 
 void PhoneBook::search() {
     std::string inputStr;
 
-	if (_nbContact == 0)
-	{
-		std::cout << RED BOLD "PhoneBook Is Empty !\n" END;
-		return ;
-	}
+    if (_nbContact == 0) {
+        std::cout << RED BOLD "PhoneBook Is Empty !\n" END;
+        return;
+    }
     printMenu();
     std::cout << "Select Index :\n";
     getline(std::cin, inputStr);

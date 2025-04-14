@@ -6,10 +6,10 @@
 #define RED "\033[0;31m"
 #define END "\033[0m"
 
-#include <string>
-#include <iostream>
-#include <iomanip>
 #include <stdlib.h>
+#include <iomanip>
+#include <iostream>
+#include <string>
 
 class Contact {
    private:
