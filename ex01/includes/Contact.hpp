@@ -1,8 +1,14 @@
 #ifndef __CONTACT_HPP__
 #define __CONTACT_HPP__
 
+#define BOLD "\033[1m"
+#define GREEN "\033[0;32m"
+#define RED "\033[0;31m"
+#define END "\033[0m"
+
 #include <string>
 #include <iostream>
+#include <iomanip>
 
 class Contact {
    private:
