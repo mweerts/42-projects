@@ -20,7 +20,8 @@ class Contact {
     std::string _darkestSecret;
 
    public:
-    Contact();
+    Contact(void);
+    ~Contact(void);
     void setFirstName(std::string firstName);
     void setLastName(std::string lastName);
     void setNickName(std::string nickName);

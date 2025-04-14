@@ -2,6 +2,8 @@
 
 Contact::Contact() {}
 
+Contact::~Contact() {}
+
 void Contact::setFirstName(std::string firstName) {
     _firstName = firstName;
 }
