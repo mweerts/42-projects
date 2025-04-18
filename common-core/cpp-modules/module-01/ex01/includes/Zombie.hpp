@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <stdlib.h>
+#include <climits>
 
 class Zombie {
    private:

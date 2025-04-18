@@ -1,7 +1,7 @@
 #include "Zombie.hpp"
 
 Zombie::Zombie() {
-    std::cout << GREEN << "Unnamed" << ": Created !" << END << std::endl;
+   std::cout << GREEN << "Unnamed" << ": Created !" << END << std::endl;
 };
 
 Zombie::~Zombie() {
