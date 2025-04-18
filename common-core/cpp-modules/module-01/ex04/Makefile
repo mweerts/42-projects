@@ -3,17 +3,15 @@ COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_END=\033[0m
 
-NAME = zombieHorde
+NAME = replace
 
 CC = c++
 CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror 
 
-INCLUDES = ./includes/
+INCLUDES =
 
-SRCS =	./srcs/main.cpp \
-		./srcs/Zombie.cpp \
-		./srcs/zombieHorde.cpp
-
+SRCS =	./srcs/main.cpp
+		
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(NAME)

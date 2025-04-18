@@ -3,7 +3,7 @@ COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_END=\033[0m
 
-NAME = zombieHorde
+NAME = harlFilter
 
 CC = c++
 CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror 
@@ -11,8 +11,8 @@ CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror
 INCLUDES = ./includes/
 
 SRCS =	./srcs/main.cpp \
-		./srcs/Zombie.cpp \
-		./srcs/zombieHorde.cpp
+		./srcs/Harl.cpp
+		
 
 OBJS = $(SRCS:.cpp=.o)
 

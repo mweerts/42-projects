@@ -3,7 +3,7 @@ COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_END=\033[0m
 
-NAME = ZombieLand
+NAME = zombieLand
 
 CC = c++
 CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror 
