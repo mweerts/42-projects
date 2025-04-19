@@ -1,3 +1,6 @@
+#ifndef __HUMANB_HPP__
+#define __HUMANB_HPP__
+
 #include <iostream>
 #include <string>
 
@@ -27,3 +30,5 @@ void HumanB::attack(void) const {
 void HumanB::setWeapon(Weapon &weapon) {
     _weapon = &weapon;
 }
+
+#endif

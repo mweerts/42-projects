@@ -1,3 +1,6 @@
+#ifndef __HUMANA_HPP__
+#define __HUMANA_HPP__
+
 #include "Weapon.hpp"
 #include <string>
 #include <iostream>
@@ -21,3 +24,5 @@ HumanA::~HumanA() {}
 void HumanA::attack(void) const {
 	std::cout << _name << " attacks with their " << _weapon.getType() << std::endl;
 }
+
+#endif
