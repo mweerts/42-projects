@@ -1,22 +1,20 @@
-#ifndef __FIXED_HPP__
-#define __FIXED_HPP__
+#ifndef FIXED_HPP
+#define FIXED_HPP
 
-class Fixed
-{
-private:
-	/* data */
-public:
-	Fixed(/* args */);
-	~Fixed();
+#include <iostream>
+
+class Fixed {
+   public:
+    Fixed();
+    Fixed(const Fixed &other);
+    ~Fixed();
+    Fixed &operator=(const Fixed &other);
+    int    getRawBits(void) const;
+    void   setRawBits(int const raw);
+
+   private:
+    int              _rawBits;
+    static const int _fractionalBits = 8;
 };
-
-Fixed::Fixed(/* args */)
-{
-}
-
-Fixed::~Fixed()
-{
-}
-
 
 #endif
