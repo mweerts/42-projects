@@ -31,6 +31,8 @@ int main(int argc, char** argv) {
     }
     input = std::strtol(argv[1], NULL, 10);
     horde = zombieHorde(input, "Bob");
+    if (!horde)
+        return (1);
     for (int i = 0; i < input; i++)
         horde[i].announce();
     delete[] horde;
