@@ -1,3 +1,6 @@
+#ifndef POINT_HPP
+# define POINT_HPP
+
 #include "Fixed.hpp"
 
 class Point {
@@ -15,3 +18,5 @@ class Point {
     Fixed getX();
     Fixed getY();
 };
+
+# endif

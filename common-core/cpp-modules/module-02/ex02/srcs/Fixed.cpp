@@ -1,34 +1,30 @@
 #include "../includes/Fixed.hpp"
 
 #include <cmath>
+
 #include "Fixed.hpp"
 
 // CONSTRUCTORS
 
 Fixed::Fixed() {
-    std::cout << "Default constructor called" << std::endl;
     _rawBits = 0;
 }
 
 Fixed::Fixed(const Fixed &other) {
-    std::cout << "Copy constructor called" << std::endl;
     *this = other;
 }
 
 Fixed::Fixed(const int number) {
-    std::cout << "Int constructor called" << std::endl;
     _rawBits = number << _fractionalBits;
 }
 
 Fixed::Fixed(const float number) {
-    std::cout << "Float constructor called" << std::endl;
     _rawBits = roundf(number * (1 << _fractionalBits));
 }
 
 // COPY ASSIGNMENT OPERATOR
 
 Fixed &Fixed::operator=(const Fixed &other) {
-    std::cout << "Copy assignment operator called" << std::endl;
     if (this != &other) {
         _rawBits = other.getRawBits();
     }
@@ -37,9 +33,7 @@ Fixed &Fixed::operator=(const Fixed &other) {
 
 // DESTRUCTOR
 
-Fixed::~Fixed() {
-    std::cout << "Destructor called" << std::endl;
-}
+Fixed::~Fixed() {}
 
 // METHODS
 
