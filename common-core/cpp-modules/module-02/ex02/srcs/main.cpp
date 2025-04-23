@@ -17,7 +17,7 @@ int main(void) {
 
     Fixed c(2.5f);
     Fixed d(1.5f);
-    std::cout << "c  : " << c <<" d : " <<  d << std::endl;
+    std::cout << "c  : " << c << " d : " << d << std::endl;
     std::cout << "c + d : " << c + d << std::endl;
     std::cout << "c - d : " << c - d << std::endl;
     std::cout << "c * d : " << c * d << std::endl;
