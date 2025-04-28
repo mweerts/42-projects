@@ -12,7 +12,10 @@ INCLUDES = ./includes/
 
 SRCS =	./srcs/main.cpp \
 		./srcs/AMateria.cpp \
-		./srcs/ICharacter.cpp
+		./srcs/Character.cpp \
+		./srcs/Cure.cpp \
+		./srcs/Ice.cpp \
+		./srcs/MateriaSource.cpp
 		
 OBJS = $(SRCS:.cpp=.o)
 

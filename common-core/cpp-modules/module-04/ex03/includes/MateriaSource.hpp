@@ -2,6 +2,7 @@
 #define MATERIASOURCE_HPP
 
 #include "IMateriaSource.hpp"
+#include <iostream>
 
 class MateriaSource : public IMateriaSource {
    public:
@@ -10,7 +11,11 @@ class MateriaSource : public IMateriaSource {
     ~MateriaSource();
     MateriaSource &operator=(const MateriaSource &other);
 
+    virtual void      learnMateria(AMateria *m);
+    virtual AMateria *createMateria(std::string const &type);
+
    private:
+    AMateria *_materiaSourceInventory[4];
 };
 
 #endif
