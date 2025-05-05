@@ -1,7 +1,6 @@
 #include "Bureaucrat.hpp"
 
 int main(void) {
-
     std::cout << "Creating Bureaucrat with grade too low :" << std::endl;
     try {
         Bureaucrat a("Bob", 151);
@@ -47,7 +46,7 @@ int main(void) {
         std::cout << d << std::endl;
         d.decrementGrade();
         std::cout << d << std::endl;
-		d.decrementGrade();
+        d.decrementGrade();
         std::cout << d << std::endl;
 
     } catch (std::exception &e) {
