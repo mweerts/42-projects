@@ -2,18 +2,24 @@
 
 ## to implement ##
 - [] Config parser
-- [] Server Initialization (NonBlocking I/O)
+- [] Core Server (NonBlocking I/O)
 - [] Request parse (HttpRequest class)
 - [] Response builder ()
 - [] CGI
 - [] Cookie
+
+### Core server ###
+- [] Server initialization # from default config if none given
+- [] Non blocking and Event-driven I/O using epoll/select)
+- [] Socket connection
+- [] 
+
 
 ### config parser ###
 - [] default params
 - [] asterisk ?? (server_name *.example.com )
 - [] remove comments
 - [] refers to default.conf for each param to handle
-- []
 - []
 
 ### request parser ###
@@ -32,15 +38,9 @@
 - [] content-type
 - [] content-length
 - []
-- []
-- []
 
 ### CGI ###
 - []
-- []
-- []
 
 ### Cookie ###
-- []
-- []
 - []
