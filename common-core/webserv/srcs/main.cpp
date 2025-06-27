@@ -10,13 +10,26 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <iostream>
-#include "../includes/Logger.hpp"
+#include "Logger.hpp"
+#include "config/server_config.hpp"
+#include "core/web_server.hpp"
+#include "tests.cpp"
+#include <signal.h>
 
 int main() {
     Logger::setLevel(LOG_LEVEL_DEBUG);
     Logger::enableColors(true);
-    
-    Logger::info() << "... initializing server ...";
+
+    Logger::info() << "... initializing config ...";
+    Config config = testConfig();
+
+    WebServer web_server(config);
+    Logger::info() << "... initializing servers ...";
+    if (!web_server.Start()) {
+        return 1;
+    }
+    Logger::info() << "... Server running ...";
+    web_server.Run();
+
     return 0;
 }

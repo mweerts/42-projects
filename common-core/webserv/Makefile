@@ -6,7 +6,7 @@
 #    By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/25 18:26:27 by llebugle          #+#    #+#              #
-#    Updated: 2025/06/25 18:26:32 by llebugle         ###   ########.fr        #
+#    Updated: 2025/06/27 21:25:11 by llebugle         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,14 +50,20 @@ re: fclean all
 ## CMAKE rules ##
 cbuild:
 	@mkdir -p build
-	@cd build && cmake .. && make
+	@cd build && cmake .. && make webserv
 #	@cp build/compile_commands.json . 2>/dev/null || true
 
+cbuild-test:
+	@mkdir -p build
+	@cd build && cmake .. && make test
+	
 cclean:
 	@rm -rf build
 # @rm -f compile_commands.json
 
-crun: cmake-build
+crun: cbuild
 	@cd build && ./webserv
 
+ctest: cbuild-test
+	@cd build && ./webserv_test
 .PHONY: cmake-build cmake-clean cmake-run

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/Logger.hpp"
+#include "Logger.hpp"
 
 #include <iostream>
 #include <string>
@@ -21,6 +21,7 @@ const char* Logger::GREEN = "\033[32m";
 const char* Logger::BLUE = "\033[34m";
 const char* Logger::YELLOW = "\033[33m";
 const char* Logger::RED = "\033[31m";
+const char* Logger::CRITICAL = "\033[31m";
 const char* Logger::PURPLE = "\033[36m";
 
 LogLevel Logger::_currentLevel = LOG_LEVEL_DEBUG;
@@ -47,6 +48,7 @@ const std::string Logger::getLevelName(LogLevel level) {
         case LOG_LEVEL_INFO: return "INFO";
         case LOG_LEVEL_WARNING: return "WARNING";
         case LOG_LEVEL_ERROR: return "ERROR";
+        case LOG_LEVEL_CRITICAL: return "CRITICAL";
         case LOG_LEVEL_NONE: return "NONE";
         default: return "UNKNOWN";
     }
@@ -85,7 +87,7 @@ void Logger::log(LogLevel level, const std::string& message) {
                 break;
             }
             case LOG_LEVEL_INFO: {
-                std::cout << BLUE;
+                std::cout << GREEN;
                 break;
             }
             case LOG_LEVEL_WARNING: {
@@ -93,6 +95,10 @@ void Logger::log(LogLevel level, const std::string& message) {
                 break;
             }
             case LOG_LEVEL_ERROR: {
+                std::cout << RED;
+                break;
+            }
+            case LOG_LEVEL_CRITICAL: {
                 std::cout << RED;
                 break;
             }
@@ -121,6 +127,10 @@ LogStream Logger::error() {
     return LogStream(LOG_LEVEL_ERROR);
 }
 
+LogStream Logger::critical() {
+    return LogStream(LOG_LEVEL_CRITICAL);
+}
+
 void Logger::debug(const std::string& message) {
     log(LOG_LEVEL_DEBUG, message);
 }
@@ -132,5 +142,9 @@ void Logger::warning(const std::string& msg) {
     log(LOG_LEVEL_WARNING, msg);
 }
 void Logger::error(const std::string& msg) {
+    log(LOG_LEVEL_ERROR, msg);
+}
+
+void Logger::critical(const std::string& msg) {
     log(LOG_LEVEL_ERROR, msg);
 }

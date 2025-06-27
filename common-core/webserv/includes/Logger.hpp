@@ -19,11 +19,12 @@
 class LogStream;
 
 enum LogLevel {
-    LOG_LEVEL_DEBUG = 0,    // Most detailed
-    LOG_LEVEL_INFO = 1,     // General information
-    LOG_LEVEL_WARNING = 2,  // Warning messages
-    LOG_LEVEL_ERROR = 3,    // Error messages
-    LOG_LEVEL_NONE = 4      // No logging at all
+    LOG_LEVEL_DEBUG = 0,     // Most detailed
+    LOG_LEVEL_INFO = 1,      // General information
+    LOG_LEVEL_WARNING = 2,   // Warning messages
+    LOG_LEVEL_ERROR = 3,     // Error messages
+    LOG_LEVEL_CRITICAL = 4,  // Error messages
+    LOG_LEVEL_NONE = 5       // No logging at all
 };
 
 class Logger {
@@ -33,6 +34,7 @@ class Logger {
     static const char* BLUE;
     static const char* YELLOW;
     static const char* RED;
+    static const char* CRITICAL;
     static const char* PURPLE;
 
     static LogLevel getLevel();
@@ -44,11 +46,13 @@ class Logger {
     static LogStream info();
     static LogStream warning();
     static LogStream error();
+    static LogStream critical();
 
     static void debug(const std::string& message);
     static void info(const std::string& message);
     static void warning(const std::string& message);
     static void error(const std::string& message);
+    static void critical(const std::string& message);
 
     static const std::string getLevelName(LogLevel level);
 
@@ -89,9 +93,9 @@ class LogStream {
     }
 
    private:
-    LogLevel _level;
+    LogLevel    _level;
     std::string _buffer;
-    bool _active;
+    bool        _active;
 };
 
 #define LOG_DEBUG(msg_expr)                      \
@@ -120,6 +124,13 @@ class LogStream {
         std::stringstream ss_error;              \
         ss_error << msg_expr;                    \
         Logger::error(ss_error.str());           \
+    }
+
+#define LOG_CRITICAL(msg_expr)                      \
+    if (Logger::getLevel() <= LOG_LEVEL_CRITICAL) { \
+        std::stringstream ss_error;                 \
+        ss_error << msg_expr;                       \
+        Logger::critical(ss_error.str());           \
     }
 
 #endif
