@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "config/server_config.hpp"
-#include "core/web_server.hpp"
 
 namespace {
 int GetNextTestPort() {

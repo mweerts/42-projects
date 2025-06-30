@@ -60,7 +60,6 @@ class WebServer {
     bool InitializeListeners();
     void SetupPolling();
 
-    HttpListener* FindListenerBySocket(int socket_fd);  // old version
     bool          IsListeningSocket(int fd) const;
     void          HandleNewConnection(int listening_fd);
     void          RemoveClient(int client_fd);

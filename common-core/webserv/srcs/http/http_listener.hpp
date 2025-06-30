@@ -32,7 +32,7 @@ class HttpListener {
     bool Initialize();  // Create socket, bind, listen
     int  GetListenSocket() const;
 
-    void AcceptAndHandle();  // Only temporary for testing 
+    void AcceptAndHandle();  // Only temporary for testing
 
    private:
     Server config_;
@@ -42,6 +42,7 @@ class HttpListener {
     void        HandleRequest(int client_fd);
     in_addr_t   getAddress();
     std::string BuildHttpResponse();
+    
     HttpListener(const HttpListener& other);
     HttpListener& operator=(const HttpListener& other);
 };

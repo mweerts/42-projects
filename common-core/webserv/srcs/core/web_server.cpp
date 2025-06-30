@@ -202,6 +202,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
     Logger::info() << "New client connected: fd=" << client_fd << " from "
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << active_clients_.size();
+    // END TEMPORARY
 }
 
 void WebServer::CleanupTimedOutClients() {
@@ -250,14 +251,4 @@ bool WebServer::IsListeningSocket(int fd) const {
         }
     }
     return false;
-}
-
-HttpListener* WebServer::FindListenerBySocket(int socket_fd) {
-    for (std::vector<HttpListener*>::iterator it = listeners_.begin();
-         it != listeners_.end(); ++it) {
-        if ((*it)->GetListenSocket() == socket_fd) {
-            return *it;
-        }
-    }
-    return NULL;
 }

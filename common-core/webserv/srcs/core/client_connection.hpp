@@ -27,7 +27,6 @@ class ClientConnection {
     };
 
    public:
-    // INCOMPLETE FOR NOW
     explicit ClientConnection(int socket_fd);
     ~ClientConnection() {
         Close();

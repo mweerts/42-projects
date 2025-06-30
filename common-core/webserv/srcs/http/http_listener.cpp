@@ -66,54 +66,6 @@ bool HttpListener::Initialize() {
     return true;
 }
 
-void HttpListener::AcceptAndHandle() {
-    // Accept one incoming connection
-    int client_fd = accept(listen_fd_, NULL, NULL);
-    if (client_fd < 0) {
-        // Don't spam errors - accept can fail for various reasons
-        return;
-    }
-
-    std::cout << "[" << config_.name << "] New connection accepted"
-              << std::endl;
-
-    // Handle the request immediately (blocking)
-    HandleRequest(client_fd);
-}
-
-void HttpListener::HandleRequest(int client_fd) {
-    // TODO
-    // read and parse request
-    std::string response = BuildHttpResponse();
-
-    ssize_t bytes_sent =
-        send(client_fd, response.c_str(), response.length(), 0);
-    if (bytes_sent < 0) {
-        std::cerr << "[" << config_.name << "] Failed to send response"
-                  << std::endl;
-    } else {
-        std::cout << "[" << config_.name << "] Response sent (" << bytes_sent
-                  << " bytes)" << std::endl;
-    }
-}
-
-std::string HttpListener::BuildHttpResponse() {
-    // TODO Implement real Response builder
-    // probably a class with the different methods
-    std::string body = "Hello from server: " + config_.name + " (port " +
-                       lib::to_string(config_.port) + ")";
-
-    std::string response = "HTTP/1.1 200 OK\r\n";
-    // response += "Connection: close\r\n";  // Explicitly close connection
-    response +=
-        "Content-Length: " + lib::to_string(static_cast<int>(body.length())) +
-        "\r\n";
-    response += "\r\n";
-    response += body;
-
-    return response;
-}
-
 in_addr_t HttpListener::getAddress() {
     in_addr_t host_addr;
     if (config_.host.empty()) {
@@ -137,3 +89,53 @@ HttpListener& HttpListener::operator=(const HttpListener& other) {
     (void)other;
     return *this;
 }
+
+// OLD VERSION TO TEST
+// void HttpListener::AcceptAndHandle() {
+//     // Accept one incoming connection
+//     int client_fd = accept(listen_fd_, NULL, NULL);
+//     if (client_fd < 0) {
+//         // Don't spam errors - accept can fail for various reasons
+//         return;
+//     }
+
+//     std::cout << "[" << config_.name << "] New connection accepted"
+//               << std::endl;
+
+//     // Handle the request immediately (blocking)
+//     HandleRequest(client_fd);
+// }
+
+// void HttpListener::HandleRequest(int client_fd) {
+//     // TODO
+//     // read and parse request
+//     std::string response = BuildHttpResponse();
+
+//     ssize_t bytes_sent =
+//         send(client_fd, response.c_str(), response.length(), 0);
+//     if (bytes_sent < 0) {
+//         std::cerr << "[" << config_.name << "] Failed to send response"
+//                   << std::endl;
+//     } else {
+//         std::cout << "[" << config_.name << "] Response sent (" << bytes_sent
+//                   << " bytes)" << std::endl;
+//     }
+// }
+
+// std::string HttpListener::BuildHttpResponse() {
+//     // TODO Implement real Response builder
+//     // probably a class with the different methods
+//     std::string body = "Hello from server: " + config_.name + " (port " +
+//                        lib::to_string(config_.port) + ")";
+
+//     std::string response = "HTTP/1.1 200 OK\r\n";
+//     // response += "Connection: close\r\n";  // Explicitly close connection
+//     response +=
+//         "Content-Length: " + lib::to_string(static_cast<int>(body.length()))
+//         +
+//         "\r\n";
+//     response += "\r\n";
+//     response += body;
+
+//     return response;
+// }

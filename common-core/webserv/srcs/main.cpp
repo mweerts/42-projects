@@ -14,7 +14,6 @@
 #include "config/server_config.hpp"
 #include "core/web_server.hpp"
 #include "tests.cpp"
-#include <signal.h>
 
 int main() {
     Logger::setLevel(LOG_LEVEL_DEBUG);
