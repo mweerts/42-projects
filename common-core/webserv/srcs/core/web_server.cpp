@@ -26,7 +26,7 @@
 #include <map>
 #include <vector>
 
-#include "../config/server_config.hpp"
+#include "server_config.hpp"
 #include "../http/http_listener.hpp"
 #include "Logger.hpp"
 #include "client_connection.hpp"
@@ -44,7 +44,7 @@ void signal_handler(int signal) {
 bool WebServer::Start() {
     for (std::vector<Server>::const_iterator it = config_.servers.begin();
          it != config_.servers.end(); ++it) {
-        HttpListener* listener = new HttpListener(*it);
+        http::Listener* listener = new http::Listener(*it);
 
         if (!listener->Initialize()) {
             delete listener;
@@ -73,7 +73,7 @@ bool WebServer::Start() {
 void WebServer::SetupPolling() {
     poll_fds_.clear();
 
-    for (std::vector<HttpListener*>::iterator it = listeners_.begin();
+    for (std::vector<http::Listener*>::iterator it = listeners_.begin();
          it != listeners_.end(); ++it) {
         pollfd pfd;
         pfd.fd = (*it)->GetListenSocket();

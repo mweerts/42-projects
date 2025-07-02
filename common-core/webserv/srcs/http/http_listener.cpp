@@ -23,7 +23,8 @@
 #include "lib/socket_guard.hpp"
 #include "lib/utils.hpp"
 
-bool HttpListener::Initialize() {
+namespace http {
+bool Listener::Initialize() {
     listen_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (listen_fd_ < 0) {
         Logger::error() << "Failed to create socket for " << config_.name;
@@ -58,7 +59,7 @@ bool HttpListener::Initialize() {
     return true;
 }
 
-bool HttpListener::BindAddress() {
+bool Listener::BindAddress() {
     struct addrinfo  hints;
     struct addrinfo* result;
 
@@ -95,20 +96,13 @@ bool HttpListener::BindAddress() {
     return true;
 }
 
-int HttpListener::GetListenSocket() const {
+int Listener::GetListenSocket() const {
     return listen_fd_;
 }
-
-HttpListener::HttpListener(const HttpListener& other) {
-    (void)other;
-};
-HttpListener& HttpListener::operator=(const HttpListener& other) {
-    (void)other;
-    return *this;
-}
+}  // namespace http
 
 // OLD VERSION TO TEST
-// void HttpListener::AcceptAndHandle() {
+// void Listener::AcceptAndHandle() {
 //     // Accept one incoming connection
 //     int client_fd = accept(listen_fd_, NULL, NULL);
 //     if (client_fd < 0) {
@@ -123,7 +117,7 @@ HttpListener& HttpListener::operator=(const HttpListener& other) {
 //     HandleRequest(client_fd);
 // }
 
-// void HttpListener::HandleRequest(int client_fd) {
+// void http::Listener::HandleRequest(int client_fd) {
 //     // TODO
 //     // read and parse request
 //     std::string response = BuildHttpResponse();
@@ -139,7 +133,7 @@ HttpListener& HttpListener::operator=(const HttpListener& other) {
 //     }
 // }
 
-// std::string HttpListener::BuildHttpResponse() {
+// std::string http::Listener::BuildHttpResponse() {
 //     // TODO Implement real Response builder
 //     // probably a class with the different methods
 //     std::string body = "Hello from server: " + config_.name + " (port " +

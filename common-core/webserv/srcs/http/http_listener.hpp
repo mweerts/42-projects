@@ -18,20 +18,20 @@
 
 #include <string>
 
-#include "../config/server_config.hpp"
+#include "server_config.hpp"
 
-class HttpListener {
+namespace http {
+class Listener {
    public:
-    explicit HttpListener(const Server& config)
-        : config_(config), listen_fd_(-1) {}
+    explicit Listener(const Server& config) : config_(config), listen_fd_(-1) {}
 
-    ~HttpListener() {
+    ~Listener() {
         if (listen_fd_ >= 0) {
             close(listen_fd_);
         }
     }
 
-    bool Initialize();  // Create socket, bind, listen
+    bool Initialize();  // Create socket, bind and listen
     int  GetListenSocket() const;
 
     void AcceptAndHandle();  // Only temporary for testing
@@ -41,13 +41,18 @@ class HttpListener {
     int    listen_fd_;
 
    private:
-    void HandleRequest(int client_fd);
-    // in_addr_t   getAddress();
+    void        HandleRequest(int client_fd);
     bool        BindAddress();
     std::string BuildHttpResponse();
 
-    HttpListener(const HttpListener& other);
-    HttpListener& operator=(const HttpListener& other);
+    Listener(const Listener& other) {
+        (void)other;
+    };
+    Listener& operator=(const Listener& other) {
+        (void)other;
+        return *this;
+    };
 };
+}  // namespace http
 
 #endif

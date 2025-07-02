@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "config/server_config.hpp"
+#include "server_config.hpp"
 
 namespace {
 int GetNextTestPort() {

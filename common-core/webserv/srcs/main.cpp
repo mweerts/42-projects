@@ -15,7 +15,7 @@
 #include <exception>
 
 #include "Logger.hpp"
-#include "config/server_config.hpp"
+#include "server_config.hpp"
 #include "core/web_server.hpp"
 #include "tests.cpp"
 
