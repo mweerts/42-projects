@@ -106,21 +106,26 @@ void WebServer::SetupPolling() {
 }
 
 void WebServer::Run() {
-    running_ = true;
-    Logger::info() << "WebServer started with " << listeners_.size()
-                   << " listeners";
+    Logger::debug() << "WebServer started with " << listeners_.size()
+                    << " listeners";
 
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
 
     // protect this loop with try later when i know where it can throw
+    running_ = true;
     while (running_ && !g_shutdown_requested) {
         SetupPolling();  // protect this
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
 
         if (ready < 0 && !g_shutdown_requested) {
-            Logger::error() << "Poll error";
-            break;
+            if (errno == EINTR) {
+                Logger::debug() << "Poll interrupted by signal, retrying";
+                continue;
+            } else {
+                Logger::critical() << "Poll error: " << strerror(errno);
+                break;
+            }
         }
 
         if (ready == 0) {
@@ -135,7 +140,6 @@ void WebServer::Run() {
 
             --ready;
             int fd = poll_fds_[i].fd;
-
             if (IsListeningSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
@@ -145,32 +149,8 @@ void WebServer::Run() {
                 // HandleClientEvents(fd, poll_fds_[i].revents);
             }
         }
-
-        if (g_shutdown_requested) {
-            Stop();
-            g_shutdown_requested = 0;
-        }
     }
-}
-
-void WebServer::Stop() {
-    std::cout << "\n";
-    Logger::info() << "... Shutting down server ...";
-
-    running_ = false;
-
-    std::vector<int> clients_to_close;
-    for (ActiveClientConstIterator it = active_clients_.begin();
-         it != active_clients_.end(); ++it) {
-        clients_to_close.push_back(it->first);
-    }
-
-    for (std::vector<int>::iterator it = clients_to_close.begin();
-         it != clients_to_close.end(); ++it) {
-        RemoveClient(*it);
-    }
-
-    Logger::info() << "WebServer stopped gracefully. Closed all connections";
+    Stop();
 }
 
 void WebServer::HandleNewConnection(int listening_fd) {
@@ -180,8 +160,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
 
     if (client_fd < 0) {
-        // skips common "try again later" errors
-        if (errno != EWOULDBLOCK && errno != EAGAIN) {
+        if (errno != EWOULDBLOCK && errno != EAGAIN) {  // skips common errors
             Logger::warning()
                 << "Failed to accept connection: " << strerror(errno);
         }
@@ -222,7 +201,7 @@ void WebServer::CleanupTimedOutClients() {
         int               client_fd = it->first;
         ClientConnection* client = it->second;
 
-        if (client->IsTimedOut(10)) {  // SHORT TIME TO TEST
+        if (client->IsTimedOut()) {
             Logger::debug() << "Client fd=" << client_fd << " timed out";
             LOG_DEBUG("test");
             clients_to_close.push_back(client_fd);
@@ -261,4 +240,24 @@ bool WebServer::IsListeningSocket(int fd) const {
         }
     }
     return false;
+}
+
+void WebServer::Stop() {
+    std::cout << "\n";
+    Logger::info() << "... Shutting down server ...";
+
+    running_ = false;
+
+    std::vector<int> clients_to_close;
+    for (ActiveClientConstIterator it = active_clients_.begin();
+         it != active_clients_.end(); ++it) {
+        clients_to_close.push_back(it->first);
+    }
+
+    for (std::vector<int>::iterator it = clients_to_close.begin();
+         it != clients_to_close.end(); ++it) {
+        RemoveClient(*it);
+    }
+
+    Logger::info() << "WebServer stopped gracefully. Closed all connections";
 }

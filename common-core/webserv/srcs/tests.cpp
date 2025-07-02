@@ -66,11 +66,11 @@ void TestPrivilegedPort(Config& config) {
 }
 
 void TestInvalidIp(Config& config) {
-    Server privileged;
-    privileged.name = "privileged-server";
-    privileged.port = GetNextTestPort();
-    privileged.host = "1257.0.0.1";
-    config.servers.push_back(privileged);
+    Server invalid;
+    invalid.name = "invalid-server";
+    invalid.port = GetNextTestPort();
+    invalid.host = "1257.0.0.1";
+    config.servers.push_back(invalid);
 }
 
 Config testConfig() {

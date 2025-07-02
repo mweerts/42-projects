@@ -15,6 +15,9 @@
 
 #include <netinet/in.h>
 #include <unistd.h>
+
+#include <string>
+
 #include "../config/server_config.hpp"
 
 class HttpListener {
@@ -38,10 +41,11 @@ class HttpListener {
     int    listen_fd_;
 
    private:
-    void        HandleRequest(int client_fd);
-    in_addr_t   getAddress();
+    void HandleRequest(int client_fd);
+    // in_addr_t   getAddress();
+    bool        BindAddress();
     std::string BuildHttpResponse();
-    
+
     HttpListener(const HttpListener& other);
     HttpListener& operator=(const HttpListener& other);
 };
