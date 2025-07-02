@@ -23,35 +23,27 @@ int main() {
     Logger::setLevel(LOG_LEVEL_DEBUG);
     Logger::enableColors(true);
 
-    Logger::info() << "... initializing config ...";
+    Logger::info() << "... Initializing config ...";
 
     Config config = testConfig();
     // Config config = parseConf();
 
     WebServer web_server(config);
-    
-    Logger::info() << "... initializing servers ...";
+
+    Logger::info() << "... Initializing servers ...";
     if (!web_server.Start()) {
         return 1;
     }
 
-    const int MAX_RESTARTS = 3;
-    const int RESTART_DELAY_SEC = 1;
-    
-    for (int i = 0; i < MAX_RESTARTS; ++i) {
+    while (true) {
         try {
             web_server.Run();
             break;
         } catch (const std::exception& e) {
-            Logger::critical() << e.what();
-            if (i < MAX_RESTARTS - 1) {
-                Logger::info() << "Restarting server in " << RESTART_DELAY_SEC
-                               << " seconds...";
-                sleep(RESTART_DELAY_SEC);
-            } else {
-                Logger::critical() << "Max restart attempts reached. Exiting.";
-                return 1;
-            }
+            Logger::critical() << "Server crashed: " << e.what();
+            web_server.Reset();
+            Logger::info() << "Restarting server...";
+            sleep(1);
         }
     }
     return 0;

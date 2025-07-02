@@ -40,6 +40,7 @@ class WebServer {
     bool Start();
     void Run();
     void Stop();
+    void Reset();
 
    private:
     std::vector<HttpListener*> listeners_;

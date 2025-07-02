@@ -64,6 +64,9 @@ bool WebServer::Start() {
     }
 
     SetupPolling();
+
+    Logger::debug() << "WebServer started with " << listeners_.size()
+                    << " listeners";
     return true;
 }
 
@@ -106,16 +109,12 @@ void WebServer::SetupPolling() {
 }
 
 void WebServer::Run() {
-    Logger::debug() << "WebServer started with " << listeners_.size()
-                    << " listeners";
-
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
 
-    // protect this loop with try later when i know where it can throw
     running_ = true;
     while (running_ && !g_shutdown_requested) {
-        SetupPolling();  // protect this
+        SetupPolling();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
 
         if (ready < 0 && !g_shutdown_requested) {
@@ -144,9 +143,9 @@ void WebServer::Run() {
                 HandleNewConnection(fd);
             } else {
                 Logger::info() << "client event";
-                RemoveClient(
-                    fd);  // TEMPORARY: because event are not handled yet
+                // TEMPORARY: because event are not handled yet
                 // HandleClientEvents(fd, poll_fds_[i].revents);
+                RemoveClient(fd);
             }
         }
     }
@@ -243,10 +242,10 @@ bool WebServer::IsListeningSocket(int fd) const {
 }
 
 void WebServer::Stop() {
+    running_ = false;
+
     std::cout << "\n";
     Logger::info() << "... Shutting down server ...";
-
-    running_ = false;
 
     std::vector<int> clients_to_close;
     for (ActiveClientConstIterator it = active_clients_.begin();
@@ -260,4 +259,21 @@ void WebServer::Stop() {
     }
 
     Logger::info() << "WebServer stopped gracefully. Closed all connections";
+}
+
+void WebServer::Reset() {
+    running_ = false;
+
+    std::vector<int> clients_to_close;
+    for (ActiveClientConstIterator it = active_clients_.begin();
+         it != active_clients_.end(); ++it) {
+        clients_to_close.push_back(it->first);
+    }
+
+    for (std::vector<int>::iterator it = clients_to_close.begin();
+         it != clients_to_close.end(); ++it) {
+        RemoveClient(*it);
+    }
+
+    Logger::debug() << "Server reset...";
 }
