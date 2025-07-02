@@ -13,9 +13,8 @@
 #ifndef HTTP_LISTENER_HPP
 #define HTTP_LISTENER_HPP
 
-#include <sys/socket.h>
+#include <netinet/in.h>
 #include <unistd.h>
-
 #include "../config/server_config.hpp"
 
 class HttpListener {

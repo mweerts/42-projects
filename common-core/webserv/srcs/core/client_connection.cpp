@@ -12,6 +12,8 @@
 
 #include "client_connection.hpp"
 #include <ctime>
+#include <cerrno>
+#include <cstring>
 #include "Logger.hpp"
 #include <unistd.h>
 

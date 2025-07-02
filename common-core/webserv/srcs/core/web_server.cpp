@@ -16,14 +16,23 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <sys/poll.h>
+#include <sys/socket.h>
 
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
+#include <vector>
+#include <map>
 
 #include "../config/server_config.hpp"
+#include "../http/http_listener.hpp"
 #include "Logger.hpp"
+#include "client_connection.hpp"
 #include "lib/socket_guard.hpp"
 
-// TODO: should we keep this for graceful exit
+// TODO: should we keep this for graceful exit?
 volatile sig_atomic_t g_shutdown_requested = 0;
 
 void signal_handler(int signal) {
@@ -171,7 +180,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
 
     if (client_fd < 0) {
-        // skips common try again later errors
+        // skips common "try again later" errors
         if (errno != EWOULDBLOCK && errno != EAGAIN) {
             Logger::warning()
                 << "Failed to accept connection: " << strerror(errno);
@@ -215,6 +224,7 @@ void WebServer::CleanupTimedOutClients() {
 
         if (client->IsTimedOut(10)) {  // SHORT TIME TO TEST
             Logger::debug() << "Client fd=" << client_fd << " timed out";
+            LOG_DEBUG("test");
             clients_to_close.push_back(client_fd);
         }
     }

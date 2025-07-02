@@ -15,7 +15,8 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
-
+#include <cerrno>
+#include <cstring>
 #include <iostream>
 
 #include "Logger.hpp"

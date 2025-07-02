@@ -15,6 +15,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 struct Server {
     int         port;
@@ -28,17 +29,5 @@ struct Server {
 struct Config {
     std::vector<Server> servers;
 };
-
-// class ConfigLoader {
-//    public:
-//     // Factory method - returns loaded config or nullopt on failure
-//     // static std::optional<ServerConfig> LoadFromFile(
-//     //     const std::filesystem::path& config_path);
-//     // static std::optional<ServerConfig> LoadFromJson(
-//     //     const std::string& json_content);
-
-//    private:
-//     static bool ValidateConfig(const Server& config);
-// };
 
 #endif

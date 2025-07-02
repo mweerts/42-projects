@@ -30,7 +30,7 @@ void testVirtualServers(Config& config) {
 
     Server api_server;
     api_server.name = "api_server";
-    api_server.host = "localhost";
+    api_server.host = "127.0.0.1";
     api_server.port = GetNextTestPort();
     api_server.document_root = "./api";
     api_server.headers["Server"] = "API/1.0";

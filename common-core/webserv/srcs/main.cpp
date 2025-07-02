@@ -20,7 +20,9 @@ int main() {
     Logger::enableColors(true);
 
     Logger::info() << "... initializing config ...";
+    
     Config config = testConfig();
+    // Config config = parseConf();
 
     WebServer web_server(config);
     Logger::info() << "... initializing servers ...";

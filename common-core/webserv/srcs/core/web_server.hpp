@@ -13,18 +13,17 @@
 #ifndef WEB_SERVER_HPP
 #define WEB_SERVER_HPP
 
-#include <ctime>
 #include <map>
 #include <vector>
 
+#include "../config/server_config.hpp"
 #include "../http/http_listener.hpp"
 #include "client_connection.hpp"
-#include "poll.h"
+#include <sys/poll.h>
 
 class WebServer {
    public:
-    explicit WebServer(const Config& config)
-        : config_(config), running_(false) {};
+    explicit WebServer(Config& config) : config_(config), running_(false) {};
 
     ~WebServer() {
         for (ListenerIterator it = listeners_.begin(); it != listeners_.end();
@@ -60,10 +59,10 @@ class WebServer {
     bool InitializeListeners();
     void SetupPolling();
 
-    bool          IsListeningSocket(int fd) const;
-    void          HandleNewConnection(int listening_fd);
-    void          RemoveClient(int client_fd);
-    void          CleanupTimedOutClients();
+    bool IsListeningSocket(int fd) const;
+    void HandleNewConnection(int listening_fd);
+    void RemoveClient(int client_fd);
+    void CleanupTimedOutClients();
 
     // void HandleClientRequest(int client_fd);
     // void HandleClientResponse(int client_fd);
