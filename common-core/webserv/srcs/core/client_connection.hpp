@@ -33,10 +33,7 @@ class ClientConnection {
     };
 
     // Event handlers
-    // bool HandleRead();   // Returns false if connection should close
-    // bool HandleWrite();  // Returns false if connection should close
-
-    void Close();
+    bool HandleEvent(short revents);
 
     // State queries
     bool NeedsToRead() const;
@@ -44,11 +41,14 @@ class ClientConnection {
     bool ShouldClose() const;
     bool IsTimedOut(int timeout_seconds = 60) const;  // default nginx
 
-    // Getters
     int   GetSocket() const;
     State GetState() const;
 
+    void Close();
+
    private:
+    static const size_t BUFFER_SIZE = 4096;
+
     int         socket_fd_;
     State       state_;
     time_t      last_activity_;
@@ -56,9 +56,12 @@ class ClientConnection {
     std::string response_buffer_;
     size_t      bytes_sent_;
     bool        is_closed_;
+    char        read_buffer_[BUFFER_SIZE];
 
    private:
     void UpdateActivity();
+    bool HandleRead();
+    bool HandleWrite();
     // void ProcessHTTPRequest();
     // bool IsCompleteHTTPRequest() const;
     // void PrepareHTTPResponse();

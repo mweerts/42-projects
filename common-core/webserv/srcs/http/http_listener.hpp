@@ -34,8 +34,6 @@ class Listener {
     bool Initialize();  // Create socket, bind and listen
     int  GetListenSocket() const;
 
-    void AcceptAndHandle();  // Only temporary for testing
-
    private:
     Server config_;
     int    listen_fd_;
