@@ -54,8 +54,6 @@ class Logger {
     static void error(const std::string& message);
     static void critical(const std::string& message);
 
-    static const std::string getLevelName(LogLevel level);
-
    private:
     friend class LogStream;
 
@@ -66,6 +64,7 @@ class Logger {
     static void log(LogLevel level, const std::string& message);
     static void log(LogLevel level, const std::stringstream& message);
     static const std::string getCurrentTimestamp();
+    static const std::string getLevelName(LogLevel level);
 };
 
 class LogStream {

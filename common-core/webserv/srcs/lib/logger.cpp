@@ -60,9 +60,7 @@ const std::string Logger::getCurrentTimestamp() {
     char buffer[80];
     
     time(&rawTime);
-    timeInfo = localtime(&rawTime);
-    
-    // Format: "2024-01-11 14:30:25"
+    timeInfo = localtime(&rawTime);    
     strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", timeInfo);
     
     return std::string(buffer);
