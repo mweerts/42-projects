@@ -18,6 +18,7 @@
 #include <cerrno>
 #include <cstring>
 #include <string>
+#include <fcntl.h>
 
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
@@ -25,7 +26,20 @@
 
 namespace http {
 bool Listener::Initialize() {
+    
+#ifdef __linux__
     listen_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+#elif defined(__APPLE__) || defined(__unix__)
+    listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
+
+    int flags = fcntl(listen_fd_, F_GETFL, 0);
+    if (flags != -1) {
+        fcntl(listen_fd_, F_SETFL, flags | O_NONBLOCK);
+    }
+#else
+#error "Unsupported platform"
+#endif
+
     if (listen_fd_ < 0) {
         Logger::error() << "Failed to create socket for " << config_.name;
         return false;

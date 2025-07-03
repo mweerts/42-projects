@@ -26,11 +26,11 @@
 #include <map>
 #include <vector>
 
-#include "server_config.hpp"
 #include "../http/http_listener.hpp"
 #include "Logger.hpp"
 #include "client_connection.hpp"
 #include "lib/socket_guard.hpp"
+#include "server_config.hpp"
 
 // TODO: should we keep this for graceful exit?
 volatile sig_atomic_t g_shutdown_requested = 0;
@@ -41,33 +41,48 @@ void signal_handler(int signal) {
     }
 }
 
-bool WebServer::Start() {
-    for (std::vector<Server>::const_iterator it = config_.servers.begin();
-         it != config_.servers.end(); ++it) {
-        http::Listener* listener = new http::Listener(*it);
+void WebServer::Run() {
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
 
-        if (!listener->Initialize()) {
-            delete listener;
+    running_ = true;
+    while (running_ && !g_shutdown_requested) {
+        SetupPolling();
+        int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
+
+        if (ready < 0 && !g_shutdown_requested) {
+            if (errno == EINTR) {
+                Logger::debug() << "Poll interrupted by signal, retrying";
+                continue;
+            } else {
+                Logger::critical() << "Poll error: " << strerror(errno);
+                break;
+            }
+        }
+
+        if (ready == 0) {
+            CleanupTimedOutClients();
             continue;
         }
-        listeners_.push_back(listener);
+
+        for (size_t i = 0; i < poll_fds_.size() && ready > 0; ++i) {
+            if (poll_fds_[i].revents == 0) {
+                continue;
+            }
+
+            --ready;
+            int fd = poll_fds_[i].fd;
+            if (IsListeningSocket(fd)) {
+                HandleNewConnection(fd);
+            } else {
+                ClientConnection* client = active_clients_[fd];
+                if (!client->HandleEvent(poll_fds_[i].revents)) {
+                    RemoveClient(fd);
+                }
+            }
+        }
     }
-
-    if (listeners_.empty()) {
-        Logger::critical() << "No servers could be initialized.";
-        return false;
-    }
-
-    if (listeners_.size() < config_.servers.size()) {
-        Logger::warning()
-            << "Partial start up: some servers failed to initialize";
-    }
-
-    SetupPolling();
-
-    Logger::debug() << "WebServer started with " << listeners_.size()
-                    << " listeners";
-    return true;
+    Stop();
 }
 
 void WebServer::SetupPolling() {
@@ -108,50 +123,6 @@ void WebServer::SetupPolling() {
     }
 }
 
-void WebServer::Run() {
-    signal(SIGINT, signal_handler);
-    signal(SIGTERM, signal_handler);
-
-    running_ = true;
-    while (running_ && !g_shutdown_requested) {
-        SetupPolling();
-        int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
-
-        if (ready < 0 && !g_shutdown_requested) {
-            if (errno == EINTR) {
-                Logger::debug() << "Poll interrupted by signal, retrying";
-                continue;
-            } else {
-                Logger::critical() << "Poll error: " << strerror(errno);
-                break;
-            }
-        }
-
-        if (ready == 0) {
-            CleanupTimedOutClients();
-            continue;
-        }
-
-        for (size_t i = 0; i < poll_fds_.size() && ready > 0; ++i) {
-            if (poll_fds_[i].revents == 0) {
-                continue;
-            }
-
-            --ready;
-            int fd = poll_fds_[i].fd;
-            if (IsListeningSocket(fd)) {
-                HandleNewConnection(fd);
-            } else {
-                Logger::info() << "client event";
-                // TEMPORARY: because event are not handled yet
-                // HandleClientEvents(fd, poll_fds_[i].revents);
-                RemoveClient(fd);
-            }
-        }
-    }
-    Stop();
-}
-
 void WebServer::HandleNewConnection(int listening_fd) {
     struct sockaddr_in client_addr;
 
@@ -168,6 +139,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
 
     lib::SocketGuard guard(client_fd);
 
+#ifdef __APPLE__ // set non-blocking I/O on mac
     int flags = fcntl(client_fd, F_GETFL, 0);
     if (flags < 0) {
         Logger::error() << "Failed to get socket flags for fd=" << client_fd;
@@ -178,6 +150,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
         Logger::error() << "Failed to set non-blocking for fd=" << client_fd;
         return;
     }
+#endif
 
     active_clients_[client_fd] = new ClientConnection(client_fd);
     guard.release();
@@ -239,6 +212,35 @@ bool WebServer::IsListeningSocket(int fd) const {
         }
     }
     return false;
+}
+
+bool WebServer::Start() {
+    for (std::vector<Server>::const_iterator it = config_.servers.begin();
+         it != config_.servers.end(); ++it) {
+        http::Listener* listener = new http::Listener(*it);
+
+        if (!listener->Initialize()) {
+            delete listener;
+            continue;
+        }
+        listeners_.push_back(listener);
+    }
+
+    if (listeners_.empty()) {
+        Logger::critical() << "No servers could be initialized.";
+        return false;
+    }
+
+    if (listeners_.size() < config_.servers.size()) {
+        Logger::warning()
+            << "Partial start up: some servers failed to initialize";
+    }
+
+    SetupPolling();
+
+    Logger::debug() << "WebServer started with " << listeners_.size()
+                    << " listeners";
+    return true;
 }
 
 void WebServer::Stop() {
