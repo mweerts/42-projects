@@ -13,65 +13,69 @@
 #ifndef HTTP_REQUEST_HANDLER_HPP
 #define HTTP_REQUEST_HANDLER_HPP
 
-#include <map>
-#include <string>
+/////////////////////////
+// NOT USED RIGHT NOW //
+////////////////////////
 
-#include "server_config.hpp"
+// #include <map>
+// #include <string>
 
-namespace http {
-struct HttpRequest {
-    std::string                        method;
-    std::string                        uri;
-    std::string                        version; // not sure about this
-    std::map<std::string, std::string> headers;
-    std::string                        body;
+// #include "server_config.hpp"
 
-    HttpRequest() : version("1.1"){};
-};
+// namespace http {
+// struct HttpRequest {
+//     std::string                        method;
+//     std::string                        uri;
+//     std::string                        version; // not sure about this
+//     std::map<std::string, std::string> headers;
+//     std::string                        body;
 
-struct HttpResponse {
-    int         status_code;
-    std::string status_message;
+//     HttpRequest() : version("1.1"){};
+// };
 
-    std::map<std::string, std::string> headers;
-    std::string                        body;
+// struct HttpResponse {
+//     int         status_code;
+//     std::string status_message;
 
-    HttpResponse() : status_code(200), status_message("OK") {}
+//     std::map<std::string, std::string> headers;
+//     std::string                        body;
 
-    std::string ToString() const; // TO IMPLEMENT
-};
+//     HttpResponse() : status_code(200), status_message("OK") {}
 
-class RequestHandler {
-   public:
-    RequestHandler(const Server& server) : server_(server) {};
-    ~RequestHandler() {};
+//     std::string ToString() const; // TO IMPLEMENT
+// };
 
-    bool ParseRequest(const std::string& raw_request);  // TO IMPLEMENT
-    void ProcessRequest();                              // TO IMPLEMENT
+// class RequestHandler {
+//    public:
+//     RequestHandler(const Server& server) : server_(server) {};
+//     ~RequestHandler() {};
 
-    HttpResponse& BuildResponse();  // TO IMPLEMENT
+//     bool ParseRequest(const std::string& raw_request);  // TO IMPLEMENT
+//     void ProcessRequest();                              // TO IMPLEMENT
 
-    // State queries
-    bool IsRequestComplete() const;  // TO IMPLEMENT
-    bool NeedsMoreData() const;      // TO IMPLEMENT
+//     HttpResponse& BuildResponse();  // TO IMPLEMENT
 
-   private:
-    const Server& server_;
-    HttpRequest   request_;   // do i need to store this?
-    HttpResponse  response_;  // do i need to store this?
-    bool          request_complete_;
-    bool          processing_complete_;
+//     // State queries
+//     bool IsRequestComplete() const;  // TO IMPLEMENT
+//     bool NeedsMoreData() const;      // TO IMPLEMENT
 
-    // Helper methods for parsing
-    void HandleMethod();                                  // TO IMPLEMENT
-    void ParseRequestLine(const std::string& line);       // TO IMPLEMENT
-    void ParseHeaders(const std::string& headers_block);  // TO IMPLEMENT
-    void ParseBody(const std::string& body_block);        // TO IMPLEMENT
+//    private:
+//     const Server& server_;
+//     HttpRequest   request_;   // do i need to store this?
+//     HttpResponse  response_;  // do i need to store this?
+//     bool          request_complete_;
+//     bool          processing_complete_;
 
-    // void GenerateErrorResponse(int status_code, const std::string& message);
-    // std::string GenerateErrorResponse(int status_code);
-};
+//     // Helper methods for parsing
+//     void HandleMethod();                                  // TO IMPLEMENT
+//     void ParseRequestLine(const std::string& line);       // TO IMPLEMENT
+//     void ParseHeaders(const std::string& headers_block);  // TO IMPLEMENT
+//     void ParseBody(const std::string& body_block);        // TO IMPLEMENT
 
-}  // namespace http
+//     // void GenerateErrorResponse(int status_code, const std::string& message);
+//     // std::string GenerateErrorResponse(int status_code);
+// };
+
+// }  // namespace http
 
 #endif
