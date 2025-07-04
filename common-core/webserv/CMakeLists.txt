@@ -18,7 +18,7 @@ set(SOURCES
     srcs/main.cpp
     srcs/core/web_server.cpp
     srcs/core/client_connection.cpp
-    srcs/http/http_listener.cpp
+    srcs/http/http_server.cpp
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
 )

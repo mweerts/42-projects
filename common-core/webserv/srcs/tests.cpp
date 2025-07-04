@@ -20,24 +20,24 @@ int GetNextTestPort() {
 };  // namespace
 
 void testVirtualServers(Config& config) {
-    Server main_server;
+    ServerConfig main_server;
     main_server.name = "main_site";
     main_server.host = "localhost";
     main_server.port = GetNextTestPort();
     main_server.document_root = "./www";
-    main_server.headers["Server"] = "MainSite/1.0";
+    main_server.headers["ServerConfig"] = "MainSite/1.0";
     config.servers.push_back(main_server);
 
-    Server api_server;
+    ServerConfig api_server;
     api_server.name = "api_server";
     api_server.host = "127.0.0.1";
     api_server.port = GetNextTestPort();
     api_server.document_root = "./api";
-    api_server.headers["Server"] = "API/1.0";
+    api_server.headers["ServerConfig"] = "API/1.0";
     api_server.headers["Content-Type"] = "application/json";
     config.servers.push_back(api_server);
 
-    Server static_server;
+    ServerConfig static_server;
     static_server.name = "static_files";
     static_server.host = "localhost";
     static_server.port = GetNextTestPort();
@@ -47,27 +47,27 @@ void testVirtualServers(Config& config) {
 }
 
 void testAddressAlreadyInUse(Config& config) {
-    Server api_server_2;
+    ServerConfig api_server_2;
     api_server_2.name = "api_server_2";
     api_server_2.host = "localhost";
     api_server_2.port = 8081;
     api_server_2.document_root = "./api";
-    api_server_2.headers["Server"] = "API/1.0";
+    api_server_2.headers["ServerConfig"] = "API/1.0";
     api_server_2.headers["Content-Type"] = "application/json";
     config.servers.push_back(api_server_2);
 }
 
 void TestPrivilegedPort(Config& config) {
-    Server privileged;
-    privileged.name = "privileged-server";
+    ServerConfig privileged;
+    privileged.name = "privileged-ServerConfig";
     privileged.port = 80;  // Requires root privileges
     privileged.host = "127.0.0.1";
     config.servers.push_back(privileged);
 }
 
 void TestInvalidIp(Config& config) {
-    Server invalid;
-    invalid.name = "invalid-server";
+    ServerConfig invalid;
+    invalid.name = "invalid-ServerConfig";
     invalid.port = GetNextTestPort();
     invalid.host = "1257.0.0.1";
     config.servers.push_back(invalid);

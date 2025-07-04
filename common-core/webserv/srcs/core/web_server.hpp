@@ -13,21 +13,22 @@
 #ifndef WEB_SERVER_HPP
 #define WEB_SERVER_HPP
 
+#include <sys/poll.h>
+
 #include <map>
 #include <vector>
 
-#include "server_config.hpp"
-#include "../http/http_listener.hpp"
+#include "../http/http_server.hpp"
 #include "client_connection.hpp"
-#include <sys/poll.h>
+#include "server_config.hpp"
 
 class WebServer {
    public:
     explicit WebServer(Config& config) : config_(config), running_(false) {};
 
     ~WebServer() {
-        for (ListenerIterator it = listeners_.begin(); it != listeners_.end();
-             ++it) {
+        for (ServerIterator it = http_servers_.begin();
+             it != http_servers_.end(); ++it) {
             delete *it;
         }
 
@@ -43,7 +44,7 @@ class WebServer {
     void Reset();
 
    private:
-    std::vector<http::Listener*> listeners_;
+    std::vector<http::Server*> http_servers_;
     std::vector<pollfd>        poll_fds_;
     Config                     config_;
     bool                       running_;
@@ -53,17 +54,19 @@ class WebServer {
     typedef std::map<int, ClientConnection*>::iterator ActiveClientIterator;
     typedef std::map<int, ClientConnection*>::const_iterator
                                                  ActiveClientConstIterator;
-    typedef std::vector<http::Listener*>::iterator ListenerIterator;
-    typedef std::vector<http::Listener*>::const_iterator ListenerConstIterator;
+    typedef std::vector<http::Server*>::iterator ServerIterator;
+    typedef std::vector<http::Server*>::const_iterator ServerConstIterator;
 
    private:
-    bool InitializeListeners();
+    bool Initializeservers();
     void SetupPolling();
 
     bool IsListeningSocket(int fd) const;
     void HandleNewConnection(int listening_fd);
     void RemoveClient(int client_fd);
     void CleanupTimedOutClients();
+
+    const ServerConfig& GetServerConfig(int fd) const;
 
     // void HandleClientRequest(int client_fd);
     // void HandleClientResponse(int client_fd);

@@ -1,5 +1,8 @@
 # webserver
 
+## To do Lucas ## 
+- [] replace http_servers by a map instead of vector in core
+
 ## to implement ##
 - [] Config parser
 - [] Core Server (NonBlocking I/O)

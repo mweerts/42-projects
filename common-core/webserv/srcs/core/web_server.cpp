@@ -26,7 +26,7 @@
 #include <map>
 #include <vector>
 
-#include "../http/http_listener.hpp"
+#include "../http/http_server.hpp"
 #include "Logger.hpp"
 #include "client_connection.hpp"
 #include "lib/socket_guard.hpp"
@@ -88,8 +88,8 @@ void WebServer::Run() {
 void WebServer::SetupPolling() {
     poll_fds_.clear();
 
-    for (std::vector<http::Listener*>::iterator it = listeners_.begin();
-         it != listeners_.end(); ++it) {
+    for (std::vector<http::Server*>::iterator it = http_servers_.begin();
+         it != http_servers_.end(); ++it) {
         pollfd pfd;
         pfd.fd = (*it)->GetListenSocket();
         pfd.events = POLLIN;
@@ -139,7 +139,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
 
     lib::SocketGuard guard(client_fd);
 
-#ifdef __APPLE__ // set non-blocking I/O on mac
+#ifdef __APPLE__  // set non-blocking I/O on mac
     int flags = fcntl(client_fd, F_GETFL, 0);
     if (flags < 0) {
         Logger::error() << "Failed to get socket flags for fd=" << client_fd;
@@ -152,7 +152,8 @@ void WebServer::HandleNewConnection(int listening_fd) {
     }
 #endif
 
-    active_clients_[client_fd] = new ClientConnection(client_fd);
+    const ServerConfig& Server_config = GetServerConfig(listening_fd);
+    active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
     guard.release();
 
     // TEMPORARY: only for Logging
@@ -175,7 +176,6 @@ void WebServer::CleanupTimedOutClients() {
 
         if (client->IsTimedOut()) {
             Logger::debug() << "Client fd=" << client_fd << " timed out";
-            LOG_DEBUG("test");
             clients_to_close.push_back(client_fd);
         }
     }
@@ -205,8 +205,8 @@ void WebServer::RemoveClient(int client_fd) {
 }
 
 bool WebServer::IsListeningSocket(int fd) const {
-    for (ListenerConstIterator it = listeners_.begin(); it != listeners_.end();
-         ++it) {
+    for (ServerConstIterator it = http_servers_.begin();
+         it != http_servers_.end(); ++it) {
         if ((*it)->GetListenSocket() == fd) {
             return true;
         }
@@ -214,32 +214,49 @@ bool WebServer::IsListeningSocket(int fd) const {
     return false;
 }
 
-bool WebServer::Start() {
-    for (std::vector<Server>::const_iterator it = config_.servers.begin();
-         it != config_.servers.end(); ++it) {
-        http::Listener* listener = new http::Listener(*it);
-
-        if (!listener->Initialize()) {
-            delete listener;
-            continue;
+const ServerConfig& WebServer::GetServerConfig(int fd) const {
+    for (ServerConstIterator it = http_servers_.begin();
+         it != http_servers_.end(); ++it) {
+        if ((*it)->GetListenSocket() == fd) {
+            return (*it)->GetConfig();
         }
-        listeners_.push_back(listener);
     }
 
-    if (listeners_.empty()) {
+    Logger::critical() << "No server config found for fd: " << fd;
+    if (!config_.servers.empty()) {  // fallback
+        return config_.servers[0];
+    }
+
+    static ServerConfig default_config;
+    return default_config;
+}
+
+bool WebServer::Start() {
+    for (std::vector<ServerConfig>::const_iterator it = config_.servers.begin();
+         it != config_.servers.end(); ++it) {
+        http::Server* Server = new http::Server(*it);
+
+        if (!Server->Initialize()) {
+            delete Server;
+            continue;
+        }
+        http_servers_.push_back(Server);
+    }
+
+    if (http_servers_.empty()) {
         Logger::critical() << "No servers could be initialized.";
         return false;
     }
 
-    if (listeners_.size() < config_.servers.size()) {
+    if (http_servers_.size() < config_.servers.size()) {
         Logger::warning()
             << "Partial start up: some servers failed to initialize";
     }
 
     SetupPolling();
 
-    Logger::debug() << "WebServer started with " << listeners_.size()
-                    << " listeners";
+    Logger::debug() << "WebServer started with " << http_servers_.size()
+                    << " servers";
     return true;
 }
 

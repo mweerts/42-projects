@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   http_listeners.cpp                                 :+:      :+:    :+:   */
+/*   http_server.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,23 +10,23 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "http_listener.hpp"
+#include "http_server.hpp"
 
+#include <fcntl.h>
 #include <netdb.h>
 #include <sys/socket.h>
 
 #include <cerrno>
 #include <cstring>
 #include <string>
-#include <fcntl.h>
 
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
 #include "lib/utils.hpp"
+#include "server_config.hpp"
 
 namespace http {
-bool Listener::Initialize() {
-    
+bool Server::Initialize() {
 #ifdef __linux__
     listen_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 #elif defined(__APPLE__) || defined(__unix__)
@@ -73,7 +73,7 @@ bool Listener::Initialize() {
     return true;
 }
 
-bool Listener::BindAddress() {
+bool Server::BindAddress() {
     struct addrinfo  hints;
     struct addrinfo* result;
 
@@ -110,7 +110,11 @@ bool Listener::BindAddress() {
     return true;
 }
 
-int Listener::GetListenSocket() const {
+const ServerConfig& Server::GetConfig() const {
+    return config_;
+}
+
+int Server::GetListenSocket() const {
     return listen_fd_;
 }
 }  // namespace http

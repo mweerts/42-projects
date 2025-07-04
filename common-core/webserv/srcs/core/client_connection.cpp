@@ -22,17 +22,36 @@
 #include <ctime>
 
 #include "Logger.hpp"
+#include "server_config.hpp"
 
 ClientConnection::ClientConnection(int socket_fd)
-    : socket_fd_(socket_fd), is_closed_(false) {
-    last_activity_ = time(NULL);
-    bytes_sent_ = 0;
-    request_buffer_ = "";
-    response_buffer_ = "";
+    : socket_fd_(socket_fd),
+      state_(READING_REQUEST),
+      keep_alive_(true),
+      last_activity_(time(nullptr)),
+      client_max_header_size_(ServerConfig::DEFAULT_MAX_HEADER_SIZE),
+      client_max_request_line_(ServerConfig::DEFAULT_MAX_REQUEST_LINE),
+      client_max_body_size_(ServerConfig::DEFAULT_MAX_BODY_SIZE),
+      bytes_sent_(0),
+      is_closed_(false) {
+    UpdateActivity();
+    
+    request_buffer_.reserve(client_max_header_size_);
+}
 
-    // TO DO maybe make it a flag instead
-    // or a keep-alive member value with -1 if false
-    state_ = KEEP_ALIVE;  // How should state be initialized?
+ClientConnection::ClientConnection(int socket_fd, const ServerConfig& config)
+    : socket_fd_(socket_fd),
+      state_(READING_REQUEST),
+      keep_alive_(true),
+      last_activity_(time(nullptr)),
+      client_max_header_size_(config.client_max_header_size),
+      client_max_request_line_(config.client_max_request_line),
+      client_max_body_size_(config.client_max_body_size),
+      bytes_sent_(0),
+      is_closed_(false) {
+    UpdateActivity();
+
+    request_buffer_.reserve(client_max_header_size_);
 }
 
 bool ClientConnection::HandleEvent(short revents) {
@@ -63,6 +82,8 @@ bool ClientConnection::HandleEvent(short revents) {
 }
 
 bool ClientConnection::HandleRead() {
+    // TODO use config limits for reading (i.e max_client_size)
+    
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
     if (bytes_read < 0) {
         int       err = 0;
@@ -83,7 +104,12 @@ bool ClientConnection::HandleRead() {
     }
 
     read_buffer_[bytes_read] = '\0';
-    request_buffer_.append(read_buffer_, bytes_read);
+    try {
+        request_buffer_.append(read_buffer_, bytes_read);
+    } catch (std::exception& e) {
+        Logger::error() << e.what();
+        return false;
+    }
 
     Logger::debug() << "read " << bytes_read << " bytes";
     // Stopped here
@@ -111,7 +137,7 @@ void ClientConnection::UpdateActivity() {
 }
 
 bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (state_ == KEEP_ALIVE) {
+    if (keep_alive_) {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return true;
@@ -120,7 +146,7 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
 // State Queries
 
 bool ClientConnection::NeedsToRead() const {
-    return state_ == READING_REQUEST || state_ == KEEP_ALIVE;
+    return state_ == READING_REQUEST;
 }
 
 bool ClientConnection::NeedsToWrite() const {
