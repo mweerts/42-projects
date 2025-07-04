@@ -88,10 +88,10 @@ void WebServer::Run() {
 void WebServer::SetupPolling() {
     poll_fds_.clear();
 
-    for (std::vector<http::Server*>::iterator it = http_servers_.begin();
+    for (ServerConstIterator it = http_servers_.begin();
          it != http_servers_.end(); ++it) {
         pollfd pfd;
-        pfd.fd = (*it)->GetListenSocket();
+        pfd.fd = it->second->GetListenSocket();
         pfd.events = POLLIN;
         pfd.revents = 0;
         poll_fds_.push_back(pfd);
@@ -205,21 +205,13 @@ void WebServer::RemoveClient(int client_fd) {
 }
 
 bool WebServer::IsListeningSocket(int fd) const {
-    for (ServerConstIterator it = http_servers_.begin();
-         it != http_servers_.end(); ++it) {
-        if ((*it)->GetListenSocket() == fd) {
-            return true;
-        }
-    }
-    return false;
+    return http_servers_.find(fd) != http_servers_.end();
 }
 
 const ServerConfig& WebServer::GetServerConfig(int fd) const {
-    for (ServerConstIterator it = http_servers_.begin();
-         it != http_servers_.end(); ++it) {
-        if ((*it)->GetListenSocket() == fd) {
-            return (*it)->GetConfig();
-        }
+    ServerConstIterator it = http_servers_.find(fd);
+    if (it != http_servers_.end()) {
+        return it->second->GetConfig();
     }
 
     Logger::critical() << "No server config found for fd: " << fd;
@@ -240,7 +232,7 @@ bool WebServer::Start() {
             delete Server;
             continue;
         }
-        http_servers_.push_back(Server);
+        http_servers_[Server->GetListenSocket()] = Server;
     }
 
     if (http_servers_.empty()) {

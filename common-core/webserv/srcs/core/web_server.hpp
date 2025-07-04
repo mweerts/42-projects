@@ -25,11 +25,10 @@
 class WebServer {
    public:
     explicit WebServer(Config& config) : config_(config), running_(false) {};
-
     ~WebServer() {
         for (ServerIterator it = http_servers_.begin();
              it != http_servers_.end(); ++it) {
-            delete *it;
+            delete it->second;
         }
 
         for (ActiveClientIterator it = active_clients_.begin();
@@ -44,18 +43,18 @@ class WebServer {
     void Reset();
 
    private:
-    std::vector<http::Server*> http_servers_;
-    std::vector<pollfd>        poll_fds_;
-    Config                     config_;
-    bool                       running_;
+    std::vector<pollfd> poll_fds_;
+    Config              config_;
+    bool                running_;
 
+    std::map<int, http::Server*>     http_servers_;
     std::map<int, ClientConnection*> active_clients_;
 
     typedef std::map<int, ClientConnection*>::iterator ActiveClientIterator;
     typedef std::map<int, ClientConnection*>::const_iterator
-                                                 ActiveClientConstIterator;
-    typedef std::vector<http::Server*>::iterator ServerIterator;
-    typedef std::vector<http::Server*>::const_iterator ServerConstIterator;
+                                                   ActiveClientConstIterator;
+    typedef std::map<int, http::Server*>::iterator ServerIterator;
+    typedef std::map<int, http::Server*>::const_iterator ServerConstIterator;
 
    private:
     bool Initializeservers();
