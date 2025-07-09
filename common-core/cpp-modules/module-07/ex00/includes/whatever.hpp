@@ -13,7 +13,6 @@ T swap(T& a, T& b) {
 
 template <typename T>
 T min(T a, T b) {
-    a = 10;
     return (a < b ? a : b);
 }
 
