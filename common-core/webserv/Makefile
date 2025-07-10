@@ -18,6 +18,8 @@ SRCS_DIR = srcs
 OBJS_DIR = objs
 SRCS = $(shell find $(SRCS_DIR) -name "*.cpp")
 
+INC = -I ./includes/
+
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJS_DIR)/%.o)
 DEPS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJS_DIR)/%.d)
 
@@ -28,7 +30,7 @@ $(NAME): $(OBJS)
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@mkdir -p $(dir $@)
-	c++ $(FLAGS) -MMD -MP -c $< -o $@
+	c++ $(FLAGS) $(INC) -MMD -MP -c $< -o $@
 
 # Include dependency files if they exist
 -include $(DEPS)
