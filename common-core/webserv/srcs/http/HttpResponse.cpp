@@ -25,7 +25,7 @@ void HttpResponse::setStatusCode(StatusCode statusCode) {
 
 void HttpResponse::setHeader(const std::string& key, const std::string& value) {
     _headers[key] = value;
-}3
+}
 
 void HttpResponse::setContent(const std::string& content) {
     _content = content;
