@@ -36,6 +36,7 @@ build
 *.out
 *.app
 
+/config/nginx.conf
 # IDE
 
 *.vscode
