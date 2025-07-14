@@ -2,7 +2,7 @@
 
 #include "Logger.hpp"
 
-HttpRequest::HttpRequest(Config config) {
+HttpRequest::HttpRequest() {
     _method = "";
     _uri = "";
     _version = "HTTP/1.0";
