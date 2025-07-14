@@ -114,9 +114,11 @@ bool ClientConnection::HandleRead() {
 
     Logger::debug() << "read " << bytes_read << " bytes";
     Logger::debug() << read_buffer_;
+    
     RequestHandler handler = RequestHandler();
     handler.handleRequest(read_buffer_);
     handler.sendResponse(socket_fd_);
+
     // Stopped here
     return true;
 }

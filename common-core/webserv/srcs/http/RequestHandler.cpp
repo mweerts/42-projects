@@ -31,13 +31,13 @@ static bool isFile(const std::string& path) {
     return S_ISREG(fileInfo.st_mode);
 }
 
-// static bool isDirectory(const std::string& path) {
-//     struct stat fileInfo;
-//     stat(path.c_str(), &fileInfo);
-//     return S_ISDIR(fileInfo.st_mode);
-// }
+static bool isDirectory(const std::string& path) {
+    struct stat fileInfo;
+    stat(path.c_str(), &fileInfo);
+    return S_ISDIR(fileInfo.st_mode);
+}
 
-bool isReadable(const std::string& path) {
+static bool isReadable(const std::string& path) {
     struct stat fileInfo;
     stat(path.c_str(), &fileInfo);
     return S_IRUSR & fileInfo.st_mode && !access(path.c_str(), R_OK);
@@ -56,24 +56,8 @@ void RequestHandler::setRequest(const HttpRequest& request) {
 void RequestHandler::setResponse(const HttpResponse& response) {
     _response = response;
 }
-void RequestHandler::handleRequest(const std::string& request) {
-    parseFullRequest(request);
-    processRequest();
-    if (_response.getStatusCode() != HTTP_OK) {
-        _response.setContent(GetHtmlErrorPage(_response));
-        _response.setContentType("text/html");
-    }
-}
-
-void RequestHandler::sendResponse(int socket_fd) {
-    std::string responseString = _response.toString();
-    Logger::debug() << "Sending response:\n" << responseString;
-    // Here you would send the responseString back to the client
-    send(socket_fd, responseString.c_str(), responseString.size(), 0);
-}
 
 void RequestHandler::parseFullRequest(const std::string& request) {
-    // Split the request into lines
     std::istringstream iss(request);
     std::string        line;
     std::string        requestLine;
@@ -97,7 +81,6 @@ void RequestHandler::parseFullRequest(const std::string& request) {
     }
 }
 void RequestHandler::parseRequestLine(const std::string& requestLine) {
-    // Parse the request line (method, URI, version)
     std::istringstream iss(requestLine);
     std::string        method, uri, version;
     iss >> method >> uri >> version;
@@ -115,8 +98,8 @@ void RequestHandler::parseRequestLine(const std::string& requestLine) {
     _request.setUri(uri);
     _request.setVersion(version);
 }
+
 void RequestHandler::parseHeaders(const std::string& headers) {
-    // Parse headers from the request
     std::istringstream iss(headers);
     std::string        line;
     while (std::getline(iss, line) && !line.empty()) {
@@ -128,8 +111,8 @@ void RequestHandler::parseHeaders(const std::string& headers) {
         }
     }
 }
+
 void RequestHandler::parseBody(const std::string& body) {
-    // Parse the body of the request
     if (!_request.getBody().empty()) {
         _request.setBody(body);
     } else {
@@ -137,8 +120,32 @@ void RequestHandler::parseBody(const std::string& body) {
     }
 }
 
+void RequestHandler::handleRequest(const std::string& request) {
+    parseFullRequest(request);
+    processRequest();
+    if (_response.getStatusCode() != HTTP_OK) {
+        _response.setContent(GetHtmlErrorPage(_response));
+        _response.setContentType("text/html");
+    }
+}
+
+void RequestHandler::sendResponse(int socket_fd) {
+    std::string responseString = _response.toString();
+    Logger::debug() << "Sending response:\n" << responseString;
+    send(socket_fd, responseString.c_str(), responseString.size(), 0);
+    if (_response.getConnection() == "close") {
+        close(socket_fd);
+    }
+}
+
 void RequestHandler::processRequest() {
     const std::string& method = _request.getMethod();
+
+    if (_request.getHeaders().at("Connection") == "keep-alive" ||
+        _request.getHeaders().at("Connection") == "close") {
+        _response.setConnection(_request.getHeaders().at("Connection"));
+    }
+
     if (method == "GET") {
         processGetRequest();
     } else if (method == "POST") {
@@ -151,9 +158,13 @@ void RequestHandler::processRequest() {
 }
 
 void RequestHandler::processGetRequest() {
-    // Handle GET request logic here
     if (!pathExist(_request.getUri())) {
         _response.setStatusCode(HTTP_NOT_FOUND);
+        return;
+    }
+    if (isDirectory(_request.getUri())) {
+        // Handle autoindex
+        _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
     if (!isReadable(_request.getUri()) || !isFile(_request.getUri())) {
@@ -171,10 +182,6 @@ void RequestHandler::processGetRequest() {
     file.close();
 }
 
-void RequestHandler::processPostRequest() {
-    // Handle POST request logic here
-}
+void RequestHandler::processPostRequest() {}
 
-void RequestHandler::processDeleteRequest() {
-    // Handle DELETE request logic here
-}
+void RequestHandler::processDeleteRequest() {}
