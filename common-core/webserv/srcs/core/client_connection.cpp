@@ -23,6 +23,7 @@
 
 #include "Logger.hpp"
 #include "server_config.hpp"
+#include "RequestHandler.hpp"
 
 ClientConnection::ClientConnection(int socket_fd)
     : socket_fd_(socket_fd),
@@ -35,7 +36,7 @@ ClientConnection::ClientConnection(int socket_fd)
       bytes_sent_(0),
       is_closed_(false) {
     UpdateActivity();
-    
+
     request_buffer_.reserve(client_max_header_size_);
 }
 
@@ -83,7 +84,7 @@ bool ClientConnection::HandleEvent(short revents) {
 
 bool ClientConnection::HandleRead() {
     // TODO use config limits for reading (i.e max_client_size)
-    
+
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
     if (bytes_read < 0) {
         int       err = 0;
@@ -112,6 +113,10 @@ bool ClientConnection::HandleRead() {
     }
 
     Logger::debug() << "read " << bytes_read << " bytes";
+    Logger::debug() << read_buffer_;
+    RequestHandler handler = RequestHandler();
+    handler.handleRequest(read_buffer_);
+    handler.sendResponse(socket_fd_);
     // Stopped here
     return true;
 }

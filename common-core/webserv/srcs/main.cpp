@@ -15,11 +15,14 @@
 #include <exception>
 
 #include "Logger.hpp"
-#include "server_config.hpp"
 #include "core/web_server.hpp"
-#include "tests.cpp"
+#include "server_config.hpp"
+
+#include "RequestHandler.hpp"
+Config testConfig();
 
 int main() {
+
     Logger::setLevel(LOG_LEVEL_DEBUG);
     Logger::enableColors(true);
 
