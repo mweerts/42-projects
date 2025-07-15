@@ -15,22 +15,30 @@
 #include <exception>
 
 #include "Logger.hpp"
+#include "RequestHandler.hpp"
 #include "core/web_server.hpp"
+#include "parsing/include/ConfigProcessor.hpp"
 #include "server_config.hpp"
 
-#include "RequestHandler.hpp"
 Config testConfig();
 
 int main() {
-
     Logger::setLevel(LOG_LEVEL_DEBUG);
     Logger::enableColors(true);
 
     Logger::info() << "... Initializing config ...";
 
     Config config = testConfig();
+
+    ConfigProcessor Conf("../config/default.conf");
+
+    if (Conf.tokenize()) {
+        return 1;
+    }
+    // Conf.printAllTree();
     // Config config = parseConf();
 
+    // WebServer web_server(conf);
     WebServer web_server(config);
 
     Logger::info() << "... Initializing servers ...";

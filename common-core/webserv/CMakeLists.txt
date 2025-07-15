@@ -27,6 +27,9 @@ set(SOURCES
     srcs/http/status_code.cpp
     srcs/http/RequestHandler.cpp
     srcs/tests.cpp
+    srcs/parsing/src/ConfigProcessor.cpp
+    srcs/parsing/src/Node.cpp
+    srcs/parsing/src/Validator.cpp
 )
 
 add_executable(webserv ${SOURCES})
