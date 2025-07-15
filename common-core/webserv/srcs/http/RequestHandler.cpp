@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "Logger.hpp"
+#include "MimeTypes.hpp"
 
 static std::string GetHtmlErrorPage(HttpResponse& response) {
     std::ostringstream oss;
@@ -41,6 +42,17 @@ static bool isReadable(const std::string& path) {
     struct stat fileInfo;
     stat(path.c_str(), &fileInfo);
     return S_IRUSR & fileInfo.st_mode && !access(path.c_str(), R_OK);
+}
+
+static std::string getLastModifiedTime(const std::string& path) {
+    struct stat fileInfo;
+    if (stat(path.c_str(), &fileInfo) == 0) {
+        char       buffer[80];
+        struct tm* tm_info = gmtime(&fileInfo.st_mtime);
+        strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", tm_info);
+        return std::string(buffer);
+    }
+    return "";
 }
 
 RequestHandler::RequestHandler() {}
@@ -179,6 +191,9 @@ void RequestHandler::processGetRequest() {
     std::ostringstream ss;
     ss << file.rdbuf();
     _response.setContent(ss.str());
+    _response.setContentType(MimeTypes::getType(_request.getUri().c_str()));
+    _response.setHeader("Last-Modified",
+                        getLastModifiedTime(_request.getUri()));
     file.close();
 }
 

@@ -14,7 +14,8 @@ HttpResponse::HttpResponse() {
     _contentType = "text/html";
     _serverName = "webserv42";
     _date = "";
-    _connection = "keep-alive"; // HTTP/1.1 default is keep-alive. HTTP1.0 default is close
+    _connection = "keep-alive";  // HTTP/1.1 default is keep-alive. HTTP/1.0
+                                 // default is close
 }
 
 HttpResponse::~HttpResponse() {}
@@ -79,7 +80,7 @@ std::string HttpResponse::toString() {
     response += "Content-Type: " + _contentType + "\r\n";
     response += "Content-Length: " + contentLengthStream.str() + "\r\n";
     response += "Connection: " + _connection + "\r\n";
-    
+
     for (std::map<std::string, std::string>::const_iterator it =
              _headers.begin();
          it != _headers.end(); ++it) {
