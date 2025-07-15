@@ -18,6 +18,7 @@ class RequestHandler {
     ServerConfig _serverConfig;
     HttpRequest  _request;
     HttpResponse _response;
+    std::string  _rootPath;
 
     void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);
@@ -25,10 +26,12 @@ class RequestHandler {
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
-	void parseFullRequest(const std::string& request);
+    void parseFullRequest(const std::string& request);
     void parseRequestLine(const std::string& requestLine);
     void parseHeaders(const std::string& headers);
     void parseBody(const std::string& body);
+
+    std::string getRootPath() const;
 };
 
 #endif

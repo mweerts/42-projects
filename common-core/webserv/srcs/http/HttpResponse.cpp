@@ -85,7 +85,8 @@ std::string HttpResponse::toString() {
     response += "Content-Length: " + contentLengthStream.str() + "\r\n";
     if (!_lastModified.empty())
         response += "Last-Modified: " + _lastModified + "\r\n";
-    response += "Connection: " + _connection + "\r\n";
+    if (!_connection.empty())
+        response += "Connection: " + _connection + "\r\n";
 
     response += "\r\n";
     response += _content;

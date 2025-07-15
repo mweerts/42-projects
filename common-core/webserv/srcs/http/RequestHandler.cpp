@@ -1,14 +1,12 @@
 #include "RequestHandler.hpp"
 
 #include <sys/socket.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include <fstream>
-#include <sstream>
 
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
+#include "utils.hpp"
 
 static std::string GetHtmlErrorPage(HttpResponse& response) {
     std::ostringstream oss;
@@ -21,33 +19,6 @@ static std::string GetHtmlErrorPage(HttpResponse& response) {
            "</center></body></html>";
 }
 
-static bool pathExist(const std::string& path) {
-    struct stat fileInfo;
-    return stat(path.c_str(), &fileInfo) == 0;
-}
-
-static bool isFile(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_ISREG(fileInfo.st_mode);
-}
-
-static bool isDirectory(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_ISDIR(fileInfo.st_mode);
-}
-
-static bool isReadable(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_IRUSR & fileInfo.st_mode && !access(path.c_str(), R_OK);
-}
-
-// static bool isPhpFile(const std::string& path) {
-//     return path.substr(path.find_last_of('.')) == ".php";
-// }
-
 static std::string getLastModifiedTime(const std::string& path) {
     struct stat fileInfo;
     if (stat(path.c_str(), &fileInfo) == 0) {
@@ -59,7 +30,7 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() {}
+RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www/") {}
 
 RequestHandler::~RequestHandler() {}
 
@@ -136,6 +107,10 @@ void RequestHandler::parseBody(const std::string& body) {
     }
 }
 
+std::string RequestHandler::getRootPath() const {
+    return _rootPath;
+}
+
 void RequestHandler::handleRequest(const std::string& request) {
     parseFullRequest(request);
     processRequest();
@@ -174,20 +149,22 @@ void RequestHandler::processRequest() {
 }
 
 void RequestHandler::processGetRequest() {
-    if (!pathExist(_request.getUri())) {
+    std::string fullPath = _rootPath + _request.getUri();
+
+    if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
-    if (isDirectory(_request.getUri())) {
+    if (isDirectory(fullPath)) {
         // Handle autoindex
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
-    if (!isReadable(_request.getUri()) || !isFile(_request.getUri())) {
+    if (!isReadable(fullPath) || !isFile(fullPath)) {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
-    std::ifstream file(_request.getUri().c_str());
+    std::ifstream file(fullPath.c_str());
     if (file.fail()) {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
@@ -195,12 +172,29 @@ void RequestHandler::processGetRequest() {
     std::ostringstream ss;
     ss << file.rdbuf();
     _response.setContent(ss.str());
-    _response.setContentType(MimeTypes::getType(_request.getUri().c_str()));
-    _response.setLastModified(getLastModifiedTime(_request.getUri()));
+    _response.setContentType(MimeTypes::getType(fullPath.c_str()));
+    _response.setLastModified(getLastModifiedTime(fullPath));
 
     file.close();
 }
 
 void RequestHandler::processPostRequest() {}
 
-void RequestHandler::processDeleteRequest() {}
+void RequestHandler::processDeleteRequest() {
+    std::string fullPath = _rootPath + "uploads" + _request.getUri();
+
+    if (!pathExist(fullPath)) {
+        _response.setStatusCode(HTTP_NOT_FOUND);
+        return;
+    }
+    if (isDirectory(fullPath)) {
+        _response.setStatusCode(HTTP_FORBIDDEN);
+        return;
+    }
+    if (remove(fullPath.c_str()) != 0) {
+        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        return;
+    }
+    _response.setStatusCode(HTTP_OK);
+    _response.setContent("File deleted successfully.");
+}

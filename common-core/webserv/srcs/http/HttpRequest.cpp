@@ -5,7 +5,7 @@
 HttpRequest::HttpRequest() {
     _method = "";
     _uri = "";
-    _version = "HTTP/1.0";
+    _version = "";
     _body = "";
 }
 
@@ -16,7 +16,7 @@ void HttpRequest::setMethod(const std::string& method) {
 }
 
 void HttpRequest::setUri(const std::string& uri) {
-    _uri = "/home/mweerts/webserv/www/" + uri;
+    _uri = uri;
 }
 
 void HttpRequest::setVersion(const std::string& version) {
