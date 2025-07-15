@@ -143,7 +143,7 @@ void RequestHandler::handleRequest(const std::string& request) {
 
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
-    Logger::debug() << "Sending response:\n" << responseString;
+    //Logger::debug() << "Sending response:\n" << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
     if (_response.getConnection() == "close") {
         close(socket_fd);

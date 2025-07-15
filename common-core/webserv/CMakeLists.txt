@@ -21,6 +21,12 @@ set(SOURCES
     srcs/http/http_server.cpp
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
+    srcs/http/HttpRequest.cpp
+    srcs/http/HttpResponse.cpp
+    srcs/http/MimeTypes.cpp
+    srcs/http/status_code.cpp
+    srcs/http/RequestHandler.cpp
+    srcs/tests.cpp
 )
 
 add_executable(webserv ${SOURCES})

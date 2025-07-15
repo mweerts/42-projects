@@ -16,7 +16,8 @@ void HttpRequest::setMethod(const std::string& method) {
 }
 
 void HttpRequest::setUri(const std::string& uri) {
-    _uri = "/home/mweerts/webserv/www/" + uri;
+    // use root from config here
+    _uri = "/home/llebugle/Documents/webserv/www/" + uri;
 }
 
 void HttpRequest::setVersion(const std::string& version) {
