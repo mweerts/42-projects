@@ -8,17 +8,6 @@
 #include "MimeTypes.hpp"
 #include "utils.hpp"
 
-static std::string GetHtmlErrorPage(HttpResponse& response) {
-    std::ostringstream oss;
-    oss << response.getStatusCode();
-    return "<html><head><title>" + oss.str() + " " +
-           GetHttpStatusText(response.getStatusCode()) +
-           "</title></head><body><center><h1>" + oss.str() + " " +
-           GetHttpStatusText(response.getStatusCode()) +
-           "</h1></center><hr><center>" + response.getServerName() +
-           "</center></body></html>";
-}
-
 static std::string getLastModifiedTime(const std::string& path) {
     struct stat fileInfo;
     if (stat(path.c_str(), &fileInfo) == 0) {
@@ -30,7 +19,7 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www/") {}
+RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www") {}
 
 RequestHandler::~RequestHandler() {}
 
@@ -107,7 +96,7 @@ void RequestHandler::parseBody(const std::string& body) {
     }
 }
 
-std::string RequestHandler::getRootPath() const {
+const std::string RequestHandler::getRootPath() const {
     return _rootPath;
 }
 
@@ -156,9 +145,12 @@ void RequestHandler::processGetRequest() {
         return;
     }
     if (isDirectory(fullPath)) {
-        // Handle autoindex
-        _response.setStatusCode(HTTP_FORBIDDEN);
+        _response.setStatusCode(HTTP_OK);
+        _response.setContent(getHtmlIndexPage(_rootPath, _request.getUri()));
+        _response.setContentType("text/html");
         return;
+        // _response.setStatusCode(HTTP_FORBIDDEN);
+        // return;
     }
     if (!isReadable(fullPath) || !isFile(fullPath)) {
         _response.setStatusCode(HTTP_FORBIDDEN);

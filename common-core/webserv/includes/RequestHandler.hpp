@@ -1,6 +1,8 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
+#include <filesystem>
+
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "server_config.hpp"
@@ -15,10 +17,10 @@ class RequestHandler {
     void sendResponse(int socket_fd);
 
    private:
-    ServerConfig _serverConfig;
-    HttpRequest  _request;
-    HttpResponse _response;
-    std::string  _rootPath;
+    ServerConfig      _serverConfig;
+    HttpRequest       _request;
+    HttpResponse      _response;
+    const std::string _rootPath;
 
     void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);
@@ -31,7 +33,7 @@ class RequestHandler {
     void parseHeaders(const std::string& headers);
     void parseBody(const std::string& body);
 
-    std::string getRootPath() const;
+    const std::string getRootPath() const;
 };
 
 #endif
