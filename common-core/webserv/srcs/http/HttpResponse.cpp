@@ -9,23 +9,20 @@
 HttpResponse::HttpResponse() {
     _statusCode = HTTP_OK;
     _version = "HTTP/1.1";
-    _content = "";
-    _contentLength = 0;
-    _contentType = "text/html";
     _serverName = "webserv42";
     _date = "";
+    _contentType = "text/html";
+    _contentLength = 0;
+    _lastModified = "";
     _connection = "keep-alive";  // HTTP/1.1 default is keep-alive. HTTP/1.0
                                  // default is close
+    _content = "";
 }
 
 HttpResponse::~HttpResponse() {}
 
 void HttpResponse::setStatusCode(StatusCode statusCode) {
     _statusCode = statusCode;
-}
-
-void HttpResponse::setHeader(const std::string& key, const std::string& value) {
-    _headers[key] = value;
 }
 
 void HttpResponse::setContent(const std::string& content) {
@@ -39,6 +36,10 @@ void HttpResponse::setContentType(const std::string& contentType) {
 
 void HttpResponse::setConnection(const std::string& connection) {
     _connection = connection;
+}
+
+void HttpResponse::setLastModified(const std::string& lastModified) {
+    _lastModified = lastModified;
 }
 
 void HttpResponse::setDate(void) {
@@ -75,18 +76,18 @@ std::string HttpResponse::toString() {
     contentLengthStream << _contentLength;
     setDate();
 
-    response += "Server: " + _serverName + "\r\n";
-    response += "Date: " + _date + "\r\n";
-    response += "Content-Type: " + _contentType + "\r\n";
+    if (!_serverName.empty())
+        response += "Server: " + _serverName + "\r\n";
+    if (!_date.empty())
+        response += "Date: " + _date + "\r\n";
+    if (!_contentType.empty())
+        response += "Content-Type: " + _contentType + "\r\n";
     response += "Content-Length: " + contentLengthStream.str() + "\r\n";
+    if (!_lastModified.empty())
+        response += "Last-Modified: " + _lastModified + "\r\n";
     response += "Connection: " + _connection + "\r\n";
 
-    for (std::map<std::string, std::string>::const_iterator it =
-             _headers.begin();
-         it != _headers.end(); ++it) {
-        response += it->first + ": " + it->second + "\r\n";
-    }
-    response += "\r\n";    // End of headers
-    response += _content;  // Add the content
+    response += "\r\n";
+    response += _content;
     return response;
 }
