@@ -64,7 +64,7 @@ std::string humanReadableSize(off_t size) {
     char        buf[10];
 
     if (dblSize < 10000) {
-#ifdef __LINUX__
+#ifdef __linux__
         snprintf(buf, sizeof(buf), "%ld", size);
 #else
         snprintf(buf, sizeof(buf), "%lld", size);
@@ -78,7 +78,7 @@ std::string humanReadableSize(off_t size) {
         ++i;
     }
     if (i == 0)
-#ifdef __LINUX__
+#ifdef __linux__
         snprintf(buf, sizeof(buf), "%ld", size);
 #else
         snprintf(buf, sizeof(buf), "%lld", size);

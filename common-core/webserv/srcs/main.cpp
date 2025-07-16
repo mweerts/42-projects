@@ -19,7 +19,7 @@
 #include "core/web_server.hpp"
 #include "parsing/include/ConfigProcessor.hpp"
 #include "server_config.hpp"
-#include "parsing/src/ConfigGett.cpp"
+#include "parsing/include/ConfigGett.hpp"
 
 Config testConfig();
 

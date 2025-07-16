@@ -27,6 +27,7 @@ class WebServer {
    public:
     explicit WebServer(Config& config) : config_(config), running_(false) {};
     explicit WebServer(ConfigGett& config) : configg_(config), running_(false) {};
+    
     ~WebServer() {
         for (ServerIterator it = http_servers_.begin();
              it != http_servers_.end(); ++it) {
