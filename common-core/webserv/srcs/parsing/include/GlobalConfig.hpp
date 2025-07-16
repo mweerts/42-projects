@@ -15,6 +15,18 @@
 
 #include "ConfigProcessor.hpp"
 
+struct CgiBin {
+    CgiBin(const std::map<std::string, std::vector<std::string> >& passprmtrs,
+           const std::string& nameLocation);
+    std::string                                      name;
+    std::map<std::string, std::vector<std::string> > prmtrs;
+    CgiBin();
+
+    const std::vector<std::string>* getPath(void) const;
+    const std::vector<std::string>* getExt(void) const;
+    const std::string*              getRoot(void) const;
+};
+
 class Location {
    private:
     std::string name;
@@ -24,19 +36,23 @@ class Location {
     const std::string&                               getName(void);
     Location(const std::map<std::string, std::vector<std::string> >& passprmtrs,
              const std::string& nameLocation);
-    // TODO
-    //	const size_t		getClientMaxBodySize( void )const;
-    //	const bool			getAutoIndex( void ) const;
-    //	const std::string*	getRoot( void ) const;
-    //	const std::string*	getIndex( void ) const;
-    //	const bool			getMethodIsAllowed(const std::string&
-    // method) const; 	const std::string*	getAlias() const;
+    size_t				getClientMaxBodySize( void )const;
+	bool				getAutoIndex( void ) const;
+	const std::string*	getRoot( void ) const;
+	const std::string*	getIndex( void ) const;
+	bool				getMethodIsAllowed(const std::string& method) const;
+	const std::string*	getAlias( void ) const;
+	const std::string*	getReturn( void ) const;
+    size_t				getHost( void )const;
+    int					getPort( void ) const;
 };
 
 class ServerConfig {
    private:
     std::string                                      name;
     std::map<std::string, std::vector<std::string> > prmtrs;
+    CgiBin                                           CGIloc;
+    bool                                             Cgi;
 
    public:
     ServerConfig() {};
@@ -52,10 +68,11 @@ class ServerConfig {
     const std::string* getIndex(void) const;
     int                getPort(void) const;
     const Location&    getLocation(const std::string& uri) const;
-    const Location&    getCgiBin(void) const;
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
     const std::string* getErrorPage(const std::string& nbrError) const;
+    void               setCgi(const CgiBin& add);
+    const CgiBin&      getCgiBin(void) const;
 
     std::map<std::string, Location> route;
     std::vector<Location>           location_;
@@ -88,9 +105,7 @@ class GlobalConfig {
     // const std::string* getErrorPage(int port, const std::string& error)
     // const;
     //
-    const std::vector<ServerConfig>& getServers() const {
-        return servers;  // TODO move to cpp
-    }
+    const std::vector<ServerConfig> getServers() const;
 
    private:
     std::vector<Node>         tree;

@@ -28,13 +28,24 @@ void GlobalConfig::CreateServerAndLocation(void) {
     while (it != this->tree.end()) {
         ServerConfig current(it->prmtrs, it->name);
         for (size_t i = 0; i < it->children.size(); ++i) {
-            Location Lcurrent(it->children[i].prmtrs, it->children[i].name);
-            current.location_.push_back(Lcurrent);
-            current.route.insert(std::make_pair(Lcurrent.getName(), Lcurrent));
+            if (it->children[i].name != "cgi-bin") {
+                Location Lcurrent(it->children[i].prmtrs, it->children[i].name);
+                current.location_.push_back(Lcurrent);
+                current.route.insert(
+                    std::make_pair(Lcurrent.getName(), Lcurrent));
+            } else {
+                CgiBin Cgicurrent(it->children[i].prmtrs, it->children[i].name);
+                current.setCgi(Cgicurrent);
+            }
         }
         this->servers.push_back(current);
         ++it;
     }
+}
+
+const std::vector<ServerConfig> GlobalConfig::getServers() const
+{
+	return this->servers;
 }
 
 // const std::string*	GlobalConfig::getErrorPage(int port, const std::string&
@@ -62,7 +73,8 @@ void GlobalConfig::CreateServerAndLocation(void) {
 // 			++itChildren;
 // 		}
 // 		std::map<std::string, std::vector<std::string> >::const_iterator
-// itMain = it->second.prmtrs.begin(); 		while (itMain != it->second.prmtrs.end())
+// itMain = it->second.prmtrs.begin(); 		while (itMain !=
+// it->second.prmtrs.end())
 // 		{
 // 			if ((pos = itMain->first.find(error, 0))
 // !=std::string::npos)
@@ -83,7 +95,8 @@ void GlobalConfig::CreateServerAndLocation(void) {
 // 	if (it != MapNode.end())
 // 	{
 // 		std::map<std::string, std::vector<std::string> >::const_iterator
-// itMain = it->second.prmtrs.begin(); 		while (itMain != it->second.prmtrs.end())
+// itMain = it->second.prmtrs.begin(); 		while (itMain !=
+// it->second.prmtrs.end())
 // 		{
 // 			if ((pos = itMain->first.find(error, 0))
 // !=std::string::npos)

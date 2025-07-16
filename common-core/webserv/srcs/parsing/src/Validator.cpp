@@ -28,6 +28,7 @@ Validator::Validator() {
         std::make_pair("allow_methods", &Validator::validateMethods));
     this->funcMap.insert(std::make_pair("listen", &Validator::validateListen));
     this->funcMap.insert(std::make_pair("root", &Validator::validateRoot));
+    this->funcMap.insert(std::make_pair("return", &Validator::validateRoot));
     this->funcMap.insert(std::make_pair("alias", &Validator::validateRoot));
     this->funcMap.insert(
         std::make_pair("cgi_path", &Validator::validateCgiPath));

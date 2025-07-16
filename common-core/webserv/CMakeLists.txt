@@ -32,6 +32,7 @@ set(SOURCES
     srcs/parsing/src/Server.cpp
     srcs/parsing/src/Node.cpp
     srcs/parsing/src/Validator.cpp
+    srcs/parsing/src/CgiBin.cpp
     
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
