@@ -50,7 +50,7 @@ void RequestHandler::parseFullRequest(const std::string& request) {
         headers += line + "\r\n";
     }
     parseHeaders(headers);
-   
+
     // Read body if present
     if (std::getline(iss, body)) {
         parseBody(body);
@@ -146,12 +146,16 @@ void RequestHandler::processGetRequest() {
         return;
     }
     if (isDirectory(fullPath)) {
-        _response.setStatusCode(HTTP_OK);
-        _response.setContent(getHtmlIndexPage(_rootPath, _request.getUri()));
-        _response.setContentType("text/html");
-        return;
-        // _response.setStatusCode(HTTP_FORBIDDEN);
-        // return;
+        if (_serverConfig.getAutoIndex()) {
+            _response.setStatusCode(HTTP_OK);
+            _response.setContent(
+                getHtmlIndexPage(_rootPath, _request.getUri()));
+            _response.setContentType("text/html");
+            return;
+        } else {
+            _response.setStatusCode(HTTP_FORBIDDEN);
+            return;
+        }
     }
     if (!isReadable(fullPath) || !isFile(fullPath)) {
         _response.setStatusCode(HTTP_FORBIDDEN);

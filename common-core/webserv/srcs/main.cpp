@@ -26,7 +26,7 @@ int main() {
     Logger::info() << "... Initializing config ...";
 
 
-    ConfigProcessor conf("../config/default.conf");
+    ConfigProcessor conf("../config/default2.conf");
 
     if (conf.tokenize()) {
         return 1;
