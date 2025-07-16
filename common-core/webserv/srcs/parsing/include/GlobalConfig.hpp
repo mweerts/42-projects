@@ -48,7 +48,7 @@ class ServerConfig {
     const std::string  getHost(void) const;
     size_t             getClientMaxBodySize(void) const;
     bool               getAutoIndex(void) const;
-    const std::string* getRoot(void) const;
+    const std::string  getRoot(void) const;
     const std::string* getIndex(void) const;
     int                getPort(void) const;
     const Location&    getLocation(const std::string& uri) const;
@@ -85,16 +85,17 @@ class GlobalConfig {
     // only server-level configuration.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     //		//♡♡♡ Does not consider URI-specific location blocks.
     // ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-    // const std::string* getErrorPage(int port, const std::string& error) const;
-    // 
+    // const std::string* getErrorPage(int port, const std::string& error)
+    // const;
+    //
     const std::vector<ServerConfig>& getServers() const {
         return servers;  // TODO move to cpp
     }
 
    private:
-    std::vector<Node>       tree;
-    std::vector<int>        allPort;
-    std::map<int, Node>     MapNode;
+    std::vector<Node>         tree;
+    std::vector<int>          allPort;
+    std::map<int, Node>       MapNode;
     std::vector<ServerConfig> servers;
 };
 

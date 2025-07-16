@@ -45,6 +45,7 @@ void WebServer::Run() {
     signal(SIGTERM, signal_handler);
 
     running_ = true;
+    
     while (running_ && !g_shutdown_requested) {
         SetupPolling();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
@@ -127,7 +128,6 @@ void WebServer::HandleNewConnection(int listening_fd) {
 
     socklen_t clen = sizeof(client_addr);
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
-
     if (client_fd < 0) {
         if (errno != EWOULDBLOCK && errno != EAGAIN) {  // skips common errors
             Logger::warning()
@@ -151,7 +151,9 @@ void WebServer::HandleNewConnection(int listening_fd) {
     }
 #endif
 
+
     const ServerConfig& Server_config = GetServerConfig(listening_fd);
+    Logger::error() << Server_config.getRoot();
     active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
     guard.release();
 
@@ -219,6 +221,7 @@ bool WebServer::IsListeningSocket(int fd) const {
 
 bool WebServer::Start() {
     std::vector<ServerConfig> servers = config_.getServers();
+    
     for (std::vector<ServerConfig>::const_iterator it = servers.begin();
          it != servers.end(); ++it) {
         http::Server* Server = new http::Server(*it);
@@ -229,7 +232,7 @@ bool WebServer::Start() {
         }
         http_servers_[Server->GetListenSocket()] = Server;
     }
-
+    
     if (http_servers_.empty()) {
         Logger::critical() << "No servers could be initialized.";
         return false;

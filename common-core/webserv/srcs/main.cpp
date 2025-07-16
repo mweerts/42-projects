@@ -37,6 +37,7 @@ int main() {
     WebServer web_server(config);
 
     Logger::info() << "... Initializing servers ...";
+    Logger::error() << "main: " << config.getServers()[0].getRoot();
     if (!web_server.Start()) {
         return 1;
     }

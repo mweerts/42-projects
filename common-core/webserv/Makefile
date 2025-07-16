@@ -68,4 +68,7 @@ crun: cbuild
 
 ctest: cbuild-test
 	@cd build && ./webserv_test
+
+valgrind: cbuild
+	@cd build && valgrind ./webserv
 .PHONY: cmake-build cmake-clean cmake-run

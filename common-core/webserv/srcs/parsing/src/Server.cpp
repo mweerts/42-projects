@@ -40,11 +40,11 @@ bool ServerConfig::getAutoIndex() const
     return false;
 }
 
-const std::string* ServerConfig::getRoot() const
+const std::string ServerConfig::getRoot() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("root");
     if (it != prmtrs.end() && !it->second.empty())
-        return &(it->second[0]);
+        return (it->second[0]);
     return NULL;
 }
 
