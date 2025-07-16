@@ -64,7 +64,7 @@ std::string humanReadableSize(off_t size) {
     char        buf[10];
 
     if (dblSize < 10000) {
-        snprintf(buf, sizeof(buf), "%ld", size);
+        snprintf(buf, sizeof(buf), "%lld", size);
         return std::string(buf);
     }
 
@@ -73,7 +73,7 @@ std::string humanReadableSize(off_t size) {
         ++i;
     }
     if (i == 0)
-        snprintf(buf, sizeof(buf), "%ld", size);
+        snprintf(buf, sizeof(buf), "%lld", size);
     else
         snprintf(buf, sizeof(buf), "%.0f%s", dblSize, suffixes[i]);
 
