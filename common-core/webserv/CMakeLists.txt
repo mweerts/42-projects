@@ -24,7 +24,6 @@ set(SOURCES
     srcs/http/HttpResponse.cpp
     srcs/http/MimeTypes.cpp
     srcs/http/RequestHandler.cpp
-    srcs/http/status_code.cpp
     srcs/http/utils.cpp
     
     srcs/parsing/src/ConfigProcessor.cpp

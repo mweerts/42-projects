@@ -1,7 +1,6 @@
 #include "utils.hpp"
 
 #include <dirent.h>
-
 #include <unistd.h>
 
 #include <algorithm>
@@ -9,6 +8,8 @@
 #include <iomanip>
 #include <sstream>
 #include <vector>
+
+#include "Logger.hpp"
 
 bool pathExist(const std::string& path) {
     struct stat fileInfo;
@@ -133,17 +134,37 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     // Add directories to the output
     for (size_t i = 0; i < dirs.size(); ++i) {
         std::string name = dirs[i];
+        std::string croppedName = name;
         std::string fullPath = path + "/" + name;
-        oss << "<a href=\"" << name << "/\">" << name << "/</a>"
-            << std::string(50 - name.length(), ' ')
-            << getLastModifiedTime(fullPath) << std::setw(8) << "-" << "\n";
+
+        if (croppedName.length() > 50) {
+            croppedName = croppedName.substr(0, 47);
+            croppedName.append("..>");
+        }
+        oss << "<a href=\"" << name << "/\">" << croppedName;
+        if (croppedName.length() < 50)
+            oss << "/";
+        oss << "</a>";
+        if (croppedName.length() < 50)
+            oss << std::string(50 - croppedName.length(), ' ');
+        else
+            oss << std::string(51 - croppedName.length(), ' ');
+        oss << getLastModifiedTime(fullPath) << std::setw(8) << "-" << "\n";
     }
     // Add files to the output
     for (size_t i = 0; i < files.size(); ++i) {
         std::string name = files[i];
+        std::string croppedName = name;
         std::string fullPath = path + "/" + name;
-        oss << "<a href=\"" << name << "\">" << name << "</a>"
-            << std::string(51 - name.length(), ' ')
+
+        if (croppedName.length() > 50) {
+            croppedName = croppedName.substr(0, 47);
+            croppedName.append("..>");
+        }
+        
+        Logger::debug() << "Adding file: " << fullPath;
+        oss << "<a href=\"" << name << "\">" << croppedName << "</a>"
+            << std::string(51 - croppedName.length(), ' ')
             << getLastModifiedTime(fullPath) << std::setw(8)
             << humanReadableSize(getFileSize(fullPath)) << "\n";
     }
