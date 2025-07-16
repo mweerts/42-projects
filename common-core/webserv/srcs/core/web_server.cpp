@@ -253,35 +253,6 @@ bool WebServer::Start() {
     return true;
 }
 
-// bool WebServer::Start() {
-//     for (std::vector<ServerConfig>::const_iterator it = config_.servers.begin();
-//          it != config_.servers.end(); ++it) {
-//         http::Server* Server = new http::Server(*it);
-
-//         if (!Server->Initialize()) {
-//             delete Server;
-//             continue;
-//         }
-//         http_servers_[Server->GetListenSocket()] = Server;
-//     }
-
-//     if (http_servers_.empty()) {
-//         Logger::critical() << "No servers could be initialized.";
-//         return false;
-//     }
-
-//     if (http_servers_.size() < config_.servers.size()) {
-//         Logger::warning()
-//             << "Partial start up: some servers failed to initialize";
-//     }
-
-//     SetupPolling();
-
-//     Logger::debug() << "WebServer started with " << http_servers_.size()
-//                     << " servers";
-//     return true;
-// }
-
 void WebServer::Stop() {
     running_ = false;
 

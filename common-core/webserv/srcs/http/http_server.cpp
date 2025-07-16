@@ -69,7 +69,7 @@ bool Server::Initialize() {
 
     Logger::info() << "Server '" << configg_.getName() << "' listening on "
                    << (configg_.getHost().empty() ? "0.0.0.0" : configg_.getHost()) << ":"
-                   << config_.port;
+                   << configg_.getPort();
 
     return true;
 }
@@ -83,13 +83,13 @@ bool Server::BindAddress() {
     hints.ai_socktype = SOCK_STREAM;  // TCP
     hints.ai_flags = AI_PASSIVE;      // binds to all interfaces if !host
 
-    std::string port = lib::to_string(config_.port);
+    std::string port = lib::to_string(configg_.getPort());
     std::string host = configg_.getHost().empty() ? NULL : configg_.getHost().c_str();
-
+    
     int status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
     if (status != 0) {
         Logger::error() << "getaddrinfo failed: " << configg_.getName() << " ("
-                        << (!host.empty() ? host : "0.0.0.0") << ":" << config_.port
+                        << (!host.empty() ? host : "0.0.0.0") << ":" << configg_.getPort()
                         << "): " << gai_strerror(status);
         return false;
     }
