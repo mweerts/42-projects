@@ -18,8 +18,7 @@ set(SOURCES
     srcs/main.cpp
     srcs/core/web_server.cpp
     srcs/core/client_connection.cpp
-    srcs/lib/socket_guard.cpp
-    srcs/lib/logger.cpp
+    
     srcs/http/http_server.cpp
     srcs/http/HttpRequest.cpp
     srcs/http/HttpResponse.cpp
@@ -27,10 +26,17 @@ set(SOURCES
     srcs/http/RequestHandler.cpp
     srcs/http/status_code.cpp
     srcs/http/utils.cpp
-    srcs/tests.cpp
+    
     srcs/parsing/src/ConfigProcessor.cpp
+    srcs/parsing/src/ConfigGett.cpp
+    srcs/parsing/src/Location.cpp
+    srcs/parsing/src/Server.cpp
     srcs/parsing/src/Node.cpp
     srcs/parsing/src/Validator.cpp
+    
+    srcs/lib/socket_guard.cpp
+    srcs/lib/logger.cpp
+    srcs/tests.cpp
 )
 
 add_executable(webserv ${SOURCES})

@@ -19,7 +19,7 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www") {}
+RequestHandler::RequestHandler() : _rootPath("/Users/lucaslebugle/Documents/42/webserv/www") {}
 
 RequestHandler::~RequestHandler() {}
 
@@ -141,6 +141,7 @@ void RequestHandler::processGetRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
     if (!pathExist(fullPath)) {
+        Logger::info() << fullPath;
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }

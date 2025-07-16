@@ -6,7 +6,7 @@
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/14 20:03:53 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/07/15 17:48:25 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,166 +41,25 @@ std::string ConfigProcessor::getBuffer( void ) const
 	return (this->Buffer);
 }
 
-const Node* ConfigProcessor::getRouteNode(int port, const std::string& uri)const
-{
-	std::map<int, Node*>::const_iterator it = Servers.find(port);
-    if (it != Servers.end())
-        return it->second->findChildNode(uri);
-    else
-        return NULL;
-}
-
-       /*♡♡♡♡♡♡♡♡♡♡♡OVERLAOD♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-const Node* ConfigProcessor::getRouteNode(const std::string& port, const std::string& uri)const
-{
-    std::vector<Node>::const_iterator it = tree.begin();
-    while(it != tree.end())
-    {
-        std::map<std::string, std::vector<std::string> >::const_iterator listen = it->prmtrs.find("listen");
-		if (listen != it->prmtrs.end() && !listen->second.empty() && listen->second[0] == port)
-		{
-			return it->findChildNode( uri );
-		}
-         ++it;
-    }  
-     return NULL;    
-}
-const std::vector<Node>& ConfigProcessor::getVectorOfServer( void ) const
+std::vector<Node> ConfigProcessor::getVectorOfServer( void ) const
 {
 	return this->tree;
 }
 
 
-const std::map<std::string, Node*> * ConfigProcessor::getMapOfOneServer( int port ) const
-{
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-		return &(it->second->route);
-	else
-		return NULL;
-}
 
-const Node* ConfigProcessor::getServerNode( int port ) const
-{
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-		return it->second;
-	else
-		return NULL;
-}
 
-bool ConfigProcessor::hasPort ( int port )
-{
-	std::vector<int>::const_iterator it = std::find( allPort.begin(), allPort.end(), port );
-	if (it != this->allPort.end())
-		return true;
-	else
-		return false;
-}
-const std::map<int, Node*>& ConfigProcessor::getFullMap( void ) const
+ std::map<int, Node> ConfigProcessor::getFullMap( void ) const
 {
 	return this->Servers;
 }
 
-const std::vector<int>& ConfigProcessor::getAllPorts( void ) const
+std::vector<int> ConfigProcessor::getAllPorts( void ) const
 {
 	return this->allPort;
 }
 
-const std::vector<std::string>* ConfigProcessor::getParam(int port, const std::string& key) const
-{
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-	{
-		std::map<std::string, std::vector<std::string> >::const_iterator itKey= it->second->prmtrs.find( key );
-		if (itKey != it->second->prmtrs.end())
-		{
-			return &(itKey->second);
-		}
-		else
-			return NULL;
-	}
-	else
-		return NULL;
 
-}
-
-const std::vector<std::string>* ConfigProcessor::getParam(int port, const std::string& uri, const std::string& key) const
-{
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-	{
-		const Node *current = it->second->findChildNode( uri );
-		if (!current)
-			return NULL;
-		else
-		{
-			std::map<std::string, std::vector<std::string> >::const_iterator itKey = current->prmtrs.find( key );
-			if ( itKey != current->prmtrs.end())
-			{
-				return &(itKey->second);
-			}
-			else
-				return NULL;
-		}
-
-	}
-	else
-		return NULL;
-
-}
-const std::string*	ConfigProcessor::getErrorPage(int port, const std::string& error, const std::string& uri) const
-{
-	size_t	pos;
-
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-	{
-		const Node *current =  it->second->findChildNode( uri );
-		if (!current)
-		{
-			return NULL;
-		}
-		std::map<std::string, std::vector<std::string> >::const_iterator itChildren = current->prmtrs.begin();
-		while (itChildren != current->prmtrs.end())
-		{
-			if ((pos = itChildren->first.find(error, 0)) !=std::string::npos)
-			{
-				return &(itChildren->second[0]);
-			}
-			++itChildren;
-		}
-		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second->prmtrs.begin();
-		while (itMain != it->second->prmtrs.end())
-		{
-			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
-			{
-				return &(itMain->second[0]);
-			}
-			itMain++;
-		}
-	}
-	return NULL;
-}
-
-const std::string*	ConfigProcessor::getErrorPage(int port, const std::string& error ) const
-{
-	size_t	pos;
-	std::map<int, Node*>::const_iterator it = Servers.find( port );
-	if (it != Servers.end())
-	{
-		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second->prmtrs.begin();
-		while (itMain != it->second->prmtrs.end())
-		{
-			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
-			{
-				return &(itMain->second[0]);
-			}
-			itMain++;
-		}
-	}
-	return NULL;
-}
     /*♡♡♡♡♡♡♡♡♡♡♡UTILS♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 void	ConfigProcessor::prepareForCore( void )
 {
@@ -225,7 +84,7 @@ void	ConfigProcessor::prepareForCore( void )
 			std::stringstream ss(listen->second[0]);
 			ss >> port;
 			this->allPort.push_back(port);
-			this->Servers.insert(std::make_pair(port, &(*it)));
+			this->Servers.insert(std::make_pair(port, *it));
 		}
 		++it;
 	}
@@ -364,7 +223,8 @@ int ConfigProcessor::validateForbiddenParameters( void ) const
 	{
 		for (size_t i = 0; i < it_->children.size(); ++i)
 		{
-			verifyInvalidParamsInContext(it_->children[i].name, it_->children[i]);
+			if (verifyInvalidParamsInContext(it_->children[i].name, it_->children[i]) == 1)
+				return (1);
 			if (it_->children[i].name == "cgi-bin")
 			{
 				if (it_->children[i].prmtrs.count("cgi_ext") < 1)
@@ -396,15 +256,19 @@ int	ConfigProcessor::verifyInvalidParamsInContext(const std::string& name, const
 	vecNoAll.push_back("listen");
 	vecNoAll.push_back("host");
 	vecNoAll.push_back("server_name");
-	vecNoAll.push_back("error_page");
+//	vecNoAll.push_back("error_page");
 	if (name == "cgi-bin")
 	{
-	    vecNoAll.push_back("allow_methods");
-	    vecNoAll.push_back("autoindex");
+	    vecNoAll.push_back("allow_methods"); // TODO: Check if possible in cgi
+	    vecNoAll.push_back("autoindex"); // TODO: Check if possible in cgi
 	    vecNoAll.push_back("alias");
 	    vecNoAll.push_back("return");
 	}
-
+	else 
+	{
+		vecNoAll.push_back("cgi_ext");
+		vecNoAll.push_back("cgi_path");
+	}
 	for (size_t i = 0; i < vecNoAll.size(); i++)
 	{
 		std::map<std::string, std::vector<std::string> >::const_iterator itPrmtrs = it.prmtrs.find(vecNoAll[i]);

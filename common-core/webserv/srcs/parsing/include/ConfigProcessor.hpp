@@ -138,46 +138,13 @@ class ConfigProcessor
 	   std::string	getPath( void ) const;
 	   std::string	getBuffer( void ) const;
 
-        // ♡ Returns a const reference to the main vector of server nodes ♡
-        const std::vector<Node>& getVectorOfServer(void) const;
+        std::vector<Node> getVectorOfServer(void) const;
 
-        // ♡ Returns a const reference to the complete map of servers indexed by port ♡
-        const std::map<int, Node*>& getFullMap(void) const;
+        std::map<int, Node> getFullMap(void) const;
 
-        // ♡ Returns a const pointer to the map of routes (uri -> Node*) for a server by its port ♡
-        // ♡ Returns nullptr if the port does not exist ♡
-        const std::map<std::string, Node*>* getMapOfOneServer(int port) const;
+        std::vector<int> getAllPorts() const;
 
-        // ♡ Returns a const pointer to the route node specified by port and URI ♡
-        // ♡ Returns nullptr if not found .
-        const Node* getRouteNode(const std::string& port, const std::string& uri) const;
-        const Node* getRouteNode(int port, const std::string& uri) const;
 
-        // ♡ Returns a const pointer to the server node associated with the specified port ♡
-        // ♡ Returns nullptr if the port does not exist ♡
-        const Node* getServerNode(int port) const;
-
-        // ♡ Returns a const reference to the vector containing all configured server ports ♡
-        const std::vector<int>& getAllPorts() const;
-
-        // ♡ Checks whether a given port is present among the configured ports ♡
-        bool hasPort(int port);
-
-        // ♡ Returns a const pointer to the vector of strings associated with a key (parameter) for a server specified by port ♡
-        // ♡ Returns nullptr if the port or key do not exist ♡
-        const std::vector<std::string>* getParam(int port, const std::string& key) const;
-
-        // ♡♡♡ Returns a const pointer to the vector of strings associated with a key (parameter) for a route specified by port and URI ♡
-        // ♡♡♡ Returns nullptr if the port, URI, or key do not exist ♡
-        const std::vector<std::string>* getParam(int port, const std::string& uri, const std::string& key) const;
-
-		//♡♡♡ Returns the custom error page path for a given port and URI, checking location-level config first.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-		//♡♡♡ Falls back to server-level config if no match is found in the location.                           ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-		const std::string*	getErrorPage(int port, const std::string& error, const std::string& uri) const;
-
-		//♡♡♡ Returns the custom error page path for a given port, using only server-level configuration.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-		//♡♡♡ Does not consider URI-specific location blocks.                                            ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-		const std::string*	getErrorPage(int port, const std::string& error ) const;
 
 	   void			printAllTree( void ) const;
 
@@ -195,7 +162,7 @@ class ConfigProcessor
 	   const std::string	PathFile;
 	   std::string		Buffer;
 	   std::vector<Node> tree;
-	   std::map<int, Node*> Servers;
+	   std::map<int, Node> Servers;
 	   std::vector<int>		allPort;
        /*♡♡♡♡♡♡♡♡♡♡♡FT♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 	   std::string findRemplaceComment(std::string const& input,

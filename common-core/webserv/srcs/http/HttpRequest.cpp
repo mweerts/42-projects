@@ -16,8 +16,7 @@ void HttpRequest::setMethod(const std::string& method) {
 }
 
 void HttpRequest::setUri(const std::string& uri) {
-    // use root from config here
-    _uri = "/Users/lucaslebugle/Library/CloudStorage/OneDrive-Personal/Documents/42/webserv/www" + uri;
+    _uri = uri;
 }
 
 void HttpRequest::setVersion(const std::string& version) {

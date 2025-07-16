@@ -22,9 +22,12 @@ endif
 
 SRC_DIR = src
 SRCS = $(SRC_DIR)/ConfigProcessor.cpp\
- $(SRC_DIR)/Node.cpp\
-$(SRC_DIR)/Validator.cpp\
+	$(SRC_DIR)/Node.cpp\
+	$(SRC_DIR)/Validator.cpp\
 	$(SRC_DIR)/mainParse.cpp\
+	$(SRC_DIR)/ConfigGett.cpp\
+	$(SRC_DIR)/Server.cpp\
+	$(SRC_DIR)/Location.cpp\
 	../lib/logger.cpp
  	
 
