@@ -7,6 +7,7 @@
 #include <fstream>
 #include <unistd.h>
 
+#include "../parsing/include/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
 #include "utils.hpp"
@@ -22,13 +23,12 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www") {}
-
 RequestHandler::~RequestHandler() {}
 
-void RequestHandler::setServerConfig(const ServerConfig& config) {
-    _serverConfig = config;
-}
+// void RequestHandler::setServerConfig(const ServerConfig& config) {
+//     _ServerConfig = config;
+// }
+
 void RequestHandler::setRequest(const HttpRequest& request) {
     _request = request;
 }
@@ -58,6 +58,7 @@ void RequestHandler::parseFullRequest(const std::string& request) {
     if (std::getline(iss, body)) {
         parseBody(body);
     }
+    Logger::debug() << "done parsing request";
 }
 void RequestHandler::parseRequestLine(const std::string& requestLine) {
     std::istringstream iss(requestLine);
@@ -144,17 +145,20 @@ void RequestHandler::processGetRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
     if (!pathExist(fullPath)) {
-        Logger::info() << fullPath;
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
     if (isDirectory(fullPath)) {
-        _response.setStatusCode(HTTP_OK);
-        _response.setContent(getHtmlIndexPage(_rootPath, _request.getUri()));
-        _response.setContentType("text/html");
-        return;
-        // _response.setStatusCode(HTTP_FORBIDDEN);
-        // return;
+        if (_serverConfig.getAutoIndex()) {
+            _response.setStatusCode(HTTP_OK);
+            _response.setContent(
+                getHtmlIndexPage(_rootPath, _request.getUri()));
+            _response.setContentType("text/html");
+            return;
+        } else {
+            _response.setStatusCode(HTTP_FORBIDDEN);
+            return;
+        }
     }
     if (!isReadable(fullPath) || !isFile(fullPath)) {
         _response.setStatusCode(HTTP_FORBIDDEN);

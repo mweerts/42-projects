@@ -3,13 +3,17 @@
 
 
 
+// #include "GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "server_config.hpp"
+#include "../srcs/parsing/include/GlobalConfig.hpp"
+
+class ServerConfig;
 
 class RequestHandler {
    public:
-    RequestHandler();
+    RequestHandler(const ServerConfig& serverConfig)
+        : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()){};
     ~RequestHandler();
 
     void handleRequest(const std::string& request);
@@ -17,10 +21,10 @@ class RequestHandler {
     void sendResponse(int socket_fd);
 
    private:
-    ServerConfig      _serverConfig;
-    HttpRequest       _request;
-    HttpResponse      _response;
-    const std::string _rootPath;
+    const ServerConfig& _serverConfig;
+    HttpRequest         _request;
+    HttpResponse        _response;
+    const std::string   _rootPath;
 
     void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);

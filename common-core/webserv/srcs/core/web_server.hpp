@@ -20,11 +20,15 @@
 
 #include "../http/http_server.hpp"
 #include "client_connection.hpp"
-#include "server_config.hpp"
+// #include "server_config.hpp"
+#include "../parsing/include/GlobalConfig.hpp"
 
 class WebServer {
    public:
-    explicit WebServer(Config& config) : config_(config), running_(false) {};
+    // explicit WebServer(Config& config) : config_(config), running_(false) {};
+    explicit WebServer(GlobalConfig& config)
+        : config_(config), running_(false) {};
+
     ~WebServer() {
         for (ServerIterator it = http_servers_.begin();
              it != http_servers_.end(); ++it) {
@@ -44,18 +48,19 @@ class WebServer {
 
    private:
     std::vector<pollfd> poll_fds_;
-    Config              config_;
+    GlobalConfig        config_;
     bool                running_;
 
     std::map<int, http::Server*>     http_servers_;
     std::map<int, ClientConnection*> active_clients_;
+    
+    std::vector<ServerConfig> server_configs_;
 
     typedef std::map<int, ClientConnection*>::iterator ActiveClientIterator;
     typedef std::map<int, ClientConnection*>::const_iterator
                                                    ActiveClientConstIterator;
     typedef std::map<int, http::Server*>::iterator ServerIterator;
     typedef std::map<int, http::Server*>::const_iterator ServerConstIterator;
-
    private:
     bool Initializeservers();
     void SetupPolling();

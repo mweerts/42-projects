@@ -30,7 +30,6 @@
 #include "Logger.hpp"
 #include "client_connection.hpp"
 #include "lib/socket_guard.hpp"
-#include "server_config.hpp"
 
 // TODO: should we keep this for graceful exit?
 volatile sig_atomic_t g_shutdown_requested = 0;
@@ -46,6 +45,7 @@ void WebServer::Run() {
     signal(SIGTERM, signal_handler);
 
     running_ = true;
+    
     while (running_ && !g_shutdown_requested) {
         SetupPolling();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
@@ -128,7 +128,6 @@ void WebServer::HandleNewConnection(int listening_fd) {
 
     socklen_t clen = sizeof(client_addr);
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
-
     if (client_fd < 0) {
         if (errno != EWOULDBLOCK && errno != EAGAIN) {  // skips common errors
             Logger::warning()
@@ -152,6 +151,7 @@ void WebServer::HandleNewConnection(int listening_fd) {
     }
 #endif
 
+
     const ServerConfig& Server_config = GetServerConfig(listening_fd);
     active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
     guard.release();
@@ -164,6 +164,16 @@ void WebServer::HandleNewConnection(int listening_fd) {
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << active_clients_.size();
     // END TEMPORARY
+}
+
+const ServerConfig& WebServer::GetServerConfig(int fd) const {
+    ServerConstIterator it = http_servers_.find(fd);
+    if (it != http_servers_.end()) {
+        return it->second->GetConfig();
+    }
+
+    Logger::critical() << "No server config found for fd: " << fd;
+    return config_.getServers()[0];
 }
 
 void WebServer::CleanupTimedOutClients() {
@@ -208,39 +218,24 @@ bool WebServer::IsListeningSocket(int fd) const {
     return http_servers_.find(fd) != http_servers_.end();
 }
 
-const ServerConfig& WebServer::GetServerConfig(int fd) const {
-    ServerConstIterator it = http_servers_.find(fd);
-    if (it != http_servers_.end()) {
-        return it->second->GetConfig();
-    }
-
-    Logger::critical() << "No server config found for fd: " << fd;
-    if (!config_.servers.empty()) {  // fallback
-        return config_.servers[0];
-    }
-
-    static ServerConfig default_config;
-    return default_config;
-}
-
 bool WebServer::Start() {
-    for (std::vector<ServerConfig>::const_iterator it = config_.servers.begin();
-         it != config_.servers.end(); ++it) {
+    server_configs_ = config_.getServers();
+    for (std::vector<ServerConfig>::const_iterator it = server_configs_.begin();
+         it != server_configs_.end(); ++it) {
         http::Server* Server = new http::Server(*it);
-
         if (!Server->Initialize()) {
             delete Server;
             continue;
         }
         http_servers_[Server->GetListenSocket()] = Server;
     }
-
+    
     if (http_servers_.empty()) {
         Logger::critical() << "No servers could be initialized.";
         return false;
     }
 
-    if (http_servers_.size() < config_.servers.size()) {
+    if (http_servers_.size() < server_configs_.size()) {
         Logger::warning()
             << "Partial start up: some servers failed to initialize";
     }

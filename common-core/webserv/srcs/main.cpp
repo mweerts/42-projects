@@ -15,12 +15,9 @@
 #include <exception>
 
 #include "Logger.hpp"
-#include "RequestHandler.hpp"
 #include "core/web_server.hpp"
 #include "parsing/include/ConfigProcessor.hpp"
-#include "server_config.hpp"
-
-Config testConfig();
+#include "parsing/include/GlobalConfig.hpp"
 
 int main() {
     Logger::setLevel(LOG_LEVEL_DEBUG);
@@ -28,17 +25,15 @@ int main() {
 
     Logger::info() << "... Initializing config ...";
 
-    Config config = testConfig();
 
-    ConfigProcessor Conf("../config/default.conf");
+    ConfigProcessor conf("../config/default2.conf");
 
-    if (Conf.tokenize()) {
+    if (conf.tokenize()) {
         return 1;
     }
-    // Conf.printAllTree();
-    // Config config = parseConf();
 
-    // WebServer web_server(conf);
+    // Config config = testConfig();
+    GlobalConfig config = GlobalConfig(conf);
     WebServer web_server(config);
 
     Logger::info() << "... Initializing servers ...";
@@ -47,15 +42,15 @@ int main() {
     }
 
     while (true) {
-        try {
+        // try {
             web_server.Run();
             break;
-        } catch (const std::exception& e) {
-            Logger::critical() << "Server crashed: " << e.what();
-            web_server.Reset();
-            Logger::info() << "Restarting server...";
-            sleep(1);
-        }
+        // } catch (const std::exception& e) {
+        //     Logger::critical() << "Server crashed: " << e.what();
+        //     web_server.Reset();
+        //     Logger::info() << "Restarting server...";
+        //     sleep(1);
+        // }
     }
     return 0;
 }
