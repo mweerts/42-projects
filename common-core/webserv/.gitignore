@@ -2,7 +2,7 @@ webserv
 objs
 build
 .cache
-
+www/uploads/*
 # Prerequisites
 *.d
 
