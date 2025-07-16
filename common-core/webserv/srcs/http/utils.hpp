@@ -1,14 +1,9 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <dirent.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
-#include <iomanip>
-#include <sstream>
 #include <string>
-#include <cstdio>
 
 #include "HttpResponse.hpp"
 

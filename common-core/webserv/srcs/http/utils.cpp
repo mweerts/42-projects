@@ -1,5 +1,15 @@
 #include "utils.hpp"
 
+#include <dirent.h>
+
+#include <unistd.h>
+
+#include <algorithm>
+#include <cstdio>
+#include <iomanip>
+#include <sstream>
+#include <vector>
+
 bool pathExist(const std::string& path) {
     struct stat fileInfo;
     return stat(path.c_str(), &fileInfo) == 0;
@@ -90,8 +100,10 @@ std::string humanReadableSize(off_t size) {
 }
 
 std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
-    std::ostringstream oss;
-    std::string        path = root + uri;
+    std::ostringstream       oss;
+    std::string              path = root + uri;
+    std::vector<std::string> files;
+    std::vector<std::string> dirs;
 
     oss << "<html><head><title>Index of " << uri << "</title></head>"
         << "<body><h1>Index of " << uri << "</h1><hr><pre>";
@@ -107,20 +119,34 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
                 continue;
             std::string fullPath = path + "/" + name;
             struct stat st;
-            if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
-                oss << "<a href=\"" << name << "/\">" << name << "/</a>"
-                    << std::string(50 - name.length(), ' ')
-                    << getLastModifiedTime(fullPath) << std::setw(7) << "-"
-                    << "\n";
-
-            } else {
-                oss << "<a href=\"" << name << "\">" << name << "</a>"
-                    << std::string(51 - name.length(), ' ')
-                    << getLastModifiedTime(fullPath) << std::setw(7)
-                    << humanReadableSize(getFileSize(fullPath)) << "\n";
-            }
+            if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
+                dirs.push_back(name);
+            else
+                files.push_back(name);
         }
         closedir(dir);
     }
+    // Sort directories and files
+    std::sort(dirs.begin(), dirs.end());
+    std::sort(files.begin(), files.end());
+
+    // Add directories to the output
+    for (size_t i = 0; i < dirs.size(); ++i) {
+        std::string name = dirs[i];
+        std::string fullPath = path + "/" + name;
+        oss << "<a href=\"" << name << "/\">" << name << "/</a>"
+            << std::string(50 - name.length(), ' ')
+            << getLastModifiedTime(fullPath) << std::setw(8) << "-" << "\n";
+    }
+    // Add files to the output
+    for (size_t i = 0; i < files.size(); ++i) {
+        std::string name = files[i];
+        std::string fullPath = path + "/" + name;
+        oss << "<a href=\"" << name << "\">" << name << "</a>"
+            << std::string(51 - name.length(), ' ')
+            << getLastModifiedTime(fullPath) << std::setw(8)
+            << humanReadableSize(getFileSize(fullPath)) << "\n";
+    }
+    oss << "</pre><hr></body></html>";
     return oss.str();
 }
