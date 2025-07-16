@@ -21,10 +21,12 @@
 #include "../http/http_server.hpp"
 #include "client_connection.hpp"
 #include "server_config.hpp"
+#include "../parsing/include/ConfigGett.hpp"
 
 class WebServer {
    public:
     explicit WebServer(Config& config) : config_(config), running_(false) {};
+    explicit WebServer(ConfigGett& config) : configg_(config), running_(false) {};
     ~WebServer() {
         for (ServerIterator it = http_servers_.begin();
              it != http_servers_.end(); ++it) {
@@ -45,6 +47,7 @@ class WebServer {
    private:
     std::vector<pollfd> poll_fds_;
     Config              config_;
+    ConfigGett          configg_;
     bool                running_;
 
     std::map<int, http::Server*>     http_servers_;
@@ -65,7 +68,7 @@ class WebServer {
     void RemoveClient(int client_fd);
     void CleanupTimedOutClients();
 
-    const ServerConfig& GetServerConfig(int fd) const;
+    // const ServerConfig& GetServerConfig(int fd) const;
 
     // void HandleClientRequest(int client_fd);
     // void HandleClientResponse(int client_fd);

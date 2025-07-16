@@ -19,6 +19,7 @@
 #include "core/web_server.hpp"
 #include "parsing/include/ConfigProcessor.hpp"
 #include "server_config.hpp"
+#include "parsing/src/ConfigGett.cpp"
 
 Config testConfig();
 
@@ -28,17 +29,15 @@ int main() {
 
     Logger::info() << "... Initializing config ...";
 
-    Config config = testConfig();
 
-    ConfigProcessor Conf("../config/default.conf");
+    ConfigProcessor conf("../config/default.conf");
 
-    if (Conf.tokenize()) {
+    if (conf.tokenize()) {
         return 1;
     }
-    // Conf.printAllTree();
-    // Config config = parseConf();
 
-    // WebServer web_server(conf);
+    // Config config = testConfig();
+    ConfigGett config = ConfigGett(conf);
     WebServer web_server(config);
 
     Logger::info() << "... Initializing servers ...";

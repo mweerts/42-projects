@@ -152,8 +152,8 @@ void WebServer::HandleNewConnection(int listening_fd) {
     }
 #endif
 
-    const ServerConfig& Server_config = GetServerConfig(listening_fd);
-    active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
+    // const ServerConfig& Server_config = GetServerConfig(listening_fd);
+    active_clients_[client_fd] = new ClientConnection(client_fd);
     guard.release();
 
     // TEMPORARY: only for Logging
@@ -208,24 +208,25 @@ bool WebServer::IsListeningSocket(int fd) const {
     return http_servers_.find(fd) != http_servers_.end();
 }
 
-const ServerConfig& WebServer::GetServerConfig(int fd) const {
-    ServerConstIterator it = http_servers_.find(fd);
-    if (it != http_servers_.end()) {
-        return it->second->GetConfig();
-    }
+// const ServerConfig& WebServer::GetServerConfig(int fd) const {
+//     ServerConstIterator it = http_servers_.find(fd);
+//     if (it != http_servers_.end()) {
+//         return it->second->GetConfig();
+//     }
 
-    Logger::critical() << "No server config found for fd: " << fd;
-    if (!config_.servers.empty()) {  // fallback
-        return config_.servers[0];
-    }
+//     Logger::critical() << "No server config found for fd: " << fd;
+//     if (!config_.servers.empty()) {  // fallback
+//         return config_.servers[0];
+//     }
 
-    static ServerConfig default_config;
-    return default_config;
-}
+//     static ServerConfig default_config;
+//     return default_config;
+// }
 
 bool WebServer::Start() {
-    for (std::vector<ServerConfig>::const_iterator it = config_.servers.begin();
-         it != config_.servers.end(); ++it) {
+    std::vector<ServerConf> servers = configg_.getServers();
+    for (std::vector<ServerConf>::const_iterator it = servers.begin();
+         it != servers.end(); ++it) {
         http::Server* Server = new http::Server(*it);
 
         if (!Server->Initialize()) {
@@ -240,7 +241,7 @@ bool WebServer::Start() {
         return false;
     }
 
-    if (http_servers_.size() < config_.servers.size()) {
+    if (http_servers_.size() < servers.size()) {
         Logger::warning()
             << "Partial start up: some servers failed to initialize";
     }
@@ -251,6 +252,35 @@ bool WebServer::Start() {
                     << " servers";
     return true;
 }
+
+// bool WebServer::Start() {
+//     for (std::vector<ServerConfig>::const_iterator it = config_.servers.begin();
+//          it != config_.servers.end(); ++it) {
+//         http::Server* Server = new http::Server(*it);
+
+//         if (!Server->Initialize()) {
+//             delete Server;
+//             continue;
+//         }
+//         http_servers_[Server->GetListenSocket()] = Server;
+//     }
+
+//     if (http_servers_.empty()) {
+//         Logger::critical() << "No servers could be initialized.";
+//         return false;
+//     }
+
+//     if (http_servers_.size() < config_.servers.size()) {
+//         Logger::warning()
+//             << "Partial start up: some servers failed to initialize";
+//     }
+
+//     SetupPolling();
+
+//     Logger::debug() << "WebServer started with " << http_servers_.size()
+//                     << " servers";
+//     return true;
+// }
 
 void WebServer::Stop() {
     running_ = false;

@@ -41,7 +41,8 @@ bool Server::Initialize() {
 #endif
 
     if (listen_fd_ < 0) {
-        Logger::error() << "Failed to create socket for " << config_.name;
+        // Logger::error() << "Failed to create socket for " << configg_.getName();
+        Logger::error() << "Failed to create socket for " << configg_.getName();
         return false;
     }
 
@@ -50,7 +51,7 @@ bool Server::Initialize() {
     int opt = 1;
     if (setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) <
         0) {
-        Logger::error() << "Setsockopt failed for " << config_.name;
+        Logger::error() << "Setsockopt failed for " << configg_.getName();
         return false;
     }
 
@@ -60,14 +61,14 @@ bool Server::Initialize() {
 
     const int kBacklog = 128;
     if (listen(listen_fd_, kBacklog) < 0) {
-        Logger::error() << "Listen failed for " << config_.name;
+        Logger::error() << "Listen failed for " << configg_.getName();
         return false;
     }
 
     guard.release();
 
-    Logger::info() << "Server '" << config_.name << "' listening on "
-                   << (config_.host.empty() ? "0.0.0.0" : config_.host) << ":"
+    Logger::info() << "Server '" << configg_.getName() << "' listening on "
+                   << (configg_.getHost().empty() ? "0.0.0.0" : configg_.getHost()) << ":"
                    << config_.port;
 
     return true;
@@ -83,12 +84,12 @@ bool Server::BindAddress() {
     hints.ai_flags = AI_PASSIVE;      // binds to all interfaces if !host
 
     std::string port = lib::to_string(config_.port);
-    const char* host = config_.host.empty() ? NULL : config_.host.c_str();
+    std::string host = configg_.getHost().empty() ? NULL : configg_.getHost().c_str();
 
-    int status = getaddrinfo(host, port.c_str(), &hints, &result);
+    int status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
     if (status != 0) {
-        Logger::error() << "getaddrinfo failed: " << config_.name << " ("
-                        << (host ? host : "0.0.0.0") << ":" << config_.port
+        Logger::error() << "getaddrinfo failed: " << configg_.getName() << " ("
+                        << (!host.empty() ? host : "0.0.0.0") << ":" << config_.port
                         << "): " << gai_strerror(status);
         return false;
     }
@@ -103,7 +104,7 @@ bool Server::BindAddress() {
 
     freeaddrinfo(result);
     if (!bind_success) {
-        Logger::error() << "Bind failed for " << config_.name << " on port "
+        Logger::error() << "Bind failed for " << configg_.getName() << " on port "
                         << config_.port << ": " << strerror(errno);
         return false;
     }

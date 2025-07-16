@@ -23,11 +23,11 @@ void	ConfigGett::CreateServerAndLocation( void )
 	std::vector<Node>::const_iterator it = this->tree.begin();
 	while (it != this->tree.end())
 	{
-		Server current(it->prmtrs, it->name);
+		ServerConf current(it->prmtrs, it->name);
 		for (size_t i = 0; i < it->children.size(); ++i)
 		{
 			Location Lcurrent(it->children[i].prmtrs, it->children[i].name);
-			current.location.push_back(Lcurrent);
+			current.location_.push_back(Lcurrent);
             current.route.insert(std::make_pair(Lcurrent.getName(), Lcurrent));
 		}
 		this->servers.push_back(current);
@@ -35,58 +35,58 @@ void	ConfigGett::CreateServerAndLocation( void )
 	}
 }
 
-const std::string*	ConfigGett::getErrorPage(int port, const std::string& error, const std::string& uri) const
-{
-	size_t	pos;
+// const std::string*	ConfigGett::getErrorPage(int port, const std::string& error, const std::string& uri) const
+// {
+// 	size_t	pos;
 
-	std::map<int, Node>::const_iterator it = MapNode.find( port );
-	if (it != MapNode.end())
-	{
-		const Node *current =  it->second.findChildNode( uri );
-		if (!current)
-		{
-			return NULL;
-		}
-		std::map<std::string, std::vector<std::string> >::const_iterator itChildren = current->prmtrs.begin();
-		while (itChildren != current->prmtrs.end())
-		{
-			if ((pos = itChildren->first.find(error, 0)) !=std::string::npos)
-			{
-				return &(itChildren->second[0]);
-			}
-			++itChildren;
-		}
-		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second.prmtrs.begin();
-		while (itMain != it->second.prmtrs.end())
-		{
-			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
-			{
-				return &(itMain->second[0]);
-			}
-			itMain++;
-		}
-	}
-	return NULL;
-}
+// 	std::map<int, Node>::const_iterator it = MapNode.find( port );
+// 	if (it != MapNode.end())
+// 	{
+// 		const Node *current =  it->second.findChildNode( uri );
+// 		if (!current)
+// 		{
+// 			return NULL;
+// 		}
+// 		std::map<std::string, std::vector<std::string> >::const_iterator itChildren = current->prmtrs.begin();
+// 		while (itChildren != current->prmtrs.end())
+// 		{
+// 			if ((pos = itChildren->first.find(error, 0)) !=std::string::npos)
+// 			{
+// 				return &(itChildren->second[0]);
+// 			}
+// 			++itChildren;
+// 		}
+// 		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second.prmtrs.begin();
+// 		while (itMain != it->second.prmtrs.end())
+// 		{
+// 			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
+// 			{
+// 				return &(itMain->second[0]);
+// 			}
+// 			itMain++;
+// 		}
+// 	}
+// 	return NULL;
+// }
 
-const std::string*	ConfigGett::getErrorPage(int port, const std::string& error ) const
-{
-	size_t	pos;
-	std::map<int, Node>::const_iterator it = MapNode.find( port );
-	if (it != MapNode.end())
-	{
-		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second.prmtrs.begin();
-		while (itMain != it->second.prmtrs.end())
-		{
-			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
-			{
-				return &(itMain->second[0]);
-			}
-			itMain++;
-		}
-	}
-	return NULL;
-}
+// const std::string*	ConfigGett::getErrorPage(int port, const std::string& error ) const
+// {
+// 	size_t	pos;
+// 	std::map<int, Node>::const_iterator it = MapNode.find( port );
+// 	if (it != MapNode.end())
+// 	{
+// 		std::map<std::string, std::vector<std::string> >::const_iterator itMain = it->second.prmtrs.begin();
+// 		while (itMain != it->second.prmtrs.end())
+// 		{
+// 			if ((pos = itMain->first.find(error, 0))  !=std::string::npos)
+// 			{
+// 				return &(itMain->second[0]);
+// 			}
+// 			itMain++;
+// 		}
+// 	}
+// 	return NULL;
+// }
 
 
 ConfigGett::~ConfigGett()

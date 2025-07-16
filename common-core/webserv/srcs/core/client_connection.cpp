@@ -30,24 +30,6 @@ ClientConnection::ClientConnection(int socket_fd)
       state_(READING_REQUEST),
       keep_alive_(true),
       last_activity_(time(0)),
-      client_max_header_size_(ServerConfig::DEFAULT_MAX_HEADER_SIZE),
-      client_max_request_line_(ServerConfig::DEFAULT_MAX_REQUEST_LINE),
-      client_max_body_size_(ServerConfig::DEFAULT_MAX_BODY_SIZE),
-      bytes_sent_(0),
-      is_closed_(false) {
-    UpdateActivity();
-
-    request_buffer_.reserve(client_max_header_size_);
-}
-
-ClientConnection::ClientConnection(int socket_fd, const ServerConfig& config)
-    : socket_fd_(socket_fd),
-      state_(READING_REQUEST),
-      keep_alive_(true),
-      last_activity_(time(0)),
-      client_max_header_size_(config.client_max_header_size),
-      client_max_request_line_(config.client_max_request_line),
-      client_max_body_size_(config.client_max_body_size),
       bytes_sent_(0),
       is_closed_(false) {
     UpdateActivity();

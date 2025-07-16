@@ -19,11 +19,15 @@
 #include <server_config.hpp>
 #include <string>
 
+#include "../parsing/include/ConfigGett.hpp"
+
 namespace http {
 class Server {
    public:
     explicit Server(const ServerConfig& config)
         : config_(config), listen_fd_(-1) {}
+    explicit Server(const ServerConf& config)
+        : configg_(config), listen_fd_(-1) {}
 
     ~Server() {
         if (listen_fd_ >= 0) {
@@ -37,6 +41,7 @@ class Server {
 
    private:
     ServerConfig config_;
+    ServerConf   configg_;
     int          listen_fd_;
 
    private:

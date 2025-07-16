@@ -1,26 +1,27 @@
 #include "../include/ConfigGett.hpp"
 
-Server::Server(const std::map<std::string, std::vector<std::string> >& prmtrs, const std::string& name)
+ServerConf::ServerConf(const std::map<std::string, std::vector<std::string> >& prmtrs, const std::string& name)
     : name(name), prmtrs(prmtrs)
 {
 	return ;
 }
 
-const std::string& Server::getName() const
+const std::string& ServerConf::getName() const
 {
     return name;
 }
 
-size_t Server::getHost() const
+const std::string ServerConf::getHost() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it
         = prmtrs.find("host");
     if (it != prmtrs.end() && !it->second.empty())
-        return static_cast<size_t>(std::atoi(it->second[0].c_str()));
-    return 0;
+        // return static_cast<size_t>(std::atoi(it->second[0].c_str()));
+        return it->second[0];
+    return "";
 }
 
-size_t Server::getClientMaxBodySize() const
+size_t ServerConf::getClientMaxBodySize() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("client_max_body_size");
     if (it != prmtrs.end() && !it->second.empty())
@@ -28,7 +29,7 @@ size_t Server::getClientMaxBodySize() const
     return 0;
 }
 
-bool Server::getAutoIndex() const
+bool ServerConf::getAutoIndex() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("autoindex");
     if (it != prmtrs.end() && !it->second.empty())
@@ -39,7 +40,7 @@ bool Server::getAutoIndex() const
     return false;
 }
 
-const std::string* Server::getRoot() const
+const std::string* ServerConf::getRoot() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("root");
     if (it != prmtrs.end() && !it->second.empty())
@@ -47,7 +48,7 @@ const std::string* Server::getRoot() const
     return NULL;
 }
 
-const std::string* Server::getIndex() const
+const std::string* ServerConf::getIndex() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("index");
     if (it != prmtrs.end() && !it->second.empty())
@@ -55,7 +56,7 @@ const std::string* Server::getIndex() const
     return NULL;
 }
 
-int	 Server::getPort() const
+int	 ServerConf::getPort() const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("listen");
     if (it != prmtrs.end() && !it->second.empty())
@@ -63,7 +64,7 @@ int	 Server::getPort() const
     return 0;
 }
 
-const Location& Server::getLocation(const std::string& uri) const 
+const Location& ServerConf::getLocation(const std::string& uri) const 
 {
     std::map<std::string, Location>::const_iterator it = route.find(uri);
     if (it != route.end())
@@ -73,7 +74,7 @@ const Location& Server::getLocation(const std::string& uri) const
 	//TODO:magari girare un eccezione
 }
 
-const Location& Server::getCgiBin( void ) const 
+const Location& ServerConf::getCgiBin( void ) const 
 {
     std::map<std::string, Location>::const_iterator it = route.find("cgi-bin");
     if (it != route.end())
@@ -83,7 +84,7 @@ const Location& Server::getCgiBin( void ) const
 	//TODO:magari girare un eccezione
 }
 
-const std::string* Server::getErrorPageLocation(const std::string& uri, const std::string& nbrError) const
+const std::string* ServerConf::getErrorPageLocation(const std::string& uri, const std::string& nbrError) const
 {
     size_t pos;
     std::map<std::string, Location>::const_iterator itLoc = route.find(uri);
@@ -104,7 +105,7 @@ const std::string* Server::getErrorPageLocation(const std::string& uri, const st
     return NULL;
 }
 
-const std::string* Server::getErrorPage(const std::string& nbrError) const
+const std::string* ServerConf::getErrorPage(const std::string& nbrError) const
 {
     size_t pos;
     for (std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.begin(); it != prmtrs.end(); ++it)
@@ -114,6 +115,6 @@ const std::string* Server::getErrorPage(const std::string& nbrError) const
     }
     return NULL;
 }
-const char* Server::NotFoundUri::what() const throw() {
+const char* ServerConf::NotFoundUri::what() const throw() {
     return "URI not found";
 }
