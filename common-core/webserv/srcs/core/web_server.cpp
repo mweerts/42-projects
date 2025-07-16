@@ -171,13 +171,8 @@ const ServerConfig& WebServer::GetServerConfig(int fd) const {
         return it->second->GetConfig();
     }
 
-    // Logger::critical() << "No server config found for fd: " << fd;
-    // if (!config_.servers.empty()) {  // fallback
-    //     return config_.servers[0];
-    // }
-
-    static ServerConfig default_config;
-    return default_config;
+    Logger::critical() << "No server config found for fd: " << fd;
+    return config_.getServers()[0];
 }
 
 void WebServer::CleanupTimedOutClients() {
@@ -223,7 +218,7 @@ bool WebServer::IsListeningSocket(int fd) const {
 }
 
 bool WebServer::Start() {
-    std::vector<ServerConfig> servers = configg_.getServers();
+    std::vector<ServerConfig> servers = config_.getServers();
     for (std::vector<ServerConfig>::const_iterator it = servers.begin();
          it != servers.end(); ++it) {
         http::Server* Server = new http::Server(*it);

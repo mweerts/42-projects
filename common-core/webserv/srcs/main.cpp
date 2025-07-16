@@ -42,15 +42,15 @@ int main() {
     }
 
     while (true) {
-        try {
+        // try {
             web_server.Run();
             break;
-        } catch (const std::exception& e) {
-            Logger::critical() << "Server crashed: " << e.what();
-            web_server.Reset();
-            Logger::info() << "Restarting server...";
-            sleep(1);
-        }
+        // } catch (const std::exception& e) {
+        //     Logger::critical() << "Server crashed: " << e.what();
+        //     web_server.Reset();
+        //     Logger::info() << "Restarting server...";
+        //     sleep(1);
+        // }
     }
     return 0;
 }

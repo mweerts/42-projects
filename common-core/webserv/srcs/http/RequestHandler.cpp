@@ -50,11 +50,12 @@ void RequestHandler::parseFullRequest(const std::string& request) {
         headers += line + "\r\n";
     }
     parseHeaders(headers);
-
+   
     // Read body if present
     if (std::getline(iss, body)) {
         parseBody(body);
     }
+    Logger::debug() << "done parsing request";
 }
 void RequestHandler::parseRequestLine(const std::string& requestLine) {
     std::istringstream iss(requestLine);

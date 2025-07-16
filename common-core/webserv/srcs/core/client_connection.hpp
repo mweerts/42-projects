@@ -59,9 +59,6 @@ class ClientConnection {
     time_t              last_activity_;
     std::string         request_buffer_;
     std::string         response_buffer_;
-    size_t              client_max_header_size_;
-    size_t              client_max_request_line_;
-    size_t              client_max_body_size_;
     size_t              bytes_sent_;
     bool                is_closed_;
     char                read_buffer_[BUFFER_SIZE];

@@ -34,8 +34,6 @@ ClientConnection::ClientConnection(int                 socket_fd,
       bytes_sent_(0),
       is_closed_(false) {
     UpdateActivity();
-
-    request_buffer_.reserve(client_max_header_size_);
 }
 
 bool ClientConnection::HandleEvent(short revents) {

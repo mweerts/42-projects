@@ -26,8 +26,9 @@
 class WebServer {
    public:
     // explicit WebServer(Config& config) : config_(config), running_(false) {};
-    explicit WebServer(GlobalConfig& config) : configg_(config), running_(false) {};
-    
+    explicit WebServer(GlobalConfig& config)
+        : config_(config), running_(false) {};
+
     ~WebServer() {
         for (ServerIterator it = http_servers_.begin();
              it != http_servers_.end(); ++it) {
@@ -47,8 +48,7 @@ class WebServer {
 
    private:
     std::vector<pollfd> poll_fds_;
-    // Config              config_;
-    GlobalConfig          configg_;
+    GlobalConfig        config_;
     bool                running_;
 
     std::map<int, http::Server*>     http_servers_;
