@@ -19,7 +19,7 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() : _rootPath("/Users/lucaslebugle/Documents/42/webserv/www") {}
+RequestHandler::RequestHandler() : _rootPath("/home/mweerts/webserv/www") {}
 
 RequestHandler::~RequestHandler() {}
 
