@@ -5,7 +5,7 @@
 HttpRequest::HttpRequest() {
     _method = "";
     _uri = "";
-    _version = "HTTP/1.0";
+    _version = "";
     _body = "";
 }
 

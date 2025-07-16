@@ -11,12 +11,12 @@ class HttpResponse {
     HttpResponse();
     ~HttpResponse();
 
-    void setStatusCode(StatusCode statusCode);
-    void setHeader(const std::string& key, const std::string& value);
-    void setContent(const std::string& content);
-    void setContentType(const std::string& contentType);
-    void setConnection(const std::string& connection);
-
+    void        setStatusCode(StatusCode statusCode);
+    void        setContent(const std::string& content);
+    void        setContentType(const std::string& contentType);
+    void        setConnection(const std::string& connection);
+    void        setLastModified(const std::string& lastModified);
+    
     StatusCode  getStatusCode() const;
     std::string getServerName() const;
     std::string getConnection() const;
@@ -24,15 +24,15 @@ class HttpResponse {
     std::string toString();
 
    private:
-    StatusCode                         _statusCode;
-    std::string                        _version;
-    std::string                        _serverName;
-    std::string                        _date;
-    std::string                        _contentType;
-    int                                _contentLength;
-    std::string                        _connection;
-    std::map<std::string, std::string> _headers;
-    std::string                        _content;
+    StatusCode  _statusCode;
+    std::string _version;
+    std::string _serverName;
+    std::string _date;
+    std::string _contentType;
+    int         _contentLength;
+    std::string _lastModified;
+    std::string _connection;
+    std::string _content;
 
     void setDate(void);
 };
