@@ -220,12 +220,10 @@ bool WebServer::IsListeningSocket(int fd) const {
 }
 
 bool WebServer::Start() {
-    std::vector<ServerConfig> servers = config_.getServers();
-    
-    for (std::vector<ServerConfig>::const_iterator it = servers.begin();
-         it != servers.end(); ++it) {
+    server_configs_ = config_.getServers();
+    for (std::vector<ServerConfig>::const_iterator it = server_configs_.begin();
+         it != server_configs_.end(); ++it) {
         http::Server* Server = new http::Server(*it);
-
         if (!Server->Initialize()) {
             delete Server;
             continue;
@@ -238,7 +236,7 @@ bool WebServer::Start() {
         return false;
     }
 
-    if (http_servers_.size() < servers.size()) {
+    if (http_servers_.size() < server_configs_.size()) {
         Logger::warning()
             << "Partial start up: some servers failed to initialize";
     }

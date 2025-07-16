@@ -13,7 +13,12 @@ class ServerConfig;
 class RequestHandler {
    public:
     RequestHandler(const ServerConfig& serverConfig)
+<<<<<<< HEAD
         : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()){};
+=======
+        : _serverConfig(serverConfig), _rootPath("/Users/lucaslebugle/Documents/42/webserv/www") {
+        };
+>>>>>>> origin/lucas
     ~RequestHandler();
 
     void handleRequest(const std::string& request);

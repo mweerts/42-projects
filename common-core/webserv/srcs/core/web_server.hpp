@@ -53,13 +53,14 @@ class WebServer {
 
     std::map<int, http::Server*>     http_servers_;
     std::map<int, ClientConnection*> active_clients_;
+    
+    std::vector<ServerConfig> server_configs_;
 
     typedef std::map<int, ClientConnection*>::iterator ActiveClientIterator;
     typedef std::map<int, ClientConnection*>::const_iterator
                                                    ActiveClientConstIterator;
     typedef std::map<int, http::Server*>::iterator ServerIterator;
     typedef std::map<int, http::Server*>::const_iterator ServerConstIterator;
-
    private:
     bool Initializeservers();
     void SetupPolling();
