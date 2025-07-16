@@ -28,7 +28,7 @@ set(SOURCES
     srcs/http/utils.cpp
     
     srcs/parsing/src/ConfigProcessor.cpp
-    srcs/parsing/src/ConfigGett.cpp
+    srcs/parsing/src/GlobalConfig.cpp
     srcs/parsing/src/Location.cpp
     srcs/parsing/src/Server.cpp
     srcs/parsing/src/Node.cpp

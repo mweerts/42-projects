@@ -23,9 +23,14 @@
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
 #include "lib/utils.hpp"
-#include "server_config.hpp"
+#include "../parsing/include/GlobalConfig.hpp"
 
 namespace http {
+
+const ServerConfig& Server::GetConfig() const {
+    return config_;
+};
+
 bool Server::Initialize() {
 #ifdef __linux__
     listen_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
@@ -41,8 +46,9 @@ bool Server::Initialize() {
 #endif
 
     if (listen_fd_ < 0) {
-        // Logger::error() << "Failed to create socket for " << configg_.getName();
-        Logger::error() << "Failed to create socket for " << configg_.getName();
+        // Logger::error() << "Failed to create socket for " <<
+        // config_.getName();
+        Logger::error() << "Failed to create socket for " << config_.getName();
         return false;
     }
 
@@ -51,7 +57,7 @@ bool Server::Initialize() {
     int opt = 1;
     if (setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) <
         0) {
-        Logger::error() << "Setsockopt failed for " << configg_.getName();
+        Logger::error() << "Setsockopt failed for " << config_.getName();
         return false;
     }
 
@@ -61,15 +67,16 @@ bool Server::Initialize() {
 
     const int kBacklog = 128;
     if (listen(listen_fd_, kBacklog) < 0) {
-        Logger::error() << "Listen failed for " << configg_.getName();
+        Logger::error() << "Listen failed for " << config_.getName();
         return false;
     }
 
     guard.release();
 
-    Logger::info() << "Server '" << configg_.getName() << "' listening on "
-                   << (configg_.getHost().empty() ? "0.0.0.0" : configg_.getHost()) << ":"
-                   << configg_.getPort();
+    Logger::info() << "Server '" << config_.getName() << "' listening on "
+                   << (config_.getHost().empty() ? "0.0.0.0"
+                                                 : config_.getHost())
+                   << ":" << config_.getPort();
 
     return true;
 }
@@ -83,14 +90,15 @@ bool Server::BindAddress() {
     hints.ai_socktype = SOCK_STREAM;  // TCP
     hints.ai_flags = AI_PASSIVE;      // binds to all interfaces if !host
 
-    std::string port = lib::to_string(configg_.getPort());
-    std::string host = configg_.getHost().empty() ? NULL : configg_.getHost().c_str();
-    
+    std::string port = lib::to_string(config_.getPort());
+    std::string host =
+        config_.getHost().empty() ? NULL : config_.getHost().c_str();
+
     int status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
     if (status != 0) {
-        Logger::error() << "getaddrinfo failed: " << configg_.getName() << " ("
-                        << (!host.empty() ? host : "0.0.0.0") << ":" << configg_.getPort()
-                        << "): " << gai_strerror(status);
+        Logger::error() << "getaddrinfo failed: " << config_.getName() << " ("
+                        << (!host.empty() ? host : "0.0.0.0") << ":"
+                        << config_.getPort() << "): " << gai_strerror(status);
         return false;
     }
 
@@ -104,19 +112,15 @@ bool Server::BindAddress() {
 
     freeaddrinfo(result);
     if (!bind_success) {
-        Logger::error() << "Bind failed for " << configg_.getName() << " on port "
-                        << config_.port << ": " << strerror(errno);
+        Logger::error() << "Bind failed for " << config_.getName()
+                        << " on port " << config_.getPort() << ": "
+                        << strerror(errno);
         return false;
     }
     return true;
-}
-
-const ServerConfig& Server::GetConfig() const {
-    return config_;
 }
 
 int Server::GetListenSocket() const {
     return listen_fd_;
 }
 }  // namespace http
-

@@ -15,13 +15,9 @@
 #include <exception>
 
 #include "Logger.hpp"
-#include "RequestHandler.hpp"
 #include "core/web_server.hpp"
 #include "parsing/include/ConfigProcessor.hpp"
-#include "server_config.hpp"
-#include "parsing/include/ConfigGett.hpp"
-
-Config testConfig();
+#include "parsing/include/GlobalConfig.hpp"
 
 int main() {
     Logger::setLevel(LOG_LEVEL_DEBUG);
@@ -37,7 +33,7 @@ int main() {
     }
 
     // Config config = testConfig();
-    ConfigGett config = ConfigGett(conf);
+    GlobalConfig config = GlobalConfig(conf);
     WebServer web_server(config);
 
     Logger::info() << "... Initializing servers ...";

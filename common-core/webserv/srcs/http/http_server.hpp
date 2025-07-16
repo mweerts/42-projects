@@ -16,46 +16,40 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-#include <server_config.hpp>
 #include <string>
 
-#include "../parsing/include/ConfigGett.hpp"
+#include "../parsing/include/GlobalConfig.hpp"
 
 namespace http {
 class Server {
    public:
     explicit Server(const ServerConfig& config)
         : config_(config), listen_fd_(-1) {}
-    explicit Server(const ServerConf& config)
-        : configg_(config), listen_fd_(-1) {}
-
+    Server(const Server& other) : config_(other.config_) {};
+    Server& operator=(const Server& other) {
+        if (this != &other) {
+            this->listen_fd_ = other.listen_fd_;
+        }
+        return *this;
+    };
     ~Server() {
         if (listen_fd_ >= 0) {
             close(listen_fd_);
         }
     }
 
-    bool                Initialize();  // Create socket, bind and listen
-    int                 GetListenSocket() const;
+    bool Initialize();  // Create socket, bind and listen
+    int  GetListenSocket() const;
+
     const ServerConfig& GetConfig() const;
 
    private:
-    ServerConfig config_;
-    ServerConf   configg_;
-    int          listen_fd_;
+    const ServerConfig& config_;
+    int                 listen_fd_;
 
    private:
-    void        HandleRequest(int client_fd);
-    bool        BindAddress();
-    std::string BuildHttpResponse();
-
-    Server(const Server& other) {
-        (void)other;
-    };
-    Server& operator=(const Server& other) {
-        (void)other;
-        return *this;
-    };
+    void HandleRequest(int client_fd);
+    bool BindAddress();
 };
 }  // namespace http
 

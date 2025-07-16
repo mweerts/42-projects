@@ -4,6 +4,7 @@
 
 #include <fstream>
 
+#include "../parsing/include/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
 #include "utils.hpp"
@@ -19,13 +20,12 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::RequestHandler() : _rootPath("/Users/lucaslebugle/Documents/42/webserv/www") {}
-
 RequestHandler::~RequestHandler() {}
 
-void RequestHandler::setServerConfig(const ServerConfig& config) {
-    _serverConfig = config;
-}
+// void RequestHandler::setServerConfig(const ServerConfig& config) {
+//     _ServerConfig = config;
+// }
+
 void RequestHandler::setRequest(const HttpRequest& request) {
     _request = request;
 }
@@ -111,7 +111,7 @@ void RequestHandler::handleRequest(const std::string& request) {
 
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
-    //Logger::debug() << "Sending response:\n" << responseString;
+    // Logger::debug() << "Sending response:\n" << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
     if (_response.getConnection() == "close") {
         close(socket_fd);

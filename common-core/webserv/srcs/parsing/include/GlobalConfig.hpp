@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ConfigGett.hpp                                     :+:      :+:    :+:   */
+/*   GlobalConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef CONFIGGETT_HPP
-#define CONFIGGETT_HPP
+#ifndef GLOBALCONFIG_HPP
+#define GLOBALCONFIG_HPP
 
 #include "ConfigProcessor.hpp"
 
@@ -33,14 +33,14 @@ class Location {
     // method) const; 	const std::string*	getAlias() const;
 };
 
-class ServerConf {
+class ServerConfig {
    private:
     std::string                                      name;
     std::map<std::string, std::vector<std::string> > prmtrs;
 
    public:
-    ServerConf() {};
-    ServerConf(
+    ServerConfig() {};
+    ServerConfig(
         const std::map<std::string, std::vector<std::string> >& passprmtrs,
         const std::string&                                      nameServer);
 
@@ -66,12 +66,13 @@ class ServerConf {
     };
 };
 
-class ConfigGett {
+class GlobalConfig {
    public:
-    ConfigGett() {};
-    ConfigGett(const ConfigProcessor& Parser);
+    GlobalConfig() {};
+    GlobalConfig(const ConfigProcessor& Parser);
+    GlobalConfig(const GlobalConfig& other);
     void CreateServerAndLocation(void);
-    virtual ~ConfigGett();
+    virtual ~GlobalConfig();
 
     //		//♡♡♡ Returns the custom error page path for a given port and
     // URI, checking location-level config first.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
@@ -86,7 +87,7 @@ class ConfigGett {
     // ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     // const std::string* getErrorPage(int port, const std::string& error) const;
     // 
-    const std::vector<ServerConf>& getServers() const {
+    const std::vector<ServerConfig>& getServers() const {
         return servers;  // TODO move to cpp
     }
 
@@ -94,7 +95,7 @@ class ConfigGett {
     std::vector<Node>       tree;
     std::vector<int>        allPort;
     std::map<int, Node>     MapNode;
-    std::vector<ServerConf> servers;
+    std::vector<ServerConfig> servers;
 };
 
 #endif

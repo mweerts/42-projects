@@ -30,7 +30,6 @@
 #include "Logger.hpp"
 #include "client_connection.hpp"
 #include "lib/socket_guard.hpp"
-#include "server_config.hpp"
 
 // TODO: should we keep this for graceful exit?
 volatile sig_atomic_t g_shutdown_requested = 0;
@@ -152,8 +151,8 @@ void WebServer::HandleNewConnection(int listening_fd) {
     }
 #endif
 
-    // const ServerConfig& Server_config = GetServerConfig(listening_fd);
-    active_clients_[client_fd] = new ClientConnection(client_fd);
+    const ServerConfig& Server_config = GetServerConfig(listening_fd);
+    active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
     guard.release();
 
     // TEMPORARY: only for Logging
@@ -164,6 +163,21 @@ void WebServer::HandleNewConnection(int listening_fd) {
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << active_clients_.size();
     // END TEMPORARY
+}
+
+const ServerConfig& WebServer::GetServerConfig(int fd) const {
+    ServerConstIterator it = http_servers_.find(fd);
+    if (it != http_servers_.end()) {
+        return it->second->GetConfig();
+    }
+
+    // Logger::critical() << "No server config found for fd: " << fd;
+    // if (!config_.servers.empty()) {  // fallback
+    //     return config_.servers[0];
+    // }
+
+    static ServerConfig default_config;
+    return default_config;
 }
 
 void WebServer::CleanupTimedOutClients() {
@@ -208,24 +222,9 @@ bool WebServer::IsListeningSocket(int fd) const {
     return http_servers_.find(fd) != http_servers_.end();
 }
 
-// const ServerConfig& WebServer::GetServerConfig(int fd) const {
-//     ServerConstIterator it = http_servers_.find(fd);
-//     if (it != http_servers_.end()) {
-//         return it->second->GetConfig();
-//     }
-
-//     Logger::critical() << "No server config found for fd: " << fd;
-//     if (!config_.servers.empty()) {  // fallback
-//         return config_.servers[0];
-//     }
-
-//     static ServerConfig default_config;
-//     return default_config;
-// }
-
 bool WebServer::Start() {
-    std::vector<ServerConf> servers = configg_.getServers();
-    for (std::vector<ServerConf>::const_iterator it = servers.begin();
+    std::vector<ServerConfig> servers = configg_.getServers();
+    for (std::vector<ServerConfig>::const_iterator it = servers.begin();
          it != servers.end(); ++it) {
         http::Server* Server = new http::Server(*it);
 

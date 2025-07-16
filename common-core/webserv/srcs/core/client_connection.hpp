@@ -16,7 +16,7 @@
 #include <ctime>
 #include <string>
 
-struct ServerConfig;
+class ServerConfig;
 
 class ClientConnection {
    public:
@@ -29,7 +29,7 @@ class ClientConnection {
     };
 
    public:
-    explicit ClientConnection(int socket_fd);
+    // explicit ClientConnection(int socket_fd);
     explicit ClientConnection(int socket_fd, const ServerConfig& server_config);
     ~ClientConnection() {
         Close();
@@ -52,18 +52,19 @@ class ClientConnection {
    private:
     static const size_t BUFFER_SIZE = 4096;
 
-    int         socket_fd_;
-    State       state_;
-    bool        keep_alive_;
-    time_t      last_activity_;
-    std::string request_buffer_;
-    std::string response_buffer_;
-    size_t      client_max_header_size_;
-    size_t      client_max_request_line_;
-    size_t      client_max_body_size_;
-    size_t      bytes_sent_;
-    bool        is_closed_;
-    char        read_buffer_[BUFFER_SIZE];
+    int                 socket_fd_;
+    const ServerConfig& server_config_;
+    State               state_;
+    bool                keep_alive_;
+    time_t              last_activity_;
+    std::string         request_buffer_;
+    std::string         response_buffer_;
+    size_t              client_max_header_size_;
+    size_t              client_max_request_line_;
+    size_t              client_max_body_size_;
+    size_t              bytes_sent_;
+    bool                is_closed_;
+    char                read_buffer_[BUFFER_SIZE];
 
    private:
     void UpdateActivity();
