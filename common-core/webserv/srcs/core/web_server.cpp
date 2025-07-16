@@ -153,7 +153,6 @@ void WebServer::HandleNewConnection(int listening_fd) {
 
 
     const ServerConfig& Server_config = GetServerConfig(listening_fd);
-    Logger::error() << Server_config.getRoot();
     active_clients_[client_fd] = new ClientConnection(client_fd, Server_config);
     guard.release();
 

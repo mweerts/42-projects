@@ -122,5 +122,6 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
         }
         closedir(dir);
     }
+    oss << "</pre><hr></body></html>";
     return oss.str();
 }

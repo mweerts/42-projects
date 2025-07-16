@@ -142,7 +142,6 @@ void RequestHandler::processGetRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
     if (!pathExist(fullPath)) {
-        Logger::info() << fullPath;
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
