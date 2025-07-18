@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 18:24:28 by llebugle          #+#    #+#             */
-/*   Updated: 2025/06/25 18:24:29 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/07/18 20:50:31 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int main() {
     Logger::info() << "... Initializing config ...";
 
 
-    ConfigProcessor conf("../config/default2.conf");
+    ConfigProcessor conf("../config/lucas.conf");
 
     if (conf.tokenize()) {
         return 1;

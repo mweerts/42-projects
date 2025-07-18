@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   web_server.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:04:00 by llebugle          #+#    #+#             */
-/*   Updated: 2025/06/27 22:04:01 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/07/18 20:49:39 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,11 @@ const ServerConfig& WebServer::GetServerConfig(int fd) const {
     }
 
     Logger::critical() << "No server config found for fd: " << fd;
-    return config_.getServers()[0];
+    static ServerConfig dummy;
+    if (!config_.getServers().empty()) {
+        dummy = config_.getServers()[0];
+    }
+    return dummy;
 }
 
 void WebServer::CleanupTimedOutClients() {
