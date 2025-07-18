@@ -7,6 +7,27 @@ ServerConfig::ServerConfig(
     return;
 }
 
+const std::string ServerConfig::getUplaodDir( void ) const
+{
+    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("upload_dir");
+    if (it != prmtrs.end() && !it->second.empty())
+	{
+        return (it->second[0]);
+	}
+	return getRoot();
+}
+
+const std::string ServerConfig::getServerName( void ) const
+{
+	static const std::string DefaulServerName = "webserver";
+    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("server_name");
+    if (it != prmtrs.end() && !it->second.empty())
+	{
+        return (it->second[0]);
+	}
+	return DefaulServerName;
+}
+
 const std::string& ServerConfig::getName() const {
     return name;
 }
@@ -17,7 +38,7 @@ const std::string ServerConfig::getHost() const {
     if (it != prmtrs.end() && !it->second.empty())
         // return static_cast<size_t>(std::atoi(it->second[0].c_str()));
         return it->second[0];
-    return "";
+    return "127001";
 }
 
 size_t ServerConfig::getClientMaxBodySize() const {
@@ -25,7 +46,7 @@ size_t ServerConfig::getClientMaxBodySize() const {
         prmtrs.find("client_max_body_size");
     if (it != prmtrs.end() && !it->second.empty())
         return static_cast<size_t>(std::atoi(it->second[0].c_str()));
-    return 0;
+    return 1024;
 }
 
 bool ServerConfig::getAutoIndex() const {
@@ -43,7 +64,7 @@ const std::string ServerConfig::getRoot() const {
         prmtrs.find("root");
     if (it != prmtrs.end() && !it->second.empty())
         return (it->second[0]);
-    return "";
+    return "./";
 }
 
 const std::string* ServerConfig::getIndex() const {

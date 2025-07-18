@@ -216,6 +216,7 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
     vecNoAll.push_back("listen");
     vecNoAll.push_back("host");
     vecNoAll.push_back("server_name");
+	vecNoAll.push_back("upload_dir");
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
         vecNoAll.push_back("allow_methods");  // TODO: Check if possible in cgi
@@ -472,6 +473,35 @@ int ConfigProcessor::ValidationPath() const {
     return (0);
 }
 
+bool ConfigProcessor::isIsolatedBrace(const std::string& str, size_t index) const {
+    char c = str[index];
+    if (c != '{' && c != '}')
+        return false;
+    if (index > 0) {
+        char prev = str[index - 1];
+        if (!isspace(prev))
+            return false;
+    }
+    if (index + 1 < str.length()) {
+        char next = str[index + 1];
+        if (!isspace(next))
+            return false;
+    }
+    return true;
+}
+
+int ConfigProcessor::checkBraces(const std::string& str) const {
+    for (size_t i = 0; i < str.length(); ++i) {
+        if (str[i] == '{' || str[i] == '}') {
+            if (!isIsolatedBrace(str, i)) {
+                Logger::error() << "Brace is NOT isolated: ";
+				return (1);
+            }
+        }
+    }
+	return (0);
+}
+
 int ConfigProcessor::countBracket() const {
     int bracket = 0;
     for (size_t i = 0; i < Buffer.length(); ++i) {
@@ -484,6 +514,9 @@ int ConfigProcessor::countBracket() const {
         Logger::error() << "Brackets don't close properly";
         return (1);
     }
+	if (checkBraces(this->Buffer) == 1){
+		return (1);
+	}
     return (0);
 }
 

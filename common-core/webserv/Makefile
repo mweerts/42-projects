@@ -16,7 +16,8 @@ FLAGS = -Wall -Wextra -Werror -std=c++98
 
 SRCS_DIR = srcs
 OBJS_DIR = objs
-SRCS = $(shell find $(SRCS_DIR) -name "*.cpp")
+SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/main.cpp")
+
 
 INC = -I ./includes/
 

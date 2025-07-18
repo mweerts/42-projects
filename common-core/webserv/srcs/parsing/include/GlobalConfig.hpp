@@ -58,8 +58,12 @@ class ServerConfig {
     ServerConfig() {};
     ServerConfig(
         const std::map<std::string, std::vector<std::string> >& passprmtrs,
-        const std::string&                                      nameServer);
-
+        const std::string&                                      nameServer);\
+	
+    void               setCgi(const CgiBin& add);
+/* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+	const std::string	getUplaodDir( void ) const;
+	const std::string	getServerName( void ) const;
     const std::string& getName(void) const;
     const std::string  getHost(void) const;
     size_t             getClientMaxBodySize(void) const;
@@ -71,7 +75,6 @@ class ServerConfig {
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
     const std::string* getErrorPage(const std::string& nbrError) const;
-    void               setCgi(const CgiBin& add);
     const CgiBin&      getCgiBin(void) const;
 
     std::map<std::string, Location> route;

@@ -28,6 +28,7 @@ struct Validator {
     void (Validator::* _FunPTR[12])(std::vector<std::string>&);
 
     /*♡♡♡♡♡♡♡♡♡♡♡FT_VALIDATE♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+	void	validateUploadDir(const std::vector<std::string>& prmtrs);
     void validateIp(const std::vector<std::string>& prmtrs);
     void validateCgiPath(const std::vector<std::string>& prmtrs);
     void validateListen(const std::vector<std::string>& prmtrs);
@@ -161,6 +162,8 @@ class ConfigProcessor {
     /*♡♡♡♡♡♡♡♡♡♡♡FT_MSG_ERROR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
     int StreamErrorFind(std::stringstream& ss) const;
     /*♡♡♡♡♡♡♡♡♡♡♡FT_VALIDATION♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+	int	checkBraces(const std::string& str) const;
+	bool	isIsolatedBrace(const std::string& str, size_t index)	const;
     int validateForbiddenParameters(void) const;
     int verifyInvalidParamsInContext(const std::string& name,
                                      const Node&        it) const;
