@@ -91,6 +91,9 @@ class GlobalConfig {
     GlobalConfig() {};
     GlobalConfig(const ConfigProcessor& Parser);
     GlobalConfig(const GlobalConfig& other);
+	
+	bool loadConfig(const std::string& path);
+
     void CreateServerAndLocation(void);
     virtual ~GlobalConfig();
 

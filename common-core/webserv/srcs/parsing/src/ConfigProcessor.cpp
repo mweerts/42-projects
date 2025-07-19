@@ -16,7 +16,8 @@
 ConfigProcessor::ConfigProcessor(const std::string& Path) : PathFile(Path) {
     std::cout << this->PathFile << "\n";
 }
-ConfigProcessor::ConfigProcessor() {
+
+ConfigProcessor::ConfigProcessor() : PathFile("") {
     // std::cout << "Default constructor called" << std::endl;
     //  ctor
 }

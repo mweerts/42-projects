@@ -24,6 +24,19 @@ GlobalConfig::GlobalConfig(const GlobalConfig& other) {
     *this = other;
 }
 
+bool GlobalConfig::loadConfig(const std::string& path) {
+    ConfigProcessor parser(path);
+    if (!parser.tokenize()) {
+        this->tree = parser.getVectorOfServer();
+        this->allPort = parser.getAllPorts();
+        this->MapNode = parser.getFullMap();
+        CreateServerAndLocation();
+        return true;
+    }
+    return false;
+}
+
+
 void GlobalConfig::CreateServerAndLocation(void) {
     std::vector<Node>::const_iterator it = this->tree.begin();
     while (it != this->tree.end()) {
