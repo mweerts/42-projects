@@ -37,7 +37,7 @@ void Node::addDefualtParm(void) {
     prmtrs.insert(std::make_pair("root", vecRoot));
     if (this->name == "server") {
         std::vector<std::string> vec;
-        vec.push_back("1048576");
+        vec.push_back("10485760");
         prmtrs.insert(std::make_pair("client_max_body_size", vec));
         std::vector<std::string> vecIp;
         vecIp.push_back("127.0.0.1");
@@ -45,6 +45,12 @@ void Node::addDefualtParm(void) {
         std::vector<std::string> vecName;
         vecName.push_back("webserv");
         prmtrs.insert(std::make_pair("server_name", vecName));
+		std::map<std::string, std::vector<std::string> >::iterator it = this->prmtrs.find("host");
+		if (it != this->prmtrs.end()){
+			if ((it->second.size() > 0) && (!it->second[0].empty() && it->second[0] == "localhost")){
+				it->second[0] = "127.0.0.1";
+			}
+		}
     }
     if (this->name != "cgi-bin") {
         std::vector<std::string> vecAuto;

@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/18 21:19:59 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/07/19 19:42:30 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -450,7 +450,6 @@ int ConfigProcessor::StreamErrorFind(std::stringstream& ss) const {
 }
 #include <sys/stat.h>
 
-#include <iostream>
 int ConfigProcessor::ValidationPath() const {
     const std::string exte = ".conf";
     size_t            posDoth = PathFile.rfind(exte);

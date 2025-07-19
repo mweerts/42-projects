@@ -38,7 +38,7 @@ const std::string ServerConfig::getHost() const {
     if (it != prmtrs.end() && !it->second.empty())
         // return static_cast<size_t>(std::atoi(it->second[0].c_str()));
         return it->second[0];
-    return "127001";
+    return "127.0.0.1";
 }
 
 size_t ServerConfig::getClientMaxBodySize() const {
