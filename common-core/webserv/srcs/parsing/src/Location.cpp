@@ -8,7 +8,7 @@ Location::Location(
     return;
 }
 
-const std::string& Location::getName(void) {
+const std::string& Location::getName(void)  const {
     return this->name;
 }
 

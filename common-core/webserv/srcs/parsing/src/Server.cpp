@@ -83,14 +83,28 @@ int ServerConfig::getPort() const {
     return 0;
 }
 
-const Location& ServerConfig::getLocation(const std::string& uri) const {
-    std::map<std::string, Location>::const_iterator it = route.find(uri);
-    if (it != route.end())
-        return (it->second);
-    else
-        throw NotFoundUri();
-    // TODO:magari girare un eccezione
+const Location* ServerConfig::getLocation(const std::string& uri) const {
+    const Location* bestMatch = NULL;
+    size_t bestLength = 0;
+
+    std::map<std::string, Location>::const_iterator itFind = route.find(uri);
+    if (itFind != route.end()){
+        return &(itFind->second);
+	}
+    for (std::map<std::string, Location>::const_iterator it = route.begin(); it != route.end(); ++it) {
+        const std::string& path = it->first;
+        if (uri.compare(0, path.length(), path) == 0) {
+            if (uri.length() == path.length() || uri[path.length()] == '/') {
+                if (path.length() > bestLength) {
+                    bestMatch = &(it->second);
+                    bestLength = path.length();
+                }
+            }
+        }
+    }
+    return bestMatch;
 }
+
 
 const std::string* ServerConfig::getErrorPageLocation(
     const std::string& uri, const std::string& nbrError) const {

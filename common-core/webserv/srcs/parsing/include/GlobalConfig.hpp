@@ -33,7 +33,7 @@ class Location {
 
    public:
     std::map<std::string, std::vector<std::string> > prmtrs;
-    const std::string&                               getName(void);
+    const std::string&                               getName(void) const;
     Location(const std::map<std::string, std::vector<std::string> >& passprmtrs,
              const std::string& nameLocation);
     size_t				getClientMaxBodySize( void )const;
@@ -71,7 +71,7 @@ class ServerConfig {
     const std::string  getRoot(void) const;
     const std::string* getIndex(void) const;
     int                getPort(void) const;
-    const Location&    getLocation(const std::string& uri) const;
+    const Location*    getLocation(const std::string& uri) const;
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
     const std::string* getErrorPage(const std::string& nbrError) const;
