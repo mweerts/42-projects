@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+// TODO: refactor this file
+
 #ifndef CLIENT_CONNECTION_HPP
 #define CLIENT_CONNECTION_HPP
 
@@ -29,13 +31,11 @@ class ClientConnection {
     };
 
    public:
-    // explicit ClientConnection(int socket_fd);
     explicit ClientConnection(int socket_fd, const ServerConfig& server_config);
     ~ClientConnection() {
         Close();
     };
 
-    // Event handlers
     bool HandleEvent(short revents);
 
     // State queries
@@ -58,7 +58,7 @@ class ClientConnection {
     bool                keep_alive_;
     time_t              last_activity_;
     std::string         request_buffer_;
-    std::string         response_buffer_;
+    // std::string         response_buffer_;
     size_t              bytes_sent_;
     bool                is_closed_;
     char                read_buffer_[BUFFER_SIZE];
@@ -67,7 +67,6 @@ class ClientConnection {
     void UpdateActivity();
     bool HandleRead();
     bool HandleWrite();
-    // void ProcessHTTPRequest();
     // bool IsCompleteHTTPRequest() const;
     // void PrepareHTTPResponse();
 };

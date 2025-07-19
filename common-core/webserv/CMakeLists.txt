@@ -21,7 +21,6 @@ set(SOURCES
 	srcs/core/tcp_server.cpp
 	
     
-    srcs/http/http_server.cpp
     srcs/http/HttpRequest.cpp
     srcs/http/HttpResponse.cpp
     srcs/http/MimeTypes.cpp

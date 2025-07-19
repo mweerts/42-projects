@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+// TODO: refactor this file
+
 #include "client_connection.hpp"
 
 #include <sys/poll.h>
@@ -50,6 +52,7 @@ bool ClientConnection::HandleEvent(short revents) {
         }
     }
 
+	// TODO: why does this work being commented out?
     // if (revents & POLLOUT) {
     //     if (!HandleWrite()) {
     //         return false;
@@ -64,8 +67,6 @@ bool ClientConnection::HandleEvent(short revents) {
 }
 
 bool ClientConnection::HandleRead() {
-    // TODO use config limits for reading (i.e max_client_size)
-
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
     if (bytes_read < 0) {
         int       err = 0;
@@ -87,6 +88,7 @@ bool ClientConnection::HandleRead() {
 
     read_buffer_[bytes_read] = '\0';
     try {
+        // TODO: implement saving the request to a file
         request_buffer_.append(read_buffer_, bytes_read);
     } catch (std::exception& e) {
         Logger::error() << e.what();
@@ -100,7 +102,6 @@ bool ClientConnection::HandleRead() {
     handler.handleRequest(read_buffer_);
     handler.sendResponse(socket_fd_);
 
-    // Stopped here
     return true;
 }
 
@@ -115,7 +116,7 @@ void ClientConnection::Close() {
     }
 
     request_buffer_.clear();
-    response_buffer_.clear();
+    // response_buffer_.clear();
     is_closed_ = true;
     socket_fd_ = -1;
 }

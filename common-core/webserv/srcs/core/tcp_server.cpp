@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   http_server.cpp                                    :+:      :+:    :+:   */
+/*   tcp_server.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/27 22:15:42 by llebugle          #+#    #+#             */
-/*   Updated: 2025/06/27 22:15:43 by llebugle         ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
+/*   Updated: 2025/07/18 22:01:50 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "http_server.hpp"
+#include "tcp_server.hpp"
 
 #include <fcntl.h>
 #include <netdb.h>
@@ -23,36 +23,42 @@
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
 #include "lib/utils.hpp"
-#include "../parsing/include/GlobalConfig.hpp"
 
-namespace http {
+TcpServer::TcpServer(const ServerConfig& config)
+    : config_(config), listen_fd_(-1) {}
 
-const ServerConfig& Server::GetConfig() const {
-    return config_;
-};
+TcpServer::TcpServer(const TcpServer& other)
+    : config_(other.config_), listen_fd_(-1) {}
 
-bool Server::Initialize() {
+TcpServer& TcpServer::operator=(const TcpServer& other) {
+    if (this != &other) {
+        this->listen_fd_ = other.listen_fd_;
+    }
+    return *this;
+}
+
+TcpServer::~TcpServer() {
+    if (listen_fd_ >= 0) {
+        close(listen_fd_);
+    }
+}
+
+bool TcpServer::Initialize() {
 #ifdef __linux__
     listen_fd_ = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
 #elif defined(__APPLE__) || defined(__unix__)
     listen_fd_ = socket(AF_INET, SOCK_STREAM, 0);
-
-    int flags = fcntl(listen_fd_, F_GETFL, 0);
-    if (flags != -1) {
-        fcntl(listen_fd_, F_SETFL, flags | O_NONBLOCK);
-    }
 #else
 #error "Unsupported platform"
 #endif
 
     if (listen_fd_ < 0) {
-        // Logger::error() << "Failed to create socket for " <<
-        // config_.getName();
         Logger::error() << "Failed to create socket for " << config_.getName();
         return false;
     }
 
-    lib::SocketGuard guard(listen_fd_);
+    lib::SocketGuard guard(listen_fd_);  // if not released, automatically
+                                         // closes the socket on scope exit
 
     int opt = 1;
     if (setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) <
@@ -65,7 +71,7 @@ bool Server::Initialize() {
         return false;
     }
 
-    const int kBacklog = 128;
+    const int kBacklog = 128;  // pending connections queue (128 is standard)
     if (listen(listen_fd_, kBacklog) < 0) {
         Logger::error() << "Listen failed for " << config_.getName();
         return false;
@@ -74,25 +80,22 @@ bool Server::Initialize() {
     guard.release();
 
     Logger::info() << "Server '" << config_.getName() << "' listening on "
-                   << (config_.getHost().empty() ? "0.0.0.0"
-                                                 : config_.getHost())
-                   << ":" << config_.getPort();
+                   << config_.getHost() << ":" << config_.getPort();
 
     return true;
 }
 
-bool Server::BindAddress() {
+bool TcpServer::BindAddress() {
     struct addrinfo  hints;
     struct addrinfo* result;
 
     std::memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_INET;        // IPv4
-    hints.ai_socktype = SOCK_STREAM;  // TCP
-    hints.ai_flags = AI_PASSIVE;      // binds to all interfaces if !host
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_flags = AI_PASSIVE;
 
     std::string port = lib::to_string(config_.getPort());
-    std::string host =
-        config_.getHost().empty() ? NULL : config_.getHost().c_str();
+    std::string host = config_.getHost().empty() ? "" : config_.getHost();
 
     int status = getaddrinfo(host.c_str(), port.c_str(), &hints, &result);
     if (status != 0) {
@@ -120,7 +123,10 @@ bool Server::BindAddress() {
     return true;
 }
 
-int Server::GetListenSocket() const {
+int TcpServer::GetListenSocket() const {
     return listen_fd_;
 }
-}  // namespace http
+
+const ServerConfig& TcpServer::GetConfig() const {
+    return config_;
+}

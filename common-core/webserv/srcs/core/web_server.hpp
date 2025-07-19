@@ -1,45 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   web_server.hpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
+/*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 20:57:20 by llebugle          #+#    #+#             */
-/*   Updated: 2025/06/27 20:57:21 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/07/19 01:47:06 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WEB_SERVER_HPP
 #define WEB_SERVER_HPP
 
-#include <sys/poll.h>
-
-#include <map>
 #include <vector>
 
-#include "../http/http_server.hpp"
-#include "client_connection.hpp"
-// #include "server_config.hpp"
 #include "../parsing/include/GlobalConfig.hpp"
+#include "connection_manager.hpp"
+#include "tcp_server.hpp"
 
 class WebServer {
    public:
-    // explicit WebServer(Config& config) : config_(config), running_(false) {};
-    explicit WebServer(GlobalConfig& config)
-        : config_(config), running_(false) {};
-
-    ~WebServer() {
-        for (ServerIterator it = http_servers_.begin();
-             it != http_servers_.end(); ++it) {
-            delete it->second;
-        }
-
-        for (ActiveClientIterator it = active_clients_.begin();
-             it != active_clients_.end(); ++it) {
-            delete it->second;
-        }
-    }
+    explicit WebServer(const GlobalConfig& config);
+    explicit WebServer(const std::vector<ServerConfig>& server_configs);
+    ~WebServer();
 
     bool Start();
     void Run();
@@ -47,34 +31,12 @@ class WebServer {
     void Reset();
 
    private:
-    std::vector<pollfd> poll_fds_;
-    GlobalConfig        config_;
-    bool                running_;
-
-    std::map<int, http::Server*>     http_servers_;
-    std::map<int, ClientConnection*> active_clients_;
-    
     std::vector<ServerConfig> server_configs_;
+    std::vector<TcpServer*>   tcp_servers_;
+    ConnectionManager*        connection_manager_;
 
-    typedef std::map<int, ClientConnection*>::iterator ActiveClientIterator;
-    typedef std::map<int, ClientConnection*>::const_iterator
-                                                   ActiveClientConstIterator;
-    typedef std::map<int, http::Server*>::iterator ServerIterator;
-    typedef std::map<int, http::Server*>::const_iterator ServerConstIterator;
-   private:
-    bool Initializeservers();
-    void SetupPolling();
-
-    bool IsListeningSocket(int fd) const;
-    void HandleNewConnection(int listening_fd);
-    void RemoveClient(int client_fd);
-    void CleanupTimedOutClients();
-
-    const ServerConfig& GetServerConfig(int fd) const;
-
-    // void HandleClientRequest(int client_fd);
-    // void HandleClientResponse(int client_fd);
-    //
+    bool InitializeServers();
+    void CleanupServers();
 };
 
 #endif
