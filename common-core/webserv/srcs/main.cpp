@@ -5,52 +5,51 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/25 18:24:28 by llebugle          #+#    #+#             */
-/*   Updated: 2025/07/18 20:50:31 by llebugle         ###   ########.fr       */
+/*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
+/*   Updated: 2025/07/19 02:10:08 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-
-#include <exception>
+#include <cstdlib>
+#include <iostream>
 
 #include "Logger.hpp"
 #include "core/web_server.hpp"
-#include "parsing/include/ConfigProcessor.hpp"
 #include "parsing/include/GlobalConfig.hpp"
 
-int main() {
-    Logger::setLevel(LOG_LEVEL_DEBUG);
-    Logger::enableColors(true);
-
-    Logger::info() << "... Initializing config ...";
-
-
-    ConfigProcessor conf("../config/lucas.conf");
-
-    if (conf.tokenize()) {
+int main(int argc, char* argv[]) {
+    if (argc > 2) {
+        std::cerr << "Usage: " << argv[0] << " [config_file]" << std::endl;
         return 1;
     }
 
-    // Config config = testConfig();
-    GlobalConfig config = GlobalConfig(conf);
-    WebServer web_server(config);
+    try {
+        GlobalConfig config;
 
-    Logger::info() << "... Initializing servers ...";
-    if (!web_server.Start()) {
+        if (argc == 2) {
+            if (!config.loadConfig(argv[1])) {
+                Logger::error() << "Failed to load configuration file";
+                return 1;
+            }
+        } else {
+            if (!config.loadConfig("config/lucas.conf")) {
+                Logger::error() << "Failed to load default configuration file";
+                return 1;
+            }
+        }
+
+        WebServer server(config);
+        if (!server.Start()) {
+            Logger::error() << "Failed to start server";
+            return 1;
+        }
+        server.Run();  // TODO: add a loop to restart the server if it crashes
+                       // # at the end of project #
+
+    } catch (const std::exception& e) {
+        Logger::critical() << "Fatal error: " << e.what();
         return 1;
     }
 
-    while (true) {
-        // try {
-            web_server.Run();
-            break;
-        // } catch (const std::exception& e) {
-        //     Logger::critical() << "Server crashed: " << e.what();
-        //     web_server.Reset();
-        //     Logger::info() << "Restarting server...";
-        //     sleep(1);
-        // }
-    }
     return 0;
 }
