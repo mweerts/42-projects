@@ -18,6 +18,9 @@ set(SOURCES
     srcs/main.cpp
     srcs/core/web_server.cpp
     srcs/core/client_connection.cpp
+	srcs/core/connection_manager.cpp
+	srcs/core/tcp_server.cpp
+	
     
     srcs/http/http_server.cpp
     srcs/http/HttpRequest.cpp
