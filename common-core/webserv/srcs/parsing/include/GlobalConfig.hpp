@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   GlobalConfig.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
+/*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:27:30 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/15 18:13:10 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/07/18 22:17:27 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,15 +98,15 @@ class GlobalConfig {
     // URI, checking location-level config first.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     //		//♡♡♡ Falls back to server-level config if no match is found in
     // the location.                           ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-    // const std::string* getErrorPage(int port, const std::string& error,
-    //                                 const std::string& uri) const;
+    const std::string* getErrorPage(int port, const std::string& error,
+                                    const std::string& uri) const;
     //
     //		//♡♡♡ Returns the custom error page path for a given port, using
     // only server-level configuration.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     //		//♡♡♡ Does not consider URI-specific location blocks.
     // ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-    // const std::string* getErrorPage(int port, const std::string& error)
-    // const;
+    const std::string* getErrorPage(int port, const std::string& error)
+    const;
     //
     const std::vector<ServerConfig> getServers() const;
 

@@ -28,7 +28,7 @@ struct Validator {
     void (Validator::* _FunPTR[12])(std::vector<std::string>&);
 
     /*♡♡♡♡♡♡♡♡♡♡♡FT_VALIDATE♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-	void	validateUploadDir(const std::vector<std::string>& prmtrs);
+    void validateUploadDir(const std::vector<std::string>& prmtrs);
     void validateIp(const std::vector<std::string>& prmtrs);
     void validateCgiPath(const std::vector<std::string>& prmtrs);
     void validateListen(const std::vector<std::string>& prmtrs);
@@ -119,6 +119,7 @@ typedef void (Validator::*ValidateFunction)(const std::vector<std::string>&);
 class ConfigProcessor {
    public:
     /*♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+    ConfigProcessor();                            // cannon
     ConfigProcessor(const std::string& Path);     // cannon
     ConfigProcessor(ConfigProcessor const& src);  // Cannon
 
@@ -143,8 +144,8 @@ class ConfigProcessor {
     virtual ~ConfigProcessor();  // Cannon
    private:
     struct Validator valval;
-    ConfigProcessor();  // cannon
-    const std::string   PathFile;
+
+    std::string         PathFile;
     std::string         Buffer;
     std::vector<Node>   tree;
     std::map<int, Node> Servers;
@@ -162,22 +163,22 @@ class ConfigProcessor {
     /*♡♡♡♡♡♡♡♡♡♡♡FT_MSG_ERROR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
     int StreamErrorFind(std::stringstream& ss) const;
     /*♡♡♡♡♡♡♡♡♡♡♡FT_VALIDATION♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-	int	checkBraces(const std::string& str) const;
-	bool	isIsolatedBrace(const std::string& str, size_t index)	const;
-    int validateForbiddenParameters(void) const;
-    int verifyInvalidParamsInContext(const std::string& name,
-                                     const Node&        it) const;
-    int validateDifferentPortServer(void) const;
-    int ValidationPath(void) const;
-    int validateCgiBin(void) const;
-    int validateErrorPage(void);
-    int valideteSize(void) const;
-    int countBracket() const;
-    int validationParameters(void);
-    int heandelError(
-        ValidateFunction                                           fun,
-        std::map<std::string, std::vector<std::string> >::iterator itPrmtrs,
-        const std::string&                                         name);
+    int  checkBraces(const std::string& str) const;
+    bool isIsolatedBrace(const std::string& str, size_t index) const;
+    int  validateForbiddenParameters(void) const;
+    int  verifyInvalidParamsInContext(const std::string& name,
+                                      const Node&        it) const;
+    int  validateDifferentPortServer(void) const;
+    int  ValidationPath(void) const;
+    int  validateCgiBin(void) const;
+    int  validateErrorPage(void);
+    int  valideteSize(void) const;
+    int  countBracket() const;
+    int  validationParameters(void);
+    int  heandelError(
+         ValidateFunction                                           fun,
+         std::map<std::string, std::vector<std::string> >::iterator itPrmtrs,
+         const std::string&                                         name);
     /*♡♡♡♡♡♡♡♡♡♡♡OPERATOR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 };
 std::ostream& operator<<(std::ostream& o, const ConfigProcessor& rhs);
