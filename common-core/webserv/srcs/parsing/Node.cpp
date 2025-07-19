@@ -1,5 +1,5 @@
+#include "GlobalConfig.hpp"
 
-#include "../include/ConfigProcessor.hpp"
 /*♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 const Node* Node::findChildNode(const std::string& uri) const {
     std::map<std::string, Node*>::const_iterator it = route.find(uri);

@@ -1,5 +1,4 @@
-
-#include "../include/GlobalConfig.hpp"
+#include "GlobalConfig.hpp"
 
 Location::Location(
     const std::map<std::string, std::vector<std::string> >& passprmtrs,

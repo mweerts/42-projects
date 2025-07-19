@@ -10,7 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/ConfigProcessor.hpp"
+#include "ConfigProcessor.hpp"
+#include "GlobalConfig.hpp"
 
 /*♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 ConfigProcessor::ConfigProcessor(const std::string& Path) : PathFile(Path) {

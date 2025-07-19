@@ -12,7 +12,7 @@
 
 #include <functional>
 
-#include "../include/ConfigProcessor.hpp"
+#include "ConfigProcessor.hpp"
 /*♡♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡*/
 Validator::Validator() {
     // funcMap["host"] = &Validator::validateIp;

@@ -15,7 +15,7 @@
 
 #include "Logger.hpp"
 #include "core/web_server.hpp"
-#include "parsing/include/GlobalConfig.hpp"
+#include "parsing/GlobalConfig.hpp"
 
 int main(int argc, char* argv[]) {
     if (argc > 2) {

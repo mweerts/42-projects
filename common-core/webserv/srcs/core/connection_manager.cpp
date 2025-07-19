@@ -26,6 +26,7 @@
 
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
+#include "../parsing/GlobalConfig.hpp"
 
 ConnectionManager::ConnectionManager() : running_(false), shutdown_flag_(NULL) {}
 

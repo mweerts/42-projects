@@ -1,4 +1,4 @@
-#include "../include/GlobalConfig.hpp"
+#include "GlobalConfig.hpp"
 
 ServerConfig::ServerConfig(
     const std::map<std::string, std::vector<std::string> >& prmtrs,

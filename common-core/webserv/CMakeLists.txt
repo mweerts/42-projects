@@ -27,13 +27,13 @@ set(SOURCES
     srcs/http/RequestHandler.cpp
     srcs/http/utils.cpp
     
-    srcs/parsing/src/ConfigProcessor.cpp
-    srcs/parsing/src/GlobalConfig.cpp
-    srcs/parsing/src/Location.cpp
-    srcs/parsing/src/Server.cpp
-    srcs/parsing/src/Node.cpp
-    srcs/parsing/src/Validator.cpp
-    srcs/parsing/src/CgiBin.cpp
+    srcs/parsing/ConfigProcessor.cpp
+    srcs/parsing/GlobalConfig.cpp
+    srcs/parsing/Location.cpp
+    srcs/parsing/Server.cpp
+    srcs/parsing/Node.cpp
+    srcs/parsing/Validator.cpp
+    srcs/parsing/CgiBin.cpp
     
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp

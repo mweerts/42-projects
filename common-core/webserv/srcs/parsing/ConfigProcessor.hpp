@@ -5,17 +5,14 @@
 #include <cstdlib>    // necessario per exit()
 #include <fstream>    // ← se usi std::ifstream
 #include <iostream>
-#include <iostream>  // ← se usi std::cout
-#include <map>       // ← se usi std::map
+#include <iostream>
+#include <map>
 #include <sstream>   // ← necessario per std::stringstream
 #include <string>
 #include <vector>
 
-#include "../../../includes/Logger.hpp"
-//
+#include "Logger.hpp"
 
-// typedef void (Validator::*)(std::vector<std::string>&)
-//
 #define MAX_BODY_SIZE 524288000
 
 struct Validator {

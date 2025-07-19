@@ -7,7 +7,7 @@
 #include <fstream>
 #include <unistd.h>
 
-#include "../parsing/include/GlobalConfig.hpp"
+#include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
 #include "utils.hpp"

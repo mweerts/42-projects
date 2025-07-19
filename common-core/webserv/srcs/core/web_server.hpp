@@ -15,7 +15,7 @@
 
 #include <vector>
 
-#include "../parsing/include/GlobalConfig.hpp"
+#include "../parsing/GlobalConfig.hpp"
 #include "connection_manager.hpp"
 #include "tcp_server.hpp"
 

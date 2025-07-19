@@ -23,6 +23,7 @@
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
 #include "lib/utils.hpp"
+#include "../parsing/GlobalConfig.hpp"
 
 TcpServer::TcpServer(const ServerConfig& config)
     : config_(config), listen_fd_(-1) {}

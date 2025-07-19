@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/GlobalConfig.hpp"
-#include "../include/ConfigProcessor.hpp"
+#include "GlobalConfig.hpp"
+#include "ConfigProcessor.hpp"
 
 GlobalConfig::GlobalConfig(const ConfigProcessor& Parser)
     : tree(Parser.getVectorOfServer()),

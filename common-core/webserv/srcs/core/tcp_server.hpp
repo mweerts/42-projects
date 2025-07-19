@@ -18,7 +18,8 @@
 
 #include <string>
 
-#include "../parsing/include/GlobalConfig.hpp"
+class GlobalConfig;
+class ServerConfig;
 
 class TcpServer {
    public:

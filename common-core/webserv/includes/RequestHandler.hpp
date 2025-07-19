@@ -1,12 +1,9 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
-
-
-// #include "GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "../srcs/parsing/include/GlobalConfig.hpp"
+#include "../srcs/parsing/GlobalConfig.hpp"
 
 class ServerConfig;
 

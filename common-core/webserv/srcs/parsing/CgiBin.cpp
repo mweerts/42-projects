@@ -1,4 +1,4 @@
-#include "../include/GlobalConfig.hpp"
+#include "GlobalConfig.hpp"
 
 CgiBin::CgiBin() {
     return;
