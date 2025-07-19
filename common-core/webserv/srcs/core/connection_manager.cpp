@@ -233,6 +233,6 @@ bool ConnectionManager::IsRunning() const {
     return running_;
 } 
 
-void ConnectionManager::SetShutdownFlag(volatile sig_atomic_t* shutdown_flag) {
+void ConnectionManager::SetShutdownFlag(shutdown_flag_t* shutdown_flag) {
     shutdown_flag_ = shutdown_flag;
 } 

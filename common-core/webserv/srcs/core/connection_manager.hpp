@@ -21,6 +21,12 @@
 #include "client_connection.hpp"
 #include "tcp_server.hpp"
 
+#if defined(__APPLE__)
+	typedef volatile sig_atomic_t shutdown_flag_t;
+#else
+	typedef volatile __sig_atomic_t shutdown_flag_t;
+#endif
+
 class ConnectionManager {
    public:
     ConnectionManager();
@@ -34,7 +40,7 @@ class ConnectionManager {
     size_t GetActiveClientCount() const;
     bool   IsRunning() const;
 
-    void SetShutdownFlag(volatile sig_atomic_t* shutdown_flag);
+    void SetShutdownFlag(shutdown_flag_t* shutdown_flag);
 
    private:
     std::vector<pollfd>              poll_fds_;
@@ -42,7 +48,7 @@ class ConnectionManager {
     std::map<int, ClientConnection*> clients_;
     bool                             running_;
 
-    volatile sig_atomic_t* shutdown_flag_;
+    shutdown_flag_t* shutdown_flag_;
 
     typedef std::map<int, ClientConnection*>::iterator ClientIterator;
     typedef std::map<int, ClientConnection*>::const_iterator
