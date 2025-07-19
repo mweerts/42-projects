@@ -65,7 +65,7 @@ cclean:
 # @rm -f compile_commands.json
 
 crun: cbuild
-	@cd build && ./webserv
+	@./build/webserv $(filter-out $@,$(MAKECMDGOALS))
 
 ctest: cbuild-test
 	@cd build && ./webserv_test

@@ -8,7 +8,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Generate compile_commands.json for LSP
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Compiler flags to match Makefile exactly
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -std=c++98")
 
 include_directories(includes)
