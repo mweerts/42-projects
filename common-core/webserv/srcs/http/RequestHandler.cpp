@@ -125,10 +125,11 @@ void RequestHandler::sendResponse(int socket_fd) {
 void RequestHandler::processRequest() {
     const std::string& method = _request.getMethod();
 
-    if (_request.getHeaders().at("Connection") == "keep-alive" ||
-        _request.getHeaders().at("Connection") == "close") {
-        _response.setConnection(_request.getHeaders().at("Connection"));
-    }
+    // if (_request.getHeaders().at("Connection") == "keep-alive" ||
+    //     _request.getHeaders().at("Connection") == "close") {
+    //     _response.setConnection(_request.getHeaders().at("Connection"));
+    // }
+	_response.setConnection("keep-alive");
 
     if (method == "GET") {
         processGetRequest();

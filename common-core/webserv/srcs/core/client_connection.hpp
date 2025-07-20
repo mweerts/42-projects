@@ -17,6 +17,7 @@
 
 #include <ctime>
 #include <string>
+#include <fstream>
 
 class ServerConfig;
 
@@ -50,7 +51,7 @@ class ClientConnection {
     void Close();
 
    private:
-    static const size_t BUFFER_SIZE = 4096;
+    static const size_t BUFFER_SIZE = 256;
 
     int                 socket_fd_;
     const ServerConfig& server_config_;
@@ -59,6 +60,8 @@ class ClientConnection {
     time_t              last_activity_;
     std::string         request_buffer_;
     // std::string         response_buffer_;
+
+	std::fstream		saved_request;
     size_t              bytes_sent_;
     bool                is_closed_;
     char                read_buffer_[BUFFER_SIZE];

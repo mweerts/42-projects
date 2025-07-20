@@ -52,7 +52,7 @@ bool ClientConnection::HandleEvent(short revents) {
         }
     }
 
-	// TODO: why does this work being commented out?
+	// TODO: the server is blocking without this
     // if (revents & POLLOUT) {
     //     if (!HandleWrite()) {
     //         return false;
@@ -68,6 +68,7 @@ bool ClientConnection::HandleEvent(short revents) {
 
 bool ClientConnection::HandleRead() {
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
+	Logger::debug() << "Handle read";
     if (bytes_read < 0) {
         int       err = 0;
         socklen_t len = sizeof(err);
@@ -95,8 +96,8 @@ bool ClientConnection::HandleRead() {
         return false;
     }
 
-    Logger::debug() << "read " << bytes_read << " bytes";
-    Logger::debug() << read_buffer_;
+    // Logger::debug() << "read " << bytes_read << " bytes";
+    // Logger::debug() << read_buffer_;
 
     RequestHandler handler = RequestHandler(server_config_);
     handler.handleRequest(read_buffer_);
