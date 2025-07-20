@@ -40,3 +40,6 @@ www/uploads/*
 # IDE
 
 *.vscode
+
+/www/*
+/config/*
