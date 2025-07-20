@@ -6,7 +6,7 @@
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 13:42:00 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/14 17:40:27 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/07/19 18:59:43 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,11 +158,11 @@ void Validator::validateClienMaxBody(const std::vector<std::string>& prmtrs) {
             throw InvalidCharEx();
         }
     }
-    std::stringstream ss(prmtrs[0]);
-    long long         nbr;
-    ss >> nbr;
-    if (nbr > MAX_BODY_SIZE)
-        throw OutOfRange();
+//    std::stringstream ss(prmtrs[0]);
+//    long long         nbr;
+//    ss >> nbr;
+//    if (nbr > MAX_BODY_SIZE)
+//        throw OutOfRange();
     // Logger::valide() << "Client_Max_Body";
 }
 
