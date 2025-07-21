@@ -106,6 +106,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     std::vector<std::string> files;
     std::vector<std::string> dirs;
 
+    
     oss << "<html><head><title>Index of " << uri << "</title></head>"
         << "<body><h1>Index of " << uri << "</h1><hr><pre>";
 
@@ -118,7 +119,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
             std::string name(entry->d_name);
             if (name == "." || name == "..")
                 continue;
-            std::string fullPath = path + "/" + name;
+            std::string fullPath = path  + name;
             struct stat st;
             if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
                 dirs.push_back(name);
@@ -155,7 +156,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     for (size_t i = 0; i < files.size(); ++i) {
         std::string name = files[i];
         std::string croppedName = name;
-        std::string fullPath = path + "/" + name;
+        std::string fullPath = path + name;
 
         if (croppedName.length() > 50) {
             croppedName = croppedName.substr(0, 47);

@@ -5,21 +5,27 @@
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 
+class ServerConfig;
+
 class RequestHandler {
    public:
     RequestHandler(const ServerConfig& serverConfig)
-        : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()) {};
+        : _serverConfig(serverConfig),
+          _rootPath(serverConfig.getRoot()),
+          _autoindex(serverConfig.getAutoIndex()) {
+          };
     ~RequestHandler();
 
     void handleRequest(const std::string& request);
-    void setServerConfig(const ServerConfig& config);
     void sendResponse(int socket_fd);
 
    private:
     const ServerConfig& _serverConfig;
     HttpRequest         _request;
     HttpResponse        _response;
-    const std::string   _rootPath;
+    std::string         _rootPath;
+    std::string         _internalUri;
+    bool                _autoindex;
 
     void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);

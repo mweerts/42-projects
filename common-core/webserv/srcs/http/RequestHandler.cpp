@@ -62,6 +62,7 @@ void RequestHandler::parseFullRequest(const std::string& request) {
     }
     Logger::debug() << "done parsing request";
 }
+
 void RequestHandler::parseRequestLine(const std::string& requestLine) {
     std::istringstream iss(requestLine);
     std::string        method, uri, version;
@@ -109,6 +110,7 @@ const std::string RequestHandler::getRootPath() const {
 void RequestHandler::handleRequest(const std::string& request) {
     parseFullRequest(request);
     processRequest();
+
     if (_response.getStatusCode() != HTTP_OK) {
         _response.setContent(GetHtmlErrorPage(_response));
         _response.setContentType("text/html");
@@ -117,7 +119,7 @@ void RequestHandler::handleRequest(const std::string& request) {
 
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
-    // Logger::debug() << "Sending response:\n" << responseString;
+    Logger::debug() << "Sending response:\n" << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
     if (_response.getConnection() == "close") {
         close(socket_fd);
@@ -125,37 +127,60 @@ void RequestHandler::sendResponse(int socket_fd) {
 }
 
 void RequestHandler::processRequest() {
+    const Location*    location = _serverConfig.getLocation(_request.getUri());
     const std::string& method = _request.getMethod();
 
-    // if (_request.getHeaders().at("Connection") == "keep-alive" ||
-    //     _request.getHeaders().at("Connection") == "close") {
-    //     _response.setConnection(_request.getHeaders().at("Connection"));
-    // }
-    _response.setConnection("keep-alive");
-
+    if (_request.getHeaders().at("Connection") == "keep-alive" ||
+        _request.getHeaders().at("Connection") == "close") {
+        _response.setConnection(_request.getHeaders().at("Connection"));
+    }
+    _internalUri = _request.getUri();
+    if (location) {
+        if (location->getAlias()) {
+            _internalUri =
+                *location->getAlias() +
+                _request.getUri().substr((location->getName()).length());
+        } else if (*location->getRoot() != "./")
+            _rootPath = *location->getRoot();
+        _autoindex = location->getAutoIndex();
+    }
+    else
+        _rootPath = _serverConfig.getRoot();
     if (method == "GET") {
-        processGetRequest();
+        if (!location || (location && location->getMethodIsAllowed("GET")))
+            processGetRequest();
+        else {
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
+		}
     } else if (method == "POST") {
-        processPostRequest();
+        if (!location || (location && location->getMethodIsAllowed("POST")))
+            processPostRequest();
+        else
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     } else if (method == "DELETE") {
         processDeleteRequest();
     } else {
-        _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+        if (!location || (location && location->getMethodIsAllowed("DELETE")))
+            _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+        else
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     }
 }
 
 void RequestHandler::processGetRequest() {
-    std::string fullPath = _rootPath + _request.getUri();
+    std::string fullPath;
 
+    fullPath = _rootPath + _internalUri;
+
+    Logger::info() << fullPath;
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
     if (isDirectory(fullPath)) {
-        if (_serverConfig.getAutoIndex()) {
+        if (_autoindex) {
             _response.setStatusCode(HTTP_OK);
-            _response.setContent(
-                getHtmlIndexPage(_rootPath, _request.getUri()));
+            _response.setContent(getHtmlIndexPage(_rootPath, _internalUri));
             _response.setContentType("text/html");
             return;
         } else {

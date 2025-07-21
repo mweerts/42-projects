@@ -41,3 +41,6 @@ www/tmp/*
 # IDE
 
 *.vscode
+
+/www/*
+/config/*
