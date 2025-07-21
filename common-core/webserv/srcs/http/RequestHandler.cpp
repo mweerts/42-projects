@@ -203,18 +203,13 @@ void RequestHandler::processGetRequest() {
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
-
-    if (location)
-        Logger::info() << "TEST: "
-                       << location->getName() + "  " + _internalUri + " " +
-                              *location->getIndex();
-    if (location && location->getName() + "/" == _internalUri &&
-        location->getIndex()) {
-        fullPath += "/" + *location->getIndex();
-    } else if (_internalUri == "/" && _serverConfig.getIndex()) {
-        fullPath = _rootPath + "/" + *_serverConfig.getIndex();
+    if (isDirectory(fullPath)) {
+        if (location && location->getIndex() && isReadable(fullPath + "/" + *location->getIndex())) {
+            fullPath += "/" + *location->getIndex();
+        } else if (_serverConfig.getIndex() && isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+            fullPath += "/" + *_serverConfig.getIndex();
+        }
     }
-    Logger::info() << fullPath;
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
