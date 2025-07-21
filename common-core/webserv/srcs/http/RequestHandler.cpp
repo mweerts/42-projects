@@ -117,12 +117,31 @@ const std::string RequestHandler::getRootPath() const {
 void RequestHandler::handleRequest(const std::string& request) {
     parseFullRequest(request);
     if (_response.getStatusCode() != HTTP_OK) {
-        _response.setContent(GetHtmlErrorPage(_response));
-        _response.setContentType("text/html");
-        return;
+        std::ostringstream oss;
+        oss << _response.getStatusCode();
+        const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
+        Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
+        if (errorPage) {
+            std::ifstream file((_rootPath + "/" + *errorPage).c_str());
+            if (file.fail()) {
+                _response.setContent(GetHtmlErrorPage(_response));
+                _response.setContentType("text/html");
+                return;
+            }
+            std::ostringstream ss;
+            ss << file.rdbuf();
+            _response.setContent(ss.str());
+            _response.setContentType(
+                MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
+            _response.setLastModified(
+                getLastModifiedTime(_rootPath + "/" + *errorPage));
+        } else {
+            _response.setContent(GetHtmlErrorPage(_response));
+            _response.setContentType("text/html");
+        }
+        return ;
     }
     processRequest();
-
     if (_response.getStatusCode() != HTTP_OK) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
@@ -177,6 +196,8 @@ void RequestHandler::processRequest() {
         _autoindex = location->getAutoIndex();
     } else
         _rootPath = _serverConfig.getRoot();
+
+
     if (method == "GET") {
         if (!location || (location && location->getMethodIsAllowed("GET")))
             processGetRequest();
