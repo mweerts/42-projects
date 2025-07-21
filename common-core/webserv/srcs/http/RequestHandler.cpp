@@ -138,13 +138,8 @@ void RequestHandler::processRequest() {
             _internalUri =
                 *location->getAlias() +
                 _request.getUri().substr((location->getName()).length());
-        } else if (location->getRoot())
-        {
+        } else if (*location->getRoot() != "./")
             _rootPath = *location->getRoot();
-            Logger::debug() << "Using root path: " << *location->getRoot();
-        }
-        else
-            _rootPath = _serverConfig.getRoot();
         _autoindex = location->getAutoIndex();
     }
     else
