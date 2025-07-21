@@ -44,8 +44,6 @@ clean:
 
 fclean: clean
 	rm -rf build
-	rm -rf tmp
-	rm -rf tmp_requests
 	rm -f $(NAME)
 
 re: fclean all
@@ -55,7 +53,6 @@ re: fclean all
 ## CMAKE rules ##
 cbuild:
 	@mkdir -p build
-	@mkdir -p tmp
 	@cd build && cmake .. && make webserv
 #	@cp build/compile_commands.json . 2>/dev/null || true
 

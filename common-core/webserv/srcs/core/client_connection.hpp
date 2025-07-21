@@ -58,7 +58,7 @@ class ClientConnection {
 
    private:
     static size_t       request_counter_;
-    static const size_t BUFFER_SIZE = 256;
+    static const size_t BUFFER_SIZE = 4096;
 
     int                 socket_fd_;
     const ServerConfig& server_config_;
