@@ -198,7 +198,7 @@ bool ClientConnection::saveRequestToFile(const char* buffer) {
             Logger::error() << "Failed to create temporary request file";
             return false;
         }
-        request_file_.open(request_file_path_,
+        request_file_.open(request_file_path_.c_str(),
                            std::ios::out | std::ios::trunc | std::ios::binary);
         if (!request_file_.is_open()) {
             Logger::error() << "Failed to open temporary request file";

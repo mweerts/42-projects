@@ -49,7 +49,10 @@ void RequestHandler::parseFullRequest(const std::string& request) {
     if (std::getline(iss, requestLine) && !requestLine.empty()) {
         parseRequestLine(requestLine);
     }
-
+    if (_response.getStatusCode() != HTTP_OK) {
+        return;  // If the request line is invalid, we don't need to parse
+                 // further
+    }
     // Read headers
     while (std::getline(iss, line) && !line.empty()) {
         headers += line + "\r\n";
@@ -65,21 +68,25 @@ void RequestHandler::parseFullRequest(const std::string& request) {
 
 void RequestHandler::parseRequestLine(const std::string& requestLine) {
     std::istringstream iss(requestLine);
-    std::string        method, uri, version;
+    std::string        method, uri, version, extra;
+
     iss >> method >> uri >> version;
+
+    // Vérifier qu'il n'y a pas de mot supplémentaire
+    if (iss >> extra) {
+        _response.setStatusCode(HTTP_BAD_REQUEST);
+    } else if (method.empty() || uri.empty() || version.empty()) {
+        Logger::debug() << "Missing words in request line: " << requestLine;
+        _response.setStatusCode(HTTP_BAD_REQUEST);
+    } else if (version != "HTTP/1.0" && version != "HTTP/1.1") {
+        _response.setStatusCode(HTTP_VERSION_NOT_SUPPORTED);
+    } else {
+        _request.setMethod(method);
+        _request.setUri(uri);
+        _request.setVersion(version);
+    }
     Logger::debug() << "Parsed request line: " << method << " " << uri << " "
                     << version;
-    if (method.empty() || uri.empty() || version.empty()) {
-        _response.setStatusCode(HTTP_BAD_REQUEST);
-        return;
-    }
-    if (version != "HTTP/1.0" && version != "HTTP/1.1") {
-        _response.setStatusCode(HTTP_VERSION_NOT_SUPPORTED);
-        return;
-    }
-    _request.setMethod(method);
-    _request.setUri(uri);
-    _request.setVersion(version);
 }
 
 void RequestHandler::parseHeaders(const std::string& headers) {
@@ -109,6 +116,11 @@ const std::string RequestHandler::getRootPath() const {
 
 void RequestHandler::handleRequest(const std::string& request) {
     parseFullRequest(request);
+    if (_response.getStatusCode() != HTTP_OK) {
+        _response.setContent(GetHtmlErrorPage(_response));
+        _response.setContentType("text/html");
+        return;
+    }
     processRequest();
 
     if (_response.getStatusCode() != HTTP_OK) {
@@ -130,10 +142,10 @@ void RequestHandler::processRequest() {
     const Location*    location = _serverConfig.getLocation(_request.getUri());
     const std::string& method = _request.getMethod();
 
-    if (_request.getHeaders().at("Connection") == "keep-alive" ||
-        _request.getHeaders().at("Connection") == "close") {
-        _response.setConnection(_request.getHeaders().at("Connection"));
-    }
+    // if (_request.getHeaders().at("Connection") == "keep-alive" ||
+    //     _request.getHeaders().at("Connection") == "close") {
+    //     _response.setConnection(_request.getHeaders().at("Connection"));
+    // }
     _internalUri = _request.getUri();
     if (location) {
         if (location->getAlias()) {
@@ -143,15 +155,14 @@ void RequestHandler::processRequest() {
         } else if (*location->getRoot() != "./")
             _rootPath = *location->getRoot();
         _autoindex = location->getAutoIndex();
-    }
-    else
+    } else
         _rootPath = _serverConfig.getRoot();
     if (method == "GET") {
         if (!location || (location && location->getMethodIsAllowed("GET")))
             processGetRequest();
         else {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-		}
+        }
     } else if (method == "POST") {
         if (!location || (location && location->getMethodIsAllowed("POST")))
             processPostRequest();
