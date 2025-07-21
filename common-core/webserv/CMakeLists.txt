@@ -37,6 +37,7 @@ set(SOURCES
     
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
+    srcs/lib/file_utils.cpp
     srcs/tests.cpp
 )
 

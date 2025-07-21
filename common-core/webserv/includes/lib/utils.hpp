@@ -12,6 +12,8 @@
 
 #include <sstream>
 #include <string>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 namespace lib {
@@ -22,4 +24,5 @@ std::string to_string(T value) {
     oss << value;
     return oss.str();
 }
-}  // namespace utils
+
+}  // namespace lib

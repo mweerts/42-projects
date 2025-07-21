@@ -3,6 +3,7 @@ objs
 build
 .cache
 www/uploads/*
+www/tmp/*
 # Prerequisites
 *.d
 

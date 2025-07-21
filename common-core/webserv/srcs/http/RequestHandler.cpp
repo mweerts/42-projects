@@ -2,12 +2,14 @@
 
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <filesystem>
 #include <fstream>
-#include <unistd.h>
 
 #include "../parsing/GlobalConfig.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
 #include "utils.hpp"
@@ -129,7 +131,7 @@ void RequestHandler::processRequest() {
     //     _request.getHeaders().at("Connection") == "close") {
     //     _response.setConnection(_request.getHeaders().at("Connection"));
     // }
-	_response.setConnection("keep-alive");
+    _response.setConnection("keep-alive");
 
     if (method == "GET") {
         processGetRequest();

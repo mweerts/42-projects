@@ -1,16 +1,14 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
+#include "../srcs/parsing/GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "../srcs/parsing/GlobalConfig.hpp"
-
-class ServerConfig;
 
 class RequestHandler {
    public:
     RequestHandler(const ServerConfig& serverConfig)
-        : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()){};
+        : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()) {};
     ~RequestHandler();
 
     void handleRequest(const std::string& request);

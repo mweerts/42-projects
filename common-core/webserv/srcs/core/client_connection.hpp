@@ -16,18 +16,24 @@
 #define CLIENT_CONNECTION_HPP
 
 #include <ctime>
-#include <string>
 #include <fstream>
+#include <string>
+
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 
 class ServerConfig;
+class RequestHandler;
 
 class ClientConnection {
    public:
     enum State {
         READING_REQUEST,
+        READING_BODY,
+        READING_CHUNKED,
         PROCESSING_REQUEST,
         WRITING_RESPONSE,
-        KEEP_ALIVE,
+        ERROR,
         CLOSING
     };
 
@@ -45,31 +51,54 @@ class ClientConnection {
     bool ShouldClose() const;
     bool IsTimedOut(int timeout_seconds = 60) const;  // default nginx
 
-    int   GetSocket() const;
+    int   GetSocketFd() const;
     State GetState() const;
 
     void Close();
 
    private:
+    static size_t       request_counter_;
     static const size_t BUFFER_SIZE = 256;
 
     int                 socket_fd_;
     const ServerConfig& server_config_;
-    State               state_;
-    bool                keep_alive_;
     time_t              last_activity_;
     std::string         request_buffer_;
-    // std::string         response_buffer_;
 
-	std::fstream		saved_request;
-    size_t              bytes_sent_;
-    bool                is_closed_;
-    char                read_buffer_[BUFFER_SIZE];
+    // Request handling
+    RequestHandler* request_handler_;
+    HttpRequest     current_request_;
+    bool            request_ready_;
+
+    // File storage
+    std::string   request_file_path_;
+    std::ofstream request_file_;
+    std::string   chunked_file_path_;
+    std::ofstream chunked_file_;
+    size_t        request_size_;
+    bool          chunked_complete_;
+
+    // Response handling
+    std::string response_buffer_;
+    size_t      bytes_sent_;
+    bool        response_complete_;
+
+    // State management
+    State state_;
+    bool  keep_alive_;
+
+    bool is_closed_;
+    char read_buffer_[BUFFER_SIZE];
 
    private:
     void UpdateActivity();
-    bool HandleRead();
+    bool ReadRequest();
     bool HandleWrite();
+
+    // FILE MANAGEMENT
+    std::string getRequestFilePath();
+    bool        saveRequestToFile(const char* buffer);
+
     // bool IsCompleteHTTPRequest() const;
     // void PrepareHTTPResponse();
 };
