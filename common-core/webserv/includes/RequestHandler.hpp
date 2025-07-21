@@ -12,7 +12,8 @@ class RequestHandler {
     RequestHandler(const ServerConfig& serverConfig)
         : _serverConfig(serverConfig),
           _rootPath(serverConfig.getRoot()),
-          _autoindex(serverConfig.getAutoIndex()) {};
+          _autoindex(serverConfig.getAutoIndex()) {
+          };
     ~RequestHandler();
 
     void handleRequest(const std::string& request);
