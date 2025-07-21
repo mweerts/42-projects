@@ -131,6 +131,9 @@ bool ClientConnection::ReadRequest() {
 
 	// i should have a way to check if i still need to read more 
 	// and return the correct state
+
+	// even better i delegate saving the request to request handler
+	// an it returns a state that i can use to know if i need to read more
 	
     try {
         request_buffer_.append(read_buffer_, bytes_read);
