@@ -124,8 +124,28 @@ void RequestHandler::handleRequest(const std::string& request) {
     processRequest();
 
     if (_response.getStatusCode() != HTTP_OK) {
-        _response.setContent(GetHtmlErrorPage(_response));
-        _response.setContentType("text/html");
+        std::ostringstream oss;
+        oss << _response.getStatusCode();
+        const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
+        Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
+        if (errorPage) {
+            std::ifstream file((_rootPath + "/" + *errorPage).c_str());
+            if (file.fail()) {
+                _response.setContent(GetHtmlErrorPage(_response));
+                _response.setContentType("text/html");
+                return;
+            }
+            std::ostringstream ss;
+            ss << file.rdbuf();
+            _response.setContent(ss.str());
+            _response.setContentType(
+                MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
+            _response.setLastModified(
+                getLastModifiedTime(_rootPath + "/" + *errorPage));
+        } else {
+            _response.setContent(GetHtmlErrorPage(_response));
+            _response.setContentType("text/html");
+        }
     }
 }
 
@@ -179,10 +199,21 @@ void RequestHandler::processRequest() {
 }
 
 void RequestHandler::processGetRequest() {
-    std::string fullPath;
+    std::string     fullPath;
+    const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
 
+    if (location)
+        Logger::info() << "TEST: "
+                       << location->getName() + "  " + _internalUri + " " +
+                              *location->getIndex();
+    if (location && location->getName() + "/" == _internalUri &&
+        location->getIndex()) {
+        fullPath += "/" + *location->getIndex();
+    } else if (_internalUri == "/" && _serverConfig.getIndex()) {
+        fullPath = _rootPath + "/" + *_serverConfig.getIndex();
+    }
     Logger::info() << fullPath;
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
