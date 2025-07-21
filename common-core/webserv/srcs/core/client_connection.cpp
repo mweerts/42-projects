@@ -199,7 +199,7 @@ bool ClientConnection::saveRequestToFile(const char* buffer) {
             return false;
         }
         request_file_.open(request_file_path_,
-                           std::ios::out | std::ios::app | std::ios::binary);
+                           std::ios::out | std::ios::trunc | std::ios::binary);
         if (!request_file_.is_open()) {
             Logger::error() << "Failed to open temporary request file";
             return false;
