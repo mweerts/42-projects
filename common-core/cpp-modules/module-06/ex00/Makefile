@@ -3,14 +3,15 @@ COLOUR_GREEN=\033[0;32m
 COLOUR_RED=\033[0;31m
 COLOUR_END=\033[0m
 
-NAME = whatever
+NAME = scalarConverter
 
 CC = c++
-CFLAGS = $(INC) -g -std=c++98 -Wall -Wextra -Werror 
+CFLAGS = -I $(INCLUDES) -g -std=c++98 -Wall -Wextra -Werror 
 
-INC = 
+INCLUDES = ./includes/
 
-SRCS =	./main.cpp
+SRCS =	./srcs/main.cpp \
+		./srcs/ScalarConverter.cpp
 		
 OBJS = $(SRCS:.cpp=.o)
 
