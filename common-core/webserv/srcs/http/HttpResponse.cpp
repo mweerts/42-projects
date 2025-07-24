@@ -91,6 +91,6 @@ std::string HttpResponse::toString() {
     response += "\r\n";
     response += _content;
 
-    Logger::debug() << "Response generated:\n" << response;
+    // Logger::debug() << "Response generated:\n" << response;
     return response;
 }

@@ -10,10 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// TODO: 
-// TODO: decouple file management from the client connection if possible
-// TODO: delete the request file after the request is processed
-
 #include "client_connection.hpp"
 
 #include <sys/poll.h>
@@ -24,33 +20,41 @@
 #include <cerrno>
 #include <cstring>
 #include <ctime>
-#include <fstream>
 #include <iostream>
 
+#include "../http/RequestParser.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "RequestHandler.hpp"
-#include "lib/file_utils.hpp"
+#include "http_status_code.hpp"
 #include "lib/utils.hpp"
 
-size_t ClientConnection::request_counter_ = 0;
-
 ClientConnection::ClientConnection(int                 socket_fd,
-                                   const ServerConfig& serverConfig)
+                                   const ServerConfig& server_config)
     : socket_fd_(socket_fd),
-      server_config_(serverConfig),
+      server_config_(server_config),
       last_activity_(time(0)),
-      request_ready_(false),
-      request_file_path_(""),
-      request_size_(0),
-      chunked_complete_(false),
-      bytes_sent_(0),
-      response_complete_(false),
+      request_parser_(NULL),
       state_(READING_REQUEST),
       keep_alive_(true),
       is_closed_(false) {
     UpdateActivity();
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
+}
+
+ClientConnection::~ClientConnection() {
+    if (request_parser_) {
+        request_parser_->cleanup();
+        delete request_parser_;
+        request_parser_ = NULL;
+    }
+    if (request_handler_) {
+        delete request_handler_;
+        request_handler_ = NULL;
+    }
+    Close();
 }
 
 bool ClientConnection::HandleEvent(short revents) {
@@ -64,33 +68,22 @@ bool ClientConnection::HandleEvent(short revents) {
     switch (state_) {
         case READING_REQUEST:
             if (revents & POLLIN) {
-                return ReadRequest();
+                return HandleRead();
             }
             break;
-
-            // case READING_BODY:
-            //     if (revents & POLLIN) {
-            //         return HandleBodyRead();
-            //     }
-            //     break;
-
-            // case READING_CHUNKED:
-            //     if (revents & POLLIN) {
-            //         return HandleChunkedRead();
-            //     }
-            //     break;
-
-            // case PROCESSING_REQUEST: return ProcessRequest();
 
         case WRITING_RESPONSE:
-            if (revents & POLLOUT) {  // to implement
-                // return HandleWrite();
-                return true;
+            if (revents & POLLOUT) {
+                return HandleWrite();
             }
             break;
 
-            // case ERROR: return HandleError();
-        case CLOSING: return false;
+        case CLOSING: {
+            Logger::debug() << "Closing connection...";
+            return false;
+        }
+            // check if all errors are handled when reaching this
+        case ERROR: return false;
         default: return false;
     }
 
@@ -108,7 +101,7 @@ static bool checkSocketError(int socket_fd) {
     return err;
 }
 
-bool ClientConnection::ReadRequest() {
+bool ClientConnection::HandleRead() {
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
 
     if (bytes_read < 0) {
@@ -125,30 +118,48 @@ bool ClientConnection::ReadRequest() {
     }
 
     read_buffer_[bytes_read] = '\0';
-    if (!saveRequestToFile(read_buffer_)) {
-        return false;
+
+    RequestParser::Status parse_status =
+        request_parser_->parse(read_buffer_, bytes_read);
+
+    switch (parse_status) {
+        case RequestParser::ERROR: {
+            StatusCode  status_code = request_parser_->getStatusCode();
+            std::string status_message = request_parser_->getStatusMessage();
+            Logger::error() << "Error parsing request from client "
+                            << status_code << " " << status_message;
+            return false;
+        }
+        case RequestParser::NEED_MORE_DATA: {
+            Logger::debug() << "Need more data";
+            return true;
+        }
+        case RequestParser::COMPLETE: {
+            Logger::debug() << "Request parsing complete";
+            request_ready_ = true;
+            state_ = WRITING_RESPONSE;
+
+            request_handler_ = new RequestHandler(current_request_, server_config_);
+            request_handler_->handleRequest();
+			
+            return true;
+        }
+        default:
+            Logger::error() << "Unknown parse result: " << parse_status;
+            return false;
     }
 
-	// i should have a way to check if i still need to read more 
-	// and return the correct state
+    return true;
+}
 
-	// even better i delegate saving the request to request handler
-	// an it returns a state that i can use to know if i need to read more
-	
-    try {
-        request_buffer_.append(read_buffer_, bytes_read);
-    } catch (std::exception& e) {
-        Logger::error() << e.what();
-        return false;
-    }
+bool ClientConnection::HandleWrite() {
+    request_handler_->sendResponse(socket_fd_);  // should i check for errors?
 
-    // Logger::debug() << "read " << bytes_read << " bytes";
-    // Logger::debug() << read_buffer_;
-
-    RequestHandler handler = RequestHandler(server_config_);
-	handler.handleRequest(request_buffer_);
-    handler.sendResponse(socket_fd_);
-
+    delete request_handler_;
+    request_handler_ = NULL;
+    delete request_parser_;
+    request_parser_ = NULL;
+    state_ = CLOSING;
     return true;
 }
 
@@ -162,8 +173,6 @@ void ClientConnection::Close() {
                         << strerror(errno);
     }
 
-    request_buffer_.clear();
-    // response_buffer_.clear();
     is_closed_ = true;
     socket_fd_ = -1;
 }
@@ -179,72 +188,10 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
     return true;
 }
 
-// FILE MANAGEMENT
-
-// should i have a version of this that trunc instead of append?
-bool ClientConnection::saveRequestToFile(const char* buffer) {
-    if (!buffer) {
-        return false;
-    }
-
-    if (request_file_path_.empty()) {  // means we are on the first read
-        try {
-            request_file_path_ = getRequestFilePath();
-        } catch (std::exception& e) {
-            Logger::critical() << e.what();
-            return false;
-        }
-        if (request_file_path_.empty()) {
-            Logger::error() << "Failed to create temporary request file";
-            return false;
-        }
-        request_file_.open(request_file_path_.c_str(),
-                           std::ios::out | std::ios::trunc | std::ios::binary);
-        if (!request_file_.is_open()) {
-            Logger::error() << "Failed to open temporary request file";
-            return false;
-        }
-    }
-
-    request_file_ << std::string(buffer);
-    request_file_.flush();  // force write to file
-    if (request_file_.fail()) {
-        Logger::error() << "Failed to write to file: " << request_file_path_;
-        return false;
-    }
-    return true;
-}
-
-std::string ClientConnection::getRequestFilePath() {
-    if (request_file_path_.empty()) {
-        std::string dir = server_config_.getRoot() + "/tmp";
-
-        if (!lib::pathExist(dir)) {
-            Logger::debug() << "Creating tmp directory for request: " << dir;
-            mkdir(dir.c_str(), 0755);
-        } else if (!lib::isDirectory(dir)) {
-            throw std::runtime_error(
-                "Failed to create tmp directory for request");
-        } else if (!lib::isWritable(dir)) {
-            throw std::runtime_error(
-                "Failed to access tmp directory for request");
-        }
-
-        request_file_path_ = dir + "/" + lib::to_string(time(NULL)) +
-                             lib::to_string(request_counter_++) + "-" +
-                             lib::to_string(socket_fd_);
-
-        Logger::debug() << "Created temporary request file: "
-                        << request_file_path_;
-    }
-    return request_file_path_;
-}
-
 // State Queries
 
 bool ClientConnection::NeedsToRead() const {
-    return state_ == READING_REQUEST || state_ == READING_BODY ||
-           state_ == READING_CHUNKED;
+    return state_ == READING_REQUEST;
 }
 
 bool ClientConnection::NeedsToWrite() const {

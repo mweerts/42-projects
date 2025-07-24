@@ -316,10 +316,10 @@
                                     "border-green-500",
                                     "border-green-400",
                                 );
-                                setTimeout(() => {
-                                    refreshFileList();
-                                    statusDiv.classList.add("hidden");
-                                }, 2000);
+                                // setTimeout(() => {
+                                //     refreshFileList();
+                                //     statusDiv.classList.add("hidden");
+                                // }, 2000);
                             } else {
                                 messageSpan.textContent = `Upload failed: ${response.status}`;
                                 statusDiv.className = statusDiv.className.replace(
@@ -337,7 +337,7 @@
                     });
 
                 // Refresh file list
-                async function refreshFileList() {
+                /* async function refreshFileList() {
                     const fileListDiv = document.getElementById("file-list");
                     fileListDiv.innerHTML =
                         '<div class="animate-pulse">Scanning file system...</div>';
@@ -355,7 +355,7 @@
                         fileListDiv.innerHTML =
                             '<div class="text-red-400">Connection error</div>';
                     }
-                }
+				} */
 
                 // Display files in terminal style
                 function displayFiles(files) {
@@ -381,7 +381,7 @@
                 }
 
                 // Initial file list load
-                refreshFileList();
+                // refreshFileList();
 
                 // Connection counter and uptime
                 let connectionCount = 0;

@@ -46,7 +46,7 @@ size_t ServerConfig::getClientMaxBodySize() const {
         prmtrs.find("client_max_body_size");
     if (it != prmtrs.end() && !it->second.empty())
         return static_cast<size_t>(std::atoi(it->second[0].c_str()));
-    return 1024;
+    return 1048576; // 1mb
 }
 
 bool ServerConfig::getAutoIndex() const {

@@ -4,39 +4,34 @@
 #include "../srcs/parsing/GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
+#include "http_status_code.hpp"
 
 class ServerConfig;
 
 class RequestHandler {
    public:
-    RequestHandler(const ServerConfig& serverConfig)
-        : _serverConfig(serverConfig),
-          _rootPath(serverConfig.getRoot()),
-          _autoindex(serverConfig.getAutoIndex()) {
-          };
+    RequestHandler(const HttpRequest& request, const ServerConfig& serverConfig);
     ~RequestHandler();
 
-    void handleRequest(const std::string& request);
+    void handleRequest();
     void sendResponse(int socket_fd);
+
+    void generateErrorResponse(StatusCode         error_code,
+                               const std::string& error_msg);
 
    private:
     const ServerConfig& _serverConfig;
-    HttpRequest         _request;
+    const HttpRequest&  _request;
     HttpResponse        _response;
     std::string         _rootPath;
     std::string         _internalUri;
     bool                _autoindex;
 
-    void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);
     void processRequest();
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
-    void parseFullRequest(const std::string& request);
-    void parseRequestLine(const std::string& requestLine);
-    void parseHeaders(const std::string& headers);
-    void parseBody(const std::string& body);
 
     const std::string getRootPath() const;
 };
