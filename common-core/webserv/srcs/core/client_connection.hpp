@@ -58,7 +58,6 @@ class ClientConnection {
 
     // State management
     State state_;
-    bool  keep_alive_;
     bool  is_closed_;
 
    private:

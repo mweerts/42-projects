@@ -5,7 +5,7 @@
 HttpRequest::HttpRequest() {
     _method = "";
     _uri = "";
-    _version = "";
+    _version = "HTTP/1.1";
     _body = "";
     _request_tmp_file = "";
     _body_start = 0;
@@ -242,6 +242,20 @@ std::string HttpRequest::getContentType() const {
     return "";
 }
 
+bool HttpRequest::shouldKeepAlive() const {
+	std::map<std::string, std::string>::const_iterator it;
+	it = _headers.find("Connection");
+	if (it != _headers.end()) {
+		if (it->second.find("close") != std::string::npos) {
+			return false;
+		}
+		if (it->second.find("keep-alive") != std::string::npos) {
+			return true;
+		}
+	}
+	return (_version == "HTTP/1.1");
+}
+
 bool HttpRequest::isRequestChunked() const {
     std::map<std::string, std::string>::const_iterator it =
         _headers.find("Transfer-Encoding");
@@ -255,6 +269,24 @@ bool HttpRequest::isRequestChunked() const {
     }
 
     return false;
+}
+
+void HttpRequest::reset() {
+    _method.clear();
+    _uri.clear();
+	_version = "HTTP/1.1";
+    _headers.clear();
+    _body.clear();
+    _request_tmp_file.clear();
+    _body_start = 0;
+    _body_length = 0;
+    _body_is_file = false;
+    _body_read_pos = 0;
+    _body_reader_initialized = false;
+    
+    if (_body_file_stream.is_open()) {
+        _body_file_stream.close();
+    }
 }
 
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request) {

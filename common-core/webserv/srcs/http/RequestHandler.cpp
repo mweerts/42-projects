@@ -49,8 +49,23 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
+bool RequestHandler::shouldCloseConnection() const {
+    if (_response.getStatusCode() != HTTP_OK) {
+        return true;
+    }
+
+    return !_request.shouldKeepAlive();
+}
+
 void RequestHandler::handleRequest() {
     processRequest();
+
+    if (_request.shouldKeepAlive()) {
+        _response.setConnection("keep-alive");
+    } else {
+        _response.setConnection("close");
+    }
+    
     if (_response.getStatusCode() != HTTP_OK) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
@@ -74,6 +89,7 @@ void RequestHandler::handleRequest() {
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
         }
+        _response.setConnection("close");
     }
 }
 
@@ -81,19 +97,12 @@ void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
     Logger::debug() << "Sending response...";
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
-    // if (_response.getConnection() == "close") {
-    //     close(socket_fd);
-    // }
 }
 
 void RequestHandler::processRequest() {
     const Location*    location = _serverConfig.getLocation(_request.getUri());
     const std::string& method = _request.getMethod();
 
-    // if (_request.getHeaders().at("Connection") == "keep-alive" ||
-    //     _request.getHeaders().at("Connection") == "close") {
-    //     _response.setConnection(_request.getHeaders().at("Connection"));
-    // }
     _internalUri = _request.getUri();
     if (location) {
         if (location->getAlias()) {

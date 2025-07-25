@@ -15,6 +15,7 @@ class RequestHandler {
 
     void handleRequest();
     void sendResponse(int socket_fd);
+    bool shouldCloseConnection() const;
 
     void generateErrorResponse(StatusCode         error_code,
                                const std::string& error_msg);

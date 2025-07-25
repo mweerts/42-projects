@@ -36,8 +36,8 @@ ClientConnection::ClientConnection(int                 socket_fd,
       server_config_(server_config),
       last_activity_(time(0)),
       request_parser_(NULL),
+      request_handler_(NULL),
       state_(READING_REQUEST),
-      keep_alive_(true),
       is_closed_(false) {
     UpdateActivity();
     request_parser_ = new RequestParser(current_request_, server_config_);
@@ -82,7 +82,7 @@ bool ClientConnection::HandleEvent(short revents) {
             Logger::debug() << "Closing connection...";
             return false;
         }
-            // check if all errors are handled when reaching this
+        // check if all errors are handled when reaching this
         case ERROR: return false;
         default: return false;
     }
@@ -126,8 +126,8 @@ bool ClientConnection::HandleRead() {
         case RequestParser::ERROR: {
             StatusCode  status_code = request_parser_->getStatusCode();
             std::string status_message = request_parser_->getStatusMessage();
-            Logger::error() << "Error parsing request from client "
-                            << status_code << " " << status_message;
+            Logger::error() << "Error parsing request: " << status_code << " "
+                            << status_message;
             return false;
         }
         case RequestParser::NEED_MORE_DATA: {
@@ -139,9 +139,10 @@ bool ClientConnection::HandleRead() {
             request_ready_ = true;
             state_ = WRITING_RESPONSE;
 
-            request_handler_ = new RequestHandler(current_request_, server_config_);
+            request_handler_ =
+                new RequestHandler(current_request_, server_config_);
             request_handler_->handleRequest();
-			
+
             return true;
         }
         default:
@@ -155,11 +156,24 @@ bool ClientConnection::HandleRead() {
 bool ClientConnection::HandleWrite() {
     request_handler_->sendResponse(socket_fd_);  // should i check for errors?
 
+    if (request_handler_->shouldCloseConnection()) {
+        state_ = CLOSING;
+        return true;
+    }
+
+    // Resetting to handle the next request
     delete request_handler_;
     request_handler_ = NULL;
     delete request_parser_;
     request_parser_ = NULL;
-    state_ = CLOSING;
+
+    current_request_.reset();
+
+    state_ = READING_REQUEST;
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
+    
+	UpdateActivity();
     return true;
 }
 
@@ -182,10 +196,10 @@ void ClientConnection::UpdateActivity() {
 }
 
 bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (keep_alive_) {
+    if (current_request_.shouldKeepAlive()) {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
-    return true;
+    return false;
 }
 
 // State Queries

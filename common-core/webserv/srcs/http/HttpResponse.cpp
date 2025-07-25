@@ -14,8 +14,7 @@ HttpResponse::HttpResponse() {
     _contentType = "text/html";
     _contentLength = 0;
     _lastModified = "";
-    _connection = "close";  // HTTP/1.1 default is keep-alive. HTTP/1.0
-                                 // default is close
+    _connection = "keep-alive";
     _content = "";
 }
 
