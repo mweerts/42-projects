@@ -95,7 +95,7 @@ int main() {
 		request.setVersion("HTTP/1.1");
         request.setUri("/upload");
         request.setHeader("Content-Type", "application/octet-stream");
-        request.setBodyFile(filename, 0, large_content.length());
+        request.setBodyParams(filename, 0, large_content.length());
         
 		std::cout << request << std::endl;
         handleFileUpload(request);
