@@ -223,8 +223,9 @@ RequestParser::Status RequestParser::parseRequestLine() {
     }
 
     std::string request_line = header_buffer_.substr(0, newline_pos);
-    if (!request_line.empty() && request_line.back() == '\r') {
-        request_line.pop_back();
+    if (!request_line.empty() &&
+        request_line[request_line.size() - 1] == '\r') {
+        request_line.erase(request_line.size() - 1);
     }
 
     if (!validateAndSetRequestLine(request_line)) {
@@ -240,8 +241,8 @@ bool RequestParser::extractHeaders(const std::string& buffer) {
     std::string        line;
 
     while (std::getline(iss, line) && !line.empty()) {
-        if (!line.empty() && line.back() == '\r') {
-            line.pop_back();
+        if (!line.empty() && line[line.size() - 1] == '\r') {
+            line.erase(line.size() - 1);
         }
 
         size_t pos = line.find(':');

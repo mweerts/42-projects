@@ -65,8 +65,9 @@ void RequestHandler::handleRequest() {
     } else {
         _response.setConnection("close");
     }
-    
-    if (_response.getStatusCode() != HTTP_OK) {
+
+    if (_response.getStatusCode() != HTTP_OK &&
+        _response.getStatusCode() != HTTP_MOVED_PERMANENTLY) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
         const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
@@ -105,7 +106,15 @@ void RequestHandler::processRequest() {
 
     _internalUri = _request.getUri();
     if (location) {
-        if (location->getAlias()) {
+        if (location->getReturn()) {
+            _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+            _response.setLocation(
+                "http://localhost:8080" + urlDecode(*location->getReturn()));
+            _response.setContent(GetHtmlErrorPage(_response));
+            _response.setContentType("text/html");
+            Logger::debug() << "RESPONSE :" <<  _response.toString();
+            return;
+        } else if (location->getAlias()) {
             _internalUri =
                 *location->getAlias() +
                 _request.getUri().substr((location->getName()).length());
@@ -141,10 +150,13 @@ void RequestHandler::processGetRequest() {
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
+
     if (isDirectory(fullPath)) {
-        if (location && location->getIndex() && isReadable(fullPath + "/" + *location->getIndex())) {
+        if (location && location->getIndex() &&
+            isReadable(fullPath + "/" + *location->getIndex())) {
             fullPath += "/" + *location->getIndex();
-        } else if (_serverConfig.getIndex() && isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+        } else if (_serverConfig.getIndex() &&
+                   isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }

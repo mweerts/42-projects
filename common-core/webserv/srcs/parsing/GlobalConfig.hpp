@@ -15,6 +15,11 @@
 
 #include "ConfigProcessor.hpp"
 
+typedef struct LocalConfig{
+    bool autoIndex;
+
+} LocalConfig;
+
 struct CgiBin {
     CgiBin(const std::map<std::string, std::vector<std::string> >& passprmtrs,
            const std::string& nameLocation);
