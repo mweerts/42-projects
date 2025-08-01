@@ -22,8 +22,8 @@ struct CgiBin {
     std::map<std::string, std::vector<std::string> > prmtrs;
     CgiBin();
 
-    const std::vector<std::string>* getPath(void) const;
-    const std::vector<std::string>* getExt(void) const;
+    const std::vector<std::string>& getPath(void) const;
+    const std::vector<std::string>& getExt(void) const;
     const std::string*              getRoot(void) const;
 };
 
@@ -36,15 +36,15 @@ class Location {
     const std::string&                               getName(void) const;
     Location(const std::map<std::string, std::vector<std::string> >& passprmtrs,
              const std::string& nameLocation);
-    size_t				getClientMaxBodySize( void )const;
-	bool				getAutoIndex( void ) const;
-	const std::string*	getRoot( void ) const;
-	const std::string*	getIndex( void ) const;
-	bool				getMethodIsAllowed(const std::string& method) const;
-	const std::string*	getAlias( void ) const;
-	const std::string*	getReturn( void ) const;
-    size_t				getHost( void )const;
-    int					getPort( void ) const;
+    size_t             getClientMaxBodySize(void) const;
+    bool               getAutoIndex(void) const;
+    const std::string* getRoot(void) const;
+    const std::string* getIndex(void) const;
+    bool               getMethodIsAllowed(const std::string& method) const;
+    const std::string* getAlias(void) const;
+    const std::string* getReturn(void) const;
+    size_t             getHost(void) const;
+    int                getPort(void) const;
 };
 
 class ServerConfig {
@@ -58,12 +58,12 @@ class ServerConfig {
     ServerConfig() {};
     ServerConfig(
         const std::map<std::string, std::vector<std::string> >& passprmtrs,
-        const std::string&                                      nameServer);\
-	
-    void               setCgi(const CgiBin& add);
-/* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-	const std::string	getUplaodDir( void ) const;
-	const std::string	getServerName( void ) const;
+        const std::string&                                      nameServer);
+
+    void setCgi(const CgiBin& add);
+    /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+    const std::string  getUplaodDir(void) const;
+    const std::string  getServerName(void) const;
     const std::string& getName(void) const;
     const std::string  getHost(void) const;
     size_t             getClientMaxBodySize(void) const;
@@ -91,8 +91,8 @@ class GlobalConfig {
     GlobalConfig() {};
     GlobalConfig(const ConfigProcessor& Parser);
     GlobalConfig(const GlobalConfig& other);
-	
-	bool loadConfig(const std::string& path);
+
+    bool loadConfig(const std::string& path);
 
     void CreateServerAndLocation(void);
     virtual ~GlobalConfig();
@@ -108,8 +108,7 @@ class GlobalConfig {
     // only server-level configuration.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     //		//♡♡♡ Does not consider URI-specific location blocks.
     // ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-    const std::string* getErrorPage(int port, const std::string& error)
-    const;
+    const std::string* getErrorPage(int port, const std::string& error) const;
     //
     const std::vector<ServerConfig> getServers() const;
 

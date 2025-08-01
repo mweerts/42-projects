@@ -46,6 +46,12 @@ bool isWritable(const std::string& path) {
     return S_IWUSR & fileInfo.st_mode && !access(path.c_str(), W_OK);
 }
 
+bool isExecutable(const std::string& path) {
+    struct stat fileInfo;
+    stat(path.c_str(), &fileInfo);
+    return (fileInfo.st_mode & S_IXUSR) != 0;
+}
+
 off_t getFileSize(const std::string& path) {
     struct stat fileInfo;
     if (stat(path.c_str(), &fileInfo) == 0) {

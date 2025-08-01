@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "../handlers/cgi_handler.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
@@ -25,10 +26,6 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _autoindex(serverConfig.getAutoIndex()) {};
 
 RequestHandler::~RequestHandler() {}
-
-// void RequestHandler::setServerConfig(const ServerConfig& config) {
-//     _ServerConfig = config;
-// }
 
 void RequestHandler::setResponse(const HttpResponse& response) {
     _response = response;
@@ -65,7 +62,7 @@ void RequestHandler::handleRequest() {
     } else {
         _response.setConnection("close");
     }
-    
+
     if (_response.getStatusCode() != HTTP_OK) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
@@ -142,16 +139,19 @@ void RequestHandler::processGetRequest() {
 
     fullPath = _rootPath + _internalUri;
     if (isDirectory(fullPath)) {
-        if (location && location->getIndex() && isReadable(fullPath + "/" + *location->getIndex())) {
+        if (location && location->getIndex() &&
+            isReadable(fullPath + "/" + *location->getIndex())) {
             fullPath += "/" + *location->getIndex();
-        } else if (_serverConfig.getIndex() && isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+        } else if (_serverConfig.getIndex() &&
+                   isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
     if (!pathExist(fullPath)) {
-        _response.setStatusCode(HTTP_NOT_FOUND);
+		_response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
+
     if (isDirectory(fullPath)) {
         if (_autoindex) {
             _response.setStatusCode(HTTP_OK);
@@ -167,6 +167,34 @@ void RequestHandler::processGetRequest() {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
+
+	// Logger::debug() << "Cgi-path: " << _serverConfig.getCgiBin().getPath()[0];
+	// Logger::debug() << "Cgi-ext: " << _serverConfig.getCgiBin().getExt()[0];
+
+    // IN PROGRESS
+    CgiHandler cgiHandler(_request);
+    if (!cgiHandler.loadCgiBin(_serverConfig.getCgiBin())) {
+		// should not happen, should i still return 500?
+        Logger::error() << "Failed to load CGI bin";
+        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        return;
+    }
+    
+    if (cgiHandler.isCgiScript(fullPath)) {
+        Logger::debug() << "Processing CGI script: " << fullPath;
+
+        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
+        //     Logger::debug() << "CGI script executed successfully";
+        //     return;
+        // } else {
+        //     Logger::error() << "CGI script execution failed";
+        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        //     return;
+        // }
+    }
+    // END IN PROGRESS
+
+    // Regular file handling
     std::ifstream file(fullPath.c_str());
     if (file.fail()) {
         _response.setStatusCode(HTTP_FORBIDDEN);
@@ -181,7 +209,62 @@ void RequestHandler::processGetRequest() {
     file.close();
 }
 
-void RequestHandler::processPostRequest() {}
+void RequestHandler::processPostRequest() {
+    std::string     fullPath;
+    const Location* location = _serverConfig.getLocation(_internalUri);
+
+    fullPath = _rootPath + _internalUri;
+    if (isDirectory(fullPath)) {
+        if (location && location->getIndex() &&
+            isReadable(fullPath + "/" + *location->getIndex())) {
+            fullPath += "/" + *location->getIndex();
+        } else if (_serverConfig.getIndex() &&
+                   isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+            fullPath += "/" + *_serverConfig.getIndex();
+        }
+    }
+    if (!pathExist(fullPath)) {
+        _response.setStatusCode(HTTP_NOT_FOUND);
+        return;
+    }
+    if (isDirectory(fullPath)) {
+        _response.setStatusCode(HTTP_FORBIDDEN);
+        return;
+    }
+    if (!isReadable(fullPath) || !isFile(fullPath)) {
+        _response.setStatusCode(HTTP_FORBIDDEN);
+        return;
+    }
+
+    // IN PROGRESS
+    CgiHandler cgiHandler(_request);
+    if (!cgiHandler.loadCgiBin(_serverConfig.getCgiBin())) {
+		// should not happen, should i still return 500?
+        Logger::error() << "Failed to load CGI bin";
+        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        return;
+    }
+    
+    if (cgiHandler.isCgiScript(fullPath)) {
+        Logger::debug() << "Processing CGI script via POST: " << fullPath;
+        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
+        //     Logger::debug() << "CGI script executed successfully";
+        //     return;
+        // } else {
+        //     Logger::error() << "CGI script execution failed";
+        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        //     return;
+        // }
+    }
+    // END IN PROGRESS
+
+    // TODO handle file upload here on post resquest on "upload" directory
+    // TODO handle file upload here on post resquest on "upload" directory
+    // TODO handle file upload here on post resquest on "upload" directory
+
+    // For non-CGI POST requests, return 405 Method Not Allowed
+    _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
+}
 
 void RequestHandler::processDeleteRequest() {
     std::string fullPath = _rootPath + "uploads" + _request.getUri();

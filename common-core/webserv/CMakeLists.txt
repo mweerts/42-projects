@@ -20,7 +20,8 @@ set(SOURCES
 	srcs/core/connection_manager.cpp
 	srcs/core/tcp_server.cpp
 	
-    
+    srcs/handlers/cgi_handler.cpp
+	
     # srcs/http/HttpRequest.cpp
     srcs/http/HttpRequest.cpp
     srcs/http/HttpResponse.cpp
