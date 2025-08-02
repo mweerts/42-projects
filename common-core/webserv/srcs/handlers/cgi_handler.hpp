@@ -33,10 +33,10 @@ class CgiHandler {
     CgiHandler(const HttpRequest& request);
     ~CgiHandler();
 
-    bool        executeCgiScript(const std::string& scriptPath,
-                                 HttpResponse&      response);
-    bool        loadCgiBin(const CgiBin& cgiBin);
-    bool        isCgiScript(const std::string& filePath);
+    bool executeCgiScript(const std::string& scriptPath,
+                          HttpResponse&      response);
+    bool loadCgiBin(const CgiBin& cgiBin);
+    bool isCgiScript(const std::string& filePath);
     const std::map<std::string, std::string>& getCgiBin() const;
 
    private:
@@ -57,13 +57,15 @@ class CgiHandler {
     bool parseCgiResponse(const std::string& cgiOutput, HttpResponse& response);
     std::string extractHeaders(const std::string& cgiOutput, std::string& body);
 
-    std::string getCgiInterpreter(const std::string& scriptPath);
+    std::string       getCgiInterpreter(const std::string& scriptPath);
     const std::string getFileExtension(const std::string& filePath);
-    void        cleanupProcess(int pid);
+    void              cleanupProcess(int pid);
 
     // Timeout handling
     static const int CGI_TIMEOUT_SECONDS = 30;
     bool             waitForProcess(int pid);
+
+    void setDefaultCgiBin();
 };
 
 #endif

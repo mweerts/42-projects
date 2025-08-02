@@ -138,6 +138,46 @@ void RequestHandler::processGetRequest() {
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
+	
+	// Logger::warning() << "CGI BIN: " << _serverConfig.getCgiBin().getPath()[0];
+	// Logger::warning() << "CGI EXT: " << _serverConfig.getCgiBin().getExt()[0];
+
+	const CgiBin cgiBin = _serverConfig.getCgiBin();
+	const std::string *root = cgiBin.getRoot();
+	const std::vector<std::string> *path = cgiBin.getPath();
+	const std::vector<std::string> *ext = cgiBin.getExt();
+	// (void)root;
+	Logger::warning() << "cgi root: " << *root;
+	if (!path || !ext) {
+		Logger::warning() << "No cgi path or ext found";
+		return;
+	}
+	Logger::warning() << "cgi path: " << path->at(0);
+	Logger::warning() << "cgi ext: " << ext->at(0);
+
+    // IN PROGRESS
+    CgiHandler cgiHandler(_request);
+    if (!cgiHandler.loadCgiBin(cgiBin)) {
+        // should not happen, should i still return 500?
+        Logger::error() << "Failed to load CGI bin";
+        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        return;
+    }
+
+    if (cgiHandler.isCgiScript(fullPath)) {
+        Logger::debug() << "Processing CGI script: " << fullPath;
+
+        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
+        //     Logger::debug() << "CGI script executed successfully";
+        //     return;
+        // } else {
+        //     Logger::error() << "CGI script execution failed";
+        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        //     return;
+        // }
+    }
+    // END IN PROGRESS
+
     if (isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             isReadable(fullPath + "/" + *location->getIndex())) {
@@ -148,7 +188,7 @@ void RequestHandler::processGetRequest() {
         }
     }
     if (!pathExist(fullPath)) {
-		_response.setStatusCode(HTTP_NOT_FOUND);
+        _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
 
@@ -167,32 +207,6 @@ void RequestHandler::processGetRequest() {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
-
-	// Logger::debug() << "Cgi-path: " << _serverConfig.getCgiBin().getPath()[0];
-	// Logger::debug() << "Cgi-ext: " << _serverConfig.getCgiBin().getExt()[0];
-
-    // IN PROGRESS
-    CgiHandler cgiHandler(_request);
-    if (!cgiHandler.loadCgiBin(_serverConfig.getCgiBin())) {
-		// should not happen, should i still return 500?
-        Logger::error() << "Failed to load CGI bin";
-        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        return;
-    }
-    
-    if (cgiHandler.isCgiScript(fullPath)) {
-        Logger::debug() << "Processing CGI script: " << fullPath;
-
-        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
-        //     Logger::debug() << "CGI script executed successfully";
-        //     return;
-        // } else {
-        //     Logger::error() << "CGI script execution failed";
-        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        //     return;
-        // }
-    }
-    // END IN PROGRESS
 
     // Regular file handling
     std::ifstream file(fullPath.c_str());
@@ -239,12 +253,12 @@ void RequestHandler::processPostRequest() {
     // IN PROGRESS
     CgiHandler cgiHandler(_request);
     if (!cgiHandler.loadCgiBin(_serverConfig.getCgiBin())) {
-		// should not happen, should i still return 500?
+        // should not happen, should i still return 500?
         Logger::error() << "Failed to load CGI bin";
         _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-    
+
     if (cgiHandler.isCgiScript(fullPath)) {
         Logger::debug() << "Processing CGI script via POST: " << fullPath;
         // if (cgiHandler.executeCgiScript(fullPath, _response)) {
