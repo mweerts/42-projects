@@ -1,5 +1,9 @@
 #include "GlobalConfig.hpp"
 
+// Initialize static members
+CgiBin ServerConfig::globalCgiBin_;
+bool ServerConfig::globalCgiInitialized_ = false;
+
 ServerConfig::ServerConfig(
     const std::map<std::string, std::vector<std::string> >& prmtrs,
     const std::string&                                      name)
@@ -145,13 +149,14 @@ const char* ServerConfig::NotFoundUri::what() const throw() {
 }
 
 void ServerConfig::setCgi(const CgiBin& add) {
-    if (this->Cgi == true)
+    if (globalCgiInitialized_)
         return;
     else {
-        this->CGIloc = add;
+        globalCgiBin_ = add;
+        globalCgiInitialized_ = true;
     }
     this->Cgi = true;
 }
 const CgiBin& ServerConfig::getCgiBin(void) const {
-    return this->CGIloc;
+    return globalCgiBin_;
 }

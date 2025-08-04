@@ -16,6 +16,16 @@
 #include "Logger.hpp"
 #include "core/web_server.hpp"
 #include "parsing/GlobalConfig.hpp"
+#include "handlers/cgi_handler.hpp"
+
+void initializeCgiBin(const std::vector<ServerConfig>& servers) {
+    for (size_t i = 0; i < servers.size(); i++) {
+        const CgiBin& cgiBin = servers[i].getCgiBin();
+        if (!cgiBin.getExt().empty() && !cgiBin.getPath().empty()) {
+            CgiHandler::initializeCgiBin(cgiBin);
+        }
+    }
+}
 
 int main(int argc, char* argv[]) {
     if (argc > 2) {
@@ -37,6 +47,8 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         }
+
+        initializeCgiBin(config.getServers());
 
         WebServer server(config);
         if (!server.Start()) {

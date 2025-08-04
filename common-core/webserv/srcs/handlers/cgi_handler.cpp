@@ -25,34 +25,61 @@
 #include "Logger.hpp"
 #include "lib/file_utils.hpp"
 
+std::map<std::string, std::string> CgiHandler::cgiBin_;
+bool                               CgiHandler::cgiBinInitialized_ = false;
+std::string                        CgiHandler::cgiBinPath_;
+
 CgiHandler::CgiHandler(const HttpRequest& request) : request_(request) {
-    setDefaultCgiBin();
+    if (!cgiBinInitialized_) {
+        setDefaultCgiBin();
+        cgiBinInitialized_ = true;
+    }
+}
+
+void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
+    if (cgiBinInitialized_) {
+        return;
+    }
+
+    cgiBin_.clear();
+    cgiBinPath_ = cgiBin.getRoot();
+    if (cgiBinPath_.empty()) {
+        Logger::error() << "No path configured for cgi";
+        return;
+    }
+    Logger::debug() << "CGI path: " << cgiBinPath_;
+
+    std::vector<std::string> extensions = cgiBin.getExt();
+    std::vector<std::string> paths = cgiBin.getPath();
+
+    Logger::debug() << "Initializing CGI bin...";
+
+    if (extensions.empty()) {
+        Logger::error() << "No extensions found in cgiBin";
+        return;
+    }
+
+    if (paths.empty()) {
+        Logger::error() << "No interpreters found in cgiBin";
+        return;
+    }
+
+    for (size_t i = 0; i < extensions.size(); i++) {
+        cgiBin_[extensions[i]] = paths[i];
+        Logger::debug() << "CGI bin initialized for extension: "
+                        << extensions[i] << " with path: " << paths[i];
+    }
+
+    cgiBinInitialized_ = true;
+    Logger::debug() << "CGI bin initialized successfully";
 }
 
 CgiHandler::~CgiHandler() {}
 
 void CgiHandler::setDefaultCgiBin() {
-    cgiBin_["py"] = "/usr/bin/python3";
-    cgiBin_["sh"] = "/bin/bash";
-    cgiBin_["php"] = "/usr/bin/php-cgi";
-}
-
-bool CgiHandler::loadCgiBin(const CgiBin& cgiBin) {
-    cgiBin_.clear();
-    // std::vector<std::string> extensions = cgiBin.getExt();
-    // std::vector<std::string> paths = cgiBin.getPath();
-
-	(void)cgiBin;
-    // if (extensions.empty() || paths.empty()) {
-    //     Logger::error() << "No extensions or interpreters found in cgiBin";
-    //     setDefaultCgiBin(); // TEMP
-    //     return true;
-    // }
-
-    // for (size_t i = 0; i < extensions.size(); i++) {
-    //     cgiBin_[extensions[i]] = paths[i];  // extension -> path
-    // }
-    return true;
+    cgiBin_[".py"] = "/usr/bin/python3";
+    cgiBin_[".sh"] = "/bin/bash";
+    cgiBin_[".php"] = "/usr/bin/php-cgi";
 }
 
 const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
@@ -60,17 +87,19 @@ const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
 }
 
 bool CgiHandler::isCgiScript(const std::string& filePath) {
-	Logger::debug() << "isCgiScript: " << filePath;
-    if (!lib::pathExist(filePath) || !lib::isExecutable(filePath)) {
+    const std::string fullPath = cgiBinPath_ + filePath;
+
+    if (!lib::pathExist(fullPath) || !lib::isExecutable(fullPath)) {
         return false;
     }
 
-    std::string ext = getFileExtension(filePath);
+    std::string ext = getFileExtension(fullPath);
     std::map<std::string, std::string>::const_iterator it = cgiBin_.find(ext);
     if (it == cgiBin_.end()) {
         return false;
     }
 
+	Logger::debug() << "isCgiScript: true";
     return lib::isExecutable(it->second);
 }
 
@@ -79,7 +108,7 @@ const std::string CgiHandler::getFileExtension(const std::string& filePath) {
     if (lastDot == std::string::npos) {
         return "";
     }
-    return filePath.substr(lastDot + 1);
+    return filePath.substr(lastDot);
 }
 
 // // Step 4: Get appropriate interpreter for script

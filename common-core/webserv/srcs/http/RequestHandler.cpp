@@ -101,6 +101,7 @@ void RequestHandler::processRequest() {
     const std::string& method = _request.getMethod();
 
     _internalUri = _request.getUri();
+	Logger::debug() << "processing request for uri: " << _internalUri;
     if (location) {
         if (location->getAlias()) {
             _internalUri =
@@ -138,35 +139,12 @@ void RequestHandler::processGetRequest() {
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
-	
-	// Logger::warning() << "CGI BIN: " << _serverConfig.getCgiBin().getPath()[0];
-	// Logger::warning() << "CGI EXT: " << _serverConfig.getCgiBin().getExt()[0];
-
-	const CgiBin cgiBin = _serverConfig.getCgiBin();
-	const std::string *root = cgiBin.getRoot();
-	const std::vector<std::string> *path = cgiBin.getPath();
-	const std::vector<std::string> *ext = cgiBin.getExt();
-	// (void)root;
-	Logger::warning() << "cgi root: " << *root;
-	if (!path || !ext) {
-		Logger::warning() << "No cgi path or ext found";
-		return;
-	}
-	Logger::warning() << "cgi path: " << path->at(0);
-	Logger::warning() << "cgi ext: " << ext->at(0);
 
     // IN PROGRESS
     CgiHandler cgiHandler(_request);
-    if (!cgiHandler.loadCgiBin(cgiBin)) {
-        // should not happen, should i still return 500?
-        Logger::error() << "Failed to load CGI bin";
-        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    if (cgiHandler.isCgiScript(fullPath)) {
-        Logger::debug() << "Processing CGI script: " << fullPath;
-
+    if (cgiHandler.isCgiScript(_internalUri)) {
+        Logger::debug() << "Processing CGI script: " << _internalUri;
+		return;
         // if (cgiHandler.executeCgiScript(fullPath, _response)) {
         //     Logger::debug() << "CGI script executed successfully";
         //     return;
@@ -176,7 +154,6 @@ void RequestHandler::processGetRequest() {
         //     return;
         // }
     }
-    // END IN PROGRESS
 
     if (isDirectory(fullPath)) {
         if (location && location->getIndex() &&
@@ -252,15 +229,9 @@ void RequestHandler::processPostRequest() {
 
     // IN PROGRESS
     CgiHandler cgiHandler(_request);
-    if (!cgiHandler.loadCgiBin(_serverConfig.getCgiBin())) {
-        // should not happen, should i still return 500?
-        Logger::error() << "Failed to load CGI bin";
-        _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        return;
-    }
-
-    if (cgiHandler.isCgiScript(fullPath)) {
+    if (cgiHandler.isCgiScript(_internalUri)) {
         Logger::debug() << "Processing CGI script via POST: " << fullPath;
+        
         // if (cgiHandler.executeCgiScript(fullPath, _response)) {
         //     Logger::debug() << "CGI script executed successfully";
         //     return;

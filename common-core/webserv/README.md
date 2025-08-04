@@ -1,6 +1,7 @@
 # webserver
 
 ## To do
+- does the parsing protect from difference between number of cgi language and paths?
 
 ## To do Lucas ## 
 - [ ] use size limits in request Parsing

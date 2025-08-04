@@ -22,9 +22,9 @@ struct CgiBin {
     std::map<std::string, std::vector<std::string> > prmtrs;
     CgiBin();
 
-    const std::vector<std::string>* getPath(void) const;
-    const std::vector<std::string>* getExt(void) const;
-    const std::string*              getRoot(void) const;
+    const std::vector<std::string>& getPath(void) const;
+    const std::vector<std::string>& getExt(void) const;
+    const std::string               getRoot(void) const;
 };
 
 class Location {
@@ -51,7 +51,8 @@ class ServerConfig {
    private:
     std::string                                      name;
     std::map<std::string, std::vector<std::string> > prmtrs;
-    CgiBin                                           CGIloc;
+    static CgiBin                                    globalCgiBin_;
+    static bool                                      globalCgiInitialized_;
     bool                                             Cgi;
 
    public:

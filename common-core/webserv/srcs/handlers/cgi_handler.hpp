@@ -32,17 +32,21 @@ class CgiHandler {
    public:
     CgiHandler(const HttpRequest& request);
     ~CgiHandler();
+    
+    // Static initialization - call once at startup
+    static void initializeCgiBin(const CgiBin& cgiBin);
 
     bool executeCgiScript(const std::string& scriptPath,
                           HttpResponse&      response);
-    bool loadCgiBin(const CgiBin& cgiBin);
     bool isCgiScript(const std::string& filePath);
     const std::map<std::string, std::string>& getCgiBin() const;
 
    private:
     const HttpRequest& request_;
-    // extension -> interpreter path
-    std::map<std::string, std::string> cgiBin_;
+    // extension -> interpreter path (static, shared across all instances)
+    static std::map<std::string, std::string> cgiBin_;
+	static std::string cgiBinPath_;
+    static bool cgiBinInitialized_;
 
     // Environment setup
     std::vector<std::string> buildEnvironment();
