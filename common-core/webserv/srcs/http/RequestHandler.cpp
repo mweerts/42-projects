@@ -144,15 +144,13 @@ void RequestHandler::processGetRequest() {
     CgiHandler cgiHandler(_request);
     if (cgiHandler.isCgiScript(_internalUri)) {
         Logger::debug() << "Processing CGI script: " << _internalUri;
+        if (cgiHandler.executeCgiScript(fullPath, _response)) {
+            Logger::debug() << "CGI script executed successfully";
+        } else {
+            Logger::error() << "CGI script execution failed";
+            _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        }
 		return;
-        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
-        //     Logger::debug() << "CGI script executed successfully";
-        //     return;
-        // } else {
-        //     Logger::error() << "CGI script execution failed";
-        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        //     return;
-        // }
     }
 
     if (isDirectory(fullPath)) {

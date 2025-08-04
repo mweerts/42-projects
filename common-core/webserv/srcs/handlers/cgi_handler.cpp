@@ -25,6 +25,7 @@
 #include "Logger.hpp"
 #include "lib/file_utils.hpp"
 
+// static init
 std::map<std::string, std::string> CgiHandler::cgiBin_;
 bool                               CgiHandler::cgiBinInitialized_ = false;
 std::string                        CgiHandler::cgiBinPath_;
@@ -35,6 +36,8 @@ CgiHandler::CgiHandler(const HttpRequest& request) : request_(request) {
         cgiBinInitialized_ = true;
     }
 }
+
+CgiHandler::~CgiHandler() {}
 
 void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
     if (cgiBinInitialized_) {
@@ -74,60 +77,86 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
     Logger::debug() << "CGI bin initialized successfully";
 }
 
-CgiHandler::~CgiHandler() {}
+bool CgiHandler::executeCgiScript(const std::string& scriptPath,
+                                  HttpResponse&      response) {
+    Logger::debug() << "Executing CGI script: " << scriptPath;
 
-void CgiHandler::setDefaultCgiBin() {
-    cgiBin_[".py"] = "/usr/bin/python3";
-    cgiBin_[".sh"] = "/bin/bash";
-    cgiBin_[".php"] = "/usr/bin/php-cgi";
+	(void)scriptPath;
+	(void)response;
+
+    // int childPid, inputPipe, outputPipe;
+
+    // Create process
+    // if (!createProcess(scriptPath, childPid, inputPipe, outputPipe)) {
+    //     Logger::error() << "Failed to create CGI process";
+    //     return false;
+    // }
+
+    // // Communicate with process
+    // bool success = communicateWithProcess(inputPipe, outputPipe, response);
+	bool success = true;
+
+    // // Wait for process to finish
+    // if (!waitForProcess(childPid)) {
+    //     Logger::error() << "CGI process failed or timed out";
+    //     cleanupProcess(childPid);
+    //     return false;
+    // }
+
+    // cleanupProcess(childPid);
+
+    // if (success) {
+    //     Logger::debug() << "CGI script executed successfully";
+    // } else {
+    //     Logger::error() << "Failed to process CGI output";
+    // }
+
+    return success;
 }
 
 const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
     return cgiBin_;
 }
 
-bool CgiHandler::isCgiScript(const std::string& filePath) {
-    const std::string fullPath = cgiBinPath_ + filePath;
+bool CgiHandler::isCgiScript(const std::string& uri) {
+    const std::string script_path = cgiBinPath_ + uri;
 
-    if (!lib::pathExist(fullPath) || !lib::isExecutable(fullPath)) {
+    if (!lib::pathExist(script_path) || !lib::isExecutable(script_path)) {
         return false;
     }
 
-    std::string ext = getFileExtension(fullPath);
+    std::string ext = getFileExtension(script_path);
     std::map<std::string, std::string>::const_iterator it = cgiBin_.find(ext);
     if (it == cgiBin_.end()) {
         return false;
     }
 
-	Logger::debug() << "isCgiScript: true";
+    Logger::debug() << "isCgiScript: yes";
     return lib::isExecutable(it->second);
 }
 
-const std::string CgiHandler::getFileExtension(const std::string& filePath) {
-    size_t lastDot = filePath.find_last_of('.');
+const std::string CgiHandler::getFileExtension(const std::string& filename) {
+    size_t lastDot = filename.find_last_of('.');
     if (lastDot == std::string::npos) {
         return "";
     }
-    return filePath.substr(lastDot);
+    return filename.substr(lastDot);
 }
 
-// // Step 4: Get appropriate interpreter for script
-// std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
-//     std::string extension = getFileExtension(scriptPath);
+std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
+    std::string extension = getFileExtension(scriptPath);
 
-//     // Look up interpreter in our supported extensions map
-//     std::map<std::string, std::string>::const_iterator it =
-//         _cgiBin.find(extension);
-//     if (it != _cgiBin.end()) {
-//         Logger::debug() << "Found interpreter for " << extension << ": "
-//                         << it->second;
-//         return it->second;
-//     }
+    std::map<std::string, std::string>::const_iterator it;
+    it = cgiBin_.find(extension);
+    if (it != cgiBin_.end()) {
+        Logger::debug() << "Found interpreter for " << extension << ": "
+                        << it->second;
+        return it->second;
+    }
 
-//     // Extension not supported
-//     Logger::debug() << "Extension " << extension << " not supported for CGI";
-//     return "";
-// }
+    Logger::debug() << "Extension " << extension << " not supported for CGI";
+    return "";
+}
 
 // // Step 5: Build query string from request
 // std::string CgiHandler::buildQueryString() {
@@ -431,36 +460,8 @@ const std::string CgiHandler::getFileExtension(const std::string& filePath) {
 //     }
 // }
 
-// // Step 12: Main CGI execution method
-// bool CgiHandler::executeCgiScript(const std::string& scriptPath,
-//                                   HttpResponse&      response) {
-//     Logger::debug() << "Executing CGI script: " << scriptPath;
-
-//     int childPid, inputPipe, outputPipe;
-
-//     // Create process
-//     if (!createProcess(scriptPath, childPid, inputPipe, outputPipe)) {
-//         Logger::error() << "Failed to create CGI process";
-//         return false;
-//     }
-
-//     // Communicate with process
-//     bool success = communicateWithProcess(inputPipe, outputPipe, response);
-
-//     // Wait for process to finish
-//     if (!waitForProcess(childPid)) {
-//         Logger::error() << "CGI process failed or timed out";
-//         cleanupProcess(childPid);
-//         return false;
-//     }
-
-//     cleanupProcess(childPid);
-
-//     if (success) {
-//         Logger::debug() << "CGI script executed successfully";
-//     } else {
-//         Logger::error() << "Failed to process CGI output";
-//     }
-
-//     return success;
-// }
+void CgiHandler::setDefaultCgiBin() {
+    cgiBin_[".py"] = "/usr/bin/python3";
+    cgiBin_[".sh"] = "/bin/bash";
+    cgiBin_[".php"] = "/usr/bin/php-cgi";
+}
