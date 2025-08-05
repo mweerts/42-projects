@@ -110,7 +110,7 @@ std::string trimSlashes(const std::string& path) {
 
 std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     std::ostringstream       oss;
-    std::string              path = trimSlashes(root) + "/" + trimSlashes(uri);
+    std::string              path = trimSlashes(root) + trimSlashes(uri);
     std::vector<std::string> files;
     std::vector<std::string> dirs;
 
@@ -126,7 +126,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
             std::string name(entry->d_name);
             if (name == "." || name == "..")
                 continue;
-            std::string fullPath = path + "/" + trimSlashes(name);
+            std::string fullPath = trimSlashes(path) + "/" + trimSlashes(name);
             struct stat st;
             if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
                 dirs.push_back(name);
@@ -143,7 +143,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     for (size_t i = 0; i < dirs.size(); ++i) {
         std::string name = dirs[i];
         std::string croppedName = name;
-        std::string fullPath = path + "/" + trimSlashes(name);
+        std::string fullPath = trimSlashes(path) + "/" + trimSlashes(name);
 
         if (croppedName.length() > 50) {
             croppedName = croppedName.substr(0, 47);
@@ -164,14 +164,13 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     for (size_t i = 0; i < files.size(); ++i) {
         std::string name = files[i];
         std::string croppedName = name;
-        std::string fullPath = path + "/" + trimSlashes(name);
+        std::string fullPath = trimSlashes(path) + "/" + trimSlashes(name);
 
         if (croppedName.length() > 50) {
             croppedName = croppedName.substr(0, 47);
             croppedName.append("..>");
         }
 
-        Logger::debug() << "Adding file: " << fullPath;
         oss << "<a href=\"" << trimSlashes(uri) << "/" << trimSlashes(name)
             << "\">" << croppedName << "</a>"
             << std::string(51 - croppedName.length(), ' ')
