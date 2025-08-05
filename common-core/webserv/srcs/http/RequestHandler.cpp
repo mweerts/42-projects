@@ -103,7 +103,7 @@ void RequestHandler::processRequest() {
     const std::string& method = _request.getMethod();
 
     _internalUri = _request.getUri();
-	Logger::debug() << "processing request for uri: " << _internalUri;
+    Logger::debug() << "processing request for uri: " << _internalUri;
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
@@ -148,19 +148,19 @@ void RequestHandler::processGetRequest() {
 
     fullPath = _rootPath + _internalUri;
 
-	    // IN PROGRESS
-		CgiHandler cgiHandler(_request);
-		if (cgiHandler.isCgiScript(_internalUri)) {
-			Logger::debug() << "Processing CGI script: " << _internalUri;
-			if (cgiHandler.executeCgiScript(_internalUri, _response)) {
-				Logger::debug() << "CGI script executed successfully";
-			} else {
-				Logger::error() << "CGI script execution failed";
-				_response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-			}
-			return;
-		}
-		
+    // IN PROGRESS
+    CgiHandler cgiHandler(_request);
+    if (cgiHandler.isCgiScript(_internalUri)) {
+        Logger::debug() << "Processing CGI script: " << _internalUri;
+        if (cgiHandler.executeCgiScript(_internalUri, _response)) {
+            Logger::debug() << "CGI script executed successfully";
+        } else {
+            Logger::error() << "CGI script execution failed";
+            _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        }
+        return;
+    }
+
     if (isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             isReadable(fullPath + "/" + *location->getIndex())) {

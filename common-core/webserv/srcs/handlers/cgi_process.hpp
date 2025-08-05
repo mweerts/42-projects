@@ -42,7 +42,8 @@ class CgiProcess {
     bool        isValid;
 
     void cleanup();
-    // void start(const std::string& scriptPath, const std::string& queryString);
+    void startProcess(const std::string& scriptPath);
+    void startProcess(const std::string& scriptPath, const std::string& queryString);
     // void handleInput();
     // void handleOutput();
     // void handleTimeout();

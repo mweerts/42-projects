@@ -22,7 +22,7 @@
 
 class ServerConfig;
 class RequestHandler;
-struct CgiProcess;
+class CgiHandler;
 
 class ClientConnection {
    public:
@@ -48,6 +48,9 @@ class ClientConnection {
     int   GetSocketFd() const;
     State GetState() const;
 
+    int GetCgiInputPipe() const;
+    int GetCgiOutputPipe() const;
+
     void Close();
 
    private:
@@ -61,7 +64,7 @@ class ClientConnection {
     RequestParser*  request_parser_;
     RequestHandler* request_handler_;
     HttpRequest     current_request_;
-    CgiProcess*     cgi_process_;
+    CgiHandler*     cgi_handler_;
 
     bool request_ready_;
 
@@ -73,6 +76,8 @@ class ClientConnection {
     void UpdateActivity();
     bool HandleRead();
     bool HandleWrite();
+    bool HandleCgi();
+    void cleanupCgi();
 };
 
 #endif

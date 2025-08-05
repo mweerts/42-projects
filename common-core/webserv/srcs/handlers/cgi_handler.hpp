@@ -47,7 +47,6 @@ class CgiHandler {
     bool isAsyncCgiComplete() const;
     void cleanupAsyncCgi();
 
-    // Getters for polling
     int  getInputPipe() const;
     int  getOutputPipe() const;
     bool isProcessing() const;
@@ -87,6 +86,7 @@ class CgiHandler {
     void buildCgiResponse(HttpResponse& response);
 
     // Timeout handling
+	bool isTimedOut() const;
     bool waitForProcess(int pid);
     void setDefaultCgiBin();
 };

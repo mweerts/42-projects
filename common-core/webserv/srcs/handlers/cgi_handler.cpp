@@ -31,7 +31,7 @@ std::map<std::string, std::string> CgiHandler::cgiBin_;
 bool                               CgiHandler::cgiBinInitialized_ = false;
 std::string                        CgiHandler::cgiBinPath_;
 
-CgiHandler::CgiHandler(const HttpRequest& request) : request_(request) {
+CgiHandler::CgiHandler(const HttpRequest& request) : request_(request), async_process_(NULL) {
     if (!cgiBinInitialized_) {
         setDefaultCgiBin();
         cgiBinInitialized_ = true;
@@ -94,6 +94,208 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     Logger::debug() << "isCgiScript: yes";
     return lib::isExecutable(it->second);
 }
+
+
+/* ASYNC PROCESS */
+
+bool CgiHandler::startAsyncCgi(const std::string& scriptPath) {
+    async_process_ = new CgiProcess();
+    async_process_->startTime = time(NULL);
+    
+    if (!startCgiProcess(scriptPath)) {
+        cleanupAsyncCgi();
+        return false;
+    }
+    
+    Logger::debug() << "Async CGI process started with PID: " << async_process_->childPid;
+    return true;
+}
+
+bool CgiHandler::processAsyncCgi(HttpResponse& response) {
+    if (!async_process_ || !async_process_->isValid) {
+        Logger::error() << "Invalid async CGI process state";
+        return false;
+    }
+    
+    // Check timeout
+    if (isTimedOut()) {
+        Logger::warning() << "Async CGI process timed out";
+        cleanupAsyncCgi();
+        return false;
+    }
+    
+    // Process I/O
+    if (processCgiIO()) {
+        // CGI completed successfully
+        buildCgiResponse(response);
+        cleanupAsyncCgi();
+        return true;
+    }
+    
+    return false;  // Still processing
+}
+
+
+/* probably need to be moved to cgi_process */
+bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
+    // Create pipes
+    int inputPipeFds[2] = {-1, -1};
+    int outputPipeFds[2] = {-1, -1};
+    
+    if (pipe(inputPipeFds) == -1 || pipe(outputPipeFds) == -1) {
+        Logger::error() << "Failed to create pipes for async CGI process";
+        return false;
+    }
+    
+    // Make pipes non-blocking
+    fcntl(inputPipeFds[0], F_SETFL, O_NONBLOCK);
+    fcntl(inputPipeFds[1], F_SETFL, O_NONBLOCK);
+    fcntl(outputPipeFds[0], F_SETFL, O_NONBLOCK);
+    fcntl(outputPipeFds[1], F_SETFL, O_NONBLOCK);
+    
+    // Fork process
+    async_process_->childPid = fork();
+    if (async_process_->childPid == -1) {
+        Logger::error() << "Failed to fork async CGI process";
+        return false;
+    }
+    
+    if (async_process_->childPid == 0) {
+        // Child process
+        close(inputPipeFds[1]);   // Close write end
+        close(outputPipeFds[0]);  // Close read end
+        
+        dup2(inputPipeFds[0], STDIN_FILENO);
+        dup2(outputPipeFds[1], STDOUT_FILENO);
+        
+        close(inputPipeFds[0]);
+        close(outputPipeFds[1]);
+        
+        // Change to script directory
+        std::string scriptDir = scriptPath.substr(0, scriptPath.find_last_of('/'));
+        if (!scriptDir.empty() && chdir(scriptDir.c_str()) != 0) {
+            exit(1);
+        }
+        
+        // Execute CGI script
+        std::string interpreter = getCgiInterpreter(scriptPath);
+        if (!interpreter.empty()) {
+            execl(interpreter.c_str(), interpreter.c_str(), scriptPath.c_str(), NULL);
+        } else {
+            execl(scriptPath.c_str(), scriptPath.c_str(), NULL);
+        }
+        exit(1);  // If exec fails
+    } else {
+        // Parent process
+        close(inputPipeFds[0]);   // Close read end
+        close(outputPipeFds[1]);  // Close write end
+        
+        async_process_->inputPipe = inputPipeFds[1];   // Write to child
+        async_process_->outputPipe = outputPipeFds[0]; // Read from child
+        async_process_->isValid = true;
+        
+        return true;
+    }
+}
+
+bool CgiHandler::processCgiIO() {
+    // Read from CGI stdout
+    char buffer[4096];
+    ssize_t bytes_read = read(async_process_->outputPipe, buffer, sizeof(buffer));
+    
+    if (bytes_read > 0) {
+        async_process_->outputBuffer.append(buffer, bytes_read);
+    } else if (bytes_read == 0) {
+        // EOF - CGI finished
+        return true;
+    } else if (errno != EAGAIN && errno != EWOULDBLOCK) {
+        Logger::error() << "Error reading from async CGI process";
+        return false;
+    }
+    
+    // Check if process is still running
+    int status;
+    pid_t result = waitpid(async_process_->childPid, &status, WNOHANG);
+    if (result == async_process_->childPid) {
+        // Process finished
+        return true;
+    }
+    
+    return false;  // Still processing
+}
+
+void CgiHandler::buildCgiResponse(HttpResponse& response) {
+    if (async_process_->outputBuffer.empty()) {
+        response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        return;
+    }
+    
+    // Parse CGI output and set response
+    parseCgiResponse(async_process_->outputBuffer, response);
+}
+
+
+
+
+
+
+/* HELPERS */
+
+const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
+    return cgiBin_;
+}
+
+const std::string CgiHandler::getFileExtension(const std::string& filename) {
+    size_t lastDot = filename.find_last_of('.');
+    if (lastDot == std::string::npos) {
+        return "";
+    }
+    return filename.substr(lastDot);
+}
+
+std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
+    std::string extension = getFileExtension(scriptPath);
+
+    std::map<std::string, std::string>::const_iterator it;
+    it = cgiBin_.find(extension);
+    if (it != cgiBin_.end()) {
+        Logger::debug() << "Found interpreter for " << extension << ": "
+                        << it->second;
+        return it->second;
+    }
+
+    Logger::debug() << "Extension " << extension << " not supported for CGI";
+    return "";
+}
+
+void CgiHandler::setDefaultCgiBin() {
+    cgiBin_[".py"] = "/usr/bin/python3";
+    cgiBin_[".sh"] = "/bin/bash";
+    cgiBin_[".php"] = "/usr/bin/php-cgi";
+}
+
+int CgiHandler::getInputPipe() const {
+    return async_process_ ? async_process_->inputPipe : -1;
+}
+
+int CgiHandler::getOutputPipe() const {
+    return async_process_ ? async_process_->outputPipe : -1;
+}
+
+bool CgiHandler::isProcessing() const {
+    return async_process_ != NULL && async_process_->isValid;
+}
+
+bool CgiHandler::isTimedOut() const {
+    if (!async_process_ || !async_process_->isValid) {
+        return false;
+    }
+    return (time(NULL) - async_process_->startTime > CGI_TIMEOUT_SECONDS);
+}
+
+
+
+/* LEGACY CODE */
 
 bool CgiHandler::executeCgiScript(const std::string& scriptPath,
                                   HttpResponse&      response) {
@@ -313,85 +515,85 @@ const std::vector<std::string>& CgiHandler::buildEnvironment() {
 // }
 
 // // Step 9: Parse CGI response
-// bool CgiHandler::parseCgiResponse(const std::string& cgiOutput,
-//                                   HttpResponse&      response) {
-//     if (cgiOutput.empty()) {
-//         Logger::error() << "Empty response from CGI script";
-//         return false;
-//     }
+bool CgiHandler::parseCgiResponse(const std::string& cgiOutput,
+                                  HttpResponse&      response) {
+    if (cgiOutput.empty()) {
+        Logger::error() << "Empty response from CGI script";
+        return false;
+    }
 
-//     // Split headers and body
-//     std::string headers, body;
-//     size_t      headerEnd = cgiOutput.find("\r\n\r\n");
-//     if (headerEnd == std::string::npos) {
-//         headerEnd = cgiOutput.find("\n\n");
-//     }
+    // Split headers and body
+    std::string headers, body;
+    size_t      headerEnd = cgiOutput.find("\r\n\r\n");
+    if (headerEnd == std::string::npos) {
+        headerEnd = cgiOutput.find("\n\n");
+    }
 
-//     if (headerEnd != std::string::npos) {
-//         headers = cgiOutput.substr(0, headerEnd);
-//         body = cgiOutput.substr(
-//             headerEnd +
-//             (cgiOutput.find("\r\n\r\n") != std::string::npos ? 4 : 2));
-//     } else {
-//         // No headers found, treat entire output as body
-//         body = cgiOutput;
-//     }
+    if (headerEnd != std::string::npos) {
+        headers = cgiOutput.substr(0, headerEnd);
+        body = cgiOutput.substr(
+            headerEnd +
+            (cgiOutput.find("\r\n\r\n") != std::string::npos ? 4 : 2));
+    } else {
+        // No headers found, treat entire output as body
+        body = cgiOutput;
+    }
 
-//     // Parse headers
-//     std::istringstream headerStream(headers);
-//     std::string        line;
-//     bool               hasStatus = false;
+    // Parse headers
+    std::istringstream headerStream(headers);
+    std::string        line;
+    bool               hasStatus = false;
 
-//     while (std::getline(headerStream, line)) {
-//         if (line.empty() || line == "\r")
-//             continue;
+    while (std::getline(headerStream, line)) {
+        if (line.empty() || line == "\r")
+            continue;
 
-//         // Remove carriage return if present
-//         if (!line.empty() && line.back() == '\r') {
-//             line.pop_back();
-//         }
+        // Remove carriage return if present
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
 
-//         size_t colonPos = line.find(':');
-//         if (colonPos != std::string::npos) {
-//             std::string key = line.substr(0, colonPos);
-//             std::string value = line.substr(colonPos + 1);
+        size_t colonPos = line.find(':');
+        if (colonPos != std::string::npos) {
+            std::string key = line.substr(0, colonPos);
+            std::string value = line.substr(colonPos + 1);
 
-//             // Trim whitespace from value
-//             while (!value.empty() && value[0] == ' ') {
-//                 value.erase(0, 1);
-//             }
+            // Trim whitespace from value
+            while (!value.empty() && value[0] == ' ') {
+                value.erase(0, 1);
+            }
 
-//             if (key == "Status") {
-//                 // Parse status line (e.g., "Status: 200 OK")
-//                 size_t spacePos = value.find(' ');
-//                 if (spacePos != std::string::npos) {
-//                     std::string statusCode = value.substr(0, spacePos);
-//                     response.setStatusCode(
-//                         static_cast<StatusCode>(std::atoi(statusCode.c_str())));
-//                 }
-//                 hasStatus = true;
-//             } else if (key == "Content-Type") {
-//                 response.setContentType(value);
-//             } else if (key == "Location") {
-//                 response.setHeader("Location", value);
-//             } else {
-//                 response.setHeader(key, value);
-//             }
-//         }
-//     }
+            if (key == "Status") {
+                // Parse status line (e.g., "Status: 200 OK")
+                size_t spacePos = value.find(' ');
+                if (spacePos != std::string::npos) {
+                    std::string statusCode = value.substr(0, spacePos);
+                    response.setStatusCode(
+                        static_cast<StatusCode>(std::atoi(statusCode.c_str())));
+                }
+                hasStatus = true;
+            } else if (key == "Content-Type") {
+                response.setContentType(value);
+            } else if (key == "Location") {
+                response.setLocation(value);
+            } else {
+                response.setHeader(key, value);
+            }
+        }
+    }
 
-//     // Set default status if not provided
-//     if (!hasStatus) {
-//         response.setStatusCode(HTTP_OK);
-//     }
+    // Set default status if not provided
+    if (!hasStatus) {
+        response.setStatusCode(HTTP_OK);
+    }
 
-//     // Set content
-//     response.setContent(body);
+    // Set content
+    response.setContent(body);
 
-//     Logger::debug() << "Parsed CGI response with " << body.length()
-//                     << " bytes of content";
-//     return true;
-// }
+    Logger::debug() << "Parsed CGI response with " << body.length()
+                    << " bytes of content";
+    return true;
+}
 
 // // Step 10: Wait for process with timeout
 // bool CgiHandler::waitForProcess(int pid) {
@@ -435,35 +637,3 @@ const std::vector<std::string>& CgiHandler::buildEnvironment() {
 //     }
 // }
 
-const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
-    return cgiBin_;
-}
-
-const std::string CgiHandler::getFileExtension(const std::string& filename) {
-    size_t lastDot = filename.find_last_of('.');
-    if (lastDot == std::string::npos) {
-        return "";
-    }
-    return filename.substr(lastDot);
-}
-
-std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
-    std::string extension = getFileExtension(scriptPath);
-
-    std::map<std::string, std::string>::const_iterator it;
-    it = cgiBin_.find(extension);
-    if (it != cgiBin_.end()) {
-        Logger::debug() << "Found interpreter for " << extension << ": "
-                        << it->second;
-        return it->second;
-    }
-
-    Logger::debug() << "Extension " << extension << " not supported for CGI";
-    return "";
-}
-
-void CgiHandler::setDefaultCgiBin() {
-    cgiBin_[".py"] = "/usr/bin/python3";
-    cgiBin_[".sh"] = "/bin/bash";
-    cgiBin_[".php"] = "/usr/bin/php-cgi";
-}

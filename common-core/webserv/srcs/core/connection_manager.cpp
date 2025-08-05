@@ -126,6 +126,20 @@ void ConnectionManager::SetupPolling() {
         if (pfd.events != 0) {
             poll_fds_.push_back(pfd);
         }
+		
+		if (client->GetState() == ClientConnection::CGI_PROCESSING) {
+            int inputPipe = client->GetCgiInputPipe();
+            int outputPipe = client->GetCgiOutputPipe();
+            
+            if (inputPipe != -1) {
+                pollfd cgi_pfd = {inputPipe, POLLOUT, 0};
+                poll_fds_.push_back(cgi_pfd);
+            }
+            if (outputPipe != -1) {
+                pollfd cgi_pfd = {outputPipe, POLLIN, 0};
+                poll_fds_.push_back(cgi_pfd);
+            }
+        }
     }
 }
 
