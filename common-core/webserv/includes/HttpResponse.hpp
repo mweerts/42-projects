@@ -16,6 +16,7 @@ class HttpResponse {
     void        setContentType(const std::string& contentType);
     void        setConnection(const std::string& connection);
     void        setLastModified(const std::string& lastModified);
+    void        setLocation(const std::string& location);
     
     StatusCode  getStatusCode() const;
     std::string getServerName() const;
@@ -33,6 +34,7 @@ class HttpResponse {
     std::string _lastModified;
     std::string _connection;
     std::string _content;
+    std::string _location;
 
     void setDate(void);
 };

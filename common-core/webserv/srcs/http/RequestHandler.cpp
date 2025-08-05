@@ -63,11 +63,12 @@ void RequestHandler::handleRequest() {
         _response.setConnection("close");
     }
 
-    if (_response.getStatusCode() != HTTP_OK) {
+    if (_response.getStatusCode() != HTTP_OK &&
+        _response.getStatusCode() != HTTP_MOVED_PERMANENTLY) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
         const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
-        Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
+        // Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
         if (errorPage) {
             std::ifstream file((_rootPath + "/" + *errorPage).c_str());
             if (file.fail()) {
@@ -93,6 +94,7 @@ void RequestHandler::handleRequest() {
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
     Logger::debug() << "Sending response...";
+    Logger::debug() << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
 }
 
@@ -103,7 +105,14 @@ void RequestHandler::processRequest() {
     _internalUri = _request.getUri();
 	Logger::debug() << "processing request for uri: " << _internalUri;
     if (location) {
-        if (location->getAlias()) {
+        if (location->getReturn()) {
+            _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+            _response.setLocation("http://localhost:8080" +
+                                  urlDecode(*location->getReturn()));
+            _response.setContent(GetHtmlErrorPage(_response));
+            _response.setContentType("text/html");
+            return;
+        } else if (location->getAlias()) {
             _internalUri =
                 *location->getAlias() +
                 _request.getUri().substr((location->getName()).length());
@@ -125,13 +134,12 @@ void RequestHandler::processRequest() {
         else
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     } else if (method == "DELETE") {
-        processDeleteRequest();
-    } else {
         if (!location || (location && location->getMethodIsAllowed("DELETE")))
-            _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+            processDeleteRequest();
         else
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-    }
+    } else
+        _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
 void RequestHandler::processGetRequest() {
@@ -140,19 +148,19 @@ void RequestHandler::processGetRequest() {
 
     fullPath = _rootPath + _internalUri;
 
-    // IN PROGRESS
-    CgiHandler cgiHandler(_request);
-    if (cgiHandler.isCgiScript(_internalUri)) {
-        Logger::debug() << "Processing CGI script: " << _internalUri;
-        if (cgiHandler.executeCgiScript(_internalUri, _response)) {
-            Logger::debug() << "CGI script executed successfully";
-        } else {
-            Logger::error() << "CGI script execution failed";
-            _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        }
-		return;
-    }
-
+	    // IN PROGRESS
+		CgiHandler cgiHandler(_request);
+		if (cgiHandler.isCgiScript(_internalUri)) {
+			Logger::debug() << "Processing CGI script: " << _internalUri;
+			if (cgiHandler.executeCgiScript(_internalUri, _response)) {
+				Logger::debug() << "CGI script executed successfully";
+			} else {
+				Logger::error() << "CGI script execution failed";
+				_response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+			}
+			return;
+		}
+		
     if (isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             isReadable(fullPath + "/" + *location->getIndex())) {
@@ -199,73 +207,42 @@ void RequestHandler::processGetRequest() {
 }
 
 void RequestHandler::processPostRequest() {
-    std::string     fullPath;
-    const Location* location = _serverConfig.getLocation(_internalUri);
+    std::ofstream file;
+    std::string   fullPath = _rootPath + _internalUri;
 
-    fullPath = _rootPath + _internalUri;
-    if (isDirectory(fullPath)) {
-        if (location && location->getIndex() &&
-            isReadable(fullPath + "/" + *location->getIndex())) {
-            fullPath += "/" + *location->getIndex();
-        } else if (_serverConfig.getIndex() &&
-                   isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
-            fullPath += "/" + *_serverConfig.getIndex();
+    if (pathExist(fullPath) && isFile(fullPath)) {
+        _response.setStatusCode(HTTP_NO_CONTENT);
+        return;
+    } else {
+        file.open(fullPath.c_str(), std::ofstream::out | std::ofstream::trunc);
+        if (file.fail()) {
+            _response.setStatusCode(HTTP_FORBIDDEN);
+            return;
         }
-    }
-    if (!pathExist(fullPath)) {
-        _response.setStatusCode(HTTP_NOT_FOUND);
+        if (_request.getBodySize() == 0) {
+            _response.setStatusCode(HTTP_NO_CONTENT);
+            file.close();
+            return;
+        }
+        file << _request.readBodyAll();
+        file.close();
+        _response.setStatusCode(HTTP_CREATED);
         return;
     }
-    if (isDirectory(fullPath)) {
-        _response.setStatusCode(HTTP_FORBIDDEN);
-        return;
-    }
-    if (!isReadable(fullPath) || !isFile(fullPath)) {
-        _response.setStatusCode(HTTP_FORBIDDEN);
-        return;
-    }
-
-    // IN PROGRESS
-    CgiHandler cgiHandler(_request);
-    if (cgiHandler.isCgiScript(_internalUri)) {
-        Logger::debug() << "Processing CGI script via POST: " << fullPath;
-        
-        // if (cgiHandler.executeCgiScript(fullPath, _response)) {
-        //     Logger::debug() << "CGI script executed successfully";
-        //     return;
-        // } else {
-        //     Logger::error() << "CGI script execution failed";
-        //     _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        //     return;
-        // }
-    }
-    // END IN PROGRESS
-
-    // TODO handle file upload here on post resquest on "upload" directory
-    // TODO handle file upload here on post resquest on "upload" directory
-    // TODO handle file upload here on post resquest on "upload" directory
-
-    // For non-CGI POST requests, return 405 Method Not Allowed
-    _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
 }
 
 void RequestHandler::processDeleteRequest() {
-    std::string fullPath = _rootPath + "uploads" + _request.getUri();
+    std::string fullPath = _rootPath + _request.getUri();
 
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
-        return;
-    }
-    if (isDirectory(fullPath)) {
-        _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
     if (remove(fullPath.c_str()) != 0) {
         _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-    _response.setStatusCode(HTTP_OK);
-    _response.setContent("File deleted successfully.");
+    _response.setStatusCode(HTTP_NO_CONTENT);
 }
 
 void RequestHandler::generateErrorResponse(StatusCode         status_code,

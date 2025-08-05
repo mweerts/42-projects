@@ -1,5 +1,8 @@
 #include "HttpRequest.hpp"
 
+#include <cctype>   // pour isxdigit
+#include <cstdlib>  // pour atoi
+
 #include "Logger.hpp"
 #include <cstdlib>
 
@@ -27,14 +30,14 @@ HttpRequest& HttpRequest::operator=(const HttpRequest& other) {
         _version = other._version;
         _headers = other._headers;
         _request_tmp_file = other._request_tmp_file;
-		_body = other._body;
-		_body_start = other._body_start;
-		_body_length = other._body_length;
-		_body_is_file = other._body_is_file;
-		_body_read_pos = other._body_read_pos;
-		_body_reader_initialized = other._body_reader_initialized;
+        _body = other._body;
+        _body_start = other._body_start;
+        _body_length = other._body_length;
+        _body_is_file = other._body_is_file;
+        _body_read_pos = other._body_read_pos;
+        _body_reader_initialized = other._body_reader_initialized;
     }
-	return *this;
+    return *this;
 }
 
 HttpRequest::~HttpRequest() {
@@ -47,8 +50,48 @@ void HttpRequest::setMethod(const std::string& method) {
     _method = method;
 }
 
+std::string urlDecode(const std::string& encoded) {
+    std::string decoded;
+    decoded.reserve(encoded.length());
+
+    for (size_t i = 0; i < encoded.length(); ++i) {
+        if (encoded[i] == '%' && i + 2 < encoded.length()) {
+            char hex1 = encoded[i + 1];
+            char hex2 = encoded[i + 2];
+
+            if (isxdigit(hex1) && isxdigit(hex2)) {
+                int value = 0;
+                if (hex1 >= '0' && hex1 <= '9')
+                    value = (hex1 - '0') * 16;
+                else if (hex1 >= 'A' && hex1 <= 'F')
+                    value = (hex1 - 'A' + 10) * 16;
+                else if (hex1 >= 'a' && hex1 <= 'f')
+                    value = (hex1 - 'a' + 10) * 16;
+
+                if (hex2 >= '0' && hex2 <= '9')
+                    value += (hex2 - '0');
+                else if (hex2 >= 'A' && hex2 <= 'F')
+                    value += (hex2 - 'A' + 10);
+                else if (hex2 >= 'a' && hex2 <= 'f')
+                    value += (hex2 - 'a' + 10);
+
+                decoded += static_cast<char>(value);
+                i += 2;
+            } else {
+                decoded += encoded[i];
+            }
+        } else if (encoded[i] == '+') {
+            decoded += ' ';
+        } else {
+            decoded += encoded[i];
+        }
+    }
+
+    return decoded;
+}
+
 void HttpRequest::setUri(const std::string& uri) {
-    _uri = uri;
+    _uri = urlDecode(uri);
 }
 
 void HttpRequest::setVersion(const std::string& version) {
@@ -93,7 +136,7 @@ void HttpRequest::setRequestFilepath(const std::string& filepath) {
 }
 
 void HttpRequest::setBodyParams(const std::string& filepath, size_t start_pos,
-                              size_t length) {
+                                size_t length) {
     _request_tmp_file = filepath;
     _body_start = start_pos;
     _body_length = length;
@@ -227,7 +270,6 @@ size_t HttpRequest::getContentLength() const {
     return 0;
 }
 
-
 std::string HttpRequest::getContentType() const {
     std::map<std::string, std::string>::const_iterator it;
     it = _headers.find("Content-Type");
@@ -244,17 +286,17 @@ std::string HttpRequest::getContentType() const {
 }
 
 bool HttpRequest::shouldKeepAlive() const {
-	std::map<std::string, std::string>::const_iterator it;
-	it = _headers.find("Connection");
-	if (it != _headers.end()) {
-		if (it->second.find("close") != std::string::npos) {
-			return false;
-		}
-		if (it->second.find("keep-alive") != std::string::npos) {
-			return true;
-		}
-	}
-	return (_version == "HTTP/1.1");
+    std::map<std::string, std::string>::const_iterator it;
+    it = _headers.find("Connection");
+    if (it != _headers.end()) {
+        if (it->second.find("close") != std::string::npos) {
+            return false;
+        }
+        if (it->second.find("keep-alive") != std::string::npos) {
+            return true;
+        }
+    }
+    return (_version == "HTTP/1.1");
 }
 
 bool HttpRequest::isRequestChunked() const {
@@ -275,7 +317,7 @@ bool HttpRequest::isRequestChunked() const {
 void HttpRequest::reset() {
     _method.clear();
     _uri.clear();
-	_version = "HTTP/1.1";
+    _version = "HTTP/1.1";
     _headers.clear();
     _body.clear();
     _request_tmp_file.clear();
@@ -284,7 +326,7 @@ void HttpRequest::reset() {
     _body_is_file = false;
     _body_read_pos = 0;
     _body_reader_initialized = false;
-    
+
     if (_body_file_stream.is_open()) {
         _body_file_stream.close();
     }

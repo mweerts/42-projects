@@ -18,7 +18,7 @@ class HttpRequest {
     void setVersion(const std::string& version);
     void setHeader(const std::string& key, const std::string& value);
     void setBody(const std::string& body);
-	void setRequestFilepath(const std::string& filepath);
+    void setRequestFilepath(const std::string& filepath);
     void setBodyParams(const std::string& filepath, size_t start_pos,
                        size_t length);
 
@@ -30,20 +30,19 @@ class HttpRequest {
 
     // Headers utility getters
     const std::map<std::string, std::string>& getHeaders() const;
-    std::string getContentType() const;
-    size_t      getContentLength() const;
-    bool        shouldKeepAlive() const;
+    std::string                               getContentType() const;
+    size_t                                    getContentLength() const;
+    bool                                      shouldKeepAlive() const;
 
-
-	// Body reader methods
+    // Body reader methods
     bool readBodyChunk(std::string& chunk, size_t max_bytes = 1024) const;
     std::string readBodyAll() const;
     void        resetBodyReader() const;
 
     bool hasMoreBody() const;
     bool isRequestChunked() const;
-    
-    void reset(); // Reset the request for reuse by the same client
+
+    void reset();  // Reset the request for reuse by the same client
 
    private:
     std::string                        _method;
@@ -64,8 +63,10 @@ class HttpRequest {
 
     bool readBodyChunkFromMemory(std::string& chunk, size_t max_bytes) const;
     bool readBodyChunkFromFile(std::string& chunk, size_t max_bytes) const;
-};
 
+    // URL decoding utility
+};
+std::string   urlDecode(const std::string& encoded);
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
 
 #endif

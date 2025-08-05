@@ -41,6 +41,10 @@ void HttpResponse::setLastModified(const std::string& lastModified) {
     _lastModified = lastModified;
 }
 
+void HttpResponse::setLocation(const std::string& location) {
+    _location = location;
+}
+
 void HttpResponse::setDate(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -82,6 +86,8 @@ std::string HttpResponse::toString() {
     if (!_contentType.empty())
         response += "Content-Type: " + _contentType + "\r\n";
     response += "Content-Length: " + contentLengthStream.str() + "\r\n";
+    if (!_location.empty())
+        response += "Location: " + _location + "\r\n";
     if (!_lastModified.empty())
         response += "Last-Modified: " + _lastModified + "\r\n";
     if (!_connection.empty())
