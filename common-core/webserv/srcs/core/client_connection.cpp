@@ -94,12 +94,6 @@ bool ClientConnection::HandleEvent(short revents) {
             return HandleCgi();
             break;
         }
-
-        case CLOSING: {
-            Logger::debug() << "Closing connection...";
-            Close();
-            return false;
-        }
         // check if all errors are handled when reaching this
         case ERROR: return false;
         default: return false;
@@ -217,9 +211,11 @@ bool ClientConnection::HandleCgi() {
 bool ClientConnection::HandleWrite() {
     request_handler_->sendResponse(socket_fd_);  // should i check for errors?
 
+	Logger::debug() << "Response sent to client " << socket_fd_;
     if (request_handler_->shouldCloseConnection()) {
-        state_ = CLOSING;
-        return true;
+		Logger::debug() << "Connection should be closed";
+        Close();
+        return false;
     }
 
     // Resetting to handle the next request
@@ -281,7 +277,7 @@ bool ClientConnection::NeedsToWrite() const {
 }
 
 bool ClientConnection::ShouldClose() const {
-    return state_ == CLOSING || state_ == ERROR;
+    return state_ == ERROR;
 }
 
 int ClientConnection::GetSocketFd() const {

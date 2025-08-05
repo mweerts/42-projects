@@ -94,7 +94,7 @@ void RequestHandler::handleRequest() {
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
     Logger::debug() << "Sending response...";
-    Logger::debug() << responseString;
+    // Logger::debug() << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
 }
 

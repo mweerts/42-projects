@@ -30,7 +30,6 @@ class ClientConnection {
         READING_REQUEST,
         WRITING_RESPONSE,
         CGI_PROCESSING,
-        CLOSING,
         ERROR
     };
 
