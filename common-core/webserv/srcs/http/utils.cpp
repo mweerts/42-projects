@@ -100,13 +100,20 @@ std::string humanReadableSize(off_t size) {
     return std::string(buf);
 }
 
+std::string trimSlashes(const std::string& path) {
+    std::string trimmed = path;
+    while (trimmed.length() > 1 && trimmed[trimmed.length() - 1] == '/') {
+        trimmed.erase(trimmed.length() - 1);
+    }
+    return trimmed;
+}
+
 std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     std::ostringstream       oss;
-    std::string              path = root + uri;
+    std::string              path = trimSlashes(root) + "/" + trimSlashes(uri);
     std::vector<std::string> files;
     std::vector<std::string> dirs;
 
-    
     oss << "<html><head><title>Index of " << uri << "</title></head>"
         << "<body><h1>Index of " << uri << "</h1><hr><pre>";
 
@@ -119,7 +126,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
             std::string name(entry->d_name);
             if (name == "." || name == "..")
                 continue;
-            std::string fullPath = path  + name;
+            std::string fullPath = path + "/" + trimSlashes(name);
             struct stat st;
             if (stat(fullPath.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
                 dirs.push_back(name);
@@ -136,13 +143,14 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     for (size_t i = 0; i < dirs.size(); ++i) {
         std::string name = dirs[i];
         std::string croppedName = name;
-        std::string fullPath = path + "/" + name;
+        std::string fullPath = path + "/" + trimSlashes(name);
 
         if (croppedName.length() > 50) {
             croppedName = croppedName.substr(0, 47);
             croppedName.append("..>");
         }
-        oss << "<a href=\"" << name << "/\">" << croppedName;
+        oss << "<a href=\"" << trimSlashes(uri) << "/" << trimSlashes(name)
+            << "/\">" << croppedName;
         if (croppedName.length() < 50)
             oss << "/";
         oss << "</a>";
@@ -156,15 +164,16 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     for (size_t i = 0; i < files.size(); ++i) {
         std::string name = files[i];
         std::string croppedName = name;
-        std::string fullPath = path + name;
+        std::string fullPath = path + "/" + trimSlashes(name);
 
         if (croppedName.length() > 50) {
             croppedName = croppedName.substr(0, 47);
             croppedName.append("..>");
         }
-        
+
         Logger::debug() << "Adding file: " << fullPath;
-        oss << "<a href=\"" << name << "\">" << croppedName << "</a>"
+        oss << "<a href=\"" << trimSlashes(uri) << "/" << trimSlashes(name)
+            << "\">" << croppedName << "</a>"
             << std::string(51 - croppedName.length(), ' ')
             << getLastModifiedTime(fullPath) << std::setw(8)
             << humanReadableSize(getFileSize(fullPath)) << "\n";
