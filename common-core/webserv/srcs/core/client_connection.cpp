@@ -157,11 +157,15 @@ bool ClientConnection::HandleRead() {
 bool ClientConnection::HandleWrite() {
     request_handler_->sendResponse(socket_fd_);  // should i check for errors?
 
+	Logger::debug() << "Response sent to client " << socket_fd_;
     if (request_handler_->shouldCloseConnection()) {
+		Logger::debug() << "Connection should be closed";
         state_ = CLOSING;
+		Close();
         return true;
     }
 
+	Logger::debug() << "Resetting to handle the next request";
     // Resetting to handle the next request
     delete request_handler_;
     request_handler_ = NULL;
@@ -197,7 +201,7 @@ void ClientConnection::UpdateActivity() {
 }
 
 bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (current_request_.shouldKeepAlive()) {
+    if (current_request_.shouldKeepAlive() && state_ != CLOSING) {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
