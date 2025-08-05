@@ -25,7 +25,7 @@ class RequestHandler;
 
 class ClientConnection {
    public:
-    enum State { READING_REQUEST, WRITING_RESPONSE, CLOSING, ERROR };
+    enum State { READING_REQUEST, WRITING_RESPONSE, ERROR };
 
    public:
     explicit ClientConnection(int socket_fd, const ServerConfig& server_config);
