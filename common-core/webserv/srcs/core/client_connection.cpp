@@ -80,6 +80,7 @@ bool ClientConnection::HandleEvent(short revents) {
 
         case CLOSING: {
             Logger::debug() << "Closing connection...";
+			Close();
             return false;
         }
         // check if all errors are handled when reaching this
