@@ -71,7 +71,7 @@ void RequestHandler::handleRequest() {
         std::ostringstream oss;
         oss << _response.getStatusCode();
         const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
-        Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
+        // Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
         if (errorPage) {
             std::ifstream file((_rootPath + "/" + *errorPage).c_str());
             if (file.fail()) {
@@ -97,6 +97,7 @@ void RequestHandler::handleRequest() {
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
     Logger::debug() << "Sending response...";
+    Logger::debug() << responseString;
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
 }
 
@@ -108,11 +109,10 @@ void RequestHandler::processRequest() {
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
-            _response.setLocation(
-                "http://localhost:8080" + urlDecode(*location->getReturn()));
+            _response.setLocation("http://localhost:8080" +
+                                  urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
-            Logger::debug() << "RESPONSE :" <<  _response.toString();
             return;
         } else if (location->getAlias()) {
             _internalUri =
@@ -136,13 +136,13 @@ void RequestHandler::processRequest() {
         else
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     } else if (method == "DELETE") {
-        processDeleteRequest();
-    } else {
         if (!location || (location && location->getMethodIsAllowed("DELETE")))
-            _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+            processDeleteRequest();
         else
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     }
+    else
+        _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
 void RequestHandler::processGetRequest() {
@@ -193,25 +193,43 @@ void RequestHandler::processGetRequest() {
     file.close();
 }
 
-void RequestHandler::processPostRequest() {}
+void RequestHandler::processPostRequest() {
+    std::ofstream file;
+    std::string   fullPath = _rootPath + _internalUri;
+
+    if (pathExist(fullPath) && isFile(fullPath)) {
+        _response.setStatusCode(HTTP_NO_CONTENT);
+        return;
+    } else {
+        file.open(fullPath.c_str(), std::ofstream::out | std::ofstream::trunc);
+        if (file.fail()) {
+            _response.setStatusCode(HTTP_FORBIDDEN);
+            return;
+        }
+        if (_request.getBodySize() == 0) {
+            _response.setStatusCode(HTTP_NO_CONTENT);
+            file.close();
+            return;
+        }
+        file << _request.readBodyAll();
+        file.close();
+        _response.setStatusCode(HTTP_CREATED);
+        return;
+    }
+}
 
 void RequestHandler::processDeleteRequest() {
-    std::string fullPath = _rootPath + "uploads" + _request.getUri();
+    std::string fullPath = _rootPath + _request.getUri();
 
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
-        return;
-    }
-    if (isDirectory(fullPath)) {
-        _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
     if (remove(fullPath.c_str()) != 0) {
         _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-    _response.setStatusCode(HTTP_OK);
-    _response.setContent("File deleted successfully.");
+    _response.setStatusCode(HTTP_NO_CONTENT);
 }
 
 void RequestHandler::generateErrorResponse(StatusCode         status_code,

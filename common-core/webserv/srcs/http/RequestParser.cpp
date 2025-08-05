@@ -58,6 +58,7 @@ void RequestParser::cleanup() {
 
 RequestParser::Status RequestParser::parse(const char* buffer,
                                            size_t      buffer_size) {
+    Logger::debug() << "Parsing : " << buffer;
     if (!buffer || buffer_size == 0) {
         Logger::error() << "Invalid buffer data";
         setError(HTTP_BAD_REQUEST);
