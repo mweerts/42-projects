@@ -140,8 +140,7 @@ void RequestHandler::processRequest() {
             processDeleteRequest();
         else
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-    }
-    else
+    } else
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
