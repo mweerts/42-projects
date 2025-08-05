@@ -29,6 +29,7 @@
 #include "../http/RequestHandler.hpp"
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
+#include "../handlers/cgi_handler.hpp"
 
 ClientConnection::ClientConnection(int                 socket_fd,
                                    const ServerConfig& server_config)
@@ -37,6 +38,7 @@ ClientConnection::ClientConnection(int                 socket_fd,
       last_activity_(time(0)),
       request_parser_(NULL),
       request_handler_(NULL),
+	  cgi_process_(NULL),
       state_(READING_REQUEST),
       is_closed_(false) {
     UpdateActivity();
@@ -54,6 +56,7 @@ ClientConnection::~ClientConnection() {
         delete request_handler_;
         request_handler_ = NULL;
     }
+	// cleanupCgi();
     Close();
 }
 

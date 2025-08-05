@@ -144,7 +144,7 @@ void RequestHandler::processGetRequest() {
     CgiHandler cgiHandler(_request);
     if (cgiHandler.isCgiScript(_internalUri)) {
         Logger::debug() << "Processing CGI script: " << _internalUri;
-        if (cgiHandler.executeCgiScript(fullPath, _response)) {
+        if (cgiHandler.executeCgiScript(_internalUri, _response)) {
             Logger::debug() << "CGI script executed successfully";
         } else {
             Logger::error() << "CGI script execution failed";

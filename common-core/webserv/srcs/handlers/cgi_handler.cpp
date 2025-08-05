@@ -23,6 +23,7 @@
 
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
+#include "cgi_process.cpp"
 #include "lib/file_utils.hpp"
 
 // static init
@@ -77,47 +78,6 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
     Logger::debug() << "CGI bin initialized successfully";
 }
 
-bool CgiHandler::executeCgiScript(const std::string& scriptPath,
-                                  HttpResponse&      response) {
-    Logger::debug() << "Executing CGI script: " << scriptPath;
-
-	(void)scriptPath;
-	(void)response;
-
-    // int childPid, inputPipe, outputPipe;
-
-    // Create process
-    // if (!createProcess(scriptPath, childPid, inputPipe, outputPipe)) {
-    //     Logger::error() << "Failed to create CGI process";
-    //     return false;
-    // }
-
-    // // Communicate with process
-    // bool success = communicateWithProcess(inputPipe, outputPipe, response);
-	bool success = true;
-
-    // // Wait for process to finish
-    // if (!waitForProcess(childPid)) {
-    //     Logger::error() << "CGI process failed or timed out";
-    //     cleanupProcess(childPid);
-    //     return false;
-    // }
-
-    // cleanupProcess(childPid);
-
-    // if (success) {
-    //     Logger::debug() << "CGI script executed successfully";
-    // } else {
-    //     Logger::error() << "Failed to process CGI output";
-    // }
-
-    return success;
-}
-
-const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
-    return cgiBin_;
-}
-
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = cgiBinPath_ + uri;
 
@@ -135,27 +95,141 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     return lib::isExecutable(it->second);
 }
 
-const std::string CgiHandler::getFileExtension(const std::string& filename) {
-    size_t lastDot = filename.find_last_of('.');
-    if (lastDot == std::string::npos) {
-        return "";
+bool CgiHandler::executeCgiScript(const std::string& scriptPath,
+                                  HttpResponse&      response) {
+    std::string path = cgiBinPath_ + scriptPath;
+    (void)response;
+
+    int childPid = -1;
+    int inputPipe = -1;
+    int outputPipe = -1;
+
+    if (!createProcess(path, childPid, inputPipe, outputPipe)) {
+        Logger::error() << "Failed to create CGI process";
+        return false;
     }
-    return filename.substr(lastDot);
+
+    // // Communicate with process
+    // bool success = communicateWithProcess(inputPipe, outputPipe, response);
+    bool success = true;
+
+    // // Wait for process to finish
+    // if (!waitForProcess(childPid)) {
+    //     Logger::error() << "CGI process failed or timed out";
+    //     cleanupProcess(childPid);
+    //     return false;
+    // }
+
+    // cleanupProcess(childPid);
+
+    if (success) {
+        Logger::debug() << "CGI script executed successfully";
+    } else {
+        Logger::error() << "Failed to process CGI output";
+    }
+
+    return success;
 }
 
-std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
-    std::string extension = getFileExtension(scriptPath);
+// Step 7: Create process and set up communication
+bool CgiHandler::createProcess(const std::string& scriptPath, int& childPid,
+                               int& inputPipe, int& outputPipe) {
+    // Create pipes for communication
+    int inputPipeFds[2] = {-1, -1};
+    int outputPipeFds[2] = {-1, -1};
 
-    std::map<std::string, std::string>::const_iterator it;
-    it = cgiBin_.find(extension);
-    if (it != cgiBin_.end()) {
-        Logger::debug() << "Found interpreter for " << extension << ": "
-                        << it->second;
-        return it->second;
+    if (pipe(inputPipeFds) == -1) {
+        Logger::error() << "Failed to create input pipe for CGI process";
+        return false;
     }
 
-    Logger::debug() << "Extension " << extension << " not supported for CGI";
-    return "";
+    if (pipe(outputPipeFds) == -1) {
+        Logger::error() << "Failed to create output pipe for CGI process";
+        close(inputPipeFds[0]);
+        close(inputPipeFds[1]);
+        return false;
+    }
+
+    // Fork the process
+    childPid = fork();
+    if (childPid == -1) {
+        Logger::error() << "Failed to fork CGI process";
+        close(inputPipeFds[0]);
+        close(inputPipeFds[1]);
+        close(outputPipeFds[0]);
+        close(outputPipeFds[1]);
+        return false;
+    }
+
+    if (childPid == 0) {
+        // Child process - execute CGI script
+        // Close unused pipe ends
+        close(inputPipeFds[1]);   // Close write end of input pipe
+        close(outputPipeFds[0]);  // Close read end of output pipe
+
+        // Redirect stdin/stdout
+        if (dup2(inputPipeFds[0], STDIN_FILENO) == -1 ||
+            dup2(outputPipeFds[1], STDOUT_FILENO) == -1) {
+            exit(1);
+        }
+
+        // Close original pipe ends
+        close(inputPipeFds[0]);
+        close(outputPipeFds[1]);
+
+        // Change to script directory (requirement 8)
+        std::string scriptDir =
+            scriptPath.substr(0, scriptPath.find_last_of('/'));
+        if (!scriptDir.empty() && chdir(scriptDir.c_str()) != 0) {
+            // Cannot use Logger in child process after fork
+            exit(1);
+        }
+
+        // Prepare environment
+        std::vector<std::string> envVars = buildEnvironment();
+        std::vector<const char*> envArray;
+        envArray.reserve(envVars.size() + 1);
+        for (std::vector<std::string>::const_iterator it = envVars.begin();
+             it != envVars.end(); ++it) {
+            envArray.push_back(it->c_str());
+        }
+        envArray.push_back(NULL);  // NULL terminator
+
+        // Get interpreter
+        std::string interpreter = getCgiInterpreter(scriptPath);
+
+        // Prepare arguments (requirement 7: file as first argument)
+        std::vector<const char*> args;
+        if (!interpreter.empty()) {
+            args.reserve(3);
+            args.push_back(interpreter.c_str());
+        } else {
+            args.reserve(2);
+        }
+        args.push_back(scriptPath.c_str());  // Script path as first argument
+        args.push_back(NULL);                // NULL terminator
+
+        // Execute the script
+        if (!interpreter.empty()) {
+            execve(interpreter.c_str(), const_cast<char* const*>(&args[0]),
+                   const_cast<char* const*>(&envArray[0]));
+        } else {
+            execve(scriptPath.c_str(), const_cast<char* const*>(&args[0]),
+                   const_cast<char* const*>(&envArray[0]));
+        }
+
+        // If we get here, exec failed
+        exit(1);
+    } else {
+        // Parent process - set up communication
+        close(inputPipeFds[0]);   // Close read end of input pipe
+        close(outputPipeFds[1]);  // Close write end of output pipe
+
+        inputPipe = inputPipeFds[1];    // Write to child's stdin
+        outputPipe = outputPipeFds[0];  // Read from child's stdout
+
+        return true;
+    }
 }
 
 // // Step 5: Build query string from request
@@ -169,137 +243,38 @@ std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
 // }
 
 // // Step 6: Build environment variables for CGI script
-// std::vector<std::string> CgiHandler::buildEnvironment() {
-//     std::vector<std::string> env;
+const std::vector<std::string>& CgiHandler::buildEnvironment() {
+    std::vector<std::string> env;
 
-//     // Standard CGI environment variables
-//     env.push_back("REQUEST_METHOD=" + request_.getMethod());
-//     env.push_back("QUERY_STRING=" + buildQueryString());
-//     env.push_back("CONTENT_LENGTH=" +
-//                   std::to_string(request_.getBody().length()));
-//     env.push_back("CONTENT_TYPE=" + request_.getContentType());
-//     env.push_back("SCRIPT_NAME=" + request_.getUri());
-//     env.push_back("PATH_INFO=" + request_.getUri());  // Full path as
-//     requested env.push_back("SERVER_NAME=localhost");
-//     env.push_back("SERVER_PORT=8080");  // Default port
-//     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
-//     env.push_back("SERVER_SOFTWARE=webserv/1.0");
+    // Standard CGI environment variables
+    env.push_back("REQUEST_METHOD=" + request_.getMethod());
+    env.push_back("QUERY_STRING=" + buildQueryString());
+    env.push_back("CONTENT_LENGTH=" +
+                  std::to_string(request_.getBody().length()));
+    env.push_back("CONTENT_TYPE=" + request_.getContentType());
+    env.push_back("SCRIPT_NAME=" + request_.getUri());
+    env.push_back("PATH_INFO=" + request_.getUri());  // Full path as
+    requested env.push_back("SERVER_NAME=localhost");
+    env.push_back("SERVER_PORT=8080");  // Default port
+    env.push_back("SERVER_PROTOCOL=HTTP/1.1");
+    env.push_back("SERVER_SOFTWARE=webserv/1.0");
 
-//     // HTTP headers as environment variables
-//     const std::map<std::string, std::string>& headers =
-//     request_.getHeaders(); for (std::map<std::string,
-//     std::string>::const_iterator it =
-//              headers.begin();
-//          it != headers.end(); ++it) {
-//         std::string envName = "HTTP_" + it->first;
-//         std::transform(envName.begin(), envName.end(), envName.begin(),
-//                        ::toupper);
-//         std::replace(envName.begin(), envName.end(), '-', '_');
-//         env.push_back(envName + "=" + it->second);
-//     }
+    // HTTP headers as environment variables
+    const std::map<std::string, std::string>& headers = request_.getHeaders();
+    for (std::map<std::string, std::string>::const_iterator it =
+             headers.begin();
+         it != headers.end(); ++it) {
+        std::string envName = "HTTP_" + it->first;
+        std::transform(envName.begin(), envName.end(), envName.begin(),
+                       ::toupper);
+        std::replace(envName.begin(), envName.end(), '-', '_');
+        env.push_back(envName + "=" + it->second);
+    }
 
-//     Logger::debug() << "Built " << env.size()
-//                     << " environment variables for CGI";
-//     return env;
-// }
-
-// // Step 7: Create process and set up communication
-// bool CgiHandler::createProcess(const std::string& scriptPath, int& childPid,
-//                                int& inputPipe, int& outputPipe) {
-//     // Create pipes for communication
-//     int inputPipeFds[2];
-//     int outputPipeFds[2];
-
-//     if (pipe(inputPipeFds) == -1 || pipe(outputPipeFds) == -1) {
-//         Logger::error() << "Failed to create pipes for CGI process";
-//         return false;
-//     }
-
-//     // Fork the process
-//     childPid = fork();
-//     if (childPid == -1) {
-//         Logger::error() << "Failed to fork CGI process";
-//         close(inputPipeFds[0]);
-//         close(inputPipeFds[1]);
-//         close(outputPipeFds[0]);
-//         close(outputPipeFds[1]);
-//         return false;
-//     }
-
-//     if (childPid == 0) {
-//         // Child process - execute CGI script
-//         try {
-//             // Close unused pipe ends
-//             close(inputPipeFds[1]);   // Close write end of input pipe
-//             close(outputPipeFds[0]);  // Close read end of output pipe
-
-//             // Redirect stdin/stdout
-//             dup2(inputPipeFds[0], STDIN_FILENO);
-//             dup2(outputPipeFds[1], STDOUT_FILENO);
-
-//             // Close original pipe ends
-//             close(inputPipeFds[0]);
-//             close(outputPipeFds[1]);
-
-//             // Change to script directory (requirement 8)
-//             std::string scriptDir =
-//                 scriptPath.substr(0, scriptPath.find_last_of('/'));
-//             if (!scriptDir.empty() && chdir(scriptDir.c_str()) != 0) {
-//                 Logger::error()
-//                     << "Failed to change directory to: " << scriptDir;
-//             }
-
-//             // Prepare environment
-//             std::vector<std::string> envVars = buildEnvironment();
-//             std::vector<const char*> envArray;
-//             for (std::vector<std::string>::iterator it = envVars.begin();
-//                  it != envVars.end(); ++it) {
-//                 envArray.push_back(it->c_str());
-//             }
-//             envArray.push_back(NULL);  // NULL terminator
-
-//             // Get interpreter
-//             std::string interpreter = getCgiInterpreter(scriptPath);
-
-//             // Prepare arguments (requirement 7: file as first argument)
-//             std::vector<const char*> args;
-//             if (!interpreter.empty()) {
-//                 args.push_back(interpreter.c_str());
-//             }
-//             args.push_back(
-//                 scriptPath.c_str());  // Script path as first argument
-//             args.push_back(NULL);     // NULL terminator
-
-//             // Execute the script
-//             if (!interpreter.empty()) {
-//                 execve(interpreter.c_str(),
-//                        const_cast<char* const*>(args.data()),
-//                        const_cast<char* const*>(envArray.data()));
-//             } else {
-//                 execve(scriptPath.c_str(),
-//                        const_cast<char* const*>(args.data()),
-//                        const_cast<char* const*>(envArray.data()));
-//             }
-
-//             // If we get here, exec failed
-//             Logger::error() << "Failed to execute CGI script: " <<
-//             scriptPath; exit(1);
-
-//         } catch (const std::exception& e) {
-//             Logger::error() << "Exception in CGI child process: " <<
-//             e.what(); exit(1);
-//         }
-//     } else {
-//         // Parent process - set up communication
-//         close(inputPipeFds[0]);   // Close read end of input pipe
-//         close(outputPipeFds[1]);  // Close write end of output pipe
-
-//         inputPipe = inputPipeFds[1];    // Write to child's stdin
-//         outputPipe = outputPipeFds[0];  // Read from child's stdout
-
-//         return true;
-//     }
-// }
+    Logger::debug() << "Built " << env.size()
+                    << " environment variables for CGI";
+    return env;
+}
 
 // // Step 8: Communicate with the CGI process
 // bool CgiHandler::communicateWithProcess(int inputPipe, int outputPipe,
@@ -459,6 +434,33 @@ std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
 //         waitpid(pid, &status, 0);
 //     }
 // }
+
+const std::map<std::string, std::string>& CgiHandler::getCgiBin() const {
+    return cgiBin_;
+}
+
+const std::string CgiHandler::getFileExtension(const std::string& filename) {
+    size_t lastDot = filename.find_last_of('.');
+    if (lastDot == std::string::npos) {
+        return "";
+    }
+    return filename.substr(lastDot);
+}
+
+std::string CgiHandler::getCgiInterpreter(const std::string& scriptPath) {
+    std::string extension = getFileExtension(scriptPath);
+
+    std::map<std::string, std::string>::const_iterator it;
+    it = cgiBin_.find(extension);
+    if (it != cgiBin_.end()) {
+        Logger::debug() << "Found interpreter for " << extension << ": "
+                        << it->second;
+        return it->second;
+    }
+
+    Logger::debug() << "Extension " << extension << " not supported for CGI";
+    return "";
+}
 
 void CgiHandler::setDefaultCgiBin() {
     cgiBin_[".py"] = "/usr/bin/python3";

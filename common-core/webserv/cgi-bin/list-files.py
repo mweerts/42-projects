@@ -11,7 +11,7 @@ print("Status: 200 OK")
 print()  # Empty line separates headers from body
 
 # Define uploads directory path
-uploads_dir = "uploads"
+uploads_dir = "/Users/lucaslebugle/Library/CloudStorage/OneDrive-Personal/Documents/42/webserv/www/uploads"
 
 # Initialize response data
 response_data = {

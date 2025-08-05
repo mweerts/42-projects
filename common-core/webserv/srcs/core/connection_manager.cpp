@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   connection_manager.cpp                              :+:      :+:    :+:   */
+/*   connection_manager.cpp                              :+:      :+:    :+: */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -24,11 +24,12 @@
 #include <cstring>
 #include <iostream>
 
+#include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
-#include "../parsing/GlobalConfig.hpp"
 
-ConnectionManager::ConnectionManager() : running_(false), shutdown_flag_(NULL) {}
+ConnectionManager::ConnectionManager()
+    : running_(false), shutdown_flag_(NULL) {}
 
 ConnectionManager::~ConnectionManager() {
     for (ClientIterator it = clients_.begin(); it != clients_.end(); ++it) {
@@ -39,10 +40,11 @@ ConnectionManager::~ConnectionManager() {
 
 void ConnectionManager::Run() {
     running_ = true;
-    
+
     while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
         SetupPolling();
-        int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
+        int ready = poll(poll_fds_.data(), poll_fds_.size(),
+                         100);  // timeout for event in ms
 
         if (ready < 0 && errno != EINTR) {
             Logger::critical() << "Poll error: " << strerror(errno);
@@ -61,7 +63,7 @@ void ConnectionManager::Run() {
 
             --ready;
             int fd = poll_fds_[i].fd;
-            
+
             if (IsServerSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
@@ -69,12 +71,12 @@ void ConnectionManager::Run() {
             }
         }
     }
-	std::cout << "\n";
+    std::cout << "\n";
 }
 
 void ConnectionManager::Stop() {
     running_ = false;
-    
+
     while (!clients_.empty()) {
         RemoveClient(clients_.begin()->first);
     }
@@ -93,7 +95,8 @@ void ConnectionManager::AddServer(TcpServer* server) {
 void ConnectionManager::SetupPolling() {
     poll_fds_.clear();
 
-    for (ServerConstIterator it = servers_.begin(); it != servers_.end(); ++it) {
+    for (ServerConstIterator it = servers_.begin(); it != servers_.end();
+         ++it) {
         pollfd pfd;
         pfd.fd = it->first;
         pfd.events = POLLIN;
@@ -101,7 +104,8 @@ void ConnectionManager::SetupPolling() {
         poll_fds_.push_back(pfd);
     }
 
-    for (ClientConstIterator it = clients_.begin(); it != clients_.end(); ++it) {
+    for (ClientConstIterator it = clients_.begin(); it != clients_.end();
+         ++it) {
         ClientConnection* client = it->second;
 
         if (client->ShouldClose()) {
@@ -127,12 +131,13 @@ void ConnectionManager::SetupPolling() {
 
 void ConnectionManager::HandleNewConnection(int listening_fd) {
     struct sockaddr_in client_addr;
-    socklen_t clen = sizeof(client_addr);
+    socklen_t          clen = sizeof(client_addr);
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
-    
+
     if (client_fd < 0) {
         if (errno != EWOULDBLOCK && errno != EAGAIN) {
-            Logger::warning() << "Failed to accept connection: " << strerror(errno);
+            Logger::warning()
+                << "Failed to accept connection: " << strerror(errno);
         }
         return;
     }
@@ -155,7 +160,7 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
-	// only for info logging
+    // only for info logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
@@ -196,8 +201,9 @@ void ConnectionManager::RemoveClient(int client_fd) {
 void ConnectionManager::CleanupTimedOutClients() {
     std::vector<int> clients_to_close;
 
-    for (ClientConstIterator it = clients_.begin(); it != clients_.end(); ++it) {
-        int client_fd = it->first;
+    for (ClientConstIterator it = clients_.begin(); it != clients_.end();
+         ++it) {
+        int               client_fd = it->first;
         ClientConnection* client = it->second;
 
         if (client->IsTimedOut()) {
@@ -221,7 +227,7 @@ const ServerConfig& ConnectionManager::GetServerConfig(int fd) const {
     if (it != servers_.end()) {
         return it->second->GetConfig();
     }
-    
+
     Logger::critical() << "No server config found for fd: " << fd;
     static ServerConfig dummy;
     return dummy;
@@ -233,8 +239,8 @@ size_t ConnectionManager::GetActiveClientCount() const {
 
 bool ConnectionManager::IsRunning() const {
     return running_;
-} 
+}
 
 void ConnectionManager::SetShutdownFlag(shutdown_flag_t* shutdown_flag) {
     shutdown_flag_ = shutdown_flag;
-} 
+}

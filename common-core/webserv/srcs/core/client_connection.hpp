@@ -22,10 +22,17 @@
 
 class ServerConfig;
 class RequestHandler;
+struct CgiProcess;
 
 class ClientConnection {
    public:
-    enum State { READING_REQUEST, WRITING_RESPONSE, CLOSING, ERROR };
+    enum State {
+        READING_REQUEST,
+        WRITING_RESPONSE,
+        CGI_PROCESSING,
+        CLOSING,
+        ERROR
+    };
 
    public:
     explicit ClientConnection(int socket_fd, const ServerConfig& server_config);
@@ -54,7 +61,9 @@ class ClientConnection {
     RequestParser*  request_parser_;
     RequestHandler* request_handler_;
     HttpRequest     current_request_;
-    bool            request_ready_;
+    CgiProcess*     cgi_process_;
+
+    bool request_ready_;
 
     // State management
     State state_;

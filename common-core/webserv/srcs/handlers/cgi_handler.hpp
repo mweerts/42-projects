@@ -27,20 +27,35 @@
 
 class ServerConfig;
 struct CgiBin;
+class CgiProcess;
 
 class CgiHandler {
    public:
     CgiHandler(const HttpRequest& request);
     ~CgiHandler();
 
-    static void initializeCgiBin(const CgiBin& cgiBin);  // call at startup
+    // to call at server startup
+    static void initializeCgiBin(const CgiBin& cgiBin);
 
     bool executeCgiScript(const std::string& scriptPath,
                           HttpResponse&      response);
     bool isCgiScript(const std::string& uri);
     const std::map<std::string, std::string>& getCgiBin() const;
 
+    bool startAsyncCgi(const std::string& scriptPath);
+    bool processAsyncCgi(HttpResponse& response);
+    bool isAsyncCgiComplete() const;
+    void cleanupAsyncCgi();
+
+    // Getters for polling
+    int  getInputPipe() const;
+    int  getOutputPipe() const;
+    bool isProcessing() const;
+
    private:
+    static const int CGI_TIMEOUT_SECONDS = 30;
+
+    CgiProcess*        async_process_;
     const HttpRequest& request_;
     static std::string cgiScriptPath_;
 
@@ -49,9 +64,10 @@ class CgiHandler {
     static std::string                        cgiBinPath_;
     static bool                               cgiBinInitialized_;
 
+   private:
     // Environment setup
-    std::vector<std::string> buildEnvironment();
-    std::string              buildQueryString();
+    const std::vector<std::string>& buildEnvironment();
+    std::string                     buildQueryString();
 
     // Process management
     bool createProcess(const std::string& scriptPath, int& childPid,
@@ -66,10 +82,12 @@ class CgiHandler {
     const std::string getFileExtension(const std::string& filePath);
     void              cleanupProcess(int pid);
 
-    // Timeout handling
-    static const int CGI_TIMEOUT_SECONDS = 30;
-    bool             waitForProcess(int pid);
+    bool startCgiProcess(const std::string& scriptPath);
+    bool processCgiIO();
+    void buildCgiResponse(HttpResponse& response);
 
+    // Timeout handling
+    bool waitForProcess(int pid);
     void setDefaultCgiBin();
 };
 
