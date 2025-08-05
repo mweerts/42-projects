@@ -104,10 +104,6 @@ void ConnectionManager::SetupPolling() {
     for (ClientConstIterator it = clients_.begin(); it != clients_.end(); ++it) {
         ClientConnection* client = it->second;
 
-        if (client->ShouldClose()) {
-            continue;
-        }
-
         pollfd pfd;
         pfd.fd = it->first;
         pfd.events = 0;

@@ -77,13 +77,6 @@ bool ClientConnection::HandleEvent(short revents) {
                 return HandleWrite();
             }
             break;
-
-        case CLOSING: {
-            Logger::debug() << "Closing connection...";
-			Close();
-            return false;
-        }
-        // check if all errors are handled when reaching this
         case ERROR: return false;
         default: return false;
     }
@@ -160,12 +153,10 @@ bool ClientConnection::HandleWrite() {
 	Logger::debug() << "Response sent to client " << socket_fd_;
     if (request_handler_->shouldCloseConnection()) {
 		Logger::debug() << "Connection should be closed";
-        state_ = CLOSING;
-		Close();
-        return true;
+        Close();
+        return false;
     }
 
-	Logger::debug() << "Resetting to handle the next request";
     // Resetting to handle the next request
     delete request_handler_;
     request_handler_ = NULL;
@@ -201,7 +192,7 @@ void ClientConnection::UpdateActivity() {
 }
 
 bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (current_request_.shouldKeepAlive() && state_ != CLOSING) {
+    if (current_request_.shouldKeepAlive()) {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
@@ -218,7 +209,7 @@ bool ClientConnection::NeedsToWrite() const {
 }
 
 bool ClientConnection::ShouldClose() const {
-    return state_ == CLOSING || state_ == ERROR;
+    return state_ == ERROR;
 }
 
 int ClientConnection::GetSocketFd() const {
