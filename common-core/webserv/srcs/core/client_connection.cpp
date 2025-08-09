@@ -153,24 +153,6 @@ bool ClientConnection::HandleRead() {
 
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
-
-            // In Progess
-            // if (request_handler_->isCgiRequest()) {
-            //     Logger::debug()
-            //         << "CGI request detected, starting async processing";
-            //     cgi_handler_ = new CgiHandler(current_request_);
-            //     if (cgi_handler_->startAsyncCgi(
-            //             request_handler_->getCgiScriptPath())) {
-            //         state_ = CGI_PROCESSING;
-            //         return true;
-            //     } else {
-            //         Logger::error() << "Failed to start async CGI process";
-            //         cleanupCgi();
-            //         state_ = ERROR;
-            //         return false;
-            //     }
-            // }
-
             request_handler_->handleRequest();
 
             return true;

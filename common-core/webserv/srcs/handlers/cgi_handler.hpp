@@ -47,6 +47,9 @@ class CgiHandler {
     bool isAsyncCgiComplete() const;
     void cleanupAsyncCgi();
 
+    // Utility to resolve the absolute script path from a request URI
+    std::string resolveScriptPath(const std::string& uri) const;
+
     int  getInputPipe() const;
     int  getOutputPipe() const;
     bool isProcessing() const;
@@ -54,8 +57,8 @@ class CgiHandler {
    private:
     static const int CGI_TIMEOUT_SECONDS = 30;
 
-    CgiProcess*        async_process_;
     const HttpRequest& request_;
+    CgiProcess*        async_process_;
     static std::string cgiScriptPath_;
 
     // initialized at startup
@@ -65,8 +68,8 @@ class CgiHandler {
 
    private:
     // Environment setup
-    const std::vector<std::string>& buildEnvironment();
-    std::string                     buildQueryString();
+    const std::vector<std::string> buildEnvironment();
+    std::string                    buildQueryString();
 
     // Process management
     bool createProcess(const std::string& scriptPath, int& childPid,
@@ -86,7 +89,7 @@ class CgiHandler {
     void buildCgiResponse(HttpResponse& response);
 
     // Timeout handling
-	bool isTimedOut() const;
+    bool isTimedOut() const;
     bool waitForProcess(int pid);
     void setDefaultCgiBin();
 };
