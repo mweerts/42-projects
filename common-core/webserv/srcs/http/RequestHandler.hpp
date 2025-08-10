@@ -10,7 +10,8 @@ class ServerConfig;
 
 class RequestHandler {
    public:
-    RequestHandler(const HttpRequest& request, const ServerConfig& serverConfig);
+    RequestHandler(const HttpRequest&  request,
+                   const ServerConfig& serverConfig);
     ~RequestHandler();
 
     void handleRequest();
@@ -33,6 +34,8 @@ class RequestHandler {
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
+
+    std::string extractBoundary(const std::string& content_type);
 
     const std::string getRootPath() const;
 };

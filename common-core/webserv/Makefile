@@ -45,6 +45,7 @@ clean:
 fclean: clean
 	rm -rf build
 	rm -f $(NAME)
+	rm -rf ./www/tmp
 
 re: fclean all
 	

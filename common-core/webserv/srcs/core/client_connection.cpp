@@ -22,11 +22,8 @@
 #include <ctime>
 #include <iostream>
 
-#include "../http/RequestParser.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include "Logger.hpp"
-#include "RequestHandler.hpp"
+#include "../http/RequestHandler.hpp"
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
 

@@ -17,8 +17,8 @@
 #include <string>
 
 #include "../http/RequestParser.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
+#include "../http/HttpRequest.hpp"
+#include "../http/HttpResponse.hpp"
 
 class ServerConfig;
 class RequestHandler;
