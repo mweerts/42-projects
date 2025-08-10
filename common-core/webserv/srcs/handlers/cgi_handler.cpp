@@ -36,16 +36,24 @@
 
 // IN PROGRESS
 // - still need to review this first
-// 
+//
 
-// static init
 std::map<std::string, std::string> CgiHandler::cgiBin_;
 bool                               CgiHandler::cgiBinInitialized_ = false;
 std::string                        CgiHandler::cgiBinPath_;
 std::string                        CgiHandler::cgiScriptPath_;
 
 CgiHandler::CgiHandler(const HttpRequest& request)
-    : request_(request), async_process_(NULL) {
+    : request_(request), serverConfig_(NULL), async_process_(NULL) {
+    if (!cgiBinInitialized_) {
+        setDefaultCgiBin();
+        cgiBinInitialized_ = true;
+    }
+}
+
+CgiHandler::CgiHandler(const HttpRequest&  request,
+                       const ServerConfig* serverConfig)
+    : request_(request), serverConfig_(serverConfig), async_process_(NULL) {
     if (!cgiBinInitialized_) {
         setDefaultCgiBin();
         cgiBinInitialized_ = true;
@@ -81,7 +89,7 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
     for (size_t i = 0; i < extensions.size(); i++) {
         cgiBin_[extensions[i]] = paths[i];
-        Logger::debug() << "CGI bin: " << extensions[i] << " : " << paths[i];
+        Logger::debug() << "CGI bin: " << extensions[i] << " -> " << paths[i];
     }
 
     cgiBinInitialized_ = true;
@@ -91,22 +99,23 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
 
-    if (!lib::pathExist(script_path))
+    if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
 
     std::string interp = getCgiInterpreter(script_path);
     if (!interp.empty()) {
         return lib::isExecutable(interp);
     }
+    Logger::debug() << "Script path: " << script_path;
     // If no interpreter, the script itself must be executable.
     return lib::isExecutable(script_path);
 }
 
 /* ============ Environment ============ */
 
-// static char to_upper_char(char c) {
-//     return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
-// }
+static char to_upper_char(char c) {
+    return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+}
 
 std::string CgiHandler::buildQueryString() {
     return lib::extractQueryFromUri(request_.getUri());
@@ -123,18 +132,19 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("SCRIPT_NAME=" + request_.getUri());
     env.push_back("PATH_INFO=" + request_.getUri());
     env.push_back("SERVER_NAME=localhost");
-    env.push_back("SERVER_PORT=8080");  // TODO: inject actual server port
+    int port = serverConfig_ ? serverConfig_->getPort() : 8080;
+    env.push_back("SERVER_PORT=" + lib::to_string(port));
     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
     env.push_back("SERVER_SOFTWARE=webserv/1.0");
+    env.push_back("UPLOADS_DIR=" +
+                  (serverConfig_ ? serverConfig_->getUploadsDir() : ""));
 
-    // HTTP headers
     const std::map<std::string, std::string>& headers = request_.getHeaders();
     for (std::map<std::string, std::string>::const_iterator it =
              headers.begin();
          it != headers.end(); ++it) {
         std::string key = it->first;
-        // use to_upper_char if not compiling
-        std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+        std::transform(key.begin(), key.end(), key.begin(), to_upper_char);
         std::replace(key.begin(), key.end(), '-', '_');
         env.push_back("HTTP_" + key + "=" + it->second);
     }
@@ -150,7 +160,6 @@ bool CgiHandler::startAsyncCgi(const std::string& scriptUri) {
         return false;
     }
     cgiScriptPath_ = resolveScriptPath(scriptUri);
-
     async_process_ = new CgiProcess();
 
     if (!startCgiProcess(cgiScriptPath_)) {
@@ -165,14 +174,21 @@ bool CgiHandler::startAsyncCgi(const std::string& scriptUri) {
 bool CgiHandler::isAsyncCgiComplete() const {
     if (!async_process_ || !async_process_->isValid())
         return false;
+    
     int   status;
     pid_t r = waitpid(async_process_->getChildPid(), &status, WNOHANG);
-    return (r == async_process_->getChildPid());
+    if (r != async_process_->getChildPid())
+        return false;  // still running
+    
+    // check if we have unprocessed output but can this happen?
+    return async_process_->getOutputBuffer().empty();
 }
 
 bool CgiHandler::isTimedOut() const {
-    if (!async_process_ || !async_process_->isValid())
+    if (!async_process_ || !async_process_->isValid()) {
+        Logger::warning() << "Invalid CGI process";
         return false;
+    }
     return (time(NULL) - async_process_->getStartTime() > CGI_TIMEOUT_SECONDS);
 }
 
@@ -186,11 +202,10 @@ void CgiHandler::cleanupAsyncCgi() {
 
 /* Child/parent setup */
 bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
-    // Working directory = script directory
-    std::string workingDir;
+    std::string dir;
     size_t      slash = scriptPath.find_last_of('/');
     if (slash != std::string::npos)
-        workingDir = scriptPath.substr(0, slash);
+        dir = scriptPath.substr(0, slash);
 
     // argv
     std::string              interpreter = getCgiInterpreter(scriptPath);
@@ -203,7 +218,7 @@ bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
     std::vector<std::string> envVec = buildEnvironment();
 
     const std::string execPath = interpreter.empty() ? scriptPath : interpreter;
-    if (!async_process_->startProcess(execPath, args, envVec, workingDir)) {
+    if (!async_process_->startProcess(execPath, args, envVec, dir)) {
         Logger::error() << "Failed to start CGI process";
         return false;
     }

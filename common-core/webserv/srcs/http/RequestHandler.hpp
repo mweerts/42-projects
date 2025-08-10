@@ -7,22 +7,32 @@
 #include "http_status_code.hpp"
 
 class ServerConfig;
+class CgiHandler;
 
 class RequestHandler {
    public:
-    RequestHandler(const HttpRequest& request, const ServerConfig& serverConfig);
+    RequestHandler(const HttpRequest&  request,
+                   const ServerConfig& serverConfig);
     ~RequestHandler();
 
     void handleRequest();
     void sendResponse(int socket_fd);
     bool shouldCloseConnection() const;
 
+    HttpResponse& getResponse();
+
     void generateErrorResponse(StatusCode         error_code,
                                const std::string& error_msg);
+
+    const std::string getRootPath() const;
+
+    bool hasCgiRunning() const;
+    bool processCgi();
 
    private:
     const ServerConfig& _serverConfig;
     const HttpRequest&  _request;
+    CgiHandler*         _cgiHandler;
     HttpResponse        _response;
     std::string         _rootPath;
     std::string         _internalUri;
@@ -34,7 +44,6 @@ class RequestHandler {
     void processPostRequest();
     void processDeleteRequest();
 
-    const std::string getRootPath() const;
 };
 
 #endif

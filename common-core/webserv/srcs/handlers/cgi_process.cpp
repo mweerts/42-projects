@@ -110,6 +110,7 @@ bool CgiProcess::startProcess(const std::string&              execPath,
     inputPipe_ = inPipe[1];
     outputPipe_ = outPipe[0];
     isValid_ = true;
+	startTime_ = time(NULL);
     return true;
 }
 

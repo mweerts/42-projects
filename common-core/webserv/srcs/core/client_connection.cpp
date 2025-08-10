@@ -38,20 +38,11 @@ ClientConnection::ClientConnection(int                 socket_fd,
       last_activity_(time(0)),
       request_parser_(NULL),
       request_handler_(NULL),
-      cgi_handler_(NULL),
       state_(READING_REQUEST),
       is_closed_(false) {
     UpdateActivity();
     request_parser_ = new RequestParser(current_request_, server_config_);
     request_ready_ = false;
-}
-
-void ClientConnection::cleanupCgi() {
-    if (cgi_handler_) {
-        cgi_handler_->cleanupAsyncCgi();
-        delete cgi_handler_;
-        cgi_handler_ = NULL;
-    }
 }
 
 ClientConnection::~ClientConnection() {
@@ -65,7 +56,6 @@ ClientConnection::~ClientConnection() {
         request_handler_ = NULL;
     }
 
-    cleanupCgi();
     Close();
 }
 
@@ -89,11 +79,7 @@ bool ClientConnection::HandleEvent(short revents) {
                 return HandleWrite();
             }
             break;
-
-        case CGI_PROCESSING: {
-            return HandleCgi();
-            break;
-        }
+            
         // check if all errors are handled when reaching this
         case ERROR: return false;
         default: return false;
@@ -149,12 +135,12 @@ bool ClientConnection::HandleRead() {
         case RequestParser::COMPLETE: {
             Logger::debug() << "Request parsing complete";
             request_ready_ = true;
-            state_ = WRITING_RESPONSE;
 
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
             request_handler_->handleRequest();
-
+            
+            state_ = WRITING_RESPONSE;
             return true;
         }
         default:
@@ -165,37 +151,21 @@ bool ClientConnection::HandleRead() {
     return true;
 }
 
-bool ClientConnection::HandleCgi() {
-    if (!cgi_handler_ || !cgi_handler_->isProcessing()) {
-        Logger::error() << "Invalid CGI handler state";
-        state_ = ERROR;
-        return false;
-    }
-
-    // if (cgi_handler_->isTimedOut()) {
-    //     Logger::warning() << "CGI process timed out";
-    //     cleanupCgi();
-    //     state_ = ERROR;
-    //     return false;
-    // }
-
-    // Process CGI
-    // if (cgi_handler_->processAsyncCgi(request_handler_->getResponse())) {
-    //     // CGI completed successfully
-    //     cleanupCgi();
-    //     state_ = WRITING_RESPONSE;
-    //     return true;
-    // }
-
-    return true;  // Continue processing
-}
-
 bool ClientConnection::HandleWrite() {
+    // If CGI is running, process it first
+    if (request_handler_->hasCgiRunning()) {
+        if (!request_handler_->processCgi()) {
+            return true;  // CGI still processing, continue next iteration
+        }
+        // CGI is complete, fall through to send response
+    }
+    
+    // Send the response
     request_handler_->sendResponse(socket_fd_);  // should i check for errors?
 
-	Logger::debug() << "Response sent to client " << socket_fd_;
+    Logger::debug() << "Response sent to client " << socket_fd_;
     if (request_handler_->shouldCloseConnection()) {
-		Logger::debug() << "Connection should be closed";
+        Logger::debug() << "Connection should be closed";
         Close();
         return false;
     }
@@ -207,7 +177,6 @@ bool ClientConnection::HandleWrite() {
     request_parser_ = NULL;
 
     current_request_.reset();
-
     state_ = READING_REQUEST;
     request_parser_ = new RequestParser(current_request_, server_config_);
     request_ready_ = false;
@@ -217,14 +186,11 @@ bool ClientConnection::HandleWrite() {
 }
 
 void ClientConnection::Close() {
-    if (is_closed_) {
+    if (is_closed_)
         return;
-    }
 
-    if (close(socket_fd_) < 0) {
-        Logger::error() << "Failed to close socket fd=" << socket_fd_ << ": "
-                        << strerror(errno);
-    }
+    if (close(socket_fd_) < 0)
+        Logger::error() << "Failed to close socket: " << strerror(errno);
 
     is_closed_ = true;
     socket_fd_ = -1;
@@ -239,13 +205,6 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
-}
-
-int ClientConnection::GetCgiInputPipe() const {
-    return cgi_handler_ ? cgi_handler_->getInputPipe() : -1;
-}
-int ClientConnection::GetCgiOutputPipe() const {
-    return cgi_handler_ ? cgi_handler_->getOutputPipe() : -1;
 }
 
 // State Queries

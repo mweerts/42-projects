@@ -180,13 +180,3 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
     oss << "</pre><hr></body></html>";
     return oss.str();
 }
-
-std::string extractQueryFromUri(const std::string& uri) {
-    size_t qpos = uri.find('?');
-    return (qpos == std::string::npos) ? "" : uri.substr(qpos + 1);
-}
-
-std::string extractPathFromUri(const std::string& uri) {
-    size_t qpos = uri.find('?');
-    return (qpos == std::string::npos) ? "" : uri.substr(0, qpos);
-}

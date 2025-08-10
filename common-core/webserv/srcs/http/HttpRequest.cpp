@@ -50,7 +50,7 @@ void HttpRequest::setMethod(const std::string& method) {
     _method = method;
 }
 
-std::string urlDecode(const std::string& encoded) {
+std::string urlDecode(const std::string& encoded) { 
     std::string decoded;
     decoded.reserve(encoded.length());
 

@@ -11,7 +11,7 @@ ServerConfig::ServerConfig(
     return;
 }
 
-const std::string ServerConfig::getUplaodDir( void ) const
+const std::string ServerConfig::getUploadsDir( void ) const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("upload_dir");
     if (it != prmtrs.end() && !it->second.empty())

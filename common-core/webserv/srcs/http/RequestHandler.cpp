@@ -22,10 +22,17 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
     : _serverConfig(serverConfig),
       _request(request),
+      _cgiHandler(NULL),
       _rootPath(serverConfig.getRoot()),
       _autoindex(serverConfig.getAutoIndex()) {};
 
-RequestHandler::~RequestHandler() {}
+RequestHandler::~RequestHandler() {
+    if (_cgiHandler) {
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+    }
+}
 
 void RequestHandler::setResponse(const HttpResponse& response) {
     _response = response;
@@ -148,19 +155,21 @@ void RequestHandler::processGetRequest() {
 
     fullPath = _rootPath + _internalUri;
 
-    // IN PROGRESS
-    CgiHandler cgiHandler(_request);
-    if (cgiHandler.isCgiScript(_internalUri)) {
-        Logger::debug() << "Processing CGI script: " << _internalUri;
-        if (cgiHandler.executeCgiScript(_internalUri, _response)) {
-            Logger::debug() << "CGI script executed successfully";
+    // Check if this is a CGI script
+    CgiHandler tempCgiHandler(_request, &_serverConfig);
+    if (tempCgiHandler.isCgiScript(_internalUri)) {
+        // Create a new CgiHandler on the heap for async processing
+        _cgiHandler = new CgiHandler(_request, &_serverConfig);
+        if (_cgiHandler->startAsyncCgi(_internalUri)) {
+            return;  // CGI started, let event loop handle it
         } else {
-            Logger::error() << "CGI script execution failed";
+            delete _cgiHandler;
+            _cgiHandler = NULL;
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+            return;
         }
-        return;
     }
-
+	
     if (isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             isReadable(fullPath + "/" + *location->getIndex())) {
@@ -207,6 +216,22 @@ void RequestHandler::processGetRequest() {
 }
 
 void RequestHandler::processPostRequest() {
+    // Check if this is a CGI script first
+    CgiHandler tempCgiHandler(_request, &_serverConfig);
+    if (tempCgiHandler.isCgiScript(_internalUri)) {
+        // Create a new CgiHandler on the heap for async processing
+        _cgiHandler = new CgiHandler(_request, &_serverConfig);
+        if (_cgiHandler->startAsyncCgi(_internalUri)) {
+            return;  // CGI started, let event loop handle it
+        } else {
+            delete _cgiHandler;
+            _cgiHandler = NULL;
+            _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+            return;
+        }
+    }
+
+    // Regular file upload handling
     std::ofstream file;
     std::string   fullPath = _rootPath + _internalUri;
 
@@ -252,4 +277,40 @@ void RequestHandler::generateErrorResponse(StatusCode         status_code,
     _response.setContent(GetHtmlErrorPage(_response));
     _response.setContentType("text/html");
     _response.setConnection("close");
+}
+
+HttpResponse& RequestHandler::getResponse() {
+    return _response;
+}
+
+bool RequestHandler::hasCgiRunning() const {
+    return _cgiHandler != NULL && _cgiHandler->isProcessing();
+}
+
+bool RequestHandler::processCgi() {
+    if (!_cgiHandler || !_cgiHandler->isProcessing()) {
+        return false;  // No CGI running
+    }
+    
+    // Check for timeout first
+    if (_cgiHandler->isTimedOut()) {
+        Logger::warning() << "CGI process timed out";
+        _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;  // Processing complete (with error)
+    }
+    
+    // Process one step of CGI I/O
+    if (_cgiHandler->processCgiIO()) {
+        // CGI I/O is complete, build the response
+        _cgiHandler->buildCgiResponse(_response);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;  // CGI processing is complete
+    }
+    
+    return false;  // CGI still processing
 }

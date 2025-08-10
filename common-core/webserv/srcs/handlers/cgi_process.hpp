@@ -24,7 +24,7 @@ class CgiProcess {
         : childPid_(-1),
           inputPipe_(-1),
           outputPipe_(-1),
-          startTime_(0),
+          startTime_(time(NULL)),
           isValid_(false) {}
 
     ~CgiProcess() {

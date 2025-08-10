@@ -21,7 +21,7 @@
 // 			Logger::info() << ClassServers[i].getPort();
 // 			Logger::info() << ClassServers[i].getAutoIndex();
 // 			Logger::info() << ClassServers[i].getRoot();
-// 			Logger::info() << ClassServers[i].getUplaodDir();
+// 			Logger::info() << ClassServers[i].getUploadsDir();
 // 			std::cout << "\n\n";
 
 // 			const Location *uri = (ClassServers[i].getLocation("NULLA"));

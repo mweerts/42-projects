@@ -32,6 +32,7 @@ class CgiProcess;
 class CgiHandler {
    public:
     CgiHandler(const HttpRequest& request);
+    CgiHandler(const HttpRequest& request, const ServerConfig* serverConfig);
     ~CgiHandler();
 
     // to call at server startup
@@ -43,21 +44,25 @@ class CgiHandler {
     const std::map<std::string, std::string>& getCgiBin() const;
 
     bool startAsyncCgi(const std::string& scriptPath);
-    bool processAsyncCgi(HttpResponse& response);
+    // bool processAsyncCgi(HttpResponse& response);
     bool isAsyncCgiComplete() const;
     void cleanupAsyncCgi();
 
-    // Utility to resolve the absolute script path from a request URI
-    std::string resolveScriptPath(const std::string& uri) const;
+	bool isTimedOut() const;
 
     int  getInputPipe() const;
     int  getOutputPipe() const;
     bool isProcessing() const;
 
+    // Async processing methods
+    bool processCgiIO();
+    void buildCgiResponse(HttpResponse& response);
+
    private:
     static const int CGI_TIMEOUT_SECONDS = 30;
 
     const HttpRequest& request_;
+	const ServerConfig* serverConfig_;
     CgiProcess*        async_process_;
     static std::string cgiScriptPath_;
 
@@ -65,6 +70,7 @@ class CgiHandler {
     static std::map<std::string, std::string> cgiBin_;
     static std::string                        cgiBinPath_;
     static bool                               cgiBinInitialized_;
+
 
    private:
     // Environment setup
@@ -85,13 +91,10 @@ class CgiHandler {
     void              cleanupProcess(int pid);
 
     bool startCgiProcess(const std::string& scriptPath);
-    bool processCgiIO();
-    void buildCgiResponse(HttpResponse& response);
 
-    // Timeout handling
-    bool isTimedOut() const;
-    bool waitForProcess(int pid);
-    void setDefaultCgiBin();
+    std::string resolveScriptPath(const std::string& uri) const;
+    void        setDefaultCgiBin();
+
 };
 
 #endif

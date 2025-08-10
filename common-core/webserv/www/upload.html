@@ -401,7 +401,7 @@
                     '<div class="animate-pulse">Scanning file system...</div>';
 
                 try {
-                    const response = await fetch("/cgi-bin/list-files.py");
+                    const response = await fetch("/list-files.py");
                     if (response.ok) {
                         const data = await response.json();
                         if (data.success) {

@@ -220,7 +220,7 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
 RequestParser::Status RequestParser::parseRequestLine() {
     size_t newline_pos = header_buffer_.find('\n');
     if (newline_pos == std::string::npos) {
-        return NEED_MORE_DATA;  // Need more data
+        return NEED_MORE_DATA;
     }
 
     std::string request_line = header_buffer_.substr(0, newline_pos);
@@ -255,7 +255,6 @@ bool RequestParser::extractHeaders(const std::string& buffer) {
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
 
-        // Trim whitespace from value
         while (!value.empty() && value[0] == ' ') {
             value.erase(0, 1);
         }
@@ -276,8 +275,7 @@ RequestParser::Status RequestParser::parseHeaders() {
         }
 
         size_t headers_start_pos = req_line_end + 1;
-        size_t headers_length =
-            headers_end_pos_ - headers_start_pos - 3;  // Minus separator
+        size_t headers_length = headers_end_pos_ - headers_start_pos - 3;
 
         std::string headers_only =
             header_buffer_.substr(headers_start_pos, headers_length);
@@ -391,7 +389,8 @@ std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
         return "";
     }
 
-    if (length <= 8192) {  // for small file, 8KB threshold
+	// for small file, 8KB threshold
+    if (length <= 8192) {
         std::vector<char> buffer(length);
         file.read(&buffer[0], length);
 

@@ -68,7 +68,7 @@ class ServerConfig {
 
     void setCgi(const CgiBin& add);
     /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-    const std::string  getUplaodDir(void) const;
+    const std::string  getUploadsDir(void) const;
     const std::string  getServerName(void) const;
     const std::string& getName(void) const;
     const std::string  getHost(void) const;
