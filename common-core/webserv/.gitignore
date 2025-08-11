@@ -17,6 +17,9 @@ www/tmp/*
 *.gch
 *.pch
 
+# Cursor
+.cursor
+
 # Compiled Dynamic libraries
 *.so
 *.dylib

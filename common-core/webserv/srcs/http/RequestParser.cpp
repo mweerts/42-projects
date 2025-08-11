@@ -357,6 +357,18 @@ bool RequestParser::findHeadersEnd() {
     return false;
 }
 
+// get the length of the file from the start position
+static size_t calculateBodyLength(std::ifstream& file, size_t start_pos) {
+	file.seekg(0, std::ios::end);
+	std::streampos file_end = file.tellg();
+	if (file_end == std::streampos(-1)) {
+		Logger::error() << "Failed to get file size";
+		return 0;
+	}
+	size_t file_size = static_cast<size_t>(file_end);
+	return file_size - start_pos;
+}
+
 std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
     if (req_filename_.empty()) {
         return "";
@@ -369,18 +381,9 @@ std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
     }
 
     if (length == 0) {
-        file.seekg(0, std::ios::end);
-        std::streampos file_end = file.tellg();
-        if (file_end == std::streampos(-1)) {  // streampos for portability
-            Logger::error() << "Failed to get file size: " << req_filename_;
-            return "";
-        }
-
-        size_t file_size = static_cast<size_t>(file_end);
-        if (start_pos >= file_size) {
-            return "";
-        }
-        length = file_size - start_pos;
+		length = calculateBodyLength(file, start_pos);
+		if (length <= 0)
+			return "";
     }
 
     file.seekg(start_pos, std::ios::beg);

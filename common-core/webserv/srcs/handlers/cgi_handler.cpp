@@ -34,10 +34,14 @@
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
 
-// IN PROGRESS
-// - still need to review this first
-//
+/* potential refactors
+ * functions :
+ * - processCgiIO
+ * - buildCgiResponse
+ * others :
+*/
 
+const int                          CgiHandler::CGI_TIMEOUT_SECONDS = 10;
 std::map<std::string, std::string> CgiHandler::cgiBin_;
 bool                               CgiHandler::cgiBinInitialized_ = false;
 std::string                        CgiHandler::cgiBinPath_;
@@ -123,6 +127,7 @@ std::string CgiHandler::buildQueryString() {
 
 const std::vector<std::string> CgiHandler::buildEnvironment() {
     std::vector<std::string> env;
+    env.reserve(12);  // minimum env variables
 
     env.push_back("REQUEST_METHOD=" + request_.getMethod());
     env.push_back("QUERY_STRING=" + buildQueryString());
@@ -131,9 +136,11 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("CONTENT_TYPE=" + request_.getContentType());
     env.push_back("SCRIPT_NAME=" + request_.getUri());
     env.push_back("PATH_INFO=" + request_.getUri());
-    env.push_back("SERVER_NAME=localhost");
-    int port = serverConfig_ ? serverConfig_->getPort() : 8080;
-    env.push_back("SERVER_PORT=" + lib::to_string(port));
+    env.push_back("SERVER_NAME=" +
+                  (serverConfig_ ? serverConfig_->getServerName() : ""));
+    std::string port =
+        serverConfig_ ? lib::to_string(serverConfig_->getPort()) : "";
+    env.push_back("SERVER_PORT=" + port);
     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
     env.push_back("SERVER_SOFTWARE=webserv/1.0");
     env.push_back("UPLOADS_DIR=" +
@@ -156,12 +163,14 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
 
 bool CgiHandler::startAsyncCgi(const std::string& scriptUri) {
     if (async_process_) {
-        Logger::error() << "Async CGI already running";
+        Logger::warning() << "Async CGI already running";
         return false;
     }
-    cgiScriptPath_ = resolveScriptPath(scriptUri);
-    async_process_ = new CgiProcess();
 
+    cgiScriptPath_ = resolveScriptPath(scriptUri);
+    Logger::debug() << "Starting async CGI for " << cgiScriptPath_;
+
+    async_process_ = new CgiProcess();
     if (!startCgiProcess(cgiScriptPath_)) {
         cleanupAsyncCgi();
         return false;
@@ -174,13 +183,13 @@ bool CgiHandler::startAsyncCgi(const std::string& scriptUri) {
 bool CgiHandler::isAsyncCgiComplete() const {
     if (!async_process_ || !async_process_->isValid())
         return false;
-    
+
     int   status;
     pid_t r = waitpid(async_process_->getChildPid(), &status, WNOHANG);
     if (r != async_process_->getChildPid())
-        return false;  // still running
-    
-    // check if we have unprocessed output but can this happen?
+        return false;
+
+    // just in case
     return async_process_->getOutputBuffer().empty();
 }
 
@@ -189,6 +198,7 @@ bool CgiHandler::isTimedOut() const {
         Logger::warning() << "Invalid CGI process";
         return false;
     }
+
     return (time(NULL) - async_process_->getStartTime() > CGI_TIMEOUT_SECONDS);
 }
 
@@ -200,44 +210,44 @@ void CgiHandler::cleanupAsyncCgi() {
     }
 }
 
-/* Child/parent setup */
 bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
-    std::string dir;
+    std::string work_dir;
     size_t      slash = scriptPath.find_last_of('/');
     if (slash != std::string::npos)
-        dir = scriptPath.substr(0, slash);
+        work_dir = scriptPath.substr(0, slash);
 
-    // argv
-    std::string              interpreter = getCgiInterpreter(scriptPath);
+    std::string interpreter = getCgiInterpreter(scriptPath);
+
     std::vector<std::string> args;
     if (!interpreter.empty())
         args.push_back(interpreter);
     args.push_back(scriptPath);
 
-    // env
-    std::vector<std::string> envVec = buildEnvironment();
+    std::vector<std::string> env = buildEnvironment();
 
-    const std::string execPath = interpreter.empty() ? scriptPath : interpreter;
-    if (!async_process_->startProcess(execPath, args, envVec, dir)) {
+    const std::string exec_path =
+        interpreter.empty() ? scriptPath : interpreter;
+    if (!async_process_->startProcess(exec_path, args, env, work_dir)) {
         Logger::error() << "Failed to start CGI process";
         return false;
     }
     return true;
 }
 
+// not convinced about this
 bool CgiHandler::processCgiIO() {
     if (!async_process_ || !async_process_->isValid())
         return false;
 
-    // Prepare request body once if any
     if (async_process_->getInputPipe() != -1 &&
         async_process_->getInputBuffer().empty()) {
         if (request_.getContentLength() > 0 || request_.hasMoreBody()) {
+			// enought for simple cgi scripts
+			// but will not scale for large bodies
             async_process_->setInputBuffer(request_.readBodyAll());
         }
     }
 
-    // Non-blocking I/O step
     async_process_->flushInputOnce();
     bool eof = async_process_->readOutputOnce();
 
@@ -249,6 +259,7 @@ bool CgiHandler::processCgiIO() {
     return false;
 }
 
+// need to clean this up a bit too
 static void parseCgiHeadersAndBody(const std::string& raw,
                                    HttpResponse&      response) {
     if (raw.empty()) {
@@ -315,33 +326,6 @@ void CgiHandler::buildCgiResponse(HttpResponse& response) {
 }
 
 /* ============ Public helpers ============ */
-
-// Synchronous wrapper that reuses the async core for simplicity.
-// Blocks until the CGI is done or times out.
-bool CgiHandler::executeCgiScript(const std::string& scriptUri,
-                                  HttpResponse&      response) {
-    if (!startAsyncCgi(scriptUri)) {
-        response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        return false;
-    }
-
-    // Busy-wait with small sleeps; caller is currently synchronous.
-    // TODO: integrate with event loop to avoid busy-wait.
-    while (!isTimedOut()) {
-        if (processCgiIO()) {
-            buildCgiResponse(response);
-            cleanupAsyncCgi();
-            return true;
-        }
-        // Small sleep to avoid spinning hard.
-        usleep(1000);  // 1ms
-    }
-
-    Logger::warning() << "CGI timed out";
-    cleanupAsyncCgi();
-    response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
-    return false;
-}
 
 int CgiHandler::getInputPipe() const {
     return async_process_ ? async_process_->getInputPipe() : -1;

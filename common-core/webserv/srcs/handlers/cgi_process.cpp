@@ -11,13 +11,26 @@
 /* ************************************************************************** */
 
 #include "cgi_process.hpp"
-#include <sys/wait.h>
-#include <signal.h>
-#include <unistd.h>
-#include <fcntl.h>
+
 #include <errno.h>
-#include <vector>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
 #include <string>
+#include <vector>
+
+// add all methods to check
+// - cleanup [x]
+
+// - startProcess [x]
+// should be able to remove fcntl this if going through poll
+// auto close fds?
+
+// - flushInputOnce [x]
+// - readOutputOnce [x]
+// - hasExited [x]
 
 void CgiProcess::cleanup() {
     if (inputPipe_ != -1) {
@@ -36,33 +49,35 @@ void CgiProcess::cleanup() {
     isValid_ = false;
 }
 
-bool CgiProcess::startProcess(const std::string&              execPath,
+bool CgiProcess::startProcess(const std::string&              exec_path,
                               const std::vector<std::string>& args,
                               const std::vector<std::string>& env,
                               const std::string&              workingDir) {
     int inPipe[2] = {-1, -1};
     int outPipe[2] = {-1, -1};
 
-    if (pipe(inPipe) == -1) return false;
+    if (pipe(inPipe) == -1)
+        return false;
     if (pipe(outPipe) == -1) {
         close(inPipe[0]);
         close(inPipe[1]);
         return false;
     }
 
-    // Non-blocking parent ends
+    // should be able to remove this if going through poll
     fcntl(inPipe[1], F_SETFL, O_NONBLOCK);
     fcntl(outPipe[0], F_SETFL, O_NONBLOCK);
 
     pid_t pid = fork();
     if (pid == -1) {
-        close(inPipe[0]); close(inPipe[1]);
-        close(outPipe[0]); close(outPipe[1]);
+        close(inPipe[0]);
+        close(inPipe[1]);
+        close(outPipe[0]);
+        close(outPipe[1]);
         return false;
     }
 
     if (pid == 0) {
-        // Child
         // Reset flags for duped fds
         fcntl(inPipe[0], F_SETFL, 0);
         fcntl(outPipe[1], F_SETFL, 0);
@@ -77,45 +92,41 @@ bool CgiProcess::startProcess(const std::string&              execPath,
         close(inPipe[0]);
         close(outPipe[1]);
 
-		if (!workingDir.empty()) {
+        if (!workingDir.empty()) {
             if (chdir(workingDir.c_str()) != 0) {
                 _exit(1);
             }
         }
 
-        // Build argv
         std::vector<char*> argv;
         argv.reserve(args.size() + 1);
-        for (size_t i = 0; i < args.size(); ++i) {
+        for (size_t i = 0; i < args.size(); ++i)
             argv.push_back(const_cast<char*>(args[i].c_str()));
-        }
         argv.push_back(NULL);
 
-        // Build envp
         std::vector<char*> envp;
         envp.reserve(env.size() + 1);
-        for (size_t i = 0; i < env.size(); ++i) {
+        for (size_t i = 0; i < env.size(); ++i)
             envp.push_back(const_cast<char*>(env[i].c_str()));
-        }
         envp.push_back(NULL);
 
-        execve(execPath.c_str(), &argv[0], &envp[0]);
+        execve(exec_path.c_str(), &argv[0], &envp[0]);
         _exit(1);
     }
 
-    // Parent
     childPid_ = pid;
     close(inPipe[0]);
     close(outPipe[1]);
     inputPipe_ = inPipe[1];
     outputPipe_ = outPipe[0];
     isValid_ = true;
-	startTime_ = time(NULL);
+    startTime_ = time(NULL);
     return true;
 }
 
 bool CgiProcess::flushInputOnce() {
-    if (inputPipe_ == -1) return true; // already closed
+    if (inputPipe_ == -1)
+        return true;
     if (inputBuffer_.empty()) {
         close(inputPipe_);
         inputPipe_ = -1;
@@ -141,8 +152,9 @@ bool CgiProcess::flushInputOnce() {
 }
 
 bool CgiProcess::readOutputOnce() {
-    if (outputPipe_ == -1) return true;
-    char buf[4096];
+    if (outputPipe_ == -1)
+        return true;
+    char    buf[4096];
     ssize_t r = read(outputPipe_, buf, sizeof(buf));
     if (r > 0) {
         outputBuffer_.append(buf, r);
@@ -163,16 +175,17 @@ bool CgiProcess::readOutputOnce() {
 }
 
 bool CgiProcess::hasExited(int* status) {
-    int  st = 0;
+    int   st = 0;
     pid_t r = waitpid(childPid_, &st, WNOHANG);
     if (r == childPid_) {
-        if (status) *status = st;
+        if (status)
+            *status = st;
         return true;
     }
     return false;
 }
 
-/* ============ Setters ============ */
+/* ============ Public helpers ============ */
 
 void CgiProcess::setInputBuffer(const std::string& inputBuffer) {
     inputBuffer_ = inputBuffer;
@@ -181,8 +194,6 @@ void CgiProcess::setInputBuffer(const std::string& inputBuffer) {
 void CgiProcess::setOutputBuffer(const std::string& outputBuffer) {
     outputBuffer_ = outputBuffer;
 }
-
-/* ============ Public helpers ============ */
 
 bool CgiProcess::isValid() const {
     return isValid_;

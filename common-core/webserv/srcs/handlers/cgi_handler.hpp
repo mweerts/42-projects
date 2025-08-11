@@ -38,13 +38,10 @@ class CgiHandler {
     // to call at server startup
     static void initializeCgiBin(const CgiBin& cgiBin);
 
-    bool executeCgiScript(const std::string& scriptPath,
-                          HttpResponse&      response);
     bool isCgiScript(const std::string& uri);
     const std::map<std::string, std::string>& getCgiBin() const;
 
     bool startAsyncCgi(const std::string& scriptPath);
-    // bool processAsyncCgi(HttpResponse& response);
     bool isAsyncCgiComplete() const;
     void cleanupAsyncCgi();
 
@@ -59,7 +56,7 @@ class CgiHandler {
     void buildCgiResponse(HttpResponse& response);
 
    private:
-    static const int CGI_TIMEOUT_SECONDS = 30;
+    static const int CGI_TIMEOUT_SECONDS;
 
     const HttpRequest& request_;
 	const ServerConfig* serverConfig_;
@@ -77,18 +74,13 @@ class CgiHandler {
     const std::vector<std::string> buildEnvironment();
     std::string                    buildQueryString();
 
-    // Process management
-    bool createProcess(const std::string& scriptPath, int& childPid,
-                       int& inputPipe, int& outputPipe);
-    bool communicateWithProcess(int inputPipe, int outputPipe,
-                                HttpResponse& response);
 
-    bool parseCgiResponse(const std::string& cgiOutput, HttpResponse& response);
-    std::string extractHeaders(const std::string& cgiOutput, std::string& body);
+    // bool parseCgiResponse(const std::string& cgiOutput, HttpResponse& response);
+    // std::string extractHeaders(const std::string& cgiOutput, std::string& body);
 
     std::string       getCgiInterpreter(const std::string& scriptPath);
     const std::string getFileExtension(const std::string& filePath);
-    void              cleanupProcess(int pid);
+    // void              cleanupProcess(int pid);
 
     bool startCgiProcess(const std::string& scriptPath);
 

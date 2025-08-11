@@ -22,8 +22,6 @@ response_data = {
     "timestamp": datetime.now().isoformat()
 }
 
-time.sleep(30)
-
 try:
     # Check if uploads directory exists
     if not os.path.exists(uploads_dir):
