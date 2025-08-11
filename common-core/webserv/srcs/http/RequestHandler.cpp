@@ -235,6 +235,7 @@ void RequestHandler::processPostRequest() {
         _response.setStatusCode(HTTP_CREATED);
         return;
     }
+     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
 }
 
 void RequestHandler::processDeleteRequest() {
