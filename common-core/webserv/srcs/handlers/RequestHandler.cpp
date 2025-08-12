@@ -25,7 +25,9 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _request(request),
       _cgiHandler(NULL),
       _rootPath(serverConfig.getRoot()),
-      _autoindex(serverConfig.getAutoIndex()) {};
+      _autoindex(serverConfig.getAutoIndex()),
+      _isStaticFile(false),
+      _staticFilePath("") {};
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -200,20 +202,15 @@ void RequestHandler::processGetRequest() {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
-
-    // Regular file handling
-    std::ifstream file(fullPath.c_str());
-    if (file.fail()) {
-        _response.setStatusCode(HTTP_FORBIDDEN);
-        return;
+    // Mark for streaming by connection layer
+    _isStaticFile = true;
+    _staticFilePath = fullPath;
+    struct stat st;
+    if (stat(fullPath.c_str(), &st) == 0) {
+        _response.setContentLength(static_cast<int>(st.st_size));
     }
-    std::ostringstream ss;
-    ss << file.rdbuf();
-    _response.setContent(ss.str());
     _response.setContentType(MimeTypes::getType(fullPath.c_str()));
     _response.setLastModified(getLastModifiedTime(fullPath));
-
-    file.close();
 }
 
 void RequestHandler::processPostRequest() {
@@ -310,30 +307,50 @@ bool RequestHandler::hasCgiRunning() const {
 
 bool RequestHandler::processCgi() {
     if (!_cgiHandler || !_cgiHandler->isProcessing()) {
-        return false;  // No CGI running
+        return false;
     }
     
-    // Check for timeout first
     if (_cgiHandler->isTimedOut()) {
         Logger::warning() << "CGI process timed out";
         _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
         _cgiHandler->cleanupAsyncCgi();
         delete _cgiHandler;
         _cgiHandler = NULL;
-        return true;  // Processing complete (with error)
+        return true;
     }
     
-    // Process one step of CGI I/O
     if (_cgiHandler->processCgiIO()) {
-        // CGI I/O is complete, build the response
         _cgiHandler->buildCgiResponse(_response);
         _cgiHandler->cleanupAsyncCgi();
         delete _cgiHandler;
         _cgiHandler = NULL;
-        return true;  // CGI processing is complete
+        return true;
     }
     
-    return false;  // CGI still processing
+    return false;
+}
+
+int RequestHandler::getCgiInputPipe() const {
+    if (_cgiHandler) return _cgiHandler->getInputPipe();
+    return -1;
+}
+
+int RequestHandler::getCgiOutputPipe() const {
+    if (_cgiHandler) return _cgiHandler->getOutputPipe();
+    return -1;
+}
+
+bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
+    if (!_cgiHandler) return true;
+    bool done = _cgiHandler->handleFdEvent(fd, revents);
+    if (done) {
+        _cgiHandler->buildCgiResponse(_response);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;
+    }
+    return false;
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {

@@ -64,6 +64,15 @@ void ConnectionManager::Run() {
             --ready;
             int fd = poll_fds_[i].fd;
 
+            // Route aux fds (file/cgipipe) back to their owners
+            std::map<int, ClientConnection*>::iterator a = aux_fd_owner_.find(fd);
+            if (a != aux_fd_owner_.end()) {
+                if (!a->second->HandleAuxEvent(fd, poll_fds_[i].revents)) {
+                    RemoveClient(a->second->GetSocketFd());
+                }
+                continue;
+            }
+
             if (IsServerSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
@@ -94,6 +103,7 @@ void ConnectionManager::AddServer(TcpServer* server) {
 
 void ConnectionManager::SetupPolling() {
     poll_fds_.clear();
+    aux_fd_owner_.clear();
 
     for (ServerConstIterator it = servers_.begin(); it != servers_.end();
          ++it) {
@@ -121,6 +131,14 @@ void ConnectionManager::SetupPolling() {
         }
         if (pfd.events != 0) {
             poll_fds_.push_back(pfd);
+        }
+
+        // Ask client for any auxiliary fds (files, cgi pipes)
+        std::vector<pollfd> extra;
+        client->GetAuxPollFds(extra);
+        for (size_t k = 0; k < extra.size(); ++k) {
+            poll_fds_.push_back(extra[k]);
+            aux_fd_owner_[extra[k].fd] = client;
         }
     }
 }

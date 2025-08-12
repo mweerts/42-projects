@@ -14,6 +14,8 @@ print()  # Empty line separates headers from body
 # Define uploads directory path
 uploads_dir = os.environ["UPLOADS_DIR"]
 
+time.sleep(30)
+
 # Initialize response data
 response_data = {
     "success": False,

@@ -17,12 +17,16 @@ class HttpResponse {
     void        setConnection(const std::string& connection);
     void        setLastModified(const std::string& lastModified);
     void        setLocation(const std::string& location);
+    void        setContentLength(int length);
     
     StatusCode  getStatusCode() const;
     std::string getServerName() const;
     std::string getConnection() const;
+    const std::string& getContent() const { return _content; }
+    int         getContentLength() const { return _contentLength; }
 
     std::string toString();
+    std::string headersToString();
 
    private:
     StatusCode  _statusCode;

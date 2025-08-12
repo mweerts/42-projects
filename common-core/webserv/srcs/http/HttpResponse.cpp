@@ -45,6 +45,10 @@ void HttpResponse::setLocation(const std::string& location) {
     _location = location;
 }
 
+void HttpResponse::setContentLength(int length) {
+    _contentLength = length;
+}
+
 void HttpResponse::setDate(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -68,7 +72,7 @@ std::string HttpResponse::getConnection() const {
     return _connection;
 }
 
-std::string HttpResponse::toString() {
+std::string HttpResponse::headersToString() {
     std::string        response;
     std::ostringstream oss;
     std::ostringstream contentLengthStream;
@@ -92,10 +96,12 @@ std::string HttpResponse::toString() {
         response += "Last-Modified: " + _lastModified + "\r\n";
     if (!_connection.empty())
         response += "Connection: " + _connection + "\r\n";
-
     response += "\r\n";
-    response += _content;
+    return response;
+}
 
-    // Logger::debug() << "Response generated:\n" << response;
+std::string HttpResponse::toString() {
+    std::string response = headersToString();
+    response += _content;
     return response;
 }

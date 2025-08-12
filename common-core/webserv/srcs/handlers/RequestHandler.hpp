@@ -28,6 +28,13 @@ class RequestHandler {
 
     bool hasCgiRunning() const;
     bool processCgi();
+    int  getCgiInputPipe() const;
+    int  getCgiOutputPipe() const;
+    bool handleCgiFdEvent(int fd, short revents);
+
+    // Static file streaming helpers
+    bool        isStaticFileResponse() const { return _isStaticFile; }
+    const std::string& getStaticFilePath() const { return _staticFilePath; }
 
    private:
     const ServerConfig& _serverConfig;
@@ -37,6 +44,8 @@ class RequestHandler {
     std::string         _rootPath;
     std::string         _internalUri;
     bool                _autoindex;
+    bool                _isStaticFile;
+    std::string         _staticFilePath;
 
     void setResponse(const HttpResponse& response);
     void processRequest();

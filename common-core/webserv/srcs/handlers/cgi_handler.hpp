@@ -49,6 +49,9 @@ class CgiHandler {
     int  getInputPipe() const;
     int  getOutputPipe() const;
     bool isProcessing() const;
+    // Handle one fd event (POLLIN/POLLOUT/HUP/ERR) and perform exactly one op.
+    // Returns true if CGI completed (stdout EOF and child exited, or fatal).
+    bool handleFdEvent(int fd, short revents);
 
     // Async processing methods
     bool processCgiIO();

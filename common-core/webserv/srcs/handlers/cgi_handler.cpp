@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
+#include <sys/poll.h>
 
 #include <algorithm>
 #include <cctype>
@@ -161,6 +162,7 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     return env;
 }
 
+
 /* ============ Async core ============ */
 
 bool CgiHandler::startAsyncCgi(const std::string& scriptUri) {
@@ -256,6 +258,45 @@ bool CgiHandler::processCgiIO() {
     if (eof) {
         int status;
         async_process_->hasExited(&status);
+        return true;
+    }
+    return false;
+}
+
+bool CgiHandler::handleFdEvent(int fd, short revents) {
+    if (!async_process_ || !async_process_->isValid()) return true;
+
+    int inFd  = async_process_->getInputPipe();
+    int outFd = async_process_->getOutputPipe();
+
+    // Write to CGI stdin when POLLOUT
+    if (fd == inFd && (revents & POLLOUT)) {
+        if (async_process_->getInputBuffer().empty()) {
+            if (request_.getContentLength() > 0 || request_.hasMoreBody()) {
+                // Simple: push all at once (can be improved to incremental)
+                async_process_->setInputBuffer(request_.readBodyAll());
+            } else {
+                async_process_->setInputBuffer("");
+            }
+        }
+        (void)async_process_->flushInputOnce();
+        // Not complete yet; wait for stdout EOF
+        return false;
+    }
+
+    // Read from CGI stdout when POLLIN
+    if (fd == outFd && (revents & POLLIN)) {
+        bool eof = async_process_->readOutputOnce();
+        if (eof) {
+            int status; (void)async_process_->hasExited(&status);
+            return true; // Completed
+        }
+        return false;
+    }
+
+    // Treat HUP/ERR/NVAL on any pipe as completion for safety
+    if ((fd == outFd || fd == inFd) && (revents & (POLLHUP | POLLERR | POLLNVAL))) {
+        int status; (void)async_process_->hasExited(&status);
         return true;
     }
     return false;

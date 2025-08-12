@@ -44,6 +44,7 @@ class ConnectionManager {
 
    private:
     std::vector<pollfd>              poll_fds_;
+    std::map<int, ClientConnection*> aux_fd_owner_;
     std::map<int, TcpServer*>        servers_;
     std::map<int, ClientConnection*> clients_;
     bool                             running_;

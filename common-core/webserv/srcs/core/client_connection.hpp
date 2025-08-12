@@ -15,10 +15,15 @@
 
 #include <ctime>
 #include <string>
+#include <vector>
+#include <sys/poll.h>
 
 #include "../http/RequestParser.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
+#include "../handlers/static_stream.hpp"
+#include "../handlers/upload_stream.hpp"
+#include "lib/stream_buffer.hpp"
 
 class ServerConfig;
 class RequestHandler;
@@ -48,6 +53,10 @@ class ClientConnection {
 
     void Close();
 
+    // Expose aux fds for polling (files, cgi pipes in future)
+    void GetAuxPollFds(std::vector<pollfd>& out) const;
+    bool HandleAuxEvent(int fd, short revents);
+
    private:
     static const size_t BUFFER_SIZE = 4096;
 
@@ -65,6 +74,16 @@ class ClientConnection {
     // State management
     State state_;
     bool  is_closed_;
+
+    // Streaming helpers
+    StaticFileStream static_stream_;
+    UploadFileStream upload_stream_;
+    StreamBuffer     outBuf_;
+    StreamBuffer     inBuf_;
+    std::string      headerBuf_;
+    size_t           headerSent_;
+    size_t           bodySent_;
+    bool             sendingHeaders_;
 
    private:
     void UpdateActivity();
