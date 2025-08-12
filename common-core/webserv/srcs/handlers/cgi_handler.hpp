@@ -22,12 +22,11 @@
 #include <string>
 #include <vector>
 
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
-
 class ServerConfig;
 struct CgiBin;
 class CgiProcess;
+class HttpRequest;
+class HttpResponse;
 
 class CgiHandler {
    public:

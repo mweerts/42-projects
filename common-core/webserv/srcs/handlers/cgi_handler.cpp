@@ -28,11 +28,13 @@
 #include <string>
 #include <vector>
 
+#include "../http/HttpRequest.hpp"
+#include "../http/HttpResponse.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
-#include "cgi_process.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
+#include "cgi_process.hpp"
 
 /* potential refactors
  * functions :
@@ -144,7 +146,7 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
     env.push_back("SERVER_SOFTWARE=webserv/1.0");
     env.push_back("UPLOADS_DIR=" +
-                  (serverConfig_ ? serverConfig_->getUploadsDir() : ""));
+                  (serverConfig_ ? serverConfig_->getUploadDir() : ""));
 
     const std::map<std::string, std::string>& headers = request_.getHeaders();
     for (std::map<std::string, std::string>::const_iterator it =

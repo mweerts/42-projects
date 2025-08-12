@@ -2,9 +2,9 @@
 #define REQUEST_HANDLER_HPP
 
 #include "../srcs/parsing/GlobalConfig.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
 #include "http_status_code.hpp"
+#include "../http/HttpRequest.hpp"
+#include "../http/HttpResponse.hpp"
 
 class ServerConfig;
 class CgiHandler;
@@ -45,7 +45,6 @@ class RequestHandler {
     void processDeleteRequest();
 
     std::string extractBoundary(const std::string& content_type);
-    const std::string getRootPath() const;
 };
 
 #endif

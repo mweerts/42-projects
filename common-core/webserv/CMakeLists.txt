@@ -22,12 +22,13 @@ set(SOURCES
 	
     srcs/handlers/cgi_handler.cpp
     srcs/handlers/cgi_process.cpp
+    srcs/handlers/RequestHandler.cpp
 	
     # srcs/http/HttpRequest.cpp
     srcs/http/HttpRequest.cpp
+    srcs/http/MultipartParser.cpp
     srcs/http/HttpResponse.cpp
     srcs/http/MimeTypes.cpp
-    srcs/http/RequestHandler.cpp
     srcs/http/RequestParser.cpp
     srcs/http/utils.cpp
     

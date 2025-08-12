@@ -23,7 +23,7 @@
 #include <iostream>
 
 #include "Logger.hpp"
-#include "../http/RequestHandler.hpp"
+#include "../handlers/RequestHandler.hpp"
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
 

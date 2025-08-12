@@ -9,15 +9,15 @@
 
 #include "../handlers/cgi_handler.hpp"
 #include "../parsing/GlobalConfig.hpp"
-#include "HttpRequest.hpp"
-#include "HttpResponse.hpp"
+#include "../http/HttpRequest.hpp"
+#include "../http/HttpResponse.hpp"
 #include "Logger.hpp"
-#include "MimeTypes.hpp"
-#include "MultipartParser.hpp"
+#include "../http/MimeTypes.hpp"
+#include "../http/MultipartParser.hpp"
 #include "http_status_code.hpp"
-#include "utils.hpp"
-
-// TODO create upload dir if not exists
+#include "lib/utils.hpp"
+#include "lib/file_utils.hpp"
+#include "../http/utils.hpp"
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -171,12 +171,12 @@ void RequestHandler::processGetRequest() {
         }
     }
 	
-    if (isDirectory(fullPath)) {
+    if (lib::isDirectory(fullPath)) {
         if (location && location->getIndex() &&
-            isReadable(fullPath + "/" + *location->getIndex())) {
+            lib::isReadable(fullPath + "/" + *location->getIndex())) {
             fullPath += "/" + *location->getIndex();
         } else if (_serverConfig.getIndex() &&
-                   isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+                   lib::isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
@@ -185,7 +185,7 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    if (isDirectory(fullPath)) {
+    if (lib::isDirectory(fullPath)) {
         if (_autoindex) {
             _response.setStatusCode(HTTP_OK);
             _response.setContent(getHtmlIndexPage(_rootPath, _internalUri));
@@ -196,7 +196,7 @@ void RequestHandler::processGetRequest() {
             return;
         }
     }
-    if (!isReadable(fullPath) || !isFile(fullPath)) {
+    if (!lib::isReadable(fullPath) || !lib::isFile(fullPath)) {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
@@ -238,7 +238,7 @@ void RequestHandler::processPostRequest() {
 
     if (_request.getContentType().find("multipart/form-data") !=
         std::string::npos) {
-        if (_serverConfig.getUplaodDir().empty()) {
+        if (_serverConfig.getUploadDir().empty()) {
             _response.setStatusCode(HTTP_FORBIDDEN);
             return;
         }
@@ -250,8 +250,8 @@ void RequestHandler::processPostRequest() {
             return;
         }
 
-        Logger::debug() << "upload dir: " << _serverConfig.getUplaodDir();
-        MultipartParser parser(boundary, _serverConfig.getUplaodDir());
+        Logger::debug() << "upload dir: " << _serverConfig.getUploadDir();
+        MultipartParser parser(boundary, _serverConfig.getUploadDir());
         std::string     chunk;
         while (_request.readBodyChunk(chunk)) {
             if (!parser.parseChunk(chunk)) {
