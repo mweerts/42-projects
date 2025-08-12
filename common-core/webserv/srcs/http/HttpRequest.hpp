@@ -63,8 +63,9 @@ class HttpRequest {
 
     bool readBodyChunkFromMemory(std::string& chunk, size_t max_bytes) const;
     bool readBodyChunkFromFile(std::string& chunk, size_t max_bytes) const;
-};
 
+    // URL decoding utility
+};
 std::string   urlDecode(const std::string& encoded);
 std::ostream& operator<<(std::ostream& os, const HttpRequest& request);
 

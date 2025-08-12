@@ -44,6 +44,8 @@ class RequestHandler {
     void processPostRequest();
     void processDeleteRequest();
 
+    std::string extractBoundary(const std::string& content_type);
+    const std::string getRootPath() const;
 };
 
 #endif

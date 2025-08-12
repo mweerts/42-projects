@@ -13,6 +13,7 @@
 #include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
+#include "MultipartParser.hpp"
 #include "http_status_code.hpp"
 #include "utils.hpp"
 
@@ -90,7 +91,7 @@ void RequestHandler::handleRequest() {
                 MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
             _response.setLastModified(
                 getLastModifiedTime(_rootPath + "/" + *errorPage));
-        } else {
+        } else if (_response.getStatusCode() != HTTP_NO_CONTENT) {
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
         }
@@ -235,25 +236,45 @@ void RequestHandler::processPostRequest() {
     std::ofstream file;
     std::string   fullPath = _rootPath + _internalUri;
 
-    if (pathExist(fullPath) && isFile(fullPath)) {
-        _response.setStatusCode(HTTP_NO_CONTENT);
-        return;
-    } else {
-        file.open(fullPath.c_str(), std::ofstream::out | std::ofstream::trunc);
-        if (file.fail()) {
+    if (_request.getContentType().find("multipart/form-data") !=
+        std::string::npos) {
+        if (_serverConfig.getUplaodDir().empty()) {
             _response.setStatusCode(HTTP_FORBIDDEN);
             return;
         }
-        if (_request.getBodySize() == 0) {
-            _response.setStatusCode(HTTP_NO_CONTENT);
-            file.close();
+
+        std::string boundary = extractBoundary(_request.getContentType());
+        if (boundary.empty()) {
+            _response.setStatusCode(HTTP_BAD_REQUEST);
+            _response.setContent("Missing boundary in multipart data");
             return;
         }
-        file << _request.readBodyAll();
-        file.close();
+
+        Logger::debug() << "upload dir: " << _serverConfig.getUplaodDir();
+        MultipartParser parser(boundary, _serverConfig.getUplaodDir());
+        std::string     chunk;
+        while (_request.readBodyChunk(chunk)) {
+            if (!parser.parseChunk(chunk)) {
+                _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+                _response.setContent("Failed to parse multipart data");
+                return;
+            }
+        }
+        if (parser.hasError()) {
+            _response.setStatusCode(HTTP_BAD_REQUEST);
+            _response.setContent("Multipart parsing error: " +
+                                 parser.getErrorMessage());
+            return;
+        }
+        if (!parser.isComplete()) {
+            _response.setStatusCode(HTTP_BAD_REQUEST);
+            _response.setContent("Incomplete multipart data");
+            return;
+        }
         _response.setStatusCode(HTTP_CREATED);
         return;
     }
+     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
 }
 
 void RequestHandler::processDeleteRequest() {
@@ -313,4 +334,36 @@ bool RequestHandler::processCgi() {
     }
     
     return false;  // CGI still processing
+}
+
+std::string RequestHandler::extractBoundary(const std::string& content_type) {
+    // Chercher "boundary=" dans le Content-Type
+    size_t boundary_pos = content_type.find("boundary=");
+    if (boundary_pos == std::string::npos) {
+        return "";
+    }
+
+    boundary_pos += 9;  // Longueur de "boundary="
+
+    // La boundary peut être entre guillemets ou non
+    std::string boundary;
+    if (boundary_pos < content_type.size() &&
+        content_type[boundary_pos] == '"') {
+        // Boundary entre guillemets
+        boundary_pos++;
+        size_t end_pos = content_type.find('"', boundary_pos);
+        if (end_pos != std::string::npos) {
+            boundary =
+                content_type.substr(boundary_pos, end_pos - boundary_pos);
+        }
+    } else {
+        // Boundary sans guillemets (jusqu'au prochain ;, espace ou fin)
+        size_t end_pos = content_type.find_first_of("; \t\r\n", boundary_pos);
+        if (end_pos == std::string::npos) {
+            end_pos = content_type.size();
+        }
+        boundary = content_type.substr(boundary_pos, end_pos - boundary_pos);
+    }
+
+    return boundary;
 }
