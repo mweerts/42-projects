@@ -13,16 +13,16 @@
 #ifndef CLIENT_CONNECTION_HPP
 #define CLIENT_CONNECTION_HPP
 
+#include <sys/poll.h>
+
 #include <ctime>
 #include <string>
 #include <vector>
-#include <sys/poll.h>
 
-#include "../http/RequestParser.hpp"
+#include "../handlers/file_streaming.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
-#include "../handlers/static_stream.hpp"
-#include "../handlers/upload_stream.hpp"
+#include "../http/RequestParser.hpp"
 #include "lib/stream_buffer.hpp"
 
 class ServerConfig;
@@ -31,11 +31,7 @@ class CgiHandler;
 
 class ClientConnection {
    public:
-    enum State {
-        READING_REQUEST,
-        WRITING_RESPONSE,
-        ERROR
-    };
+    enum State { READING_REQUEST, WRITING_RESPONSE, ERROR };
 
    public:
     explicit ClientConnection(int socket_fd, const ServerConfig& server_config);
@@ -76,14 +72,14 @@ class ClientConnection {
     bool  is_closed_;
 
     // Streaming helpers
-    StaticFileStream static_stream_;
-    UploadFileStream upload_stream_;
-    StreamBuffer     outBuf_;
-    StreamBuffer     inBuf_;
-    std::string      headerBuf_;
-    size_t           headerSent_;
-    size_t           bodySent_;
-    bool             sendingHeaders_;
+    FileReadStream  read_stream_;
+    FileWriteStream write_stream_;
+    StreamBuffer    outBuf_;
+    StreamBuffer    inBuf_;
+    std::string     headerBuf_;
+    size_t          headerSent_;
+    size_t          bodySent_;
+    bool            sendingHeaders_;
 
    private:
     void UpdateActivity();

@@ -22,8 +22,7 @@ set(SOURCES
 	
     srcs/handlers/cgi_handler.cpp
     srcs/handlers/cgi_process.cpp
-    srcs/handlers/upload_stream.cpp
-    srcs/handlers/static_stream.cpp
+    srcs/handlers/file_streaming.cpp
     srcs/handlers/RequestHandler.cpp
 	
     # srcs/http/HttpRequest.cpp
@@ -45,6 +44,7 @@ set(SOURCES
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
     srcs/lib/file_utils.cpp
+	srcs/lib/stream_buffer.cpp
 	srcs/lib/file_io.cpp
     srcs/lib/utils.cpp
     srcs/tests.cpp

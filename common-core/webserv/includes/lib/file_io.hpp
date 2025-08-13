@@ -15,20 +15,20 @@
 
 #include <string>
 
-// Lightweight wrappers for file streaming roles used by the event loop.
-// Note: we do not read errno after read/write; caller uses poll revents for errors.
-
 class FileReader {
    public:
     FileReader();
     ~FileReader();
 
-    bool   openForRead(const std::string& path);
-    void   close();
-    int    fd() const;
-    bool   eof() const;
-    bool   hasError() const;
-    // Read at most once into provided buffer (appends to it). Returns bytes read, 0 on EOF, -1 on would-block or error.
+    bool openForRead(const std::string& path);
+    void close();
+    int  fd() const;
+    bool eof() const;
+    bool hasError() const;
+
+    /*
+     * Returns bytes read, 0 on EOF, -1 on would-block or error.
+     */
     ssize_t readOnce(char* buf, size_t maxLen);
 
    private:
@@ -42,11 +42,14 @@ class FileWriter {
     FileWriter();
     ~FileWriter();
 
-    bool   openForWrite(const std::string& path, bool append);
-    void   close();
-    int    fd() const;
-    bool   hasError() const;
-    // Write at most once from provided buffer. Returns bytes written, 0 if nothing written, -1 on would-block or error.
+    bool openForWrite(const std::string& path, bool append);
+    void close();
+    int  fd() const;
+    bool hasError() const;
+
+    /*
+     * Returns bytes written, 0 if nothing written, -1 on would-block or error.
+     */
     ssize_t writeOnce(const char* buf, size_t len);
 
    private:
@@ -55,5 +58,3 @@ class FileWriter {
 };
 
 #endif
-
-

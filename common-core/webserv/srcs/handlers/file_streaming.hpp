@@ -10,41 +10,57 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STATIC_STREAM_HPP
-#define STATIC_STREAM_HPP
+#ifndef FILE_STREAMING_HPP
+#define FILE_STREAMING_HPP
 
 #include <string>
-
 #include "lib/file_io.hpp"
 #include "lib/stream_buffer.hpp"
 
-// Glue object to stream a static file to a client socket using one-op-per-event.
-class StaticFileStream {
+/*
+ * Streams a static file to a client socket, reading from the file into a buffer
+ * and allowing the server to send buffered data one chunk per event.
+ */
+class FileReadStream {
    public:
-    StaticFileStream();
+    FileReadStream();
+    ~FileReadStream();
 
-    // Returns false on open failure (caller maps to HTTP error)
     bool open(const std::string& path);
     void close();
 
-    // Poll integration
-    bool wantsFileRead() const;  // poll for POLLIN on file
+    bool wantsFileRead() const;
     int  fileFd() const;
 
-    // I/O steps (one call per ready event)
-    // Returns: bytes read, 0 on EOF, -1 on no progress/error
     ssize_t onFileReadable();
-
-    // Buffer exposed to client writer
     StreamBuffer& outBuffer();
-    bool          isEof() const;
+	
+    bool isEof() const;
 
    private:
     FileReader   file_;
     StreamBuffer outBuf_;
-    char         scratch_[4096];
+    char         readBuffer_[4096];
+};
+
+/*
+ * Streams a file to a client socket, writing from a buffer to the file.
+ */
+class FileWriteStream {
+   public:
+    FileWriteStream();
+    ~FileWriteStream();
+
+    bool open(const std::string& path, bool append);
+    void close();
+
+    bool wantsFileWrite(const StreamBuffer& inBuf) const;
+    int  fileFd() const;
+
+    ssize_t onFileWritable(StreamBuffer& inBuf);
+
+   private:
+    FileWriter file_;
 };
 
 #endif
-
-

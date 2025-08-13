@@ -17,46 +17,30 @@
 
 #include <string>
 
-// Simple single-producer/single-consumer byte buffer with watermarks.
-// Designed to make one-op-per-event I/O straightforward.
+/*
+ * Simple single-producer/single-consumer byte buffer with watermarks.
+ */
 class StreamBuffer {
+    static const size_t DEFAULT_LOW_WATERMARK = 16384;   // 16kb
+    static const size_t DEFAULT_HIGH_WATERMARK = 65536;  // 64kb
+
    public:
-    StreamBuffer(size_t highWatermark, size_t lowWatermark)
-        : buffer_(), high_(highWatermark), low_(lowWatermark) {}
+    explicit StreamBuffer(size_t highWatermark = DEFAULT_HIGH_WATERMARK,
+                 size_t lowWatermark = DEFAULT_LOW_WATERMARK);
+    ~StreamBuffer();
 
-    // Producer side
-    bool wantProducer() const {
-        return buffer_.size() < high_;
-    }
-    void append(const char* data, size_t length) {
-        buffer_.append(data, length);
-    }
+    bool wantProducer() const;
+    bool wantConsumer() const;
+	
+    void append(const char* data, size_t length);
+    void consume(size_t n);
 
-    // Consumer side
-    bool wantConsumer() const {
-        return !buffer_.empty();
-    }
-    size_t size() const {
-        return buffer_.size();
-    }
-    bool empty() const {
-        return buffer_.empty();
-    }
+    size_t size() const;
+    bool isFull() const;
+    bool empty() const;
 
-    // Expose direct read-only access for sending
-    const char* data() const {
-        return buffer_.c_str();
-    }
+    const char* data() const;
 
-    // Consume n bytes from the front
-    void consume(size_t n) {
-        (void)low_;
-        if (n >= buffer_.size()) {
-            buffer_.clear();
-        } else {
-            buffer_.erase(0, n);
-        }
-    }
 
    private:
     std::string buffer_;

@@ -37,8 +37,8 @@ ClientConnection::ClientConnection(int                 socket_fd,
       request_handler_(NULL),
       state_(READING_REQUEST),
       is_closed_(false),
-      static_stream_(),
-      upload_stream_(),
+      read_stream_(),	
+      write_stream_(),
       outBuf_(65536, 16384),
       inBuf_(65536, 16384),
       headerBuf_(),
@@ -159,7 +159,7 @@ bool ClientConnection::HandleRead() {
                 sendingHeaders_ = true;
                 // If static file, open it for streaming
                 if (request_handler_->isStaticFileResponse()) {
-                    static_stream_.open(request_handler_->getStaticFilePath());
+                    read_stream_.open(request_handler_->getStaticFilePath());
                 }
             }
 
@@ -225,7 +225,7 @@ bool ClientConnection::HandleWrite() {
 
     // Static file streaming: send from buffer one chunk per POLLOUT
     if (!sendingHeaders_ && request_handler_->isStaticFileResponse()) {
-        StreamBuffer& ob = static_stream_.outBuffer();
+        StreamBuffer& ob = read_stream_.outBuffer();
         if (ob.wantConsumer()) {
             ssize_t n = send(socket_fd_, ob.data(), ob.size(), 0);
             if (n < 0) {
@@ -237,8 +237,8 @@ bool ClientConnection::HandleWrite() {
             return true;
         }
         // If file is EOF and buffer drained, finish response
-        if (static_stream_.isEof() && ob.empty()) {
-            static_stream_.close();
+        if (read_stream_.isEof() && ob.empty()) {
+            read_stream_.close();
             // fall through to finalization below
         }
     }
@@ -246,7 +246,7 @@ bool ClientConnection::HandleWrite() {
     // Finalization: only when headers sent and body sent or streaming finished
     bool headersDone = (!sendingHeaders_ && headerSent_ >= headerBuf_.size());
     bool nonStaticDone = (!request_handler_->isStaticFileResponse() && bodySent_ >= request_handler_->getResponse().getContent().size());
-    bool staticDone = (request_handler_->isStaticFileResponse() && static_stream_.isEof() && static_stream_.outBuffer().empty());
+    bool staticDone = (request_handler_->isStaticFileResponse() && read_stream_.isEof() && read_stream_.outBuffer().empty());
     if (headersDone && (nonStaticDone || staticDone)) {
         Logger::debug() << "Response sent to client " << socket_fd_;
         if (request_handler_->shouldCloseConnection()) {
@@ -311,8 +311,8 @@ ClientConnection::State ClientConnection::GetState() const {
 
 void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
     if (state_ == WRITING_RESPONSE && request_handler_ && request_handler_->isStaticFileResponse()) {
-        if (static_stream_.wantsFileRead()) {
-            pollfd p; p.fd = static_stream_.fileFd(); p.events = POLLIN; p.revents = 0; out.push_back(p);
+        if (read_stream_.wantsFileRead()) {
+            pollfd p; p.fd = read_stream_.fileFd(); p.events = POLLIN; p.revents = 0; out.push_back(p);
         }
     }
     // Include CGI pipes too
@@ -326,8 +326,8 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
 
 bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     if (request_handler_ && request_handler_->isStaticFileResponse()) {
-        if (fd == static_stream_.fileFd() && (revents & POLLIN)) {
-            (void)static_stream_.onFileReadable();
+        if (fd == read_stream_.fileFd() && (revents & POLLIN)) {
+            (void)read_stream_.onFileReadable();
         }
     }
     if (request_handler_ && request_handler_->hasCgiRunning()) {

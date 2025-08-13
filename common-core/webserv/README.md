@@ -7,7 +7,7 @@
 ## To do cgi 
 
 * Upload streaming:
-	* Wire UploadFileStream into the event loop:
+	* Wire FileWriteStream into the event loop:
 		* Client POLLIN → inBuf_ → file POLLOUT (one write per ready event).
 		* When body complete and inBuf_ empty → close file → send 201/204.
 * Backpressure toggling:
@@ -31,7 +31,7 @@
 
 ## To do Lucas ## 
 - [ ] handle transfer-encoding header?
-- [ ] Integrate uploads (POST) with UploadFileStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure.
+- [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure.
 - [ ] Add buffer thresholds (64KB/16KB) to enable/disable interests dynamically.
 - [ ] Implemented non-blocking static file streaming via file FDs + poll; one-op-per-event.
 - [ ] Added header-only send and partial body sending.
