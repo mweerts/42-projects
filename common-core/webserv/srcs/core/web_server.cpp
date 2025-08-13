@@ -19,8 +19,7 @@
 
 #include "Logger.hpp"
 
-volatile sig_atomic_t g_shutdown_requested =
-    0;  // Global shutdown flag for signal handling
+volatile sig_atomic_t g_shutdown_requested = 0;
 
 void signal_handler(int signal) {
     if (signal == SIGINT || signal == SIGTERM) {

@@ -74,8 +74,6 @@ class ClientConnection {
     // Streaming helpers
     FileReadStream  read_stream_;
     FileWriteStream write_stream_;
-    StreamBuffer    outBuf_;
-    StreamBuffer    inBuf_;
     std::string     headerBuf_;
     size_t          headerSent_;
     size_t          bodySent_;

@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// this is the tcp handler maybe it should be called tcp_manager
-
 #include "connection_manager.hpp"
 
 #include <arpa/inet.h>
@@ -38,68 +36,6 @@ ConnectionManager::~ConnectionManager() {
     clients_.clear();
 }
 
-void ConnectionManager::Run() {
-    running_ = true;
-
-    while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
-        SetupPolling();
-        int ready = poll(poll_fds_.data(), poll_fds_.size(),
-                         100);  // timeout for event in ms
-
-        if (ready < 0 && errno != EINTR) {
-            Logger::critical() << "Poll error: " << strerror(errno);
-            break;
-        }
-
-        if (ready == 0) {
-            CleanupTimedOutClients();
-            continue;
-        }
-
-        for (size_t i = 0; i < poll_fds_.size() && ready > 0; ++i) {
-            if (poll_fds_[i].revents == 0) {
-                continue;
-            }
-
-            --ready;
-            int fd = poll_fds_[i].fd;
-
-            // Route aux fds (file/cgipipe) back to their owners
-            std::map<int, ClientConnection*>::iterator a = aux_fd_owner_.find(fd);
-            if (a != aux_fd_owner_.end()) {
-                if (!a->second->HandleAuxEvent(fd, poll_fds_[i].revents)) {
-                    RemoveClient(a->second->GetSocketFd());
-                }
-                continue;
-            }
-
-            if (IsServerSocket(fd)) {
-                HandleNewConnection(fd);
-            } else {
-                HandleClientEvent(fd, poll_fds_[i].revents);
-            }
-        }
-    }
-    std::cout << "\n";
-}
-
-void ConnectionManager::Stop() {
-    running_ = false;
-
-    while (!clients_.empty()) {
-        RemoveClient(clients_.begin()->first);
-    }
-
-    Logger::debug() << "ConnectionManager closed all connections";
-}
-
-void ConnectionManager::AddServer(TcpServer* server) {
-    int listening_fd = server->GetListenSocket();
-    if (server && listening_fd >= 0) {
-        servers_[listening_fd] = server;
-        Logger::debug() << "Added server with fd=" << listening_fd;
-    }
-}
 
 void ConnectionManager::SetupPolling() {
     poll_fds_.clear();
@@ -140,6 +76,69 @@ void ConnectionManager::SetupPolling() {
             poll_fds_.push_back(extra[k]);
             aux_fd_owner_[extra[k].fd] = client;
         }
+    }
+}
+
+void ConnectionManager::Run() {
+    running_ = true;
+
+    while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
+        SetupPolling();
+        int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
+
+        if (ready < 0 && errno != EINTR) {
+            Logger::critical() << "Poll error: " << strerror(errno);
+            break;
+        }
+
+        if (ready == 0) {
+            CleanupTimedOutClients();
+            continue;
+        }
+
+        for (size_t i = 0; i < poll_fds_.size() && ready > 0; ++i) {
+            if (poll_fds_[i].revents == 0) {
+                continue;
+            }
+
+            --ready;
+            int fd = poll_fds_[i].fd;
+
+            // Route aux fds (file/cgipipe) back to their owners
+            std::map<int, ClientConnection*>::iterator a =
+                aux_fd_owner_.find(fd);
+            if (a != aux_fd_owner_.end()) {
+                if (!a->second->HandleAuxEvent(fd, poll_fds_[i].revents)) {
+                    RemoveClient(a->second->GetSocketFd());
+                }
+                continue;
+            }
+
+            if (IsServerSocket(fd)) {
+                HandleNewConnection(fd);
+            } else {
+                HandleClientEvent(fd, poll_fds_[i].revents);
+            }
+        }
+    }
+    std::cout << "\n";
+}
+
+void ConnectionManager::Stop() {
+    running_ = false;
+
+    while (!clients_.empty()) {
+        RemoveClient(clients_.begin()->first);
+    }
+
+    Logger::debug() << "ConnectionManager closed all connections";
+}
+
+void ConnectionManager::AddServer(TcpServer* server) {
+    int listening_fd = server->GetListenSocket();
+    if (server && listening_fd >= 0) {
+        servers_[listening_fd] = server;
+        Logger::debug() << "Added server with fd=" << listening_fd;
     }
 }
 

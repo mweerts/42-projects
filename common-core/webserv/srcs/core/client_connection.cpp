@@ -22,9 +22,9 @@
 #include <ctime>
 #include <iostream>
 #include <vector>
-#include <sys/poll.h>
-#include "Logger.hpp"
+
 #include "../handlers/RequestHandler.hpp"
+#include "Logger.hpp"
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
 
@@ -37,10 +37,8 @@ ClientConnection::ClientConnection(int                 socket_fd,
       request_handler_(NULL),
       state_(READING_REQUEST),
       is_closed_(false),
-      read_stream_(),	
+      read_stream_(),
       write_stream_(),
-      outBuf_(65536, 16384),
-      inBuf_(65536, 16384),
       headerBuf_(),
       headerSent_(0),
       bodySent_(0),
@@ -84,8 +82,6 @@ bool ClientConnection::HandleEvent(short revents) {
                 return HandleWrite();
             }
             break;
-            
-        // check if all errors are handled when reaching this
         case ERROR: return false;
         default: return false;
     }
@@ -97,10 +93,13 @@ bool ClientConnection::HandleEvent(short revents) {
     return true;
 }
 
+// utility function to check if the socket has an error instead of using errno
 static bool checkSocketError(int socket_fd) {
     int       err = 0;
     socklen_t len = sizeof(err);
     getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len);
+    if (err != 0)
+        Logger::error() << "Socket error on client " << socket_fd;
     return err;
 }
 
@@ -108,11 +107,7 @@ bool ClientConnection::HandleRead() {
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
 
     if (bytes_read < 0) {
-        if (checkSocketError(socket_fd_)) {  // because we can't use errno here
-            Logger::error() << "Socket error on client " << socket_fd_;
-            return false;
-        }
-        return true;
+        return checkSocketError(socket_fd_);
     }
 
     if (bytes_read == 0) {
@@ -127,10 +122,9 @@ bool ClientConnection::HandleRead() {
 
     switch (parse_status) {
         case RequestParser::ERROR: {
-            StatusCode  status_code = request_parser_->getStatusCode();
-            std::string status_message = request_parser_->getStatusMessage();
-            Logger::error() << "Error parsing request: " << status_code << " "
-                            << status_message;
+            Logger::error()
+                << "Error parsing request: " << request_parser_->getStatusCode()
+                << " " << request_parser_->getStatusMessage();
             return false;
         }
         case RequestParser::NEED_MORE_DATA: {
@@ -179,22 +173,22 @@ bool ClientConnection::HandleWrite() {
     if (request_handler_->hasCgiRunning()) {
         return true;
     }
-    
+
     // First send headers partially
     if (sendingHeaders_ && headerSent_ < headerBuf_.size()) {
         const char* data = headerBuf_.c_str() + headerSent_;
-        size_t      len  = headerBuf_.size() - headerSent_;
-        ssize_t     n    = send(socket_fd_, data, len, 0);
+        size_t      len = headerBuf_.size() - headerSent_;
+        ssize_t     n = send(socket_fd_, data, len, 0);
         if (n < 0) {
             if (checkSocketError(socket_fd_)) {
                 Logger::error() << "Send error on client " << socket_fd_;
                 return false;
             }
-            return true; // would block
+            return true;  // would block
         }
         headerSent_ += static_cast<size_t>(n);
         if (headerSent_ < headerBuf_.size()) {
-            return true; // continue later
+            return true;  // continue later
         }
         sendingHeaders_ = false;
         // Respect one-write-per-event: defer body send to next POLLOUT
@@ -212,12 +206,14 @@ bool ClientConnection::HandleWrite() {
         if (bodySent_ < body.size()) {
             const char* bodyPtr = body.c_str() + bodySent_;
             size_t      bodyLen = body.size() - bodySent_;
-            ssize_t     n       = send(socket_fd_, bodyPtr, bodyLen, 0);
+            ssize_t     n = send(socket_fd_, bodyPtr, bodyLen, 0);
             if (n < 0) {
-                if (checkSocketError(socket_fd_)) return false;
+                if (checkSocketError(socket_fd_))
+                    return false;
                 return true;
             }
-            if (n > 0) bodySent_ += static_cast<size_t>(n);
+            if (n > 0)
+                bodySent_ += static_cast<size_t>(n);
             // After one body write, return to respect one-op-per-event
             return true;
         }
@@ -229,10 +225,12 @@ bool ClientConnection::HandleWrite() {
         if (ob.wantConsumer()) {
             ssize_t n = send(socket_fd_, ob.data(), ob.size(), 0);
             if (n < 0) {
-                if (checkSocketError(socket_fd_)) return false;
+                if (checkSocketError(socket_fd_))
+                    return false;
                 return true;
             }
-            if (n > 0) ob.consume(static_cast<size_t>(n));
+            if (n > 0)
+                ob.consume(static_cast<size_t>(n));
             // One write done for this event
             return true;
         }
@@ -245,8 +243,12 @@ bool ClientConnection::HandleWrite() {
 
     // Finalization: only when headers sent and body sent or streaming finished
     bool headersDone = (!sendingHeaders_ && headerSent_ >= headerBuf_.size());
-    bool nonStaticDone = (!request_handler_->isStaticFileResponse() && bodySent_ >= request_handler_->getResponse().getContent().size());
-    bool staticDone = (request_handler_->isStaticFileResponse() && read_stream_.isEof() && read_stream_.outBuffer().empty());
+    bool nonStaticDone =
+        (!request_handler_->isStaticFileResponse() &&
+         bodySent_ >= request_handler_->getResponse().getContent().size());
+    bool staticDone =
+        (request_handler_->isStaticFileResponse() && read_stream_.isEof() &&
+         read_stream_.outBuffer().empty());
     if (headersDone && (nonStaticDone || staticDone)) {
         Logger::debug() << "Response sent to client " << socket_fd_;
         if (request_handler_->shouldCloseConnection()) {
@@ -254,8 +256,10 @@ bool ClientConnection::HandleWrite() {
             Close();
             return false;
         }
-        delete request_handler_; request_handler_ = NULL;
-        delete request_parser_;  request_parser_  = NULL;
+        delete request_handler_;
+        request_handler_ = NULL;
+        delete request_parser_;
+        request_parser_ = NULL;
         current_request_.reset();
         state_ = READING_REQUEST;
         request_parser_ = new RequestParser(current_request_, server_config_);
@@ -310,17 +314,35 @@ ClientConnection::State ClientConnection::GetState() const {
 }
 
 void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
-    if (state_ == WRITING_RESPONSE && request_handler_ && request_handler_->isStaticFileResponse()) {
+    if (state_ == WRITING_RESPONSE && request_handler_ &&
+        request_handler_->isStaticFileResponse()) {
         if (read_stream_.wantsFileRead()) {
-            pollfd p; p.fd = read_stream_.fileFd(); p.events = POLLIN; p.revents = 0; out.push_back(p);
+            pollfd p;
+            p.fd = read_stream_.fileFd();
+            p.events = POLLIN;
+            p.revents = 0;
+            out.push_back(p);
         }
     }
     // Include CGI pipes too
-    if (state_ == WRITING_RESPONSE && request_handler_ && request_handler_->hasCgiRunning()) {
+    if (state_ == WRITING_RESPONSE && request_handler_ &&
+        request_handler_->hasCgiRunning()) {
         int inFd = request_handler_->getCgiInputPipe();
         int outFd = request_handler_->getCgiOutputPipe();
-        if (inFd != -1) { pollfd p; p.fd = inFd; p.events = POLLOUT; p.revents = 0; out.push_back(p); }
-        if (outFd != -1) { pollfd p; p.fd = outFd; p.events = POLLIN;  p.revents = 0; out.push_back(p); }
+        if (inFd != -1) {
+            pollfd p;
+            p.fd = inFd;
+            p.events = POLLOUT;
+            p.revents = 0;
+            out.push_back(p);
+        }
+        if (outFd != -1) {
+            pollfd p;
+            p.fd = outFd;
+            p.events = POLLIN;
+            p.revents = 0;
+            out.push_back(p);
+        }
     }
 }
 
