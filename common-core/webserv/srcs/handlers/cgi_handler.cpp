@@ -78,6 +78,7 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
     cgiBin_.clear();
     cgiBinPath_ = cgiBin.getRoot();
+    Logger::debug() << "Initializing CGI bin at: " << cgiBinPath_;
     if (cgiBinPath_.empty()) {
         Logger::error() << "No path configured for cgi";
         return;
@@ -106,6 +107,8 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
 
+    Logger::debug() << "Checking if URI is CGI script: " << uri
+                    << " -> " << script_path;
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
 
@@ -330,8 +333,8 @@ static void parseCgiHeadersAndBody(const std::string& raw,
     std::string        line;
     bool               hasStatus = false;
     while (std::getline(hs, line)) {
-        if (!line.empty() && line.back() == '\r')
-            line.pop_back();
+        if (!line.empty() && line[line.size() - 1] == '\r')
+            line.erase(line.size() - 1);
         if (line.empty())
             continue;
         size_t p = line.find(':');

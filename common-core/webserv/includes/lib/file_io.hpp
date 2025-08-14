@@ -14,6 +14,7 @@
 #define FILE_IO_HPP
 
 #include <string>
+#include <sys/types.h>
 
 class FileReader {
    public:

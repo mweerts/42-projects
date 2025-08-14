@@ -1,7 +1,6 @@
 # webserver
 
 ## To discuss
-- right now the cgi is non blocking but not truely asynchronous, should we still implement it? (means more state and complexity as well as more potential bugs)
 - does the parsing protect from difference between number of cgi language and paths?
 - make content-length not an int, it's not enough and could cause issue.
 

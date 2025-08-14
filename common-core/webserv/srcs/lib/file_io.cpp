@@ -14,6 +14,7 @@
 
 #include <fcntl.h>
 #include <unistd.h>
+#include <cerrno>
 
 FileReader::FileReader() : fd_(-1), eof_(false), err_(false) {}
 FileReader::~FileReader() {

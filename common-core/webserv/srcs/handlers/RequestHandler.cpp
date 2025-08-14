@@ -8,16 +8,16 @@
 #include <fstream>
 
 #include "../handlers/cgi_handler.hpp"
-#include "../parsing/GlobalConfig.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
-#include "Logger.hpp"
 #include "../http/MimeTypes.hpp"
 #include "../http/MultipartParser.hpp"
-#include "http_status_code.hpp"
-#include "lib/utils.hpp"
-#include "lib/file_utils.hpp"
 #include "../http/utils.hpp"
+#include "../parsing/GlobalConfig.hpp"
+#include "Logger.hpp"
+#include "http_status_code.hpp"
+#include "lib/file_utils.hpp"
+#include "lib/utils.hpp"
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -139,6 +139,9 @@ void RequestHandler::processRequest() {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
         }
     } else if (method == "POST") {
+        if (!location) {
+            Logger::warning() << "No location found for POST request";
+        }
         if (!location || (location && location->getMethodIsAllowed("POST")))
             processPostRequest();
         else
@@ -170,13 +173,14 @@ void RequestHandler::processGetRequest() {
             return;
         }
     }
-	
+
     if (lib::isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             lib::isReadable(fullPath + "/" + *location->getIndex())) {
             fullPath += "/" + *location->getIndex();
         } else if (_serverConfig.getIndex() &&
-                   lib::isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+                   lib::isReadable(fullPath + "/" +
+                                   *_serverConfig.getIndex())) {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
@@ -202,9 +206,12 @@ void RequestHandler::processGetRequest() {
     }
 
     // Mark for streaming by connection layer
-	// TODO: make a utils function for this and maybe move it to the response streamer
-	// TODO: make a utils function for this and maybe move it to the response streamer
-	// TODO: make a utils function for this and maybe move it to the response streamer
+    // TODO: make a utils function for this and maybe move it to the response
+    // streamer
+    // TODO: make a utils function for this and maybe move it to the response
+    // streamer
+    // TODO: make a utils function for this and maybe move it to the response
+    // streamer
     _isStaticFile = true;
     _staticFilePath = fullPath;
     struct stat st;
@@ -216,7 +223,7 @@ void RequestHandler::processGetRequest() {
 }
 
 void RequestHandler::processPostRequest() {
-	// make a utils function for this because it's the same for the get request
+    // make a utils function for this because it's the same for the get request
     CgiHandler tempCgiHandler(_request, &_serverConfig);
     if (tempCgiHandler.isCgiScript(_internalUri)) {
         _cgiHandler = new CgiHandler(_request, &_serverConfig);
@@ -272,7 +279,7 @@ void RequestHandler::processPostRequest() {
         _response.setStatusCode(HTTP_CREATED);
         return;
     }
-     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
+    _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
 }
 
 void RequestHandler::processDeleteRequest() {
@@ -310,7 +317,7 @@ bool RequestHandler::processCgi() {
     if (!_cgiHandler || !_cgiHandler->isProcessing()) {
         return false;
     }
-    
+
     if (_cgiHandler->isTimedOut()) {
         Logger::warning() << "CGI process timed out";
         _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
@@ -319,7 +326,7 @@ bool RequestHandler::processCgi() {
         _cgiHandler = NULL;
         return true;
     }
-    
+
     if (_cgiHandler->processCgiIO()) {
         _cgiHandler->buildCgiResponse(_response);
         _cgiHandler->cleanupAsyncCgi();
@@ -327,22 +334,25 @@ bool RequestHandler::processCgi() {
         _cgiHandler = NULL;
         return true;
     }
-    
+
     return false;
 }
 
 int RequestHandler::getCgiInputPipe() const {
-    if (_cgiHandler) return _cgiHandler->getInputPipe();
+    if (_cgiHandler)
+        return _cgiHandler->getInputPipe();
     return -1;
 }
 
 int RequestHandler::getCgiOutputPipe() const {
-    if (_cgiHandler) return _cgiHandler->getOutputPipe();
+    if (_cgiHandler)
+        return _cgiHandler->getOutputPipe();
     return -1;
 }
 
 bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
-    if (!_cgiHandler) return true;
+    if (!_cgiHandler)
+        return true;
     bool done = _cgiHandler->handleFdEvent(fd, revents);
     if (done) {
         _cgiHandler->buildCgiResponse(_response);

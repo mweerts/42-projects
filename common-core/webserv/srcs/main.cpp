@@ -42,14 +42,13 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         } else {
-            if (!config.loadConfig("config/lucas.conf")) {
+            if (!config.loadConfig("config/max.conf")) {
                 Logger::error() << "Failed to load default configuration file";
                 return 1;
             }
         }
 
         initializeCgiBin(config.getServers());
-
         WebServer server(config);
         if (!server.Start()) {
             Logger::error() << "Failed to start server";
