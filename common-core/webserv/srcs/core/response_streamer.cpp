@@ -16,9 +16,14 @@
 
 #include "../handlers/file_streaming.hpp"
 #include "../http/HttpResponse.hpp"
-#include "lib/stream_buffer.hpp"
 #include "Logger.hpp"
+#include "lib/stream_buffer.hpp"
 #include "lib/utils.hpp"
+
+// TODO:
+// - [ ] make a wrapper for send
+// - [ ] remove excessive logging
+// - Name "-2" (try again later) for Clarity
 
 ResponseStreamer::ResponseStreamer()
     : state_(HEADERS),
@@ -53,22 +58,24 @@ void ResponseStreamer::prepareResponse(HttpResponse& response) {
     body_sent_ = 0;
 }
 
-//
-void ResponseStreamer::prepareStaticFile(const std::string& path) {
+void ResponseStreamer::prepareStaticFile(HttpResponse&      response,
+                                         const std::string& path) {
     Logger::debug() << "Preparing static file: " << path;
-    
+
     if (!read_stream_.open(path)) {
         Logger::error() << "Failed to open file for streaming: " << path;
         state_ = COMPLETE;
         return;
     }
 
-    header_buffer_.clear();
+    header_buffer_ =
+        response.headersToString();  // enough for now but will not scale whith
+                                     // very large headers
     header_sent_ = 0;
 
     state_ = HEADERS;
     response_type_ = FILE;
-    
+
     Logger::debug() << "Static file prepared, state: " << state_;
 }
 
@@ -89,16 +96,15 @@ ssize_t ResponseStreamer::writeNextChunk(int socket_fd) {
         case BODY: return writeBody(socket_fd);
         case COMPLETE: return 0;
         default: {
-			Logger::error() << "Invalid ResponseStreamer state"; 
-			return -1;
-		}
+            Logger::error() << "Invalid ResponseStreamer state";
+            return -1;
+        }
     }
 }
 
 bool ResponseStreamer::wantsFileRead() const {
-    return response_type_ == FILE && 
-           state_ != COMPLETE &&
-           !read_stream_.isEof() && 
+    return response_type_ == FILE && state_ != COMPLETE &&
+           !read_stream_.isEof() &&
            const_cast<FileReadStream&>(read_stream_).getBuffer().wantProducer();
 }
 
@@ -119,11 +125,11 @@ ssize_t ResponseStreamer::writeHeaders(int socket_fd) {
         return 0;
     }
     if (n < 0) {
-		if (lib::checkSocketError(socket_fd)) {
-			Logger::error() << "Socket error while sending headers";
-			return -1;
-		}
-		return -2; // would block try again later
+        if (lib::checkSocketError(socket_fd)) {
+            Logger::error() << "Socket error while sending headers";
+            return -1;
+        }
+        return -2;  // would block try again later
     }
 
     header_sent_ += static_cast<size_t>(n);
@@ -132,10 +138,11 @@ ssize_t ResponseStreamer::writeHeaders(int socket_fd) {
     return n;
 }
 
+// need to cleanup and refactor this function
 ssize_t ResponseStreamer::writeStaticFileBody(int socket_fd) {
     StreamBuffer& buffer = read_stream_.getBuffer();
 
-    Logger::debug() << "writeStaticFileBody - State: " << state_ 
+    Logger::debug() << "writeStaticFileBody - State: " << state_
                     << ", Buffer size: " << buffer.size()
                     << ", EOF: " << read_stream_.isEof()
                     << ", Buffer empty: " << buffer.empty();
@@ -147,17 +154,15 @@ ssize_t ResponseStreamer::writeStaticFileBody(int socket_fd) {
         return 0;
     }
 
-    // If buffer is empty but we're not at EOF, we need more data
     if (buffer.empty()) {
         Logger::debug() << "Buffer empty, waiting for more file data";
         return 0;
     }
 
-    // Send data from buffer
     ssize_t n = send(socket_fd, buffer.data(), buffer.size(), 0);
-    Logger::debug() << "Send result: " << n 
+    Logger::debug() << "Send result: " << n
                     << ", Buffer size: " << buffer.size();
-    
+
     if (n == 0) {
         Logger::warning() << "Socket closed while sending file body";
         state_ = COMPLETE;
@@ -170,19 +175,18 @@ ssize_t ResponseStreamer::writeStaticFileBody(int socket_fd) {
             state_ = COMPLETE;
             return -1;
         }
-        return -2; // would block try again later
+        return -2;  // would block try again later
     }
 
     buffer.consume(n);
     Logger::debug() << "After consume - Buffer size: " << buffer.size()
                     << ", EOF: " << read_stream_.isEof();
-    
-    // Check if we're complete after consuming data
+
     if (read_stream_.isEof() && buffer.empty()) {
         Logger::debug() << "Setting state to COMPLETE after consume";
         state_ = COMPLETE;
     }
-    
+
     Logger::debug() << "Final state: " << state_;
     return n;
 }
@@ -199,16 +203,16 @@ ssize_t ResponseStreamer::writeResponseBody(int socket_fd) {
     ssize_t n = send(socket_fd, data, len, 0);
     if (n == 0) {
         Logger::warning() << "Socket closed while sending body";
-		state_ = COMPLETE;
+        state_ = COMPLETE;
         return 0;
     }
     if (n < 0) {
-		if (lib::checkSocketError(socket_fd)) {
-			Logger::error() << "Socket error while sending body";
-			state_ = COMPLETE;
-			return -1;
-		}
-		return -2; // would block try again later
+        if (lib::checkSocketError(socket_fd)) {
+            Logger::error() << "Socket error while sending body";
+            state_ = COMPLETE;
+            return -1;
+        }
+        return -2;  // would block try again later
     }
 
     body_sent_ += n;
@@ -235,7 +239,7 @@ ssize_t ResponseStreamer::writeBody(int socket_fd) {
 // ==== Public Helpers ==== //
 
 ResponseStreamer::State ResponseStreamer::getState() const {
-	return state_;
+    return state_;
 }
 
 bool ResponseStreamer::isWritable() const {

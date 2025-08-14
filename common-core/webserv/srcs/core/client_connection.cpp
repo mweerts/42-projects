@@ -28,6 +28,10 @@
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
 
+// TODO:
+// - [ ] Create a CgiManager class that handle the cgi or let the cgi handler do
+// it?
+
 ClientConnection::ClientConnection(int                 socket_fd,
                                    const ServerConfig& server_config)
     : socket_fd_(socket_fd),
@@ -130,15 +134,16 @@ bool ClientConnection::HandleRead() {
                 new RequestHandler(current_request_, server_config_);
             request_handler_->handleRequest();
 
-            // Prepare for response phase using ResponseStreamer
             if (request_handler_->hasCgiRunning()) {
-                // CGI: don't prepare response yet, wait for completion
                 Logger::debug() << "CGI started, waiting for completion";
             } else if (request_handler_->isStaticFileResponse()) {
-                response_streamer_.prepareStaticFile(request_handler_->getStaticFilePath());
+                response_streamer_.prepareStaticFile(
+                    request_handler_->getResponse(),
+                    request_handler_->getStaticFilePath());
                 Logger::debug() << "Prepared static file streaming";
             } else {
-                response_streamer_.prepareResponse(request_handler_->getResponse());
+                response_streamer_.prepareResponse(
+                    request_handler_->getResponse());
                 Logger::debug() << "Prepared regular response";
             }
 
@@ -154,35 +159,33 @@ bool ClientConnection::HandleRead() {
 }
 
 bool ClientConnection::HandleWrite() {
-    // If CGI is running, wait for aux-FD events to complete it
     if (request_handler_ && request_handler_->hasCgiRunning()) {
-        return true;
+        return true;  // should i let the request handler handle the cgi?
     }
 
-    Logger::debug() << "Writing response, current state: " << response_streamer_.getState();
-    
-    // Let ResponseStreamer handle all the streaming logic
+    Logger::debug() << "Writing response, current state: "
+                    << response_streamer_.getState();
+
     ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
     Logger::debug() << "writeNextChunk returned: " << n;
-    
+
     if (n == -1) {
-        // Fatal error
         Logger::error() << "Fatal error in response streaming";
         return false;
     }
-    
+
     if (n == -2) {
-        // Would block, try again later
         return true;
     }
-    
+
     if (response_streamer_.isComplete()) {
         Logger::debug() << "Response complete, finalizing";
         finalizeResponse();
     } else {
-        Logger::debug() << "Response not complete yet, state: " << response_streamer_.getState();
+        Logger::debug() << "Response not complete yet, state: "
+                        << response_streamer_.getState();
     }
-    
+
     return true;
 }
 
@@ -230,21 +233,23 @@ ClientConnection::State ClientConnection::GetState() const {
     return state_;
 }
 
+// still need review
 void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
     // Static file: poll file for POLLIN when buffer has space
-    if (response_streamer_.isStreamingFile() && response_streamer_.wantsFileRead()) {
+    if (response_streamer_.isStreamingFile() &&
+        response_streamer_.wantsFileRead()) {
         pollfd p;
         p.fd = response_streamer_.getFileStream().fileFd();
         p.events = POLLIN;
         p.revents = 0;
         out.push_back(p);
     }
-    
+
     // CGI pipes: poll stdin for POLLOUT, stdout for POLLIN
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         int inFd = request_handler_->getCgiInputPipe();
         int outFd = request_handler_->getCgiOutputPipe();
-        
+
         if (inFd != -1) {
             pollfd p;
             p.fd = inFd;
@@ -252,7 +257,7 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
             p.revents = 0;
             out.push_back(p);
         }
-        
+
         if (outFd != -1) {
             pollfd p;
             p.fd = outFd;
@@ -263,49 +268,49 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
     }
 }
 
+// still need review
 bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     // Static file event: read more data into buffer
-    if (response_streamer_.isStreamingFile() && 
-        fd == response_streamer_.getFileStream().fileFd() && 
+    if (response_streamer_.isStreamingFile() &&
+        fd == response_streamer_.getFileStream().fileFd() &&
         (revents & POLLIN)) {
         response_streamer_.getFileStream().onFileReadable();
     }
-    
+
     // CGI event: handle CGI I/O
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         bool done = request_handler_->handleCgiFdEvent(fd, revents);
         if (done) {
             // CGI complete: prepare response and start streaming
             Logger::debug() << "CGI completed, preparing response";
-            response_streamer_.prepareCgiResponse(request_handler_->getResponse());
+            response_streamer_.prepareCgiResponse(
+                request_handler_->getResponse());
         }
     }
-    
+
     return true;
 }
 
 void ClientConnection::finalizeResponse() {
     Logger::debug() << "Response sent to client " << socket_fd_;
-    
+
     if (request_handler_->shouldCloseConnection()) {
         Logger::debug() << "Connection should be closed";
         Close();
         return;
     }
-    
+
     // Reset for next request
     delete request_handler_;
     request_handler_ = NULL;
     delete request_parser_;
     request_parser_ = NULL;
-    
+
     current_request_.reset();
+    response_streamer_.reset();
     state_ = READING_REQUEST;
     request_parser_ = new RequestParser(current_request_, server_config_);
     request_ready_ = false;
-    
-    // Reset response streamer for next request
-    response_streamer_.reset();
-    
+
     UpdateActivity();
 }

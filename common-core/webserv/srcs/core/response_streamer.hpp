@@ -29,7 +29,7 @@ class ResponseStreamer {
     ~ResponseStreamer();
 
     void prepareResponse(HttpResponse& response);
-    void prepareStaticFile(const std::string& path);
+    void prepareStaticFile(HttpResponse& response, const std::string& path);
     void prepareCgiResponse(HttpResponse& response);
 
     bool    isWritable() const;
@@ -49,11 +49,9 @@ class ResponseStreamer {
     State state_;
     ResponseType response_type_;
 
-    // Header streaming
     std::string header_buffer_;
     size_t      header_sent_;
 
-    // Body streaming
     std::string body_content_;
     size_t      body_sent_;
 	

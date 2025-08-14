@@ -158,13 +158,11 @@ void RequestHandler::processGetRequest() {
 
     fullPath = _rootPath + _internalUri;
 
-    // Check if this is a CGI script
     CgiHandler tempCgiHandler(_request, &_serverConfig);
     if (tempCgiHandler.isCgiScript(_internalUri)) {
-        // Create a new CgiHandler on the heap for async processing
         _cgiHandler = new CgiHandler(_request, &_serverConfig);
         if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;  // CGI started, let event loop handle it
+            return;
         } else {
             delete _cgiHandler;
             _cgiHandler = NULL;
@@ -202,7 +200,11 @@ void RequestHandler::processGetRequest() {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
+
     // Mark for streaming by connection layer
+	// TODO: make a utils function for this and maybe move it to the response streamer
+	// TODO: make a utils function for this and maybe move it to the response streamer
+	// TODO: make a utils function for this and maybe move it to the response streamer
     _isStaticFile = true;
     _staticFilePath = fullPath;
     struct stat st;
@@ -214,13 +216,12 @@ void RequestHandler::processGetRequest() {
 }
 
 void RequestHandler::processPostRequest() {
-    // Check if this is a CGI script first
+	// make a utils function for this because it's the same for the get request
     CgiHandler tempCgiHandler(_request, &_serverConfig);
     if (tempCgiHandler.isCgiScript(_internalUri)) {
-        // Create a new CgiHandler on the heap for async processing
         _cgiHandler = new CgiHandler(_request, &_serverConfig);
         if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;  // CGI started, let event loop handle it
+            return;
         } else {
             delete _cgiHandler;
             _cgiHandler = NULL;

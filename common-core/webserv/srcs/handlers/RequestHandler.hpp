@@ -32,7 +32,6 @@ class RequestHandler {
     int  getCgiOutputPipe() const;
     bool handleCgiFdEvent(int fd, short revents);
 
-    // Static file streaming helpers
     bool        isStaticFileResponse() const { return _isStaticFile; }
     const std::string& getStaticFilePath() const { return _staticFilePath; }
 

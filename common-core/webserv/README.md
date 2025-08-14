@@ -3,6 +3,7 @@
 ## To discuss
 - right now the cgi is non blocking but not truely asynchronous, should we still implement it? (means more state and complexity as well as more potential bugs)
 - does the parsing protect from difference between number of cgi language and paths?
+- make content-length not an int, it's not enough and could cause issue.
 
 ## To do cgi 
 
@@ -24,12 +25,11 @@
 	* Treat RequestHandler::sendResponse() as deprecated; all responses should go through the partial-send/streaming pipeline 	you now have.
 
 ## To do Lucas ## 
+- [ ] fix this "[ERROR] Error parsing request: 413 body size exceeds limit" when uploading
 - [ ] handle transfer-encoding header and chunked request
 - [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure.
-- [ ] Add buffer thresholds (64KB/16KB) to enable/disable interests dynamically.
 - [ ] Implemented non-blocking static file streaming via file FDs + poll; one-op-per-event.
-- [ ] Added header-only send and partial body sending.
-- [ ] Extended poll loop to include aux FDs and route events back to connections.
+- [ ] make a wrapper for send
 
 ## Tests ##
 * Tests:

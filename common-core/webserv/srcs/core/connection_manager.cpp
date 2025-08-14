@@ -69,7 +69,7 @@ void ConnectionManager::SetupPolling() {
             poll_fds_.push_back(pfd);
         }
 
-        // Ask client for any auxiliary fds (files, cgi pipes)
+        // auxiliary fds (files, cgi pipes)
         std::vector<pollfd> extra;
         client->GetAuxPollFds(extra);
         for (size_t k = 0; k < extra.size(); ++k) {
@@ -105,6 +105,7 @@ void ConnectionManager::Run() {
             int fd = poll_fds_[i].fd;
 
             // Route aux fds (file/cgipipe) back to their owners
+			// still need review
             std::map<int, ClientConnection*>::iterator a =
                 aux_fd_owner_.find(fd);
             if (a != aux_fd_owner_.end()) {
