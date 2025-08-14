@@ -13,6 +13,9 @@
 #ifndef HTTP_STATUS_CODE_HPP
 #define HTTP_STATUS_CODE_HPP
 
+/**
+ * Based on IETF RFCs and HTTP/1.1 specification
+ */
 enum StatusCode {
     // 2xx Success
     HTTP_OK = 200,

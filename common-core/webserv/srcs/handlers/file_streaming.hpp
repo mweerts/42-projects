@@ -33,7 +33,7 @@ class FileReadStream {
     int  fileFd() const;
 
     ssize_t onFileReadable();
-    StreamBuffer& outBuffer();
+    StreamBuffer& getBuffer();
 	
     bool isEof() const;
 

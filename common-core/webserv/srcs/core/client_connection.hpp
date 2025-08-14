@@ -14,16 +14,14 @@
 #define CLIENT_CONNECTION_HPP
 
 #include <sys/poll.h>
-
 #include <ctime>
 #include <string>
 #include <vector>
 
-#include "../handlers/file_streaming.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
 #include "../http/RequestParser.hpp"
-#include "lib/stream_buffer.hpp"
+#include "response_streamer.hpp"
 
 class ServerConfig;
 class RequestHandler;
@@ -49,7 +47,7 @@ class ClientConnection {
 
     void Close();
 
-    // Expose aux fds for polling (files, cgi pipes in future)
+    // Expose aux fds for polling (files, cgi pipes)
     void GetAuxPollFds(std::vector<pollfd>& out) const;
     bool HandleAuxEvent(int fd, short revents);
 
@@ -65,25 +63,21 @@ class ClientConnection {
     RequestHandler* request_handler_;
     HttpRequest     current_request_;
 
-    bool request_ready_;
-
     // State management
     State state_;
     bool  is_closed_;
+	
+    bool request_ready_;
 
-    // Streaming helpers
-    FileReadStream  read_stream_;
-    FileWriteStream write_stream_;
-    std::string     headerBuf_;
-    size_t          headerSent_;
-    size_t          bodySent_;
-    bool            sendingHeaders_;
+    // Response streaming - replaces all the old streaming logic
+    ResponseStreamer response_streamer_;
 
    private:
     void UpdateActivity();
     bool HandleRead();
     bool HandleWrite();
     void cleanupCgi();
+    void finalizeResponse();
 };
 
 #endif

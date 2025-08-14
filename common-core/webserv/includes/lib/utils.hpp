@@ -27,5 +27,5 @@ std::string to_string(T value) {
 
 std::string extractQueryFromUri(const std::string& uri);
 std::string extractPathFromUri(const std::string& uri);
-
+bool checkSocketError(int socket_fd);
 }  // namespace lib

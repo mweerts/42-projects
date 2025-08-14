@@ -23,9 +23,9 @@ FileReader::~FileReader() {
 bool FileReader::openForRead(const std::string& path) {
     close();
     fd_ = ::open(path.c_str(), O_RDONLY
-#ifdef __APPLE__
-                                   | O_NONBLOCK
-#endif
+// #ifdef __APPLE__
+//                                    | O_NONBLOCK
+// #endif
     );
     eof_ = false;
     err_ = (fd_ < 0);
@@ -58,6 +58,13 @@ ssize_t FileReader::readOnce(char* buf, size_t maxLen) {
     if (n == 0) {
         eof_ = true;
         return 0;
+    }
+	if (n < 0) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            return -2; // Would block, try again later
+        }
+        err_ = true;
+        return -1;
     }
     return -1;
 }

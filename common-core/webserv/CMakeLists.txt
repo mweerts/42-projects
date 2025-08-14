@@ -19,6 +19,7 @@ set(SOURCES
     srcs/core/client_connection.cpp
 	srcs/core/connection_manager.cpp
 	srcs/core/tcp_server.cpp
+	srcs/core/response_streamer.cpp
 	
     srcs/handlers/cgi_handler.cpp
     srcs/handlers/cgi_process.cpp

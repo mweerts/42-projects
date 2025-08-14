@@ -12,6 +12,8 @@
 
 #include "file_streaming.hpp"
 
+#include "Logger.hpp"
+
 FileReadStream::FileReadStream() : file_(), outBuf_() {}
 
 FileReadStream::~FileReadStream() {
@@ -36,18 +38,24 @@ int FileReadStream::fileFd() const {
 
 // returns bytes read, 0 on EOF, -1 on no progress/error
 ssize_t FileReadStream::onFileReadable() {
+    if (file_.hasError())
+        return -1;
+
+    if (file_.eof())
+        return 0;
+
     ssize_t n = file_.readOnce(readBuffer_, sizeof(readBuffer_));
     if (n > 0)
         outBuf_.append(readBuffer_, static_cast<size_t>(n));
     return n;
 }
 
-StreamBuffer& FileReadStream::outBuffer() {
+StreamBuffer& FileReadStream::getBuffer() {
     return outBuf_;
 }
 
 bool FileReadStream::isEof() const {
-    return file_.eof();
+    return file_.eof() || file_.hasError();
 }
 
 FileWriteStream::FileWriteStream() : file_() {}

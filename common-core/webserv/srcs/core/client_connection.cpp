@@ -37,15 +37,9 @@ ClientConnection::ClientConnection(int                 socket_fd,
       request_handler_(NULL),
       state_(READING_REQUEST),
       is_closed_(false),
-      read_stream_(),
-      write_stream_(),
-      headerBuf_(),
-      headerSent_(0),
-      bodySent_(0),
-      sendingHeaders_(false) {
+      request_ready_(false) {
     UpdateActivity();
     request_parser_ = new RequestParser(current_request_, server_config_);
-    request_ready_ = false;
 }
 
 ClientConnection::~ClientConnection() {
@@ -67,6 +61,9 @@ bool ClientConnection::HandleEvent(short revents) {
 
     if (revents & (POLLHUP | POLLERR | POLLNVAL)) {
         Logger::debug() << "Client " << socket_fd_ << " disconnected";
+        if (state_ == WRITING_RESPONSE && !response_streamer_.isComplete()) {
+            Logger::warning() << "Client disconnected before response complete";
+        }
         return false;
     }
 
@@ -93,21 +90,15 @@ bool ClientConnection::HandleEvent(short revents) {
     return true;
 }
 
-// utility function to check if the socket has an error instead of using errno
-static bool checkSocketError(int socket_fd) {
-    int       err = 0;
-    socklen_t len = sizeof(err);
-    getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len);
-    if (err != 0)
-        Logger::error() << "Socket error on client " << socket_fd;
-    return err;
-}
-
 bool ClientConnection::HandleRead() {
-    ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
+    if (request_ready_) {
+        return true;
+    }
 
+    ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
     if (bytes_read < 0) {
-        return checkSocketError(socket_fd_);
+        Logger::error() << "Socket error after recv";
+        return lib::checkSocketError(socket_fd_);
     }
 
     if (bytes_read == 0) {
@@ -139,22 +130,16 @@ bool ClientConnection::HandleRead() {
                 new RequestHandler(current_request_, server_config_);
             request_handler_->handleRequest();
 
-            // Prepare for response phase. Do NOT send headers yet for CGI,
-            // headers will be built after CGI completes.
+            // Prepare for response phase using ResponseStreamer
             if (request_handler_->hasCgiRunning()) {
-                headerBuf_.clear();
-                headerSent_ = 0;
-                bodySent_ = 0;
-                sendingHeaders_ = false;
+                // CGI: don't prepare response yet, wait for completion
+                Logger::debug() << "CGI started, waiting for completion";
+            } else if (request_handler_->isStaticFileResponse()) {
+                response_streamer_.prepareStaticFile(request_handler_->getStaticFilePath());
+                Logger::debug() << "Prepared static file streaming";
             } else {
-                headerBuf_ = request_handler_->getResponse().headersToString();
-                headerSent_ = 0;
-                bodySent_ = 0;
-                sendingHeaders_ = true;
-                // If static file, open it for streaming
-                if (request_handler_->isStaticFileResponse()) {
-                    read_stream_.open(request_handler_->getStaticFilePath());
-                }
+                response_streamer_.prepareResponse(request_handler_->getResponse());
+                Logger::debug() << "Prepared regular response";
             }
 
             state_ = WRITING_RESPONSE;
@@ -169,103 +154,35 @@ bool ClientConnection::HandleRead() {
 }
 
 bool ClientConnection::HandleWrite() {
-    // If CGI is running, wait for aux-FD events to complete it.
-    if (request_handler_->hasCgiRunning()) {
+    // If CGI is running, wait for aux-FD events to complete it
+    if (request_handler_ && request_handler_->hasCgiRunning()) {
         return true;
     }
 
-    // First send headers partially
-    if (sendingHeaders_ && headerSent_ < headerBuf_.size()) {
-        const char* data = headerBuf_.c_str() + headerSent_;
-        size_t      len = headerBuf_.size() - headerSent_;
-        ssize_t     n = send(socket_fd_, data, len, 0);
-        if (n < 0) {
-            if (checkSocketError(socket_fd_)) {
-                Logger::error() << "Send error on client " << socket_fd_;
-                return false;
-            }
-            return true;  // would block
-        }
-        headerSent_ += static_cast<size_t>(n);
-        if (headerSent_ < headerBuf_.size()) {
-            return true;  // continue later
-        }
-        sendingHeaders_ = false;
-        // Respect one-write-per-event: defer body send to next POLLOUT
+    Logger::debug() << "Writing response, current state: " << response_streamer_.getState();
+    
+    // Let ResponseStreamer handle all the streaming logic
+    ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
+    Logger::debug() << "writeNextChunk returned: " << n;
+    
+    if (n == -1) {
+        // Fatal error
+        Logger::error() << "Fatal error in response streaming";
+        return false;
+    }
+    
+    if (n == -2) {
+        // Would block, try again later
         return true;
     }
-
-    // If we have not prepared headers yet (e.g., CGI still running), do nothing
-    if (headerBuf_.empty()) {
-        return true;
+    
+    if (response_streamer_.isComplete()) {
+        Logger::debug() << "Response complete, finalizing";
+        finalizeResponse();
+    } else {
+        Logger::debug() << "Response not complete yet, state: " << response_streamer_.getState();
     }
-
-    // Non-static: send body one chunk per POLLOUT
-    if (!sendingHeaders_ && !request_handler_->isStaticFileResponse()) {
-        const std::string& body = request_handler_->getResponse().getContent();
-        if (bodySent_ < body.size()) {
-            const char* bodyPtr = body.c_str() + bodySent_;
-            size_t      bodyLen = body.size() - bodySent_;
-            ssize_t     n = send(socket_fd_, bodyPtr, bodyLen, 0);
-            if (n < 0) {
-                if (checkSocketError(socket_fd_))
-                    return false;
-                return true;
-            }
-            if (n > 0)
-                bodySent_ += static_cast<size_t>(n);
-            // After one body write, return to respect one-op-per-event
-            return true;
-        }
-    }
-
-    // Static file streaming: send from buffer one chunk per POLLOUT
-    if (!sendingHeaders_ && request_handler_->isStaticFileResponse()) {
-        StreamBuffer& ob = read_stream_.outBuffer();
-        if (ob.wantConsumer()) {
-            ssize_t n = send(socket_fd_, ob.data(), ob.size(), 0);
-            if (n < 0) {
-                if (checkSocketError(socket_fd_))
-                    return false;
-                return true;
-            }
-            if (n > 0)
-                ob.consume(static_cast<size_t>(n));
-            // One write done for this event
-            return true;
-        }
-        // If file is EOF and buffer drained, finish response
-        if (read_stream_.isEof() && ob.empty()) {
-            read_stream_.close();
-            // fall through to finalization below
-        }
-    }
-
-    // Finalization: only when headers sent and body sent or streaming finished
-    bool headersDone = (!sendingHeaders_ && headerSent_ >= headerBuf_.size());
-    bool nonStaticDone =
-        (!request_handler_->isStaticFileResponse() &&
-         bodySent_ >= request_handler_->getResponse().getContent().size());
-    bool staticDone =
-        (request_handler_->isStaticFileResponse() && read_stream_.isEof() &&
-         read_stream_.outBuffer().empty());
-    if (headersDone && (nonStaticDone || staticDone)) {
-        Logger::debug() << "Response sent to client " << socket_fd_;
-        if (request_handler_->shouldCloseConnection()) {
-            Logger::debug() << "Connection should be closed";
-            Close();
-            return false;
-        }
-        delete request_handler_;
-        request_handler_ = NULL;
-        delete request_parser_;
-        request_parser_ = NULL;
-        current_request_.reset();
-        state_ = READING_REQUEST;
-        request_parser_ = new RequestParser(current_request_, server_config_);
-        request_ready_ = false;
-        UpdateActivity();
-    }
+    
     return true;
 }
 
@@ -314,21 +231,20 @@ ClientConnection::State ClientConnection::GetState() const {
 }
 
 void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
-    if (state_ == WRITING_RESPONSE && request_handler_ &&
-        request_handler_->isStaticFileResponse()) {
-        if (read_stream_.wantsFileRead()) {
-            pollfd p;
-            p.fd = read_stream_.fileFd();
-            p.events = POLLIN;
-            p.revents = 0;
-            out.push_back(p);
-        }
+    // Static file: poll file for POLLIN when buffer has space
+    if (response_streamer_.isStreamingFile() && response_streamer_.wantsFileRead()) {
+        pollfd p;
+        p.fd = response_streamer_.getFileStream().fileFd();
+        p.events = POLLIN;
+        p.revents = 0;
+        out.push_back(p);
     }
-    // Include CGI pipes too
-    if (state_ == WRITING_RESPONSE && request_handler_ &&
-        request_handler_->hasCgiRunning()) {
+    
+    // CGI pipes: poll stdin for POLLOUT, stdout for POLLIN
+    if (request_handler_ && request_handler_->hasCgiRunning()) {
         int inFd = request_handler_->getCgiInputPipe();
         int outFd = request_handler_->getCgiOutputPipe();
+        
         if (inFd != -1) {
             pollfd p;
             p.fd = inFd;
@@ -336,6 +252,7 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
             p.revents = 0;
             out.push_back(p);
         }
+        
         if (outFd != -1) {
             pollfd p;
             p.fd = outFd;
@@ -347,19 +264,48 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
 }
 
 bool ClientConnection::HandleAuxEvent(int fd, short revents) {
-    if (request_handler_ && request_handler_->isStaticFileResponse()) {
-        if (fd == read_stream_.fileFd() && (revents & POLLIN)) {
-            (void)read_stream_.onFileReadable();
-        }
+    // Static file event: read more data into buffer
+    if (response_streamer_.isStreamingFile() && 
+        fd == response_streamer_.getFileStream().fileFd() && 
+        (revents & POLLIN)) {
+        response_streamer_.getFileStream().onFileReadable();
     }
+    
+    // CGI event: handle CGI I/O
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         bool done = request_handler_->handleCgiFdEvent(fd, revents);
         if (done) {
-            // Prepare headers of CGI response and switch to header sending
-            headerBuf_ = request_handler_->getResponse().headersToString();
-            headerSent_ = 0;
-            sendingHeaders_ = true;
+            // CGI complete: prepare response and start streaming
+            Logger::debug() << "CGI completed, preparing response";
+            response_streamer_.prepareCgiResponse(request_handler_->getResponse());
         }
     }
+    
     return true;
+}
+
+void ClientConnection::finalizeResponse() {
+    Logger::debug() << "Response sent to client " << socket_fd_;
+    
+    if (request_handler_->shouldCloseConnection()) {
+        Logger::debug() << "Connection should be closed";
+        Close();
+        return;
+    }
+    
+    // Reset for next request
+    delete request_handler_;
+    request_handler_ = NULL;
+    delete request_parser_;
+    request_parser_ = NULL;
+    
+    current_request_.reset();
+    state_ = READING_REQUEST;
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
+    
+    // Reset response streamer for next request
+    response_streamer_.reset();
+    
+    UpdateActivity();
 }

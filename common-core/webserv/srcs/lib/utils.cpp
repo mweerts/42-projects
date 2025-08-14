@@ -11,6 +11,8 @@
 /* ************************************************************************** */
 
 #include <string>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 namespace lib {
 std::string extractQueryFromUri(const std::string& uri) {
@@ -21,5 +23,12 @@ std::string extractQueryFromUri(const std::string& uri) {
 std::string extractPathFromUri(const std::string& uri) {
     size_t qpos = uri.find('?');
     return (qpos == std::string::npos) ? "" : uri.substr(0, qpos);
+}
+
+bool checkSocketError(int socket_fd) {
+    int err = 0;
+    socklen_t len = sizeof(err);
+    getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len);
+    return err != 0;
 }
 }  // namespace lib
