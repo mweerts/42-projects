@@ -27,9 +27,10 @@
 ## To do Lucas ## 
 - [ ] fix this "[ERROR] Error parsing request: 413 body size exceeds limit" when uploading
 - [ ] handle transfer-encoding header and chunked request
-- [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure.
+- [/] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure. // should be done but need to make sure
 - [ ] Implemented non-blocking static file streaming via file FDs + poll; one-op-per-event.
 - [ ] make a wrapper for send
+- [ ] make saving the request to a file asynchronous too using the FileWriteStream
 
 ## Tests ##
 * Tests:
