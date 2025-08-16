@@ -12,7 +12,7 @@
 
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -std=c++98 -g3 
+FLAGS = -Wall -Wextra -Werror
 
 SRCS_DIR = srcs
 OBJS_DIR = objs

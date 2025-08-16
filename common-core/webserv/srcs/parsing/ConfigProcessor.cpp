@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/19 19:42:30 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/07/21 16:41:06 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,9 +363,6 @@ int ConfigProcessor::validationParameters(void) {
     if (validateDifferentPortServer() == 1)
         return (1);
     return (0);
-    // TODO: Validare che tutti i server abbiano un listen diverso OK!
-    // aggiungere giusto il controllo se é empty
-    // TODO: Ovveride client_max_body_size
 }
 
 void ConfigProcessor::RicorsiveTree(std::stringstream& sstoken, bool flags) {
@@ -383,18 +380,6 @@ void ConfigProcessor::RicorsiveTree(std::stringstream& sstoken, bool flags) {
         treeParser(sstoken, root);  // costruisci il sottoalbero
         tree.push_back(root);       // aggiungi alla foresta
     }
-    //	else if (flags == false && token == "{")
-    //	{
-    //		Logger::info() << "Push new Tree";
-    //		Node root;
-    //        root.name = token;  // salva il tipo di blocco
-    //        treeParser(sstoken, root);  // costruisci il sottoalbero
-    //        tree.push_back(root);       // aggiungi alla foresta
-    //	}
-    /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-     * TODO: Vedere se togliere il blocca else if per avre server in cascata
-     ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-   */
     RicorsiveTree(sstoken);
 }
 
@@ -404,9 +389,7 @@ void ConfigProcessor::treeParser(std::stringstream& sstoken, Node& current) {
 
     while (sstoken >> token) {
         if (token == "location") {
-            // std::getline(sstoken >> std::ws, rest);
             while (sstoken >> token && token != "{") rest = rest + token;
-            // rest.erase(rest.find_last_not_of(" \t\r\n") + 1);
             if (token == "{") {
                 Node child;
                 child.name = rest;
@@ -420,8 +403,6 @@ void ConfigProcessor::treeParser(std::stringstream& sstoken, Node& current) {
                 // TODO: Da gestire corretamente;
             }
         }
-        //			else if (token == "server")   // TODO:Vedere se
-        //togliere questo blocco 				RicorsiveTree(sstoken, false);
         else {
             if (token == "}")
                 return;
@@ -568,11 +549,19 @@ int ConfigProcessor::valideteSize(void) const {
         Logger::error() << "No found a valid config";
         return (1);
     }
+	for (size_t i = 0; i < tree.size(); ++i)
+	{
+		for (size_t y = 0; y < tree[i].children.size(); ++y)
+		{
+			if (tree[i].children[y].children.size() > 0)
+			{	
+				Logger::error() << "Level 3 not allowed in this config";
+				return (1);
+			}
+		}
+	}
     return (0);
-    /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-     * TODO: Verifircare che non ci siano tre livelli
-     ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-   */
+	
 }
 
 int ConfigProcessor::tokenize(void) {

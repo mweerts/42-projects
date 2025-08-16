@@ -21,7 +21,7 @@ GlobalConfig::GlobalConfig(const ConfigProcessor& Parser)
 }
 
 GlobalConfig::GlobalConfig(const GlobalConfig& other) {
-    *this = other;
+	(void)other;
 }
 
 bool GlobalConfig::loadConfig(const std::string& path) {
@@ -89,7 +89,8 @@ const std::string* GlobalConfig::getErrorPage(int                port,
             itMain++;
         }
     }
-    return NULL;
+	static std::string  def ="500";
+    return &def;
 }
 
 const std::string* GlobalConfig::getErrorPage(int                port,
@@ -106,7 +107,8 @@ const std::string* GlobalConfig::getErrorPage(int                port,
             itMain++;
         }
     }
-    return NULL;
+	static std::string  def ="500";
+    return &def;
 }
 
 GlobalConfig::~GlobalConfig() {
