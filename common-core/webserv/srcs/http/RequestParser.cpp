@@ -58,7 +58,6 @@ void RequestParser::cleanup() {
 
 RequestParser::Status RequestParser::parse(const char* buffer,
                                            size_t      buffer_size) {
-    Logger::debug() << "Parsing : " << buffer;
     if (!buffer || buffer_size == 0) {
         Logger::error() << "Invalid buffer data";
         setError(HTTP_BAD_REQUEST);
@@ -287,7 +286,6 @@ RequestParser::Status RequestParser::parseHeaders() {
         Logger::debug() << "Headers parsed successfully";
         return COMPLETE;
     }
-    Logger::debug() << "Headers not complete yet, need more data";
     return NEED_MORE_DATA;
 }
 
@@ -332,7 +330,6 @@ RequestParser::Status RequestParser::parseBody() {
                 << "Body parsed successfully (" << content_length << " bytes)";
             return COMPLETE;
         } else {
-            Logger::debug() << "Body incomplete, need more data";
             return NEED_MORE_DATA;
         }
     } else {

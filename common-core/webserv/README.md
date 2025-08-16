@@ -3,6 +3,10 @@
 ## To discuss
 - does the parsing protect from difference between number of cgi language and paths?
 - make content-length not an int, it's not enough and could cause issue.
+- location is broken with autodindex not working, it works by default not when when the location is configured
+
+## to do max
+- verifier que les urls "index%copy.html" marche parce que je crois pas qu'elles fonctionne
 
 ## To do cgi 
 

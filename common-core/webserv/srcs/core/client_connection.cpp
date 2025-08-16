@@ -123,7 +123,6 @@ bool ClientConnection::HandleRead() {
             return false;
         }
         case RequestParser::NEED_MORE_DATA: {
-            Logger::debug() << "Need more data";
             return true;
         }
         case RequestParser::COMPLETE: {
@@ -163,11 +162,7 @@ bool ClientConnection::HandleWrite() {
         return true;  // should i let the request handler handle the cgi?
     }
 
-    Logger::debug() << "Writing response, current state: "
-                    << response_streamer_.getState();
-
     ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
-    Logger::debug() << "writeNextChunk returned: " << n;
 
     if (n == -1) {
         Logger::error() << "Fatal error in response streaming";
@@ -179,13 +174,8 @@ bool ClientConnection::HandleWrite() {
     }
 
     if (response_streamer_.isComplete()) {
-        Logger::debug() << "Response complete, finalizing";
         finalizeResponse();
-    } else {
-        Logger::debug() << "Response not complete yet, state: "
-                        << response_streamer_.getState();
     }
-
     return true;
 }
 

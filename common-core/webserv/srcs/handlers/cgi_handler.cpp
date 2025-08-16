@@ -87,8 +87,6 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
     std::vector<std::string> extensions = cgiBin.getExt();
     std::vector<std::string> paths = cgiBin.getPath();
 
-    Logger::debug() << "Initializing CGI bin...";
-
     if (extensions.empty() || paths.empty() ||
         extensions.size() != paths.size()) {
         Logger::error() << "Invalid cgiBin configuration";
@@ -107,8 +105,6 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
 
-    Logger::debug() << "Checking if URI is CGI script: " << uri
-                    << " -> " << script_path;
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
 
@@ -117,6 +113,7 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
         return lib::isExecutable(interp);
     }
     Logger::debug() << "Script path: " << script_path;
+	
     // If no interpreter, the script itself must be executable.
     return lib::isExecutable(script_path);
 }

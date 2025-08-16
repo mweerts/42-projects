@@ -19,6 +19,8 @@
 #include "handlers/cgi_handler.hpp"
 
 void initializeCgiBin(const std::vector<ServerConfig>& servers) {
+    Logger::debug() << "Initializing CGI bin...";
+
     for (size_t i = 0; i < servers.size(); i++) {
         const CgiBin& cgiBin = servers[i].getCgiBin();
         if (!cgiBin.getExt().empty() && !cgiBin.getPath().empty()) {
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]) {
                 return 1;
             }
         } else {
-            if (!config.loadConfig("config/max.conf")) {
+            if (!config.loadConfig("config/lucas.conf")) {
                 Logger::error() << "Failed to load default configuration file";
                 return 1;
             }

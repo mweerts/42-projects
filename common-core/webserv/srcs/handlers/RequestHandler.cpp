@@ -101,12 +101,12 @@ void RequestHandler::handleRequest() {
     }
 }
 
-void RequestHandler::sendResponse(int socket_fd) {
-    std::string responseString = _response.toString();
-    Logger::debug() << "Sending response...";
-    // Logger::debug() << responseString;
-    send(socket_fd, responseString.c_str(), responseString.size(), 0);
-}
+// void RequestHandler::sendResponse(int socket_fd) {
+//     std::string responseString = _response.toString();
+//     Logger::debug() << "Sending response...";
+//     // Logger::debug() << responseString;
+//     send(socket_fd, responseString.c_str(), responseString.size(), 0);
+// }
 
 void RequestHandler::processRequest() {
     const Location*    location = _serverConfig.getLocation(_request.getUri());

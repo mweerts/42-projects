@@ -16,7 +16,7 @@ class RequestHandler {
     ~RequestHandler();
 
     void handleRequest();
-    void sendResponse(int socket_fd);
+    // void sendResponse(int socket_fd);
     bool shouldCloseConnection() const;
 
     HttpResponse& getResponse();

@@ -21,8 +21,6 @@
 #include "lib/utils.hpp"
 
 // TODO:
-// - [ ] make a wrapper for send
-// - [ ] remove excessive logging
 // - Name "-2" (try again later) for Clarity
 
 ResponseStreamer::ResponseStreamer()
@@ -142,26 +140,23 @@ ssize_t ResponseStreamer::writeHeaders(int socket_fd) {
 ssize_t ResponseStreamer::writeStaticFileBody(int socket_fd) {
     StreamBuffer& buffer = read_stream_.getBuffer();
 
-    Logger::debug() << "writeStaticFileBody - State: " << state_
-                    << ", Buffer size: " << buffer.size()
-                    << ", EOF: " << read_stream_.isEof()
-                    << ", Buffer empty: " << buffer.empty();
+    // Logger::debug() << "writeStaticFileBody - State: " << state_
+    //                 << ", Buffer size: " << buffer.size()
+    //                 << ", EOF: " << read_stream_.isEof()
+    //                 << ", Buffer empty: " << buffer.empty();
 
-    // Check if we should transition to COMPLETE
     if (read_stream_.isEof() && buffer.empty()) {
-        Logger::debug() << "File EOF and buffer empty, setting COMPLETE";
         state_ = COMPLETE;
         return 0;
     }
 
     if (buffer.empty()) {
-        Logger::debug() << "Buffer empty, waiting for more file data";
         return 0;
     }
 
     ssize_t n = send(socket_fd, buffer.data(), buffer.size(), 0);
-    Logger::debug() << "Send result: " << n
-                    << ", Buffer size: " << buffer.size();
+    // Logger::debug() << "Send result: " << n
+    //                 << ", Buffer size: " << buffer.size();
 
     if (n == 0) {
         Logger::warning() << "Socket closed while sending file body";
@@ -179,15 +174,15 @@ ssize_t ResponseStreamer::writeStaticFileBody(int socket_fd) {
     }
 
     buffer.consume(n);
-    Logger::debug() << "After consume - Buffer size: " << buffer.size()
-                    << ", EOF: " << read_stream_.isEof();
+		// Logger::debug() << "After consume - Buffer size: " << buffer.size()
+		//                 << ", EOF: " << read_stream_.isEof();
 
     if (read_stream_.isEof() && buffer.empty()) {
         Logger::debug() << "Setting state to COMPLETE after consume";
         state_ = COMPLETE;
     }
 
-    Logger::debug() << "Final state: " << state_;
+    // Logger::debug() << "Final state: " << state_;
     return n;
 }
 
