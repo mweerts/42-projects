@@ -206,6 +206,15 @@ int ConfigProcessor::validateForbiddenParameters(void) const {
                     return (1);
                 }
             }
+			else
+			{
+                if (it_->children[i].prmtrs.count("root") < 1) 
+				{
+                    Logger::error()
+                        << "missing root in: " << it_->children[i].name;
+                    return (1);
+				}
+			}
         }
         ++it_;
     }
@@ -321,8 +330,9 @@ int ConfigProcessor::validationParameters(void) {
     while (it_ != tree.end()) {
         std::map<std::string, std::vector<std::string> >::iterator itPrmtrs =
             it_->prmtrs.begin();
-        if (it_->prmtrs.count("listen") < 1) {
-            Logger::error() << "listening port, is mandatory parameter";
+        if (it_->prmtrs.count("listen") < 1 ||
+				it_->prmtrs.count("root") < 1) {
+            Logger::error() << "listening port and root, is mandatory parameter";
             return (1);
         }
         if (it_->prmtrs.count("alias") != 0 ||
@@ -499,7 +509,51 @@ int ConfigProcessor::countBracket() const {
 	if (checkBraces(this->Buffer) == 1){
 		return (1);
 	}
-    return (0);
+	std::stack<char> c;
+    size_t  i = 0;
+    if (s.size() == 1)
+        return false;
+     while (i < s.size())
+     {
+        if ( s[i] == '(' || s[i] == '[' || s[i] == '{')
+        {
+            c.push(s[i]);
+        }
+        if ( (s[i] == ')' || s[i] == ']' || s[i] == '}') && !c.empty())
+        {
+            if (s[i] == ')' && c.top() != '(')
+            {
+                return 1;
+            }
+            else if (s[i] == '}' && c.top() != '{')
+            {
+                return 1;
+            }
+            else if (s[i] == ']' && c.top() != '[')
+            {
+                return 1;
+            }
+            else if (s[i] == ')' && c.top() == '(')
+            {
+                c.pop();
+            }
+            else if (s[i] == '}' && c.top() == '{')
+            {
+                c.pop();
+            }
+            else if (s[i] == ']' && c.top() == '[')
+            {
+                c.pop();
+            }
+        }
+        else if ( ( s[i] == ')' || s[i] == ']' || s[i] == '}' ) && c.size() == 0)
+            return 1;
+
+        i++;
+     }
+     if (c.size() == 0)	
+         return 0;
+     return 0;
 }
 
 int ConfigProcessor::recursiveMap(void) {

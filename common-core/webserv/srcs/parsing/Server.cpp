@@ -14,7 +14,7 @@ const std::string ServerConfig::getUplaodDir( void ) const
 	{
         return (it->second[0]);
 	}
-	return getRoot();
+	return "";
 }
 
 const std::string ServerConfig::getServerName( void ) const

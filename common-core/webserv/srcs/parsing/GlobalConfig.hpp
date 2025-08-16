@@ -43,8 +43,8 @@ class Location {
 	bool				getMethodIsAllowed(const std::string& method) const;
 	const std::string*	getAlias( void ) const;
 	const std::string*	getReturn( void ) const;
-    size_t				getHost( void )const;
-    int					getPort( void ) const;
+//    size_t				getHost( void )const;
+//    int					getPort( void ) const;
 };
 
 class ServerConfig {
