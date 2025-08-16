@@ -132,13 +132,14 @@ const std::string* ServerConfig::getErrorPageLocation(
 const std::string* ServerConfig::getErrorPage(
     const std::string& nbrError) const {
     size_t pos;
+	static std::string def = "";
     for (std::map<std::string, std::vector<std::string> >::const_iterator it =
              prmtrs.begin();
          it != prmtrs.end(); ++it) {
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-    return NULL;
+    return &def;
 }
 const char* ServerConfig::NotFoundUri::what() const throw() {
     return "URI not found";

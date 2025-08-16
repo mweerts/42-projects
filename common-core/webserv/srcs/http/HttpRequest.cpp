@@ -1,5 +1,5 @@
 #include "HttpRequest.hpp"
-
+#include <stdlib.h>
 #include "Logger.hpp"
 
 HttpRequest::HttpRequest() {
@@ -221,7 +221,7 @@ size_t HttpRequest::getContentLength() const {
     std::map<std::string, std::string>::const_iterator it;
     it = headers.find("Content-Length");
     if (it != headers.end()) {
-        return std::atoi(it->second.c_str());
+        return atoi(it->second.c_str());
     }
     return 0;
 }
