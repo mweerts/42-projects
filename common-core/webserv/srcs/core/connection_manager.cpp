@@ -155,6 +155,7 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
+	// only for info logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 

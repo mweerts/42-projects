@@ -21,10 +21,12 @@ set(SOURCES
 	srcs/core/tcp_server.cpp
 	
     
+    # srcs/http/HttpRequest.cpp
     srcs/http/HttpRequest.cpp
     srcs/http/HttpResponse.cpp
     srcs/http/MimeTypes.cpp
     srcs/http/RequestHandler.cpp
+    srcs/http/RequestParser.cpp
     srcs/http/utils.cpp
     
     srcs/parsing/ConfigProcessor.cpp
@@ -37,6 +39,7 @@ set(SOURCES
     
     srcs/lib/socket_guard.cpp
     srcs/lib/logger.cpp
+    srcs/lib/file_utils.cpp
     srcs/tests.cpp
 )
 
@@ -59,3 +62,4 @@ add_custom_target(test
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running tests..."
 )
+

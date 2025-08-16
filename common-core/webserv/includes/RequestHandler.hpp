@@ -1,38 +1,38 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
+#include "../srcs/parsing/GlobalConfig.hpp"
 #include "HttpRequest.hpp"
 #include "HttpResponse.hpp"
-#include "../srcs/parsing/GlobalConfig.hpp"
+#include "http_status_code.hpp"
 
 class ServerConfig;
 
 class RequestHandler {
    public:
-    RequestHandler(const ServerConfig& serverConfig)
-        : _serverConfig(serverConfig), _rootPath(_serverConfig.getRoot()){};
+    RequestHandler(const HttpRequest& request, const ServerConfig& serverConfig);
     ~RequestHandler();
 
-    void handleRequest(const std::string& request);
-    void setServerConfig(const ServerConfig& config);
+    void handleRequest();
     void sendResponse(int socket_fd);
+    bool shouldCloseConnection() const;
+
+    void generateErrorResponse(StatusCode         error_code,
+                               const std::string& error_msg);
 
    private:
     const ServerConfig& _serverConfig;
-    HttpRequest         _request;
+    const HttpRequest&  _request;
     HttpResponse        _response;
-    const std::string   _rootPath;
+    std::string         _rootPath;
+    std::string         _internalUri;
+    bool                _autoindex;
 
-    void setRequest(const HttpRequest& request);
     void setResponse(const HttpResponse& response);
     void processRequest();
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
-    void parseFullRequest(const std::string& request);
-    void parseRequestLine(const std::string& requestLine);
-    void parseHeaders(const std::string& headers);
-    void parseBody(const std::string& body);
 
     const std::string getRootPath() const;
 };

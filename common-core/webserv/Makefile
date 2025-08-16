@@ -12,11 +12,11 @@
 
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -Werror -std=c++98 -g -fsanitize=address
 
 SRCS_DIR = srcs
 OBJS_DIR = objs
-SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/parsing/test/*")
+SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/parsing/test/*" ! -path "srcs/tests/*")
 
 
 INC = -I ./includes/
@@ -41,9 +41,9 @@ run: all
 
 clean:
 	rm -rf $(OBJS_DIR)
-	rm -rf build
 
 fclean: clean
+	rm -rf build
 	rm -f $(NAME)
 
 re: fclean all

@@ -14,8 +14,7 @@ HttpResponse::HttpResponse() {
     _contentType = "text/html";
     _contentLength = 0;
     _lastModified = "";
-    _connection = "keep-alive";  // HTTP/1.1 default is keep-alive. HTTP/1.0
-                                 // default is close
+    _connection = "keep-alive";
     _content = "";
 }
 
@@ -90,5 +89,7 @@ std::string HttpResponse::toString() {
 
     response += "\r\n";
     response += _content;
+
+    // Logger::debug() << "Response generated:\n" << response;
     return response;
 }

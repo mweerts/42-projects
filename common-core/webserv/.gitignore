@@ -2,7 +2,8 @@ webserv
 objs
 build
 .cache
-www/uploads/*
+www/uploads
+www/tmp/*
 # Prerequisites
 *.d
 
@@ -40,3 +41,5 @@ www/uploads/*
 # IDE
 
 *.vscode
+
+/config/*

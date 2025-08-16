@@ -72,11 +72,10 @@ const std::string* Location::getAlias() const
 
 const std::string* Location::getRoot() const
 {
-	static const std::string defaultRoot = "./";
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("root");
     if (it != prmtrs.end() && !it->second.empty())
 	{
         return &(it->second[0]);
 	}
-	return &defaultRoot;
+	return NULL;
 }

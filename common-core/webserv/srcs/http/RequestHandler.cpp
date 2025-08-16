@@ -2,15 +2,41 @@
 
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <filesystem>
 #include <fstream>
-#include <unistd.h>
 
 #include "../parsing/GlobalConfig.hpp"
+#include "HttpRequest.hpp"
+#include "HttpResponse.hpp"
 #include "Logger.hpp"
 #include "MimeTypes.hpp"
+#include "http_status_code.hpp"
 #include "utils.hpp"
+
+// TODO create upload dir if not exists
+
+RequestHandler::RequestHandler(const HttpRequest&  request,
+                               const ServerConfig& serverConfig)
+    : _serverConfig(serverConfig),
+      _request(request),
+      _rootPath(serverConfig.getRoot()),
+      _autoindex(serverConfig.getAutoIndex()) {};
+
+RequestHandler::~RequestHandler() {}
+
+// void RequestHandler::setServerConfig(const ServerConfig& config) {
+//     _ServerConfig = config;
+// }
+
+void RequestHandler::setResponse(const HttpResponse& response) {
+    _response = response;
+}
+
+const std::string RequestHandler::getRootPath() const {
+    return _rootPath;
+}
 
 static std::string getLastModifiedTime(const std::string& path) {
     struct stat fileInfo;
@@ -23,136 +49,113 @@ static std::string getLastModifiedTime(const std::string& path) {
     return "";
 }
 
-RequestHandler::~RequestHandler() {}
-
-// void RequestHandler::setServerConfig(const ServerConfig& config) {
-//     _ServerConfig = config;
-// }
-
-void RequestHandler::setRequest(const HttpRequest& request) {
-    _request = request;
-}
-void RequestHandler::setResponse(const HttpResponse& response) {
-    _response = response;
-}
-
-void RequestHandler::parseFullRequest(const std::string& request) {
-    std::istringstream iss(request);
-    std::string        line;
-    std::string        requestLine;
-    std::string        headers;
-    std::string        body;
-
-    // Read the request line
-    if (std::getline(iss, requestLine) && !requestLine.empty()) {
-        parseRequestLine(requestLine);
-    }
-
-    // Read headers
-    while (std::getline(iss, line) && !line.empty()) {
-        headers += line + "\r\n";
-    }
-    parseHeaders(headers);
-
-    // Read body if present
-    if (std::getline(iss, body)) {
-        parseBody(body);
-    }
-    Logger::debug() << "done parsing request";
-}
-void RequestHandler::parseRequestLine(const std::string& requestLine) {
-    std::istringstream iss(requestLine);
-    std::string        method, uri, version;
-    iss >> method >> uri >> version;
-    Logger::debug() << "Parsed request line: " << method << " " << uri << " "
-                    << version;
-    if (method.empty() || uri.empty() || version.empty()) {
-        _response.setStatusCode(HTTP_BAD_REQUEST);
-        return;
-    }
-    if (version != "HTTP/1.0" && version != "HTTP/1.1") {
-        _response.setStatusCode(HTTP_VERSION_NOT_SUPPORTED);
-        return;
-    }
-    _request.setMethod(method);
-    _request.setUri(uri);
-    _request.setVersion(version);
-}
-
-void RequestHandler::parseHeaders(const std::string& headers) {
-    std::istringstream iss(headers);
-    std::string        line;
-    while (std::getline(iss, line) && !line.empty()) {
-        size_t pos = line.find(':');
-        if (pos != std::string::npos) {
-            std::string key = line.substr(0, pos);
-            std::string value = line.substr(pos + 1);
-            _request.setHeader(key, value);
-        }
-    }
-}
-
-void RequestHandler::parseBody(const std::string& body) {
-    if (!_request.getBody().empty()) {
-        _request.setBody(body);
-    } else {
-        _response.setStatusCode(HTTP_BAD_REQUEST);
-    }
-}
-
-const std::string RequestHandler::getRootPath() const {
-    return _rootPath;
-}
-
-void RequestHandler::handleRequest(const std::string& request) {
-    parseFullRequest(request);
-    processRequest();
+bool RequestHandler::shouldCloseConnection() const {
     if (_response.getStatusCode() != HTTP_OK) {
-        _response.setContent(GetHtmlErrorPage(_response));
-        _response.setContentType("text/html");
+        return true;
+    }
+
+    return !_request.shouldKeepAlive();
+}
+
+void RequestHandler::handleRequest() {
+    processRequest();
+
+    if (_request.shouldKeepAlive()) {
+        _response.setConnection("keep-alive");
+    } else {
+        _response.setConnection("close");
+    }
+    
+    if (_response.getStatusCode() != HTTP_OK) {
+        std::ostringstream oss;
+        oss << _response.getStatusCode();
+        const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
+        Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
+        if (errorPage) {
+            std::ifstream file((_rootPath + "/" + *errorPage).c_str());
+            if (file.fail()) {
+                _response.setContent(GetHtmlErrorPage(_response));
+                _response.setContentType("text/html");
+                return;
+            }
+            std::ostringstream ss;
+            ss << file.rdbuf();
+            _response.setContent(ss.str());
+            _response.setContentType(
+                MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
+            _response.setLastModified(
+                getLastModifiedTime(_rootPath + "/" + *errorPage));
+        } else {
+            _response.setContent(GetHtmlErrorPage(_response));
+            _response.setContentType("text/html");
+        }
+        _response.setConnection("close");
     }
 }
 
 void RequestHandler::sendResponse(int socket_fd) {
     std::string responseString = _response.toString();
-    // Logger::debug() << "Sending response:\n" << responseString;
+    Logger::debug() << "Sending response...";
     send(socket_fd, responseString.c_str(), responseString.size(), 0);
-    if (_response.getConnection() == "close") {
-        close(socket_fd);
-    }
 }
 
 void RequestHandler::processRequest() {
+    const Location*    location = _serverConfig.getLocation(_request.getUri());
     const std::string& method = _request.getMethod();
 
-    if (_request.getHeaders().at("Connection") == "keep-alive" ||
-        _request.getHeaders().at("Connection") == "close") {
-        _response.setConnection(_request.getHeaders().at("Connection"));
-    }
+    _internalUri = _request.getUri();
+    if (location) {
+        if (location->getAlias()) {
+            _internalUri =
+                *location->getAlias() +
+                _request.getUri().substr((location->getName()).length());
+        } else if (*location->getRoot() != "./")
+            _rootPath = *location->getRoot();
+        _autoindex = location->getAutoIndex();
+    } else
+        _rootPath = _serverConfig.getRoot();
 
     if (method == "GET") {
-        processGetRequest();
+        if (!location || (location && location->getMethodIsAllowed("GET")))
+            processGetRequest();
+        else {
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
+        }
     } else if (method == "POST") {
-        processPostRequest();
+        if (!location || (location && location->getMethodIsAllowed("POST")))
+            processPostRequest();
+        else
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     } else if (method == "DELETE") {
         processDeleteRequest();
     } else {
-        _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+        if (!location || (location && location->getMethodIsAllowed("DELETE")))
+            _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+        else
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
     }
 }
 
 void RequestHandler::processGetRequest() {
-    std::string fullPath = _rootPath + _request.getUri();
+    std::string     fullPath;
+    const Location* location = _serverConfig.getLocation(_internalUri);
 
+    fullPath = _rootPath + _internalUri;
+    if (isDirectory(fullPath)) {
+        if (location && location->getIndex() && isReadable(fullPath + "/" + *location->getIndex())) {
+            fullPath += "/" + *location->getIndex();
+        } else if (_serverConfig.getIndex() && isReadable(fullPath + "/" + *_serverConfig.getIndex())) {
+            fullPath += "/" + *_serverConfig.getIndex();
+        }
+    }
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
     if (isDirectory(fullPath)) {
-        if (_serverConfig.getAutoIndex()) {
+        if (_autoindex) {
             _response.setStatusCode(HTTP_OK);
-            _response.setContent(
-                getHtmlIndexPage(_rootPath, _request.getUri()));
+            _response.setContent(getHtmlIndexPage(_rootPath, _internalUri));
             _response.setContentType("text/html");
             return;
         } else {
@@ -197,4 +200,13 @@ void RequestHandler::processDeleteRequest() {
     }
     _response.setStatusCode(HTTP_OK);
     _response.setContent("File deleted successfully.");
+}
+
+void RequestHandler::generateErrorResponse(StatusCode         status_code,
+                                           const std::string& error_msg) {
+    (void)error_msg;  // use this to pass the error message to the response
+    _response.setStatusCode(status_code);
+    _response.setContent(GetHtmlErrorPage(_response));
+    _response.setContentType("text/html");
+    _response.setConnection("close");
 }
