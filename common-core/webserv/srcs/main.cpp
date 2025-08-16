@@ -15,11 +15,11 @@
 
 #include "Logger.hpp"
 #include "core/web_server.hpp"
-#include "parsing/GlobalConfig.hpp"
 #include "handlers/cgi_handler.hpp"
+#include "parsing/GlobalConfig.hpp"
 
 void initializeCgiBin(const std::vector<ServerConfig>& servers) {
-    Logger::debug() << "Initializing CGI bin...";
+    Logger::info() << "Initializing CGI bin...";
 
     for (size_t i = 0; i < servers.size(); i++) {
         const CgiBin& cgiBin = servers[i].getCgiBin();
@@ -30,24 +30,24 @@ void initializeCgiBin(const std::vector<ServerConfig>& servers) {
 }
 
 int main(int argc, char* argv[]) {
-    if (argc > 2) {
-        std::cerr << "Usage: " << argv[0] << " [config_file]" << std::endl;
-        return 1;
+    Logger::setLevel(LOG_LEVEL_INFO);
+
+    std::string config_file = "config/lucas.conf";
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
+            config_file = static_cast<std::string>(argv[i + 1]);
+            Logger::info() << "Using config file: " << config_file;
+        } else if (strcmp(argv[i], "-v") == 0) {
+            Logger::setLevel(LOG_LEVEL_DEBUG);
+        }
     }
 
     try {
         GlobalConfig config;
 
-        if (argc == 2) {
-            if (!config.loadConfig(argv[1])) {
-                Logger::error() << "Failed to load configuration file";
-                return 1;
-            }
-        } else {
-            if (!config.loadConfig("config/lucas.conf")) {
-                Logger::error() << "Failed to load default configuration file";
-                return 1;
-            }
+        if (!config.loadConfig(config_file)) {
+            Logger::error() << "Failed to load configuration file";
+            return 1;
         }
 
         initializeCgiBin(config.getServers());

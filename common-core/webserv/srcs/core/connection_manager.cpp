@@ -36,7 +36,6 @@ ConnectionManager::~ConnectionManager() {
     clients_.clear();
 }
 
-
 void ConnectionManager::SetupPolling() {
     poll_fds_.clear();
     aux_fd_owner_.clear();
@@ -105,7 +104,7 @@ void ConnectionManager::Run() {
             int fd = poll_fds_[i].fd;
 
             // Route aux fds (file/cgipipe) back to their owners
-			// still need review
+            // still need review
             std::map<int, ClientConnection*>::iterator a =
                 aux_fd_owner_.find(fd);
             if (a != aux_fd_owner_.end()) {
@@ -183,17 +182,19 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
                    << ". Active clients: " << clients_.size();
 }
 
-void ConnectionManager::HandleClientEvent(int fd, short events) {
+int ConnectionManager::HandleClientEvent(int fd, short events) {
     ClientIterator it = clients_.find(fd);
     if (it == clients_.end()) {
         Logger::warning() << "Event for unknown client fd=" << fd;
-        return;
+        return -1;
     }
 
     ClientConnection* client = it->second;
     if (!client->HandleEvent(events)) {
         RemoveClient(fd);
+        return -1;
     }
+    return 0;
 }
 
 void ConnectionManager::RemoveClient(int client_fd) {
@@ -208,8 +209,8 @@ void ConnectionManager::RemoveClient(int client_fd) {
     delete client;
     clients_.erase(it);
 
-    Logger::debug() << "Removed client fd=" << client_fd
-                    << ". Active clients: " << clients_.size();
+    Logger::debug() << "Removed client " << client_fd << ". Active clients: "
+                   << clients_.size();
 }
 
 void ConnectionManager::CleanupTimedOutClients() {

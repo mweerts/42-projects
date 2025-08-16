@@ -12,7 +12,7 @@
 
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror
+FLAGS = -Wall -Wextra -Werror -g3
 
 SRCS_DIR = srcs
 OBJS_DIR = objs
@@ -37,7 +37,7 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 -include $(DEPS)
 
 run: all
-	./$(NAME)
+	./$(NAME) -v
 
 clean:
 	rm -rf $(OBJS_DIR)
@@ -66,7 +66,7 @@ cclean:
 # @rm -f compile_commands.json
 
 crun: cbuild
-	@./build/webserv $(filter-out $@,$(MAKECMDGOALS))
+	@./build/webserv $(filter-out $@,$(MAKECMDGOALS)) -v
 
 ctest: cbuild-test
 	@cd build && ./webserv_test

@@ -163,6 +163,7 @@ void RequestHandler::processGetRequest() {
 
     CgiHandler tempCgiHandler(_request, &_serverConfig);
     if (tempCgiHandler.isCgiScript(_internalUri)) {
+        Logger::info() << "Executing CGI script";
         _cgiHandler = new CgiHandler(_request, &_serverConfig);
         if (_cgiHandler->startAsyncCgi(_internalUri)) {
             return;

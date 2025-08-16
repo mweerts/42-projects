@@ -15,11 +15,11 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <sys/poll.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/poll.h>
 
 #include <algorithm>
 #include <cctype>
@@ -33,16 +33,16 @@
 #include "../http/HttpResponse.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
+#include "cgi_process.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
-#include "cgi_process.hpp"
 
 /* potential refactors
  * functions :
  * - processCgiIO
  * - buildCgiResponse
  * others :
-*/
+ */
 
 const int                          CgiHandler::CGI_TIMEOUT_SECONDS = 10;
 std::map<std::string, std::string> CgiHandler::cgiBin_;
@@ -78,11 +78,12 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
     cgiBin_.clear();
     cgiBinPath_ = cgiBin.getRoot();
-    Logger::debug() << "Initializing CGI bin at: " << cgiBinPath_;
     if (cgiBinPath_.empty()) {
         Logger::error() << "No path configured for cgi";
         return;
     }
+
+    Logger::debug() << "Initializing CGI bin at: " << cgiBinPath_;
 
     std::vector<std::string> extensions = cgiBin.getExt();
     std::vector<std::string> paths = cgiBin.getPath();
@@ -113,7 +114,7 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
         return lib::isExecutable(interp);
     }
     Logger::debug() << "Script path: " << script_path;
-	
+
     // If no interpreter, the script itself must be executable.
     return lib::isExecutable(script_path);
 }
@@ -161,7 +162,6 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
 
     return env;
 }
-
 
 /* ============ Async core ============ */
 
@@ -246,8 +246,8 @@ bool CgiHandler::processCgiIO() {
     if (async_process_->getInputPipe() != -1 &&
         async_process_->getInputBuffer().empty()) {
         if (request_.getContentLength() > 0 || request_.hasMoreBody()) {
-			// enought for simple cgi scripts
-			// but will not scale for large bodies
+            // enought for simple cgi scripts
+            // but will not scale for large bodies
             async_process_->setInputBuffer(request_.readBodyAll());
         }
     }
@@ -264,9 +264,10 @@ bool CgiHandler::processCgiIO() {
 }
 
 bool CgiHandler::handleFdEvent(int fd, short revents) {
-    if (!async_process_ || !async_process_->isValid()) return true;
+    if (!async_process_ || !async_process_->isValid())
+        return true;
 
-    int inFd  = async_process_->getInputPipe();
+    int inFd = async_process_->getInputPipe();
     int outFd = async_process_->getOutputPipe();
 
     // Write to CGI stdin when POLLOUT
@@ -288,15 +289,18 @@ bool CgiHandler::handleFdEvent(int fd, short revents) {
     if (fd == outFd && (revents & POLLIN)) {
         bool eof = async_process_->readOutputOnce();
         if (eof) {
-            int status; (void)async_process_->hasExited(&status);
-            return true; // Completed
+            int status;
+            (void)async_process_->hasExited(&status);
+            return true;  // Completed
         }
         return false;
     }
 
     // Treat HUP/ERR/NVAL on any pipe as completion for safety
-    if ((fd == outFd || fd == inFd) && (revents & (POLLHUP | POLLERR | POLLNVAL))) {
-        int status; (void)async_process_->hasExited(&status);
+    if ((fd == outFd || fd == inFd) &&
+        (revents & (POLLHUP | POLLERR | POLLNVAL))) {
+        int status;
+        (void)async_process_->hasExited(&status);
         return true;
     }
     return false;

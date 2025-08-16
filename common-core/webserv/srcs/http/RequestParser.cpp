@@ -47,13 +47,13 @@ void RequestParser::cleanup() {
         request_file_.close();
     }
 
-    // TEMPORARY: keep the file for debugging
-    // if (!req_filename_.empty() && lib::pathExist(req_filename_)) {
-    //     if (remove(req_filename_.c_str()) != 0) {
-    //         Logger::warning() << "Failed to remove temporary request file: "
-    //                           << req_filename_;
-    //     }
-    // }
+    // Comment this to keep the file for debugging
+    if (!req_filename_.empty() && lib::pathExist(req_filename_)) {
+        if (remove(req_filename_.c_str()) != 0) {
+            Logger::warning() << "Failed to remove temporary request file: "
+                              << req_filename_;
+        }
+    }
 }
 
 RequestParser::Status RequestParser::parse(const char* buffer,
@@ -148,7 +148,7 @@ std::string RequestParser::createRequestFilePath() {
         req_filename_ = dir + "/" + lib::to_string(time(NULL)) + "_" +
                         lib::to_string(request_counter_++);
 
-        Logger::debug() << "Created tmp request file path: " << req_filename_;
+        Logger::debug() << "Created tmp request file";
     }
     return req_filename_;
 }
@@ -210,9 +210,7 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
     request_.setUri(uri);
     request_.setVersion(version);
 
-    Logger::debug() << "Parsed request line: " << method << " " << uri << " "
-                    << version;
-
+    Logger::info() << "Request: " << method << " " << uri << " " << version;
     return true;
 }
 
@@ -232,7 +230,6 @@ RequestParser::Status RequestParser::parseRequestLine() {
         return ERROR;
     }
 
-    Logger::debug() << "Request line parsed successfully";
     return COMPLETE;
 }
 
@@ -356,14 +353,14 @@ bool RequestParser::findHeadersEnd() {
 
 // get the length of the file from the start position
 static size_t calculateBodyLength(std::ifstream& file, size_t start_pos) {
-	file.seekg(0, std::ios::end);
-	std::streampos file_end = file.tellg();
-	if (file_end == std::streampos(-1)) {
-		Logger::error() << "Failed to get file size";
-		return 0;
-	}
-	size_t file_size = static_cast<size_t>(file_end);
-	return file_size - start_pos;
+    file.seekg(0, std::ios::end);
+    std::streampos file_end = file.tellg();
+    if (file_end == std::streampos(-1)) {
+        Logger::error() << "Failed to get file size";
+        return 0;
+    }
+    size_t file_size = static_cast<size_t>(file_end);
+    return file_size - start_pos;
 }
 
 std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
@@ -378,9 +375,9 @@ std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
     }
 
     if (length == 0) {
-		length = calculateBodyLength(file, start_pos);
-		if (length <= 0)
-			return "";
+        length = calculateBodyLength(file, start_pos);
+        if (length <= 0)
+            return "";
     }
 
     file.seekg(start_pos, std::ios::beg);
@@ -389,7 +386,7 @@ std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
         return "";
     }
 
-	// for small file, 8KB threshold
+    // for small file, 8KB threshold
     if (length <= 8192) {
         std::vector<char> buffer(length);
         file.read(&buffer[0], length);

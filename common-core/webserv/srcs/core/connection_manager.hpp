@@ -59,7 +59,7 @@ class ConnectionManager {
    private:
     void SetupPolling();
     void HandleNewConnection(int fd);
-    void HandleClientEvent(int fd, short events);
+    int HandleClientEvent(int fd, short events);
     void CleanupTimedOutClients();
     void RemoveClient(int client_fd);
 

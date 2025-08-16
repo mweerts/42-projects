@@ -76,8 +76,7 @@ class ClientConnection {
     void UpdateActivity();
     bool HandleRead();
     bool HandleWrite();
-    void cleanupCgi();
-    void finalizeResponse();
+    bool finalizeResponse();
 };
 
 #endif

@@ -64,10 +64,6 @@ bool ClientConnection::HandleEvent(short revents) {
     UpdateActivity();
 
     if (revents & (POLLHUP | POLLERR | POLLNVAL)) {
-        Logger::debug() << "Client " << socket_fd_ << " disconnected";
-        if (state_ == WRITING_RESPONSE && !response_streamer_.isComplete()) {
-            Logger::warning() << "Client disconnected before response complete";
-        }
         return false;
     }
 
@@ -126,7 +122,8 @@ bool ClientConnection::HandleRead() {
             return true;
         }
         case RequestParser::COMPLETE: {
-            Logger::debug() << "Request parsing complete";
+            Logger::debug()
+                << "=========== Request parsing complete ===========";
             request_ready_ = true;
 
             request_handler_ =
@@ -134,16 +131,14 @@ bool ClientConnection::HandleRead() {
             request_handler_->handleRequest();
 
             if (request_handler_->hasCgiRunning()) {
-                Logger::debug() << "CGI started, waiting for completion";
+                Logger::debug() << "CGI is running";
             } else if (request_handler_->isStaticFileResponse()) {
                 response_streamer_.prepareStaticFile(
                     request_handler_->getResponse(),
                     request_handler_->getStaticFilePath());
-                Logger::debug() << "Prepared static file streaming";
             } else {
                 response_streamer_.prepareResponse(
                     request_handler_->getResponse());
-                Logger::debug() << "Prepared regular response";
             }
 
             state_ = WRITING_RESPONSE;
@@ -165,16 +160,14 @@ bool ClientConnection::HandleWrite() {
     ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
 
     if (n == -1) {
-        Logger::error() << "Fatal error in response streaming";
         return false;
-    }
-
-    if (n == -2) {
+    } else if (n == -2) {
+        // EAGAIN or EWOULDBLOCK: try again later
         return true;
     }
 
     if (response_streamer_.isComplete()) {
-        finalizeResponse();
+        return finalizeResponse();
     }
     return true;
 }
@@ -281,13 +274,13 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     return true;
 }
 
-void ClientConnection::finalizeResponse() {
+bool ClientConnection::finalizeResponse() {
     Logger::debug() << "Response sent to client " << socket_fd_;
 
     if (request_handler_->shouldCloseConnection()) {
         Logger::debug() << "Connection should be closed";
         Close();
-        return;
+        return false;
     }
 
     // Reset for next request
@@ -302,5 +295,5 @@ void ClientConnection::finalizeResponse() {
     request_parser_ = new RequestParser(current_request_, server_config_);
     request_ready_ = false;
 
-    UpdateActivity();
+    return true;
 }

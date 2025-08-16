@@ -59,7 +59,7 @@ target_compile_definitions(webserv_test PRIVATE TEST=1)
 target_link_libraries(webserv_test ${LIBS})
 
 add_custom_target(run
-    COMMAND ./webserv
+    COMMAND ./webserv -v
     DEPENDS webserv
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
