@@ -1,10 +1,10 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
-#include "../srcs/parsing/GlobalConfig.hpp"
-#include "http_status_code.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
+#include "../srcs/parsing/GlobalConfig.hpp"
+#include "http_status_code.hpp"
 
 class ServerConfig;
 class CgiHandler;
@@ -32,8 +32,12 @@ class RequestHandler {
     int  getCgiOutputPipe() const;
     bool handleCgiFdEvent(int fd, short revents);
 
-    bool        isStaticFileResponse() const { return _isStaticFile; }
-    const std::string& getStaticFilePath() const { return _staticFilePath; }
+    bool isStaticFileResponse() const {
+        return _isStaticFile;
+    }
+    const std::string& getStaticFilePath() const {
+        return _staticFilePath;
+    }
 
    private:
     const ServerConfig& _serverConfig;
@@ -51,6 +55,8 @@ class RequestHandler {
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
+
+    CgiHandler* initCgiHandler();
 
     std::string extractBoundary(const std::string& content_type);
 };

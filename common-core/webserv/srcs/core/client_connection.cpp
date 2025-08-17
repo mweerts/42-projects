@@ -172,6 +172,31 @@ bool ClientConnection::HandleWrite() {
     return true;
 }
 
+bool ClientConnection::finalizeResponse() {
+    Logger::debug() << "Response sent to client " << socket_fd_;
+
+    if (request_handler_->shouldCloseConnection()) {
+        Logger::debug() << "Connection should be closed";
+        Close();
+        return false;
+    }
+
+    // Reset for next request
+    delete request_handler_;
+    request_handler_ = NULL;
+    delete request_parser_;
+    request_parser_ = NULL;
+
+    current_request_.reset();
+    response_streamer_.reset();
+    state_ = READING_REQUEST;
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
+
+    return true;
+}
+
+
 void ClientConnection::Close() {
     if (is_closed_)
         return;
@@ -192,28 +217,6 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
-}
-
-// State Queries
-
-bool ClientConnection::NeedsToRead() const {
-    return state_ == READING_REQUEST;
-}
-
-bool ClientConnection::NeedsToWrite() const {
-    return state_ == WRITING_RESPONSE;
-}
-
-bool ClientConnection::ShouldClose() const {
-    return state_ == ERROR;
-}
-
-int ClientConnection::GetSocketFd() const {
-    return socket_fd_;
-}
-
-ClientConnection::State ClientConnection::GetState() const {
-    return state_;
 }
 
 // still need review
@@ -274,26 +277,24 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     return true;
 }
 
-bool ClientConnection::finalizeResponse() {
-    Logger::debug() << "Response sent to client " << socket_fd_;
+// ========== State Queries ========== //
 
-    if (request_handler_->shouldCloseConnection()) {
-        Logger::debug() << "Connection should be closed";
-        Close();
-        return false;
-    }
+bool ClientConnection::NeedsToRead() const {
+    return state_ == READING_REQUEST;
+}
 
-    // Reset for next request
-    delete request_handler_;
-    request_handler_ = NULL;
-    delete request_parser_;
-    request_parser_ = NULL;
+bool ClientConnection::NeedsToWrite() const {
+    return state_ == WRITING_RESPONSE;
+}
 
-    current_request_.reset();
-    response_streamer_.reset();
-    state_ = READING_REQUEST;
-    request_parser_ = new RequestParser(current_request_, server_config_);
-    request_ready_ = false;
+bool ClientConnection::ShouldClose() const {
+    return state_ == ERROR;
+}
 
-    return true;
+int ClientConnection::GetSocketFd() const {
+    return socket_fd_;
+}
+
+ClientConnection::State ClientConnection::GetState() const {
+    return state_;
 }

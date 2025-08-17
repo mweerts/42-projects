@@ -44,51 +44,43 @@ class CgiHandler {
     bool isAsyncCgiComplete() const;
     void cleanupAsyncCgi();
 
-	bool isTimedOut() const;
+    bool isTimedOut() const;
 
     int  getInputPipe() const;
     int  getOutputPipe() const;
     bool isProcessing() const;
-    // Handle one fd event (POLLIN/POLLOUT/HUP/ERR) and perform exactly one op.
+
+	
     // Returns true if CGI completed (stdout EOF and child exited, or fatal).
     bool handleFdEvent(int fd, short revents);
 
-    // Async processing methods
     bool processCgiIO();
     void buildCgiResponse(HttpResponse& response);
 
    private:
     static const int CGI_TIMEOUT_SECONDS;
 
-    const HttpRequest& request_;
-	const ServerConfig* serverConfig_;
-    CgiProcess*        async_process_;
-    static std::string cgiScriptPath_;
+    const HttpRequest&  request_;
+    const ServerConfig* serverConfig_;
+    CgiProcess*         async_process_;
+    static std::string  cgiScriptPath_;
 
     // initialized at startup
     static std::map<std::string, std::string> cgiBin_;
     static std::string                        cgiBinPath_;
     static bool                               cgiBinInitialized_;
 
-
    private:
-    // Environment setup
     const std::vector<std::string> buildEnvironment();
     std::string                    buildQueryString();
 
-
-    // bool parseCgiResponse(const std::string& cgiOutput, HttpResponse& response);
-    // std::string extractHeaders(const std::string& cgiOutput, std::string& body);
-
     std::string       getCgiInterpreter(const std::string& scriptPath);
     const std::string getFileExtension(const std::string& filePath);
-    // void              cleanupProcess(int pid);
 
     bool startCgiProcess(const std::string& scriptPath);
 
     std::string resolveScriptPath(const std::string& uri) const;
     void        setDefaultCgiBin();
-
 };
 
 #endif

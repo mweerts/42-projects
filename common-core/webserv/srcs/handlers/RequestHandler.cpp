@@ -155,24 +155,31 @@ void RequestHandler::processRequest() {
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
+
+// ============ CGI ============ //
+
+CgiHandler* RequestHandler::initCgiHandler() {
+    CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
+    if (cgiHandler->startAsyncCgi(_internalUri))
+        return cgiHandler;
+    delete cgiHandler;
+    return NULL;
+}
+
+// ============ GET ============ //
+
 void RequestHandler::processGetRequest() {
     std::string     fullPath;
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
 
-    CgiHandler tempCgiHandler(_request, &_serverConfig);
-    if (tempCgiHandler.isCgiScript(_internalUri)) {
-        Logger::info() << "Executing CGI script";
-        _cgiHandler = new CgiHandler(_request, &_serverConfig);
-        if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;
-        } else {
-            delete _cgiHandler;
-            _cgiHandler = NULL;
+    CgiHandler tmpCgi(_request, &_serverConfig);
+    if (tmpCgi.isCgiScript(_internalUri)) {
+        _cgiHandler = initCgiHandler();
+        if (!_cgiHandler)
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-            return;
-        }
+        return;
     }
 
     if (lib::isDirectory(fullPath)) {
@@ -223,19 +230,15 @@ void RequestHandler::processGetRequest() {
     _response.setLastModified(getLastModifiedTime(fullPath));
 }
 
+// ============ POST ============ //
+
 void RequestHandler::processPostRequest() {
-    // make a utils function for this because it's the same for the get request
-    CgiHandler tempCgiHandler(_request, &_serverConfig);
-    if (tempCgiHandler.isCgiScript(_internalUri)) {
-        _cgiHandler = new CgiHandler(_request, &_serverConfig);
-        if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;
-        } else {
-            delete _cgiHandler;
-            _cgiHandler = NULL;
+    CgiHandler tmpCgi(_request, &_serverConfig);
+    if (tmpCgi.isCgiScript(_internalUri)) {
+        _cgiHandler = initCgiHandler();
+        if (!_cgiHandler)
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-            return;
-        }
+        return ;
     }
 
     // Regular file upload handling
