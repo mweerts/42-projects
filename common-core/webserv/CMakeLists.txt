@@ -43,6 +43,7 @@ set(SOURCES
     srcs/parsing/CgiBin.cpp
     
     srcs/lib/socket_guard.cpp
+    srcs/lib/fd_guard.cpp
     srcs/lib/logger.cpp
     srcs/lib/file_utils.cpp
 	srcs/lib/stream_buffer.cpp

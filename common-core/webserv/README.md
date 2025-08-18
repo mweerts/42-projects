@@ -7,7 +7,7 @@
 
 ## to do max
 - verifier que les urls "index%copy.html" marche parce que je crois pas qu'elles fonctionne
-
+- Location doit etre dynamique dans process request, la c'est tout le temps localhost:8080
 ## To do cgi 
 
 * Upload streaming:
