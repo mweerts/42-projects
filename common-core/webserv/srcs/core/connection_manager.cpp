@@ -36,7 +36,7 @@ ConnectionManager::~ConnectionManager() {
     clients_.clear();
 }
 
-void ConnectionManager::SetupPolling() {
+void ConnectionManager::RegisterFds() {
     poll_fds_.clear();
     aux_fd_owner_.clear();
 
@@ -68,12 +68,11 @@ void ConnectionManager::SetupPolling() {
             poll_fds_.push_back(pfd);
         }
 
-        // auxiliary fds (files, cgi pipes)
-        std::vector<pollfd> extra;
-        client->GetAuxPollFds(extra);
-        for (size_t k = 0; k < extra.size(); ++k) {
-            poll_fds_.push_back(extra[k]);
-            aux_fd_owner_[extra[k].fd] = client;
+		// register auxiliary fds (files, cgi pipes)
+        std::vector<pollfd> extra = client->GetAuxPollFds();
+        for (size_t i = 0; i < extra.size(); ++i) {
+            poll_fds_.push_back(extra[i]);
+            aux_fd_owner_[extra[i].fd] = client;
         }
     }
 }
@@ -82,7 +81,7 @@ void ConnectionManager::Run() {
     running_ = true;
 
     while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
-        SetupPolling();
+        RegisterFds();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
 
         if (ready < 0 && errno != EINTR) {

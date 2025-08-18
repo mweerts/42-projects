@@ -48,7 +48,7 @@ class ClientConnection {
     void Close();
 
     // Expose aux fds for polling (files, cgi pipes)
-    void GetAuxPollFds(std::vector<pollfd>& out) const;
+    std::vector<pollfd> GetAuxPollFds() const;
     bool HandleAuxEvent(int fd, short revents);
 
    private:

@@ -59,6 +59,7 @@ class RequestHandler {
     CgiHandler* initCgiHandler();
 
     std::string extractBoundary(const std::string& content_type);
+
 };
 
 #endif

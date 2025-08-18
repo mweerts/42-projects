@@ -57,7 +57,7 @@ class ConnectionManager {
     typedef std::map<int, TcpServer*>::const_iterator ServerConstIterator;
 
    private:
-    void SetupPolling();
+    void RegisterFds();
     void HandleNewConnection(int fd);
     int HandleClientEvent(int fd, short events);
     void CleanupTimedOutClients();

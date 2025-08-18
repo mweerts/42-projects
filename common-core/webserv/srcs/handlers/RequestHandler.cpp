@@ -60,7 +60,6 @@ bool RequestHandler::shouldCloseConnection() const {
     if (_response.getStatusCode() != HTTP_OK) {
         return true;
     }
-
     return !_request.shouldKeepAlive();
 }
 
@@ -108,6 +107,7 @@ void RequestHandler::handleRequest() {
 //     send(socket_fd, responseString.c_str(), responseString.size(), 0);
 // }
 
+// TODO: maybe make this a bit cleaner or easy to read?
 void RequestHandler::processRequest() {
     const Location*    location = _serverConfig.getLocation(_request.getUri());
     const std::string& method = _request.getMethod();
@@ -117,6 +117,7 @@ void RequestHandler::processRequest() {
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+			// TODO: Needs to be dynamic
             _response.setLocation("http://localhost:8080" +
                                   urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
@@ -155,17 +156,6 @@ void RequestHandler::processRequest() {
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
-
-// ============ CGI ============ //
-
-CgiHandler* RequestHandler::initCgiHandler() {
-    CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
-    if (cgiHandler->startAsyncCgi(_internalUri))
-        return cgiHandler;
-    delete cgiHandler;
-    return NULL;
-}
-
 // ============ GET ============ //
 
 void RequestHandler::processGetRequest() {
@@ -192,6 +182,7 @@ void RequestHandler::processGetRequest() {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
+
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
@@ -213,19 +204,15 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    // Mark for streaming by connection layer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
+
+	// needed for the response streamer
     _isStaticFile = true;
     _staticFilePath = fullPath;
     struct stat st;
     if (stat(fullPath.c_str(), &st) == 0) {
         _response.setContentLength(static_cast<int>(st.st_size));
     }
+
     _response.setContentType(MimeTypes::getType(fullPath.c_str()));
     _response.setLastModified(getLastModifiedTime(fullPath));
 }
@@ -286,6 +273,8 @@ void RequestHandler::processPostRequest() {
     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
 }
 
+// ============ DELETE ============ //
+
 void RequestHandler::processDeleteRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
@@ -300,17 +289,14 @@ void RequestHandler::processDeleteRequest() {
     _response.setStatusCode(HTTP_NO_CONTENT);
 }
 
-void RequestHandler::generateErrorResponse(StatusCode         status_code,
-                                           const std::string& error_msg) {
-    (void)error_msg;  // use this to pass the error message to the response
-    _response.setStatusCode(status_code);
-    _response.setContent(GetHtmlErrorPage(_response));
-    _response.setContentType("text/html");
-    _response.setConnection("close");
-}
+// ============ CGI ============ //
 
-HttpResponse& RequestHandler::getResponse() {
-    return _response;
+CgiHandler* RequestHandler::initCgiHandler() {
+    CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
+    if (cgiHandler->startAsyncCgi(_internalUri))
+        return cgiHandler;
+    delete cgiHandler;
+    return NULL;
 }
 
 bool RequestHandler::hasCgiRunning() const {
@@ -342,18 +328,6 @@ bool RequestHandler::processCgi() {
     return false;
 }
 
-int RequestHandler::getCgiInputPipe() const {
-    if (_cgiHandler)
-        return _cgiHandler->getInputPipe();
-    return -1;
-}
-
-int RequestHandler::getCgiOutputPipe() const {
-    if (_cgiHandler)
-        return _cgiHandler->getOutputPipe();
-    return -1;
-}
-
 bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
     if (!_cgiHandler)
         return true;
@@ -366,6 +340,33 @@ bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
         return true;
     }
     return false;
+}
+
+int RequestHandler::getCgiInputPipe() const {
+    if (_cgiHandler)
+        return _cgiHandler->getInputPipe();
+    return -1;
+}
+
+int RequestHandler::getCgiOutputPipe() const {
+    if (_cgiHandler)
+        return _cgiHandler->getOutputPipe();
+    return -1;
+}
+
+// ============ UTILS ============ //
+
+HttpResponse& RequestHandler::getResponse() {
+    return _response;
+}
+
+void RequestHandler::generateErrorResponse(StatusCode         status_code,
+	const std::string& error_msg) {
+(void)error_msg;  // not implemented
+_response.setStatusCode(status_code);
+_response.setContent(GetHtmlErrorPage(_response));
+_response.setContentType("text/html");
+_response.setConnection("close");
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {
