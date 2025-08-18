@@ -9,13 +9,14 @@ for i in range(100):
         capture_output=True,
         text=True
     )
-    result = subprocess.run(
+    resultApi = subprocess.run(
         ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", urlApi],
         capture_output=True,
         text=True
         )
 
     code = result.stdout.strip()
+    codeApi = resultApi.stdout.strip()
 
     if code == "200":
         # Verde
@@ -23,6 +24,13 @@ for i in range(100):
     else:
         # Rosso
         print(f"Request {i+1}: \033[91mERROR {code}\033[0m")
+
+    if codeApi == "200":
+        # Verde
+        print(f"RequestApi {i+1}: \033[92mOK\033[0m")
+    else:
+        # Rosso
+        print(f"RequestApi {i+1}: \033[91mERROR {code}\033[0m")
 
 url = "http://127.0.0.1:8080/"
 urlApi = "http://127.0.0.1:8081/"
@@ -115,15 +123,17 @@ subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
 cmdMini = ["siege", url, "-c", "2","-v", "-d", "0.5", "-t", "10s"]
 cmdFull = ["siege", "-f","urlFull.txt" , "-c", "10", "-t", "10s"]
 cmdBasic = ["siege", "-f","urlBasic.txt" , "-c", "10", "-t", "10s"]
-
-
+cmdBanch = ["siege", "-b","urlBasic.txt" ]
 ######siege -c 5 -r 10 --delay=2 -t 1m http://127.0.0.1:8080/large_file.txt
 cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
+
+######  SUB PROCCESS SIEGE
 time.sleep(5)
 print("### TEST SIEGE ####")
 print("### LOWPRESSURE SIEGE ####")
 subprocess.run(cmdLow, capture_output=False)
 print("### MINI TEST SIEGE ####")
+time.sleep(1)
 subprocess.run(cmdMini, capture_output=False)
 print("### FULL TEST SIEGE ####")
 time.sleep(1)
@@ -131,6 +141,14 @@ subprocess.run(cmdFull, capture_output=False)
 print("### TEST JUST ALLOWMETODH ####")
 time.sleep(1)
 subprocess.run(cmdBasic, capture_output=False)
+print("### TEST BENCHAMARK ####")
+time.sleep(1)
+subprocess.run(cmdBanch, capture_output=False)
 
+
+# TEST VALGRIND WITH ERROR CONFIG ###
+cmdValgrind = ["valgrind", "../../.webserv", "../../config/errorConf/"]
+cmdValgrind = ["valgrind", "../../.webserv", "../../config/errorConf/"]
+cmdValgrind = ["valgrind", "../../.webserv", "../../config/errorConf/"]
 #subprocess.run(cmd, capture_output=False)
 

@@ -1,0 +1,400 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/jfranco/01_ecole/07_group_prj/02_webserv/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+$(NAME)	srcs/./parsing/tests/Makefile	/^$(NAME): $(OBJ)$/;"	t
+$(OBJ_DIR)	srcs/./parsing/tests/Makefile	/^$(OBJ_DIR):$/;"	t
+$(OBJ_DIR)/%.o	srcs/./parsing/tests/Makefile	/^$(OBJ_DIR)\/%.o: $(SRC_DIR)\/%.cpp | $(OBJ_DIR)$/;"	t
+AddServer	srcs/./core/connection_manager.cpp	/^void ConnectionManager::AddServer(TcpServer* server) {$/;"	f	class:ConnectionManager	typeref:typename:void
+BLUE	srcs/./lib/logger.cpp	/^const char* Logger::BLUE = "\\033[34m";$/;"	m	class:Logger	typeref:typename:const char *
+BUFFER_SIZE	srcs/./core/client_connection.hpp	/^    static const size_t BUFFER_SIZE = 4096;$/;"	m	class:ClientConnection	typeref:typename:const size_t
+BindAddress	srcs/./core/tcp_server.cpp	/^bool TcpServer::BindAddress() {$/;"	f	class:TcpServer	typeref:typename:bool
+Buffer	srcs/./parsing/ConfigProcessor.hpp	/^    std::string         Buffer;$/;"	m	class:ConfigProcessor	typeref:typename:std::string
+CC	srcs/./parsing/tests/Makefile	/^CC = c++$/;"	m
+CFLAGS	srcs/./parsing/tests/Makefile	/^CFLAGS = -std=c++98$/;"	m
+CGIloc	srcs/./parsing/GlobalConfig.hpp	/^    CgiBin                                           CGIloc;$/;"	m	class:ServerConfig	typeref:typename:CgiBin
+CLIENT_CONNECTION_HPP	srcs/./core/client_connection.hpp	/^#define CLIENT_CONNECTION_HPP$/;"	d
+CLOSING	srcs/./core/client_connection.hpp	/^        CLOSING$/;"	e	enum:ClientConnection::State
+CONFIGPROCESSOR_H	srcs/./parsing/ConfigProcessor.hpp	/^#define CONFIGPROCESSOR_H$/;"	d
+CONNECTION_MANAGER_HPP	srcs/./core/connection_manager.hpp	/^#define CONNECTION_MANAGER_HPP$/;"	d
+CRITICAL	srcs/./lib/logger.cpp	/^const char* Logger::CRITICAL = "\\033[31m";$/;"	m	class:Logger	typeref:typename:const char *
+Cgi	srcs/./parsing/GlobalConfig.hpp	/^    bool                                             Cgi;$/;"	m	class:ServerConfig	typeref:typename:bool
+CgiBin	srcs/./parsing/CgiBin.cpp	/^CgiBin::CgiBin($/;"	f	class:CgiBin
+CgiBin	srcs/./parsing/CgiBin.cpp	/^CgiBin::CgiBin() {$/;"	f	class:CgiBin
+CgiBin	srcs/./parsing/GlobalConfig.hpp	/^struct CgiBin {$/;"	s
+CheckFileStream	srcs/./parsing/ConfigProcessor.cpp	/^static bool CheckFileStream(std::ifstream& file, const std::string& filename) {$/;"	f	typeref:typename:bool	file:
+CleanupServers	srcs/./core/web_server.cpp	/^void WebServer::CleanupServers() {$/;"	f	class:WebServer	typeref:typename:void
+CleanupTimedOutClients	srcs/./core/connection_manager.cpp	/^void ConnectionManager::CleanupTimedOutClients() {$/;"	f	class:ConnectionManager	typeref:typename:void
+ClientConnection	srcs/./core/client_connection.cpp	/^ClientConnection::ClientConnection(int                 socket_fd,$/;"	f	class:ClientConnection
+ClientConnection	srcs/./core/client_connection.hpp	/^class ClientConnection {$/;"	c
+ClientConstIterator	srcs/./core/connection_manager.hpp	/^                                                      ClientConstIterator;$/;"	t	class:ConnectionManager	typeref:typename:std::map<int,ClientConnection * >::const_iterator
+ClientIterator	srcs/./core/connection_manager.hpp	/^    typedef std::map<int, ClientConnection*>::iterator ClientIterator;$/;"	t	class:ConnectionManager	typeref:typename:std::map<int,ClientConnection * >::iterator
+Close	srcs/./core/client_connection.cpp	/^void ClientConnection::Close() {$/;"	f	class:ClientConnection	typeref:typename:void
+ConfigProcessor	srcs/./parsing/ConfigProcessor.cpp	/^ConfigProcessor::ConfigProcessor() : PathFile("") {$/;"	f	class:ConfigProcessor
+ConfigProcessor	srcs/./parsing/ConfigProcessor.cpp	/^ConfigProcessor::ConfigProcessor(ConfigProcessor const& src) {$/;"	f	class:ConfigProcessor
+ConfigProcessor	srcs/./parsing/ConfigProcessor.cpp	/^ConfigProcessor::ConfigProcessor(const std::string& Path) : PathFile(Path) {$/;"	f	class:ConfigProcessor
+ConfigProcessor	srcs/./parsing/ConfigProcessor.hpp	/^class ConfigProcessor {$/;"	c
+ConnectionManager	srcs/./core/connection_manager.cpp	/^ConnectionManager::ConnectionManager() : running_(false), shutdown_flag_(NULL) {}$/;"	f	class:ConnectionManager
+ConnectionManager	srcs/./core/connection_manager.hpp	/^class ConnectionManager {$/;"	c
+CreateServerAndLocation	srcs/./parsing/GlobalConfig.cpp	/^void GlobalConfig::CreateServerAndLocation(void) {$/;"	f	class:GlobalConfig	typeref:typename:void
+DontValidIp	srcs/./parsing/ConfigProcessor.hpp	/^    class DontValidIp : public std::exception {$/;"	c	struct:Validator
+Empty	srcs/./parsing/ConfigProcessor.hpp	/^    class Empty : public std::exception {$/;"	c	struct:Validator
+GLOBALCONFIG_HPP	srcs/./parsing/GlobalConfig.hpp	/^#define GLOBALCONFIG_HPP$/;"	d
+GREEN	srcs/./lib/logger.cpp	/^const char* Logger::GREEN = "\\033[32m";$/;"	m	class:Logger	typeref:typename:const char *
+GetActiveClientCount	srcs/./core/connection_manager.cpp	/^size_t ConnectionManager::GetActiveClientCount() const {$/;"	f	class:ConnectionManager	typeref:typename:size_t
+GetConfig	srcs/./core/tcp_server.cpp	/^const ServerConfig& TcpServer::GetConfig() const {$/;"	f	class:TcpServer	typeref:typename:const ServerConfig &
+GetHtmlErrorPage	srcs/./http/utils.cpp	/^std::string GetHtmlErrorPage(HttpResponse& response) {$/;"	f	typeref:typename:std::string
+GetHttpStatusText	srcs/./http/status_code.hpp	/^inline const char* GetHttpStatusText(StatusCode status) {$/;"	f	namespace:http	typeref:typename:const char *
+GetListenSocket	srcs/./core/tcp_server.cpp	/^int TcpServer::GetListenSocket() const {$/;"	f	class:TcpServer	typeref:typename:int
+GetServerConfig	srcs/./core/connection_manager.cpp	/^const ServerConfig& ConnectionManager::GetServerConfig(int fd) const {$/;"	f	class:ConnectionManager	typeref:typename:const ServerConfig &
+GetSocket	srcs/./core/client_connection.cpp	/^int ClientConnection::GetSocket() const {$/;"	f	class:ClientConnection	typeref:typename:int
+GetState	srcs/./core/client_connection.cpp	/^ClientConnection::State ClientConnection::GetState() const {$/;"	f	class:ClientConnection	typeref:typename:ClientConnection::State
+GlobalConfig	srcs/./parsing/GlobalConfig.cpp	/^GlobalConfig::GlobalConfig(const ConfigProcessor& Parser)$/;"	f	class:GlobalConfig
+GlobalConfig	srcs/./parsing/GlobalConfig.cpp	/^GlobalConfig::GlobalConfig(const GlobalConfig& other) {$/;"	f	class:GlobalConfig
+GlobalConfig	srcs/./parsing/GlobalConfig.hpp	/^    GlobalConfig() {};$/;"	f	class:GlobalConfig
+GlobalConfig	srcs/./parsing/GlobalConfig.hpp	/^class GlobalConfig {$/;"	c
+HTTP_ACCEPTED	srcs/./http/status_code.hpp	/^    HTTP_ACCEPTED = 202,$/;"	e	enum:http::StatusCode
+HTTP_BAD_GATEWAY	srcs/./http/status_code.hpp	/^    HTTP_BAD_GATEWAY = 502,$/;"	e	enum:http::StatusCode
+HTTP_BAD_REQUEST	srcs/./http/status_code.hpp	/^    HTTP_BAD_REQUEST = 400,$/;"	e	enum:http::StatusCode
+HTTP_CONFLICT	srcs/./http/status_code.hpp	/^    HTTP_CONFLICT = 409,$/;"	e	enum:http::StatusCode
+HTTP_CREATED	srcs/./http/status_code.hpp	/^    HTTP_CREATED = 201,$/;"	e	enum:http::StatusCode
+HTTP_EXPECTATION_FAILED	srcs/./http/status_code.hpp	/^    HTTP_EXPECTATION_FAILED = 417,$/;"	e	enum:http::StatusCode
+HTTP_FORBIDDEN	srcs/./http/status_code.hpp	/^    HTTP_FORBIDDEN = 403,$/;"	e	enum:http::StatusCode
+HTTP_FOUND	srcs/./http/status_code.hpp	/^    HTTP_FOUND = 302,$/;"	e	enum:http::StatusCode
+HTTP_GATEWAY_TIMEOUT	srcs/./http/status_code.hpp	/^    HTTP_GATEWAY_TIMEOUT = 504,$/;"	e	enum:http::StatusCode
+HTTP_GONE	srcs/./http/status_code.hpp	/^    HTTP_GONE = 410,$/;"	e	enum:http::StatusCode
+HTTP_INTERNAL_SERVER_ERROR	srcs/./http/status_code.hpp	/^    HTTP_INTERNAL_SERVER_ERROR = 500,$/;"	e	enum:http::StatusCode
+HTTP_LENGTH_REQUIRED	srcs/./http/status_code.hpp	/^    HTTP_LENGTH_REQUIRED = 411,$/;"	e	enum:http::StatusCode
+HTTP_METHOD_NOT_ALLOWED	srcs/./http/status_code.hpp	/^    HTTP_METHOD_NOT_ALLOWED = 405,$/;"	e	enum:http::StatusCode
+HTTP_MOVED_PERMANENTLY	srcs/./http/status_code.hpp	/^    HTTP_MOVED_PERMANENTLY = 301,$/;"	e	enum:http::StatusCode
+HTTP_MULTIPLE_CHOICES	srcs/./http/status_code.hpp	/^    HTTP_MULTIPLE_CHOICES = 300,$/;"	e	enum:http::StatusCode
+HTTP_NON_AUTHORITATIVE_INFORMATION	srcs/./http/status_code.hpp	/^    HTTP_NON_AUTHORITATIVE_INFORMATION = 203,$/;"	e	enum:http::StatusCode
+HTTP_NOT_ACCEPTABLE	srcs/./http/status_code.hpp	/^    HTTP_NOT_ACCEPTABLE = 406,$/;"	e	enum:http::StatusCode
+HTTP_NOT_FOUND	srcs/./http/status_code.hpp	/^    HTTP_NOT_FOUND = 404,$/;"	e	enum:http::StatusCode
+HTTP_NOT_IMPLEMENTED	srcs/./http/status_code.hpp	/^    HTTP_NOT_IMPLEMENTED = 501,$/;"	e	enum:http::StatusCode
+HTTP_NOT_MODIFIED	srcs/./http/status_code.hpp	/^    HTTP_NOT_MODIFIED = 304,$/;"	e	enum:http::StatusCode
+HTTP_NO_CONTENT	srcs/./http/status_code.hpp	/^    HTTP_NO_CONTENT = 204,$/;"	e	enum:http::StatusCode
+HTTP_OK	srcs/./http/status_code.hpp	/^    HTTP_OK = 200,$/;"	e	enum:http::StatusCode
+HTTP_PARTIAL_CONTENT	srcs/./http/status_code.hpp	/^    HTTP_PARTIAL_CONTENT = 206,$/;"	e	enum:http::StatusCode
+HTTP_PAYMENT_REQUIRED	srcs/./http/status_code.hpp	/^    HTTP_PAYMENT_REQUIRED = 402,$/;"	e	enum:http::StatusCode
+HTTP_PRECONDITION_FAILED	srcs/./http/status_code.hpp	/^    HTTP_PRECONDITION_FAILED = 412,$/;"	e	enum:http::StatusCode
+HTTP_PROXY_AUTHENTICATION_REQUIRED	srcs/./http/status_code.hpp	/^    HTTP_PROXY_AUTHENTICATION_REQUIRED = 407,$/;"	e	enum:http::StatusCode
+HTTP_REQUESTED_RANGE_NOT_SATISFIABLE	srcs/./http/status_code.hpp	/^    HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416,$/;"	e	enum:http::StatusCode
+HTTP_REQUEST_ENTITY_TOO_LARGE	srcs/./http/status_code.hpp	/^    HTTP_REQUEST_ENTITY_TOO_LARGE = 413,$/;"	e	enum:http::StatusCode
+HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE	srcs/./http/status_code.hpp	/^    HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431,$/;"	e	enum:http::StatusCode
+HTTP_REQUEST_TIMEOUT	srcs/./http/status_code.hpp	/^    HTTP_REQUEST_TIMEOUT = 408,$/;"	e	enum:http::StatusCode
+HTTP_REQUEST_URI_TOO_LONG	srcs/./http/status_code.hpp	/^    HTTP_REQUEST_URI_TOO_LONG = 414,$/;"	e	enum:http::StatusCode
+HTTP_RESET_CONTENT	srcs/./http/status_code.hpp	/^    HTTP_RESET_CONTENT = 205,$/;"	e	enum:http::StatusCode
+HTTP_SEE_OTHER	srcs/./http/status_code.hpp	/^    HTTP_SEE_OTHER = 303,$/;"	e	enum:http::StatusCode
+HTTP_SERVICE_UNAVAILABLE	srcs/./http/status_code.hpp	/^    HTTP_SERVICE_UNAVAILABLE = 503,$/;"	e	enum:http::StatusCode
+HTTP_STATUS_CODE_HPP	srcs/./http/status_code.hpp	/^#define HTTP_STATUS_CODE_HPP$/;"	d
+HTTP_TEMPORARY_REDIRECT	srcs/./http/status_code.hpp	/^    HTTP_TEMPORARY_REDIRECT = 307,$/;"	e	enum:http::StatusCode
+HTTP_UNAUTHORIZED	srcs/./http/status_code.hpp	/^    HTTP_UNAUTHORIZED = 401,$/;"	e	enum:http::StatusCode
+HTTP_UNSUPPORTED_MEDIA_TYPE	srcs/./http/status_code.hpp	/^    HTTP_UNSUPPORTED_MEDIA_TYPE = 415,$/;"	e	enum:http::StatusCode
+HTTP_USE_PROXY	srcs/./http/status_code.hpp	/^    HTTP_USE_PROXY = 305,$/;"	e	enum:http::StatusCode
+HTTP_VERSION_NOT_SUPPORTED	srcs/./http/status_code.hpp	/^    HTTP_VERSION_NOT_SUPPORTED = 505$/;"	e	enum:http::StatusCode
+HandleClientEvent	srcs/./core/connection_manager.cpp	/^void ConnectionManager::HandleClientEvent(int fd, short events) {$/;"	f	class:ConnectionManager	typeref:typename:void
+HandleEvent	srcs/./core/client_connection.cpp	/^bool ClientConnection::HandleEvent(short revents) {$/;"	f	class:ClientConnection	typeref:typename:bool
+HandleNewConnection	srcs/./core/connection_manager.cpp	/^void ConnectionManager::HandleNewConnection(int listening_fd) {$/;"	f	class:ConnectionManager	typeref:typename:void
+HandleRead	srcs/./core/client_connection.cpp	/^bool ClientConnection::HandleRead() {$/;"	f	class:ClientConnection	typeref:typename:bool
+HttpRequest	srcs/./http/HttpRequest.cpp	/^HttpRequest::HttpRequest() {$/;"	f	class:HttpRequest
+HttpResponse	srcs/./http/HttpResponse.cpp	/^HttpResponse::HttpResponse() {$/;"	f	class:HttpResponse
+Initialize	srcs/./core/tcp_server.cpp	/^bool TcpServer::Initialize() {$/;"	f	class:TcpServer	typeref:typename:bool
+InitializeServers	srcs/./core/web_server.cpp	/^bool WebServer::InitializeServers() {$/;"	f	class:WebServer	typeref:typename:bool
+InvalidChar	srcs/./parsing/Validator.cpp	/^static bool InvalidChar(char c) {$/;"	f	typeref:typename:bool	file:
+InvalidCharEx	srcs/./parsing/ConfigProcessor.hpp	/^    class InvalidCharEx : public std::exception {$/;"	c	struct:Validator
+IsRunning	srcs/./core/connection_manager.cpp	/^bool ConnectionManager::IsRunning() const {$/;"	f	class:ConnectionManager	typeref:typename:bool
+IsServerSocket	srcs/./core/connection_manager.cpp	/^bool ConnectionManager::IsServerSocket(int fd) const {$/;"	f	class:ConnectionManager	typeref:typename:bool
+IsTimedOut	srcs/./core/client_connection.cpp	/^bool ClientConnection::IsTimedOut(int timeout_seconds) const {$/;"	f	class:ClientConnection	typeref:typename:bool
+KEEP_ALIVE	srcs/./core/client_connection.hpp	/^        KEEP_ALIVE,$/;"	e	enum:ClientConnection::State
+Location	srcs/./parsing/GlobalConfig.hpp	/^class Location {$/;"	c
+Location	srcs/./parsing/Location.cpp	/^Location::Location($/;"	f	class:Location
+MAX_BODY_SIZE	srcs/./parsing/ConfigProcessor.hpp	/^#define MAX_BODY_SIZE /;"	d
+MIMETYPES_H_	srcs/./http/MimeTypes.hpp	/^#define MIMETYPES_H_$/;"	d
+MODE	srcs/./parsing/tests/Makefile	/^MODE ?= normal$/;"	m
+MapNode	srcs/./parsing/GlobalConfig.hpp	/^    std::map<int, Node>       MapNode;$/;"	m	class:GlobalConfig	typeref:typename:std::map<int,Node>
+MimeTypes	srcs/./http/MimeTypes.hpp	/^class MimeTypes {$/;"	c
+NAME	srcs/./parsing/tests/Makefile	/^NAME = webserv_parsing$/;"	m
+NeedsToRead	srcs/./core/client_connection.cpp	/^bool ClientConnection::NeedsToRead() const {$/;"	f	class:ClientConnection	typeref:typename:bool
+NeedsToWrite	srcs/./core/client_connection.cpp	/^bool ClientConnection::NeedsToWrite() const {$/;"	f	class:ClientConnection	typeref:typename:bool
+Node	srcs/./parsing/ConfigProcessor.hpp	/^struct Node {$/;"	s
+NotFoundUri	srcs/./parsing/GlobalConfig.hpp	/^    class NotFoundUri : public std::exception {$/;"	c	class:ServerConfig
+OBJ	srcs/./parsing/tests/Makefile	/^OBJ = $(SRCS:$(SRC_DIR)\/%.cpp=$(OBJ_DIR)\/%.o)$/;"	m
+OBJ_DIR	srcs/./parsing/tests/Makefile	/^OBJ_DIR = obj$/;"	m
+OutOfRange	srcs/./parsing/ConfigProcessor.hpp	/^    class OutOfRange : public std::exception {$/;"	c	struct:Validator
+PROCESSING_REQUEST	srcs/./core/client_connection.hpp	/^        PROCESSING_REQUEST,$/;"	e	enum:ClientConnection::State
+PURPLE	srcs/./lib/logger.cpp	/^const char* Logger::PURPLE = "\\033[36m";$/;"	m	class:Logger	typeref:typename:const char *
+PathFile	srcs/./parsing/ConfigProcessor.hpp	/^    std::string         PathFile;$/;"	m	class:ConfigProcessor	typeref:typename:std::string
+PortAccessDeniedException	srcs/./parsing/ConfigProcessor.hpp	/^    class PortAccessDeniedException : public std::exception {$/;"	c	struct:Validator
+READING_REQUEST	srcs/./core/client_connection.hpp	/^        READING_REQUEST,$/;"	e	enum:ClientConnection::State
+RED	srcs/./lib/logger.cpp	/^const char* Logger::RED = "\\033[31m";$/;"	m	class:Logger	typeref:typename:const char *
+RESET	srcs/./lib/logger.cpp	/^const char* Logger::RESET = "\\033[0m";$/;"	m	class:Logger	typeref:typename:const char *
+RemoveClient	srcs/./core/connection_manager.cpp	/^void ConnectionManager::RemoveClient(int client_fd) {$/;"	f	class:ConnectionManager	typeref:typename:void
+Reset	srcs/./core/web_server.cpp	/^void WebServer::Reset() {$/;"	f	class:WebServer	typeref:typename:void
+RicorsiveTree	srcs/./parsing/ConfigProcessor.cpp	/^void ConfigProcessor::RicorsiveTree(std::stringstream& sstoken, bool flags) {$/;"	f	class:ConfigProcessor	typeref:typename:void
+Run	srcs/./core/connection_manager.cpp	/^void ConnectionManager::Run() {$/;"	f	class:ConnectionManager	typeref:typename:void
+Run	srcs/./core/web_server.cpp	/^void WebServer::Run() {$/;"	f	class:WebServer	typeref:typename:void
+SRCS	srcs/./parsing/tests/Makefile	/^SRCS = $(SRC_DIR)\/ConfigProcessor.cpp\\$/;"	m
+SRC_DIR	srcs/./parsing/tests/Makefile	/^SRC_DIR = src$/;"	m
+ServerConfig	srcs/./parsing/GlobalConfig.hpp	/^    ServerConfig() {};$/;"	f	class:ServerConfig
+ServerConfig	srcs/./parsing/GlobalConfig.hpp	/^class ServerConfig {$/;"	c
+ServerConfig	srcs/./parsing/Server.cpp	/^ServerConfig::ServerConfig($/;"	f	class:ServerConfig
+ServerConstIterator	srcs/./core/connection_manager.hpp	/^    typedef std::map<int, TcpServer*>::const_iterator ServerConstIterator;$/;"	t	class:ConnectionManager	typeref:typename:std::map<int,TcpServer * >::const_iterator
+Servers	srcs/./parsing/ConfigProcessor.hpp	/^    std::map<int, Node> Servers;$/;"	m	class:ConfigProcessor	typeref:typename:std::map<int,Node>
+SetShutdownFlag	srcs/./core/connection_manager.cpp	/^void ConnectionManager::SetShutdownFlag(shutdown_flag_t* shutdown_flag) {$/;"	f	class:ConnectionManager	typeref:typename:void
+SetupPolling	srcs/./core/connection_manager.cpp	/^void ConnectionManager::SetupPolling() {$/;"	f	class:ConnectionManager	typeref:typename:void
+ShouldClose	srcs/./core/client_connection.cpp	/^bool ClientConnection::ShouldClose() const {$/;"	f	class:ClientConnection	typeref:typename:bool
+Start	srcs/./core/web_server.cpp	/^bool WebServer::Start() {$/;"	f	class:WebServer	typeref:typename:bool
+State	srcs/./core/client_connection.hpp	/^    enum State {$/;"	g	class:ClientConnection
+StatusCode	srcs/./http/status_code.hpp	/^enum StatusCode {$/;"	g	namespace:http
+Stop	srcs/./core/connection_manager.cpp	/^void ConnectionManager::Stop() {$/;"	f	class:ConnectionManager	typeref:typename:void
+Stop	srcs/./core/web_server.cpp	/^void WebServer::Stop() {$/;"	f	class:WebServer	typeref:typename:void
+StreamErrorFind	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::StreamErrorFind(std::stringstream& ss) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+TCP_SERVER_HPP	srcs/./core/tcp_server.hpp	/^#define TCP_SERVER_HPP$/;"	d
+TcpServer	srcs/./core/tcp_server.cpp	/^TcpServer::TcpServer(const ServerConfig& config)$/;"	f	class:TcpServer
+TcpServer	srcs/./core/tcp_server.cpp	/^TcpServer::TcpServer(const TcpServer& other)$/;"	f	class:TcpServer
+TcpServer	srcs/./core/tcp_server.hpp	/^class TcpServer {$/;"	c
+ToManyDoth	srcs/./parsing/ConfigProcessor.hpp	/^    class ToManyDoth : public std::exception {$/;"	c	struct:Validator
+UTILS_HPP	srcs/./http/utils.hpp	/^#define UTILS_HPP$/;"	d
+UpdateActivity	srcs/./core/client_connection.cpp	/^void ClientConnection::UpdateActivity() {$/;"	f	class:ClientConnection	typeref:typename:void
+ValidateFunction	srcs/./parsing/ConfigProcessor.cpp	/^typedef void (Validator::*ValidateFunction)(const std::vector<std::string>&);$/;"	t	typeref:typename:void (Validator::*)(const std::vector<std::string> &)	file:
+ValidateFunction	srcs/./parsing/ConfigProcessor.hpp	/^    typedef void (Validator::*ValidateFunction)($/;"	t	struct:Validator	typeref:typename:void (Validator::*)(const std::vector<std::string> &)
+ValidateFunction	srcs/./parsing/ConfigProcessor.hpp	/^typedef void (Validator::*ValidateFunction)(const std::vector<std::string>&);$/;"	t	typeref:typename:void (Validator::*)(const std::vector<std::string> &)
+ValidationPath	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::ValidationPath() const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+Validator	srcs/./parsing/ConfigProcessor.hpp	/^struct Validator {$/;"	s
+Validator	srcs/./parsing/Validator.cpp	/^Validator::Validator() {$/;"	f	class:Validator
+VectorSizeToHight	srcs/./parsing/ConfigProcessor.hpp	/^    class VectorSizeToHight : public std::exception {$/;"	c	struct:Validator
+VectorSizeToLow	srcs/./parsing/ConfigProcessor.hpp	/^    class VectorSizeToLow : public std::exception {$/;"	c	struct:Validator
+WEB_SERVER_HPP	srcs/./core/web_server.hpp	/^#define WEB_SERVER_HPP$/;"	d
+WRITING_RESPONSE	srcs/./core/client_connection.hpp	/^        WRITING_RESPONSE,$/;"	e	enum:ClientConnection::State
+WebServer	srcs/./core/web_server.cpp	/^WebServer::WebServer(const GlobalConfig& config)$/;"	f	class:WebServer
+WebServer	srcs/./core/web_server.cpp	/^WebServer::WebServer(const std::vector<ServerConfig>& server_configs)$/;"	f	class:WebServer
+WebServer	srcs/./core/web_server.hpp	/^class WebServer {$/;"	c
+YELLOW	srcs/./lib/logger.cpp	/^const char* Logger::YELLOW = "\\033[33m";$/;"	m	class:Logger	typeref:typename:const char *
+_FunPTR	srcs/./parsing/ConfigProcessor.hpp	/^    void (Validator::* _FunPTR[12])(std::vector<std::string>&);$/;"	m	struct:Validator	typeref:typename:void (Validator::* [12])(std::vector<std::string> &)
+_currentLevel	srcs/./lib/logger.cpp	/^LogLevel Logger::_currentLevel = LOG_LEVEL_DEBUG;$/;"	m	class:Logger	typeref:typename:LogLevel
+_useColors	srcs/./lib/logger.cpp	/^bool     Logger::_useColors = true;$/;"	m	class:Logger	typeref:typename:bool
+_useTimestamps	srcs/./lib/logger.cpp	/^bool     Logger::_useTimestamps = false;$/;"	m	class:Logger	typeref:typename:bool
+addDefualtParm	srcs/./parsing/Node.cpp	/^void Node::addDefualtParm(void) {$/;"	f	class:Node	typeref:typename:void
+all	srcs/./parsing/tests/Makefile	/^all: $(NAME)$/;"	t
+allPort	srcs/./parsing/ConfigProcessor.hpp	/^    std::vector<int>    allPort;$/;"	m	class:ConfigProcessor	typeref:typename:std::vector<int>
+allPort	srcs/./parsing/GlobalConfig.hpp	/^    std::vector<int>          allPort;$/;"	m	class:GlobalConfig	typeref:typename:std::vector<int>
+array	srcs/./parsing/ConfigProcessor.hpp	/^    std::vector<std::string>                         array;$/;"	m	struct:Node	typeref:typename:std::vector<std::string>
+bytes_sent_	srcs/./core/client_connection.hpp	/^    size_t              bytes_sent_;$/;"	m	class:ClientConnection	typeref:typename:size_t
+checkBraces	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::checkBraces(const std::string& str) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+children	srcs/./parsing/ConfigProcessor.hpp	/^    std::vector<Node>                                children;$/;"	m	struct:Node	typeref:typename:std::vector<Node>
+clean	srcs/./parsing/tests/Makefile	/^clean:$/;"	t
+clearMap	srcs/./parsing/Node.cpp	/^int Node::clearMap(void) {$/;"	f	class:Node	typeref:typename:int
+clients_	srcs/./core/connection_manager.hpp	/^    std::map<int, ClientConnection*> clients_;$/;"	m	class:ConnectionManager	typeref:typename:std::map<int,ClientConnection * >
+config_	srcs/./core/tcp_server.hpp	/^    const ServerConfig& config_;$/;"	m	class:TcpServer	typeref:typename:const ServerConfig &
+connection_manager_	srcs/./core/web_server.hpp	/^    ConnectionManager*        connection_manager_;$/;"	m	class:WebServer	typeref:typename:ConnectionManager *
+countBracket	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::countBracket() const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+critical	srcs/./lib/logger.cpp	/^LogStream Logger::critical() {$/;"	f	class:Logger	typeref:typename:LogStream
+critical	srcs/./lib/logger.cpp	/^void Logger::critical(const std::string& msg) {$/;"	f	class:Logger	typeref:typename:void
+debug	srcs/./lib/logger.cpp	/^LogStream Logger::debug() {$/;"	f	class:Logger	typeref:typename:LogStream
+debug	srcs/./lib/logger.cpp	/^void Logger::debug(const std::string& message) {$/;"	f	class:Logger	typeref:typename:void
+enableColors	srcs/./lib/logger.cpp	/^void Logger::enableColors(bool enableColors) {$/;"	f	class:Logger	typeref:typename:void
+enableTimestamps	srcs/./lib/logger.cpp	/^void Logger::enableTimestamps(bool enable) {$/;"	f	class:Logger	typeref:typename:void
+entry	srcs/./http/MimeTypes.hpp	/^    struct entry {$/;"	s	class:MimeTypes
+error	srcs/./lib/logger.cpp	/^LogStream Logger::error() {$/;"	f	class:Logger	typeref:typename:LogStream
+error	srcs/./lib/logger.cpp	/^void Logger::error(const std::string& msg) {$/;"	f	class:Logger	typeref:typename:void
+fclean	srcs/./parsing/tests/Makefile	/^fclean: clean$/;"	t
+fileExtension	srcs/./http/MimeTypes.hpp	/^        const char* fileExtension;$/;"	m	struct:MimeTypes::entry	typeref:typename:const char *
+findChildNode	srcs/./parsing/Node.cpp	/^const Node* Node::findChildNode(const std::string& uri) const {$/;"	f	class:Node	typeref:typename:const Node *
+findRemplaceComment	srcs/./parsing/ConfigProcessor.cpp	/^std::string ConfigProcessor::findRemplaceComment(std::string const& input,$/;"	f	class:ConfigProcessor	typeref:typename:std::string
+funcMap	srcs/./parsing/ConfigProcessor.hpp	/^    std::map<std::string, ValidateFunction> funcMap;$/;"	m	struct:Validator	typeref:typename:std::map<std::string,ValidateFunction>
+g_shutdown_requested	srcs/./core/web_server.cpp	/^volatile sig_atomic_t g_shutdown_requested =$/;"	v	typeref:typename:volatile sig_atomic_t
+getAlias	srcs/./parsing/Location.cpp	/^const std::string* Location::getAlias() const$/;"	f	class:Location	typeref:typename:const std::string *
+getAllPorts	srcs/./parsing/ConfigProcessor.cpp	/^std::vector<int> ConfigProcessor::getAllPorts(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:std::vector<int>
+getAutoIndex	srcs/./parsing/Location.cpp	/^bool Location::getAutoIndex() const$/;"	f	class:Location	typeref:typename:bool
+getAutoIndex	srcs/./parsing/Server.cpp	/^bool ServerConfig::getAutoIndex() const {$/;"	f	class:ServerConfig	typeref:typename:bool
+getBody	srcs/./http/HttpRequest.cpp	/^const std::string& HttpRequest::getBody() const {$/;"	f	class:HttpRequest	typeref:typename:const std::string &
+getBuffer	srcs/./parsing/ConfigProcessor.cpp	/^std::string ConfigProcessor::getBuffer(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:std::string
+getCgiBin	srcs/./parsing/Server.cpp	/^const CgiBin& ServerConfig::getCgiBin(void) const {$/;"	f	class:ServerConfig	typeref:typename:const CgiBin &
+getClientMaxBodySize	srcs/./parsing/Location.cpp	/^size_t Location::getClientMaxBodySize() const$/;"	f	class:Location	typeref:typename:size_t
+getClientMaxBodySize	srcs/./parsing/Server.cpp	/^size_t ServerConfig::getClientMaxBodySize() const {$/;"	f	class:ServerConfig	typeref:typename:size_t
+getConnection	srcs/./http/HttpResponse.cpp	/^std::string HttpResponse::getConnection() const {$/;"	f	class:HttpResponse	typeref:typename:std::string
+getCurrentTimestamp	srcs/./lib/logger.cpp	/^const std::string Logger::getCurrentTimestamp() {$/;"	f	class:Logger	typeref:typename:const std::string
+getErrorPage	srcs/./parsing/GlobalConfig.cpp	/^const std::string* GlobalConfig::getErrorPage(int                port,$/;"	f	class:GlobalConfig	typeref:typename:const std::string *
+getErrorPage	srcs/./parsing/Server.cpp	/^const std::string* ServerConfig::getErrorPage($/;"	f	class:ServerConfig	typeref:typename:const std::string *
+getErrorPageLocation	srcs/./parsing/Server.cpp	/^const std::string* ServerConfig::getErrorPageLocation($/;"	f	class:ServerConfig	typeref:typename:const std::string *
+getExt	srcs/./parsing/CgiBin.cpp	/^const std::vector<std::string>* CgiBin::getExt(void) const {$/;"	f	class:CgiBin	typeref:typename:const std::vector<std::string> *
+getExtension	srcs/./http/MimeTypes.cpp	/^const char* MimeTypes::getExtension(const char* type, int skip) {$/;"	f	class:MimeTypes	typeref:typename:const char *
+getFileSize	srcs/./http/utils.cpp	/^off_t getFileSize(const std::string& path) {$/;"	f	typeref:typename:off_t
+getFullMap	srcs/./parsing/ConfigProcessor.cpp	/^std::map<int, Node> ConfigProcessor::getFullMap(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:std::map<int,Node>
+getHeaders	srcs/./http/HttpRequest.cpp	/^const std::map<std::string, std::string>& HttpRequest::getHeaders() const {$/;"	f	class:HttpRequest	typeref:typename:const std::map<std::string,std::string> &
+getHost	srcs/./parsing/Server.cpp	/^const std::string ServerConfig::getHost() const {$/;"	f	class:ServerConfig	typeref:typename:const std::string
+getHtmlIndexPage	srcs/./http/utils.cpp	/^std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {$/;"	f	typeref:typename:std::string
+getIndex	srcs/./parsing/Location.cpp	/^const std::string* Location::getIndex() const$/;"	f	class:Location	typeref:typename:const std::string *
+getIndex	srcs/./parsing/Server.cpp	/^const std::string* ServerConfig::getIndex() const {$/;"	f	class:ServerConfig	typeref:typename:const std::string *
+getLastModifiedTime	srcs/./http/RequestHandler.cpp	/^static std::string getLastModifiedTime(const std::string& path) {$/;"	f	typeref:typename:std::string	file:
+getLastModifiedTime	srcs/./http/utils.cpp	/^static std::string getLastModifiedTime(const std::string& path) {$/;"	f	typeref:typename:std::string	file:
+getLevel	srcs/./lib/logger.cpp	/^LogLevel Logger::getLevel() {$/;"	f	class:Logger	typeref:typename:LogLevel
+getLevelName	srcs/./lib/logger.cpp	/^const std::string Logger::getLevelName(LogLevel level) {$/;"	f	class:Logger	typeref:typename:const std::string
+getLocation	srcs/./parsing/Server.cpp	/^const Location* ServerConfig::getLocation(const std::string& uri) const {$/;"	f	class:ServerConfig	typeref:typename:const Location *
+getMethod	srcs/./http/HttpRequest.cpp	/^const std::string& HttpRequest::getMethod() const {$/;"	f	class:HttpRequest	typeref:typename:const std::string &
+getMethodIsAllowed	srcs/./parsing/Location.cpp	/^bool	Location::getMethodIsAllowed(const std::string& method) const$/;"	f	class:Location	typeref:typename:bool
+getName	srcs/./parsing/Location.cpp	/^const std::string& Location::getName(void)  const {$/;"	f	class:Location	typeref:typename:const std::string &
+getName	srcs/./parsing/Server.cpp	/^const std::string& ServerConfig::getName() const {$/;"	f	class:ServerConfig	typeref:typename:const std::string &
+getPath	srcs/./parsing/CgiBin.cpp	/^const std::vector<std::string>* CgiBin::getPath(void) const {$/;"	f	class:CgiBin	typeref:typename:const std::vector<std::string> *
+getPath	srcs/./parsing/ConfigProcessor.cpp	/^std::string ConfigProcessor::getPath(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:std::string
+getPort	srcs/./parsing/Server.cpp	/^int ServerConfig::getPort() const {$/;"	f	class:ServerConfig	typeref:typename:int
+getReturn	srcs/./parsing/Location.cpp	/^const std::string* Location::getReturn() const$/;"	f	class:Location	typeref:typename:const std::string *
+getRoot	srcs/./parsing/CgiBin.cpp	/^const std::string* CgiBin::getRoot() const {$/;"	f	class:CgiBin	typeref:typename:const std::string *
+getRoot	srcs/./parsing/Location.cpp	/^const std::string* Location::getRoot() const$/;"	f	class:Location	typeref:typename:const std::string *
+getRoot	srcs/./parsing/Server.cpp	/^const std::string ServerConfig::getRoot() const {$/;"	f	class:ServerConfig	typeref:typename:const std::string
+getRootPath	srcs/./http/RequestHandler.cpp	/^const std::string RequestHandler::getRootPath() const {$/;"	f	class:RequestHandler	typeref:typename:const std::string
+getServerName	srcs/./http/HttpResponse.cpp	/^std::string HttpResponse::getServerName() const {$/;"	f	class:HttpResponse	typeref:typename:std::string
+getServerName	srcs/./parsing/Server.cpp	/^const std::string ServerConfig::getServerName( void ) const$/;"	f	class:ServerConfig	typeref:typename:const std::string
+getServers	srcs/./parsing/GlobalConfig.cpp	/^const std::vector<ServerConfig> GlobalConfig::getServers() const {$/;"	f	class:GlobalConfig	typeref:typename:const std::vector<ServerConfig>
+getStatusCode	srcs/./http/HttpResponse.cpp	/^StatusCode HttpResponse::getStatusCode() const {$/;"	f	class:HttpResponse	typeref:typename:StatusCode
+getType	srcs/./http/MimeTypes.cpp	/^const char* MimeTypes::getType(const char* extension) {$/;"	f	class:MimeTypes	typeref:typename:const char *
+getUplaodDir	srcs/./parsing/Server.cpp	/^const std::string ServerConfig::getUplaodDir( void ) const$/;"	f	class:ServerConfig	typeref:typename:const std::string
+getUri	srcs/./http/HttpRequest.cpp	/^const std::string& HttpRequest::getUri() const {$/;"	f	class:HttpRequest	typeref:typename:const std::string &
+getVectorOfServer	srcs/./parsing/ConfigProcessor.cpp	/^std::vector<Node> ConfigProcessor::getVectorOfServer(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:std::vector<Node>
+getVersion	srcs/./http/HttpRequest.cpp	/^const std::string& HttpRequest::getVersion() const {$/;"	f	class:HttpRequest	typeref:typename:const std::string &
+handleRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::handleRequest(const std::string& request) {$/;"	f	class:RequestHandler	typeref:typename:void
+heandelError	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::heandelError($/;"	f	class:ConfigProcessor	typeref:typename:int
+heredityClientMaxBody	srcs/./parsing/ConfigProcessor.cpp	/^void ConfigProcessor::heredityClientMaxBody(void) {$/;"	f	class:ConfigProcessor	typeref:typename:void
+http	srcs/./http/status_code.hpp	/^namespace http {$/;"	n
+humanReadableSize	srcs/./http/utils.cpp	/^std::string humanReadableSize(off_t size) {$/;"	f	typeref:typename:std::string
+info	srcs/./lib/logger.cpp	/^LogStream Logger::info() {$/;"	f	class:Logger	typeref:typename:LogStream
+info	srcs/./lib/logger.cpp	/^void Logger::info(const std::string& msg) {$/;"	f	class:Logger	typeref:typename:void
+isDirectory	srcs/./http/utils.cpp	/^bool isDirectory(const std::string& path) {$/;"	f	typeref:typename:bool
+isFile	srcs/./http/utils.cpp	/^bool isFile(const std::string& path) {$/;"	f	typeref:typename:bool
+isIsolatedBrace	srcs/./parsing/ConfigProcessor.cpp	/^bool ConfigProcessor::isIsolatedBrace(const std::string& str, size_t index) const {$/;"	f	class:ConfigProcessor	typeref:typename:bool
+isPhpFile	srcs/./http/utils.cpp	/^bool isPhpFile(const std::string& path) {$/;"	f	typeref:typename:bool
+isReadable	srcs/./http/utils.cpp	/^bool isReadable(const std::string& path) {$/;"	f	typeref:typename:bool
+is_closed_	srcs/./core/client_connection.hpp	/^    bool                is_closed_;$/;"	m	class:ClientConnection	typeref:typename:bool
+keep_alive_	srcs/./core/client_connection.hpp	/^    bool                keep_alive_;$/;"	m	class:ClientConnection	typeref:typename:bool
+last_activity_	srcs/./core/client_connection.hpp	/^    time_t              last_activity_;$/;"	m	class:ClientConnection	typeref:typename:time_t
+lib	srcs/./lib/socket_guard.cpp	/^namespace lib {$/;"	n	file:
+listen_fd_	srcs/./core/tcp_server.hpp	/^    int                 listen_fd_;$/;"	m	class:TcpServer	typeref:typename:int
+loadConfig	srcs/./parsing/GlobalConfig.cpp	/^bool GlobalConfig::loadConfig(const std::string& path) {$/;"	f	class:GlobalConfig	typeref:typename:bool
+location_	srcs/./parsing/GlobalConfig.hpp	/^    std::vector<Location>           location_;$/;"	m	class:ServerConfig	typeref:typename:std::vector<Location>
+log	srcs/./lib/logger.cpp	/^void Logger::log(LogLevel level, const std::string& message) {$/;"	f	class:Logger	typeref:typename:void
+main	srcs/./main.cpp	/^int main(int argc, char* argv[]) {$/;"	f	typeref:typename:int
+main	srcs/./parsing/tests/mainParse.cpp	/^int	main(int argv, char **argc)$/;"	f	typeref:typename:int
+mimeType	srcs/./http/MimeTypes.hpp	/^        const char* mimeType;$/;"	m	struct:MimeTypes::entry	typeref:typename:const char *
+name	srcs/./parsing/ConfigProcessor.hpp	/^    std::string                                      name;$/;"	m	struct:Node	typeref:typename:std::string
+name	srcs/./parsing/GlobalConfig.hpp	/^    std::string                                      name;$/;"	m	class:ServerConfig	typeref:typename:std::string
+name	srcs/./parsing/GlobalConfig.hpp	/^    std::string                                      name;$/;"	m	struct:CgiBin	typeref:typename:std::string
+name	srcs/./parsing/GlobalConfig.hpp	/^    std::string name;$/;"	m	class:Location	typeref:typename:std::string
+onlyDigit	srcs/./parsing/ConfigProcessor.hpp	/^    class onlyDigit : public std::exception {$/;"	c	struct:Validator
+operator <<	srcs/./parsing/ConfigProcessor.cpp	/^std::ostream& operator<<(std::ostream& o, const ConfigProcessor& rhs) {$/;"	f	typeref:typename:std::ostream &
+operator =	srcs/./core/tcp_server.cpp	/^TcpServer& TcpServer::operator=(const TcpServer& other) {$/;"	f	class:TcpServer	typeref:typename:TcpServer &
+operator =	srcs/./parsing/ConfigProcessor.cpp	/^ConfigProcessor& ConfigProcessor::operator=(ConfigProcessor const& rhs) {$/;"	f	class:ConfigProcessor	typeref:typename:ConfigProcessor &
+parseBody	srcs/./http/RequestHandler.cpp	/^void RequestHandler::parseBody(const std::string& body) {$/;"	f	class:RequestHandler	typeref:typename:void
+parseFullRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::parseFullRequest(const std::string& request) {$/;"	f	class:RequestHandler	typeref:typename:void
+parseHeaders	srcs/./http/RequestHandler.cpp	/^void RequestHandler::parseHeaders(const std::string& headers) {$/;"	f	class:RequestHandler	typeref:typename:void
+parseRequestLine	srcs/./http/RequestHandler.cpp	/^void RequestHandler::parseRequestLine(const std::string& requestLine) {$/;"	f	class:RequestHandler	typeref:typename:void
+pathExist	srcs/./http/utils.cpp	/^bool pathExist(const std::string& path) {$/;"	f	typeref:typename:bool
+poll_fds_	srcs/./core/connection_manager.hpp	/^    std::vector<pollfd>              poll_fds_;$/;"	m	class:ConnectionManager	typeref:typename:std::vector<pollfd>
+prepareForCore	srcs/./parsing/ConfigProcessor.cpp	/^void ConfigProcessor::prepareForCore(void) {$/;"	f	class:ConfigProcessor	typeref:typename:void
+printAllTree	srcs/./parsing/ConfigProcessor.cpp	/^void ConfigProcessor::printAllTree(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:void
+printMap	srcs/./parsing/Node.cpp	/^void Node::printMap(void) const {$/;"	f	class:Node	typeref:typename:void
+printSubtree	srcs/./parsing/Node.cpp	/^void Node::printSubtree(const std::string& prefix, bool isLast) const {$/;"	f	class:Node	typeref:typename:void
+printTree	srcs/./parsing/Node.cpp	/^void Node::printTree(void) const {$/;"	f	class:Node	typeref:typename:void
+prmtrs	srcs/./parsing/ConfigProcessor.hpp	/^    std::map<std::string, std::vector<std::string> > prmtrs;$/;"	m	struct:Node	typeref:typename:std::map<std::string,std::vector<std::string>>
+prmtrs	srcs/./parsing/GlobalConfig.hpp	/^    std::map<std::string, std::vector<std::string> > prmtrs;$/;"	m	class:Location	typeref:typename:std::map<std::string,std::vector<std::string>>
+prmtrs	srcs/./parsing/GlobalConfig.hpp	/^    std::map<std::string, std::vector<std::string> > prmtrs;$/;"	m	class:ServerConfig	typeref:typename:std::map<std::string,std::vector<std::string>>
+prmtrs	srcs/./parsing/GlobalConfig.hpp	/^    std::map<std::string, std::vector<std::string> > prmtrs;$/;"	m	struct:CgiBin	typeref:typename:std::map<std::string,std::vector<std::string>>
+processDeleteRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::processDeleteRequest() {$/;"	f	class:RequestHandler	typeref:typename:void
+processGetRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::processGetRequest() {$/;"	f	class:RequestHandler	typeref:typename:void
+processPostRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::processPostRequest() {}$/;"	f	class:RequestHandler	typeref:typename:void
+processRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::processRequest() {$/;"	f	class:RequestHandler	typeref:typename:void
+pushArgInMap	srcs/./parsing/Node.cpp	/^int Node::pushArgInMap(void) {$/;"	f	class:Node	typeref:typename:int
+re	srcs/./parsing/tests/Makefile	/^re: fclean all$/;"	t
+read_buffer_	srcs/./core/client_connection.hpp	/^    char                read_buffer_[BUFFER_SIZE];$/;"	m	class:ClientConnection	typeref:typename:char[]
+recursiveMap	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::recursiveMap(void) {$/;"	f	class:ConfigProcessor	typeref:typename:int
+release	srcs/./lib/socket_guard.cpp	/^void SocketGuard::release() {$/;"	f	class:lib::SocketGuard	typeref:typename:void
+request_buffer_	srcs/./core/client_connection.hpp	/^    std::string         request_buffer_;$/;"	m	class:ClientConnection	typeref:typename:std::string
+route	srcs/./parsing/ConfigProcessor.hpp	/^    std::map<std::string, Node*>                     route;$/;"	m	struct:Node	typeref:typename:std::map<std::string,Node * >
+route	srcs/./parsing/GlobalConfig.hpp	/^    std::map<std::string, Location> route;$/;"	m	class:ServerConfig	typeref:typename:std::map<std::string,Location>
+run	srcs/./parsing/tests/Makefile	/^run: all$/;"	t
+running_	srcs/./core/connection_manager.hpp	/^    bool                             running_;$/;"	m	class:ConnectionManager	typeref:typename:bool
+sendResponse	srcs/./http/RequestHandler.cpp	/^void RequestHandler::sendResponse(int socket_fd) {$/;"	f	class:RequestHandler	typeref:typename:void
+server_config_	srcs/./core/client_connection.hpp	/^    const ServerConfig& server_config_;$/;"	m	class:ClientConnection	typeref:typename:const ServerConfig &
+server_configs_	srcs/./core/web_server.hpp	/^    std::vector<ServerConfig> server_configs_;$/;"	m	class:WebServer	typeref:typename:std::vector<ServerConfig>
+servers	srcs/./parsing/GlobalConfig.hpp	/^    std::vector<ServerConfig> servers;$/;"	m	class:GlobalConfig	typeref:typename:std::vector<ServerConfig>
+servers_	srcs/./core/connection_manager.hpp	/^    std::map<int, TcpServer*>        servers_;$/;"	m	class:ConnectionManager	typeref:typename:std::map<int,TcpServer * >
+setBody	srcs/./http/HttpRequest.cpp	/^void HttpRequest::setBody(const std::string& body) {$/;"	f	class:HttpRequest	typeref:typename:void
+setCgi	srcs/./parsing/Server.cpp	/^void ServerConfig::setCgi(const CgiBin& add) {$/;"	f	class:ServerConfig	typeref:typename:void
+setConnection	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setConnection(const std::string& connection) {$/;"	f	class:HttpResponse	typeref:typename:void
+setContent	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setContent(const std::string& content) {$/;"	f	class:HttpResponse	typeref:typename:void
+setContentType	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setContentType(const std::string& contentType) {$/;"	f	class:HttpResponse	typeref:typename:void
+setDate	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setDate(void) {$/;"	f	class:HttpResponse	typeref:typename:void
+setHeader	srcs/./http/HttpRequest.cpp	/^void HttpRequest::setHeader(const std::string& key, const std::string& value) {$/;"	f	class:HttpRequest	typeref:typename:void
+setLastModified	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setLastModified(const std::string& lastModified) {$/;"	f	class:HttpResponse	typeref:typename:void
+setLevel	srcs/./lib/logger.cpp	/^void Logger::setLevel(LogLevel level) {$/;"	f	class:Logger	typeref:typename:void
+setMethod	srcs/./http/HttpRequest.cpp	/^void HttpRequest::setMethod(const std::string& method) {$/;"	f	class:HttpRequest	typeref:typename:void
+setRequest	srcs/./http/RequestHandler.cpp	/^void RequestHandler::setRequest(const HttpRequest& request) {$/;"	f	class:RequestHandler	typeref:typename:void
+setResponse	srcs/./http/RequestHandler.cpp	/^void RequestHandler::setResponse(const HttpResponse& response) {$/;"	f	class:RequestHandler	typeref:typename:void
+setStatusCode	srcs/./http/HttpResponse.cpp	/^void HttpResponse::setStatusCode(StatusCode statusCode) {$/;"	f	class:HttpResponse	typeref:typename:void
+setUri	srcs/./http/HttpRequest.cpp	/^void HttpRequest::setUri(const std::string& uri) {$/;"	f	class:HttpRequest	typeref:typename:void
+setVersion	srcs/./http/HttpRequest.cpp	/^void HttpRequest::setVersion(const std::string& version) {$/;"	f	class:HttpRequest	typeref:typename:void
+shutdown_flag_	srcs/./core/connection_manager.hpp	/^    shutdown_flag_t* shutdown_flag_;$/;"	m	class:ConnectionManager	typeref:typename:shutdown_flag_t *
+shutdown_flag_t	srcs/./core/connection_manager.hpp	/^	typedef volatile __sig_atomic_t shutdown_flag_t;$/;"	t	typeref:typename:volatile __sig_atomic_t
+shutdown_flag_t	srcs/./core/connection_manager.hpp	/^	typedef volatile sig_atomic_t shutdown_flag_t;$/;"	t	typeref:typename:volatile sig_atomic_t
+signal_handler	srcs/./core/web_server.cpp	/^void signal_handler(int signal) {$/;"	f	typeref:typename:void
+socket_fd_	srcs/./core/client_connection.hpp	/^    int                 socket_fd_;$/;"	m	class:ClientConnection	typeref:typename:int
+state_	srcs/./core/client_connection.hpp	/^    State               state_;$/;"	m	class:ClientConnection	typeref:typename:State
+strcmpi	srcs/./http/MimeTypes.cpp	/^int MimeTypes::strcmpi(const char* s1, const char* s2) {$/;"	f	class:MimeTypes	typeref:typename:int
+tcp_servers_	srcs/./core/web_server.hpp	/^    std::vector<TcpServer*>   tcp_servers_;$/;"	m	class:WebServer	typeref:typename:std::vector<TcpServer * >
+toString	srcs/./http/HttpResponse.cpp	/^std::string HttpResponse::toString() {$/;"	f	class:HttpResponse	typeref:typename:std::string
+tokenize	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::tokenize(void) {$/;"	f	class:ConfigProcessor	typeref:typename:int
+tree	srcs/./parsing/ConfigProcessor.hpp	/^    std::vector<Node>   tree;$/;"	m	class:ConfigProcessor	typeref:typename:std::vector<Node>
+tree	srcs/./parsing/GlobalConfig.hpp	/^    std::vector<Node>         tree;$/;"	m	class:GlobalConfig	typeref:typename:std::vector<Node>
+treeParser	srcs/./parsing/ConfigProcessor.cpp	/^void ConfigProcessor::treeParser(std::stringstream& sstoken, Node& current) {$/;"	f	class:ConfigProcessor	typeref:typename:void
+types	srcs/./http/MimeTypes.cpp	/^MimeTypes::entry MimeTypes::types[347] = {$/;"	m	class:MimeTypes	typeref:typename:MimeTypes::entry[347]
+types	srcs/./http/MimeTypes.hpp	/^    static MimeTypes::entry types[347];$/;"	m	class:MimeTypes	typeref:typename:MimeTypes::entry[347]
+unknownMethods	srcs/./parsing/ConfigProcessor.hpp	/^    class unknownMethods : public std::exception {$/;"	c	struct:Validator
+validateAutoIndex	srcs/./parsing/Validator.cpp	/^void Validator::validateAutoIndex(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateCgiBin	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::validateCgiBin(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+validateCgiExt	srcs/./parsing/Validator.cpp	/^void Validator::validateCgiExt(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateCgiPath	srcs/./parsing/Validator.cpp	/^void Validator::validateCgiPath(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateClienMaxBody	srcs/./parsing/Validator.cpp	/^void Validator::validateClienMaxBody(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateDifferentPortServer	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::validateDifferentPortServer(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+validateErrorPage	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::validateErrorPage(void) {$/;"	f	class:ConfigProcessor	typeref:typename:int
+validateErrorPage	srcs/./parsing/Validator.cpp	/^void Validator::validateErrorPage(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateForbiddenParameters	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::validateForbiddenParameters(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+validateIp	srcs/./parsing/Validator.cpp	/^void Validator::validateIp(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateListen	srcs/./parsing/Validator.cpp	/^void Validator::validateListen(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateMethods	srcs/./parsing/Validator.cpp	/^void Validator::validateMethods(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validatePath	srcs/./parsing/Validator.cpp	/^void Validator::validatePath(const std::string& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateRoot	srcs/./parsing/Validator.cpp	/^void Validator::validateRoot(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateServerName	srcs/./parsing/Validator.cpp	/^void Validator::validateServerName(const std::vector<std::string>& prmtrs) {$/;"	f	class:Validator	typeref:typename:void
+validateUploadDir	srcs/./parsing/Validator.cpp	/^void	Validator::validateUploadDir( const std::vector<std::string>& prmtrs )$/;"	f	class:Validator	typeref:typename:void
+validationParameters	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::validationParameters(void) {$/;"	f	class:ConfigProcessor	typeref:typename:int
+valideteSize	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::valideteSize(void) const {$/;"	f	class:ConfigProcessor	typeref:typename:int
+valval	srcs/./parsing/ConfigProcessor.hpp	/^    struct Validator valval;$/;"	m	class:ConfigProcessor	typeref:struct:Validator
+verifyInvalidParamsInContext	srcs/./parsing/ConfigProcessor.cpp	/^int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,$/;"	f	class:ConfigProcessor	typeref:typename:int
+warning	srcs/./lib/logger.cpp	/^LogStream Logger::warning() {$/;"	f	class:Logger	typeref:typename:LogStream
+warning	srcs/./lib/logger.cpp	/^void Logger::warning(const std::string& msg) {$/;"	f	class:Logger	typeref:typename:void
+what	srcs/./parsing/Server.cpp	/^const char* ServerConfig::NotFoundUri::what() const throw() {$/;"	f	class:ServerConfig::NotFoundUri	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::DontValidIp::what() const throw() {$/;"	f	class:Validator::DontValidIp	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::Empty::what() const throw() {$/;"	f	class:Validator::Empty	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::InvalidCharEx::what() const throw() {$/;"	f	class:Validator::InvalidCharEx	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::OutOfRange::what() const throw() {$/;"	f	class:Validator::OutOfRange	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::PortAccessDeniedException::what() const throw() {$/;"	f	class:Validator::PortAccessDeniedException	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::ToManyDoth::what() const throw() {$/;"	f	class:Validator::ToManyDoth	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::VectorSizeToHight::what() const throw() {$/;"	f	class:Validator::VectorSizeToHight	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::VectorSizeToLow::what() const throw() {$/;"	f	class:Validator::VectorSizeToLow	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::onlyDigit::what() const throw() {$/;"	f	class:Validator::onlyDigit	typeref:typename:const char *
+what	srcs/./parsing/Validator.cpp	/^const char* Validator::unknownMethods::what() const throw() {$/;"	f	class:Validator::unknownMethods	typeref:typename:const char *
+~ClientConnection	srcs/./core/client_connection.hpp	/^    ~ClientConnection() {$/;"	f	class:ClientConnection
+~ConfigProcessor	srcs/./parsing/ConfigProcessor.cpp	/^ConfigProcessor::~ConfigProcessor() {$/;"	f	class:ConfigProcessor
+~ConnectionManager	srcs/./core/connection_manager.cpp	/^ConnectionManager::~ConnectionManager() {$/;"	f	class:ConnectionManager
+~GlobalConfig	srcs/./parsing/GlobalConfig.cpp	/^GlobalConfig::~GlobalConfig() {$/;"	f	class:GlobalConfig
+~HttpRequest	srcs/./http/HttpRequest.cpp	/^HttpRequest::~HttpRequest() {}$/;"	f	class:HttpRequest
+~HttpResponse	srcs/./http/HttpResponse.cpp	/^HttpResponse::~HttpResponse() {}$/;"	f	class:HttpResponse
+~RequestHandler	srcs/./http/RequestHandler.cpp	/^RequestHandler::~RequestHandler() {}$/;"	f	class:RequestHandler
+~TcpServer	srcs/./core/tcp_server.cpp	/^TcpServer::~TcpServer() {$/;"	f	class:TcpServer
+~WebServer	srcs/./core/web_server.cpp	/^WebServer::~WebServer() {$/;"	f	class:WebServer
