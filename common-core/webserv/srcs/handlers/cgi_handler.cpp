@@ -60,7 +60,7 @@ CgiHandler::CgiHandler(const HttpRequest& request)
 
 CgiHandler::CgiHandler(const HttpRequest&  request,
                        const ServerConfig* serverConfig)
-    : request_(request), serverConfig_(serverConfig), async_process_(NULL) {
+    : request_(request), serverConfig_(serverConfig), async_process_(NULL), queryString_("") {
     if (!cgiBinInitialized_) {
         setDefaultCgiBin();
         cgiBinInitialized_ = true;
@@ -125,8 +125,8 @@ static char to_upper_char(char c) {
     return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
 }
 
-std::string CgiHandler::buildQueryString() {
-    return lib::extractQueryFromUri(request_.getUri());
+void CgiHandler::setQueryString(const std::string& queryString) {
+    queryString_ = queryString;
 }
 
 const std::vector<std::string> CgiHandler::buildEnvironment() {
@@ -134,7 +134,8 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.reserve(12);  // minimum env variables
 
     env.push_back("REQUEST_METHOD=" + request_.getMethod());
-    env.push_back("QUERY_STRING=" + buildQueryString());
+    env.push_back("QUERY_STRING=" + queryString_);
+	Logger::debug() << "QUERY_STRING=" << queryString_;
     env.push_back("CONTENT_LENGTH=" +
                   lib::to_string(request_.getContentLength()));
     env.push_back("CONTENT_TYPE=" + request_.getContentType());
@@ -147,6 +148,7 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("SERVER_PORT=" + port);
     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
     env.push_back("SERVER_SOFTWARE=webserv/1.0");
+    env.push_back("LOG_FILE=" + Logger::getLogFilename());
     env.push_back("UPLOADS_DIR=" +
                   (serverConfig_ ? serverConfig_->getUploadDir() : ""));
 

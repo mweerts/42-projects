@@ -48,6 +48,7 @@ class CgiHandler {
 
     int  getInputPipe() const;
     int  getOutputPipe() const;
+	void setQueryString(const std::string& queryString);
     bool isProcessing() const;
 
 	
@@ -64,6 +65,7 @@ class CgiHandler {
     const ServerConfig* serverConfig_;
     CgiProcess*         async_process_;
     static std::string  cgiScriptPath_;
+	std::string   queryString_;
 
     // initialized at startup
     static std::map<std::string, std::string> cgiBin_;
@@ -72,7 +74,6 @@ class CgiHandler {
 
    private:
     const std::vector<std::string> buildEnvironment();
-    std::string                    buildQueryString();
 
     std::string       getCgiInterpreter(const std::string& scriptPath);
     const std::string getFileExtension(const std::string& filePath);

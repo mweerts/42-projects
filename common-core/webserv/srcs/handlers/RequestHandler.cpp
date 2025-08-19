@@ -18,6 +18,7 @@
 #include "http_status_code.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
+#include "../core/server_status.hpp"
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -27,7 +28,8 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _rootPath(serverConfig.getRoot()),
       _autoindex(serverConfig.getAutoIndex()),
       _isStaticFile(false),
-      _staticFilePath("") {};
+      _staticFilePath("")
+	  {};
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -98,6 +100,7 @@ void RequestHandler::handleRequest() {
         }
         _response.setConnection("close");
     }
+	ServerStatus::getInstance().onRequestProcessed();
 }
 
 // void RequestHandler::sendResponse(int socket_fd) {
@@ -109,11 +112,18 @@ void RequestHandler::handleRequest() {
 
 // TODO: maybe make this a bit cleaner or easy to read?
 void RequestHandler::processRequest() {
-    const Location*    location = _serverConfig.getLocation(_request.getUri());
+    _internalUri = lib::extractPathFromUri(_request.getUri());
+    const Location*    location = _serverConfig.getLocation(_internalUri);
     const std::string& method = _request.getMethod();
-
-    _internalUri = _request.getUri();
+	
+	if (method == "GET" || method == "POST") {
+		_queryString = lib::extractQueryFromUri(_request.getUri());
+	}
+	
     Logger::debug() << "processing request for uri: " << _internalUri;
+    if (!_queryString.empty())
+        Logger::debug() << "query string: " << _queryString;
+		
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
@@ -126,7 +136,7 @@ void RequestHandler::processRequest() {
         } else if (location->getAlias()) {
             _internalUri =
                 *location->getAlias() +
-                _request.getUri().substr((location->getName()).length());
+                _internalUri.substr((location->getName()).length());
         } else if (*location->getRoot() != "./")
             _rootPath = *location->getRoot();
         _autoindex = location->getAutoIndex();
@@ -156,14 +166,20 @@ void RequestHandler::processRequest() {
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
+
 // ============ GET ============ //
 
+void RequestHandler::handleStatusRequest() {
+	_response.setStatusCode(HTTP_OK);
+	_response.setContent(ServerStatus::getInstance().getJson());
+	_response.setContentType("application/json");
+	_response.setConnection("close");
+}
 void RequestHandler::processGetRequest() {
     std::string     fullPath;
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
-
     CgiHandler tmpCgi(_request, &_serverConfig);
     if (tmpCgi.isCgiScript(_internalUri)) {
         _cgiHandler = initCgiHandler();
@@ -182,6 +198,11 @@ void RequestHandler::processGetRequest() {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
+
+	if (_internalUri == "/status") {
+		handleStatusRequest();
+		return;
+	}
 
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
@@ -203,7 +224,6 @@ void RequestHandler::processGetRequest() {
         _response.setStatusCode(HTTP_FORBIDDEN);
         return;
     }
-
 
 	// needed for the response streamer
     _isStaticFile = true;
@@ -293,6 +313,7 @@ void RequestHandler::processDeleteRequest() {
 
 CgiHandler* RequestHandler::initCgiHandler() {
     CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
+	cgiHandler->setQueryString(_queryString);
     if (cgiHandler->startAsyncCgi(_internalUri))
         return cgiHandler;
     delete cgiHandler;
@@ -355,6 +376,14 @@ int RequestHandler::getCgiOutputPipe() const {
 }
 
 // ============ UTILS ============ //
+
+bool RequestHandler::isStaticFileResponse() const {
+	return _isStaticFile;
+}
+
+const std::string& RequestHandler::getStaticFilePath() const {
+	return _staticFilePath;
+}
 
 HttpResponse& RequestHandler::getResponse() {
     return _response;

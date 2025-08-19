@@ -25,6 +25,7 @@
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
+#include "server_status.hpp"
 
 ConnectionManager::ConnectionManager()
     : running_(false), shutdown_flag_(NULL) {}
@@ -172,11 +173,13 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
+	ServerStatus::getInstance().onConnectionEstablished();
+
     // only for info logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
-    Logger::info() << "New client connected: fd=" << client_fd << " from "
+    Logger::debug() << "New client connected: fd=" << client_fd << " from "
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << clients_.size();
 }
@@ -207,6 +210,8 @@ void ConnectionManager::RemoveClient(int client_fd) {
     client->Close();
     delete client;
     clients_.erase(it);
+
+	ServerStatus::getInstance().onConnectionClosed();
 
     Logger::debug() << "Removed client " << client_fd << ". Active clients: "
                    << clients_.size();
