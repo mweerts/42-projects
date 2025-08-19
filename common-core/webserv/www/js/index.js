@@ -69,24 +69,35 @@ function displayFiles(files) {
     fileListDiv.innerHTML = html;
 }
 
-// Initial file list load
-// refreshFileList();
+async function fetchStats() {
+    try {
+		const response = await fetch("/status", {
+			headers: {
+				'Accept': 'application/json'
+			}
+		});
 
-// Connection counter and uptime
-let connectionCount = 0;
-let startTime = Date.now();
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}`);
+		}
 
-function updateStats() {
-    connectionCount = Math.floor(Math.random() * 5);
-    document.getElementById("connections").textContent = connectionCount;
+   		const data = await response.json();
+		document.getElementById("connections").textContent = data.connections?.active || 0;
 
-    const elapsed = Date.now() - startTime;
-    const hours = Math.floor(elapsed / 3600000);
-    const minutes = Math.floor((elapsed % 3600000) / 60000);
-    const seconds = Math.floor((elapsed % 60000) / 1000);
-    document.getElementById("uptime").textContent =
-        `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+		const uptime = data.server_info?.uptime_formatted || '--';
+    	document.getElementById("uptime").textContent = uptime;
+
+	} catch (error) {
+		console.error("Failed to fetch stats:", error);
+	}
 }
 
-setInterval(updateStats, 1000);
-updateStats();
+function updateStats() {
+    fetchStats();
+    
+    setInterval(() => {
+        fetchStats();
+    }, 600);
+}
+
+document.addEventListener("DOMContentLoaded", updateStats);
