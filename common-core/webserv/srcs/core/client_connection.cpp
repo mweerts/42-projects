@@ -133,7 +133,7 @@ bool ClientConnection::HandleRead() {
         }
         case RequestParser::COMPLETE: {
             Logger::debug() << "======== Request parsing complete ========";
-			
+
             request_ready_ = true;
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
@@ -163,8 +163,7 @@ bool ClientConnection::HandleWrite() {
     if (n == -1) {
         return false;
     } else if (n == -2) {
-        // EAGAIN or EWOULDBLOCK: try again later
-        return true;
+        return true;  // EAGAIN or EWOULDBLOCK: try again later
     }
 
     if (response_streamer_.isComplete()) {
@@ -212,7 +211,7 @@ void ClientConnection::Close() {
 
 // still need review
 std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
-	std::vector<pollfd> out;
+    std::vector<pollfd> out;
     // Static file: poll file for POLLIN when buffer has space
     if (response_streamer_.isStreamingFile() &&
         response_streamer_.wantsFileRead()) {
@@ -244,7 +243,7 @@ std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
             out.push_back(p);
         }
     }
-	return out;
+    return out;
 }
 
 // still need review
@@ -260,7 +259,6 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         bool done = request_handler_->handleCgiFdEvent(fd, revents);
         if (done) {
-            // CGI complete: prepare response and start streaming
             Logger::debug() << "CGI completed, preparing response";
             response_streamer_.prepareCgiResponse(
                 request_handler_->getResponse());

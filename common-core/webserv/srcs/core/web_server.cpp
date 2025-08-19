@@ -35,6 +35,7 @@ WebServer::WebServer(const std::vector<ServerConfig>& server_configs)
 
 WebServer::~WebServer() {
     CleanupServers();
+	Logger::cleanup();
     if (connection_manager_) {
         delete connection_manager_;
     }

@@ -72,7 +72,7 @@ bool TcpServer::Initialize() {
         return false;
     }
 
-    const int kBacklog = 128;  // pending connections queue (128 is standard)
+    const int kBacklog = 1024;  // pending connections queue (128 is standard)
     if (listen(listen_fd_, kBacklog) < 0) {
         Logger::error() << "Listen failed for " << config_.getName();
         return false;
