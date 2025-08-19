@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 17:24:31 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/19 19:41:58 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -331,6 +331,16 @@ int ConfigProcessor::validateDifferentPortServer(void) const {
     }
     return (0);
 }
+static	int	isKnownParameter(const std::string& key, const std::string& nameREF)
+{		
+	Logger::warning() << "Parameter \"" << key << "\" in configuration section \"" << nameREF 
+                  << "\" is not recognized. Press any key to continue, or 'n' to abort.";
+	std::string in;
+	std::cin >> in;
+	if (in == "n")
+		return 1;
+	return 0;
+}
 
 int ConfigProcessor::validationParameters(void) {
     if (validateCgiBin() == 1)
@@ -364,6 +374,11 @@ int ConfigProcessor::validationParameters(void) {
                 if (heandelError(func, itPrmtrs, it_->name) == 1)
                     return (1);
             }
+			else if (itPrmtrs->first != "index" && itPrmtrs->first.rfind("error_page ", 0) != 0){
+				if (isKnownParameter(itPrmtrs->first, it_->name) == 1){
+					return 1;
+				}
+			}
             ++itPrmtrs;
         }
         std::vector<Node>::iterator itChild = it_->children.begin();
@@ -377,7 +392,13 @@ int ConfigProcessor::validationParameters(void) {
                     ValidateFunction func = itFunc->second;
                     if (heandelError(func, itPrmtrs, itChild->name) == 1)
                         return (1);
+
                 }
+				else if (itPrmtrs->first != "index" && itPrmtrs->first.rfind("error_page ", 0) != 0){
+					if (isKnownParameter(itPrmtrs->first, itChild->name) == 1){
+						return 1;
+					}
+				}
                 ++itPrmtrs;
             }
             itChild++;
