@@ -1,5 +1,6 @@
 import subprocess
 import time
+import sys
 import signal
 
 url = "http://127.0.0.1:8080/"
@@ -8,13 +9,60 @@ fileName = "file_40mb.txt"
 size_mb = 40
 chunk_size = 1024 * 1024  # 1 MB
 config_list = [
-        "../../config/default2.conf",
+    "../../config/TestConf/HeritanceBody.conf",
+    "../../config/default2.conf",
     "../../config/TestConf/noErrorPage.conf",
     "../../config/TestConf/noBindPort.conf",
     "../../config/TestConf/JusteServer.conf",
-    "../../config/TestConf/1kb.conf"
+    "../../config/TestConf/1kb.conf",
+    "../../config/TestConf/portNameLocalHost.conf",
+    "../../config/TestConf/HeritanceErrorPage.conf",
+    "../../config/TestConf/noUploadDir.conf"
 ]
+parser_list = [
+    "../../config/ParserConf/noRootServer.conf",
+    "../../config/ParserConf/noRootLocation.conf",
+    "../../config/ParserConf/noRootCGI.conf",
+    "../../config/ParserConf/noPort.conf",
+    "../../config/ParserConf/noCgiBin.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinLocation00.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinLocation01.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinLocation02.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinCGI00.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinCGI01.conf",
+    "../../config/ParserConf/noForbitenPrmtrsinCGI02.conf",
+    "../../config/ParserConf/noCgiBin.conf",
+    "../../config/ParserConf/noValadePort.conf",
+    "../../config/ParserConf/samePortSever.conf",
+
+]
+
 # Creo il file una volta sola fuori dal ciclo
+for i in range(5)
+    print(f"\n==== PARSER TEST {i+1} ====")
+    cont  = input("Touch me for continue...")
+    print(parser_list[ciclo])
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue ;
+    if (cont == "break"):
+        proc.send_signal(signal.SIGINT)
+        break ;
+    cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
+    subprocess.run(cmdValgrind)
+    sleep(3);
+    cont  = input("Touch me for continue...")
+    print(parser_list[ciclo])
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue ;
+    if (cont == "break"):
+        proc.send_signal(signal.SIGINT)
+        break ;
+    
 with open(fileName, "wb") as f:
     for _ in range(size_mb):
         f.write(b'\x00' * chunk_size)
@@ -26,6 +74,15 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     # Start Valgrind (test più esterno - prima)
     print("### AVVIO VALGRIND ###")
     cmdValgrind = ["valgrind", "../../webserv", "-c", config_list[ciclo]]
+    print(config_list[ciclo])
+    cont  = input("Touch me for continue...")
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue ;
+        
     proc = subprocess.Popen(cmdValgrind)
     time.sleep(4)
 
@@ -46,7 +103,7 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
 
         print(f"Request {i+1}: \033[92mOK\033[0m" if code == "200" else f"Request {i+1}: \033[91mERROR {code}\033[0m")
         print(f"RequestApi {i+1}: \033[92mOK\033[0m" if codeApi == "200" else f"RequestApi {i+1}: \033[91mERROR {codeApi}\033[0m")
-        time.sleep(0.5);
+        #time.sleep(0.5);
 
     # Secondo gruppo di richieste curl con limitazione di banda (10 richieste)
     for i in range(10):
@@ -67,6 +124,9 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
         print(f"RequestApi {i+1}: \033[92mOK\033[0m" if codeApi == "200" else f"RequestApi {i+1}: \033[91mERROR {codeApi}\033[0m")
 
         time.sleep(2)
+
+    url = "http://127.0.0.1:8080/upload"
+    urlApi = "http://127.0.0.1:8081/upload"
 
     # Upload file (40 MB)
     cmdUpload = [
@@ -107,7 +167,15 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     time.sleep(5)
     print("### TEST SIEGE ####")
     print("### LOW PRESSURE SIEGE ####")
-    input("Touch me for continue...")
+    cont  = input("Touch me for continue...")
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue ;
+        
+        
     subprocess.run(cmdLow)
     time.sleep(1)
     print("### MINI TEST SIEGE ####")
