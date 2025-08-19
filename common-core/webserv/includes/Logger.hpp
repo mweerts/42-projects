@@ -15,6 +15,7 @@
 
 #include <sstream>
 #include <string>
+#include <fstream>
 
 class LogStream;
 
@@ -39,6 +40,7 @@ class Logger {
 
     static LogLevel getLevel();
     static void     setLevel(LogLevel level);
+    static bool     setLogFile(const std::string& filename);
     static void     enableColors(bool enableColors);
     static void     enableTimestamps(bool enable);
 
@@ -60,10 +62,14 @@ class Logger {
     static LogLevel _currentLevel;
     static bool     _useColors;
     static bool     _useTimestamps;
+	static bool     _logToFile;
+	static std::ofstream _logFile;
+	static std::string _logFilename;
 
     static void log(LogLevel level, const std::string& message);
     static void log(LogLevel level, const std::stringstream& message);
     static const std::string getCurrentTimestamp();
+	static const std::string getCurrentHour();
     static const std::string getLevelName(LogLevel level);
 };
 
