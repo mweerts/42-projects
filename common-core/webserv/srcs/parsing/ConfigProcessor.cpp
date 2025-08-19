@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 17:06:23 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/19 17:24:31 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,7 +210,11 @@ int ConfigProcessor::validateForbiddenParameters(void) const {
 					if (bin.size() != ext.size())
 					{
 						Logger::error()
-							<< "No mach converter in: " << it_->children[i].name;
+						 << "Mismatch between CGI interpreters and extensions in configuration block: "
+						 << it_->children[i].name
+						 << ". Found " << bin.size() << " 'cgi_path' entries but " << ext.size()
+						 << " 'cgi_ext' entries.";
+		
 						return (1);
 					}
 				}
