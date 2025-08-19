@@ -6,7 +6,7 @@
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 13:42:00 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/19 18:59:43 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/19 16:25:08 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ Validator::Validator() {
     this->funcMap.insert(
         std::make_pair("error_page", &Validator::validateErrorPage));
 	this->funcMap.insert(std::make_pair("upload_dir", &Validator::validateUploadDir));
+	this->funcMap.insert(std::make_pair("tmp_folder", &Validator::validateUploadDir));
     return;
 }
 /*♡♡♡♡♡♡♡♡♡♡♡♡FT_FOR_VALIDATION♡♡♡♡♡♡♡♡♡♡♡*/

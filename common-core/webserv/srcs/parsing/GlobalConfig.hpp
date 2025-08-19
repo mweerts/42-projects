@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:27:30 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/18 22:17:27 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:42:49 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ class ServerConfig {
     void               setCgi(const CgiBin& add);
 /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 	const std::string	getUplaodDir( void ) const;
+	const std::string	getTmpFolder( void ) const;
 	const std::string	getServerName( void ) const;
     const std::string& getName(void) const;
     const std::string  getHost(void) const;

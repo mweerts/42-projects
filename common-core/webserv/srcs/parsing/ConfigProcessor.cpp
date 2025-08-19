@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/21 16:41:06 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/19 17:06:23 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,8 +175,6 @@ int ConfigProcessor::heandelError(
         itPrmtrs->second[0] = "8080";
     } catch (std::exception& e) {
         Logger::error() << e.what() << " " << itPrmtrs->first;
-        ;
-        //	this->~ConfigProcessor(); //Cannon
         return (1);
     }
     return (0);
@@ -205,6 +203,17 @@ int ConfigProcessor::validateForbiddenParameters(void) const {
                         << "missing root in: " << it_->children[i].name;
                     return (1);
                 }
+				if ((it_->children[i].prmtrs.count("cgi_path") >= 1) && (it_->children[i].prmtrs.count("cgi_ext") >= 1))
+				{
+					std::vector<std::string> bin = it_->children[i].prmtrs.at("cgi_path");
+					std::vector<std::string> ext = it_->children[i].prmtrs.at("cgi_ext");
+					if (bin.size() != ext.size())
+					{
+						Logger::error()
+							<< "No mach converter in: " << it_->children[i].name;
+						return (1);
+					}
+				}
             }
 			else
 			{
@@ -228,6 +237,7 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
     vecNoAll.push_back("host");
     vecNoAll.push_back("server_name");
 	vecNoAll.push_back("upload_dir");
+	vecNoAll.push_back("tmp_folder");
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
         vecNoAll.push_back("allow_methods");  // TODO: Check if possible in cgi
@@ -494,25 +504,14 @@ int ConfigProcessor::checkBraces(const std::string& str) const {
 	return (0);
 }
 
+#include <stack>
+
 int ConfigProcessor::countBracket() const {
-    int bracket = 0;
-    for (size_t i = 0; i < Buffer.length(); ++i) {
-        if (this->Buffer[i] == '{')
-            bracket++;
-        if (this->Buffer[i] == '}')
-            bracket--;
-    }
-    if (bracket != 0) {
-        Logger::error() << "Brackets don't close properly";
-        return (1);
-    }
-	if (checkBraces(this->Buffer) == 1){
-		return (1);
-	}
 	std::stack<char> c;
     size_t  i = 0;
-    if (s.size() == 1)
-        return false;
+	std::string s = this->Buffer;
+    if (s.size() <= 1)
+        return 1;
      while (i < s.size())
      {
         if ( s[i] == '(' || s[i] == '[' || s[i] == '{')
@@ -548,12 +547,11 @@ int ConfigProcessor::countBracket() const {
         }
         else if ( ( s[i] == ')' || s[i] == ']' || s[i] == '}' ) && c.size() == 0)
             return 1;
-
         i++;
      }
      if (c.size() == 0)	
          return 0;
-     return 0;
+     return 1;
 }
 
 int ConfigProcessor::recursiveMap(void) {
@@ -647,7 +645,10 @@ int ConfigProcessor::tokenize(void) {
    */
     this->Buffer = findRemplaceComment(this->Buffer, "#", "\n", "\n");
     if (countBracket() == 1)
+	{
+		Logger::error() << "Close Bracket pls";
         return (1);
+	}
     /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
      * Create a stringstream from the cleaned buffer, allowing tokenization
      using >>.
