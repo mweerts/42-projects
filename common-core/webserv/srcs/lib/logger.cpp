@@ -18,6 +18,8 @@
 #include <string>
 #include <fstream>
 
+static const size_t MAX_LOG_SIZE = 1024 * 1024; // 1MB
+
 const char* Logger::RESET = "\033[0m";
 const char* Logger::GREEN = "\033[32m";
 const char* Logger::BLUE = "\033[34m";
@@ -95,7 +97,6 @@ const std::string Logger::getCurrentTimestamp() {
     return std::string(buffer);
 }
 
-static const size_t MAX_LOG_SIZE = 10 * 1024 * 1024; // 10MB
 
 void Logger::log(LogLevel level, const std::string& message) {
     if (level < _currentLevel || level >= LOG_LEVEL_NONE || message.empty()) {
@@ -111,7 +112,7 @@ void Logger::log(LogLevel level, const std::string& message) {
         _logFile.seekp(0, std::ios::end);
         if (_logFile.tellp() > static_cast<std::streampos>(MAX_LOG_SIZE)) {  // 10MB
             _logFile.close();
-            _logFile.open(_logFilename.c_str(), std::ios::trunc | std::ios::app);
+            _logFile.open(_logFilename.c_str(), std::ios::trunc);
         }
     }
 
