@@ -13,9 +13,9 @@
 #ifndef LOGGER_HPP
 #define LOGGER_HPP
 
+#include <fstream>
 #include <sstream>
 #include <string>
-#include <fstream>
 
 class LogStream;
 
@@ -38,12 +38,14 @@ class Logger {
     static const char* CRITICAL;
     static const char* PURPLE;
 
-    static LogLevel getLevel();
-    static void     setLevel(LogLevel level);
-    static bool     setLogFile(const std::string& filename);
-    static void     enableColors(bool enableColors);
-    static void     enableTimestamps(bool enable);
-
+    static LogLevel     getLevel();
+    static void         setLevel(LogLevel level);
+    static bool         setLogFile(const std::string& filename);
+    static void         enableColors(bool enableColors);
+    static void         enableTimestamps(bool enable);
+    static std::string& getLogFilename();
+	static void         cleanup();
+	
     static LogStream debug();
     static LogStream info();
     static LogStream warning();
@@ -59,17 +61,17 @@ class Logger {
    private:
     friend class LogStream;
 
-    static LogLevel _currentLevel;
-    static bool     _useColors;
-    static bool     _useTimestamps;
-	static bool     _logToFile;
-	static std::ofstream _logFile;
-	static std::string _logFilename;
+    static LogLevel      _currentLevel;
+    static bool          _useColors;
+    static bool          _useTimestamps;
+    static bool          _logToFile;
+    static std::ofstream _logFile;
+    static std::string   _logFilename;
 
     static void log(LogLevel level, const std::string& message);
-    static void log(LogLevel level, const std::stringstream& message);
+	
     static const std::string getCurrentTimestamp();
-	static const std::string getCurrentHour();
+    static const std::string getCurrentHour();
     static const std::string getLevelName(LogLevel level);
 };
 

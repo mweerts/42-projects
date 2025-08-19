@@ -13,12 +13,13 @@
 #include "Logger.hpp"
 
 #include <time.h>
+#include <unistd.h>
 
+#include <fstream>
 #include <iostream>
 #include <string>
-#include <fstream>
 
-static const size_t MAX_LOG_SIZE = 1024 * 1024; // 1MB
+static const size_t MAX_LOG_SIZE = 1024 * 1024;  // 1MB
 
 const char* Logger::RESET = "\033[0m";
 const char* Logger::GREEN = "\033[32m";
@@ -43,16 +44,16 @@ void Logger::setLevel(LogLevel level) {
 }
 
 bool Logger::setLogFile(const std::string& filename) {
-	if (_logToFile) {
-		_logFile.close();
-	}
-	_logFile.open(filename, std::ios::app);
-	if (!_logFile.is_open()) {
-		return false;
-	}
-	_logToFile = true;
-	_logFilename = filename;
-	return true;
+    if (_logToFile) {
+        _logFile.close();
+    }
+    _logFile.open(filename, std::ios::app);
+    if (!_logFile.is_open()) {
+        return false;
+    }
+    _logToFile = true;
+    _logFilename = filename;
+    return true;
 }
 
 void Logger::enableColors(bool enableColors) {
@@ -61,6 +62,10 @@ void Logger::enableColors(bool enableColors) {
 
 void Logger::enableTimestamps(bool enable) {
     _useTimestamps = enable;
+}
+
+std::string& Logger::getLogFilename() {
+    return _logFilename;
 }
 
 const std::string Logger::getLevelName(LogLevel level) {
@@ -76,7 +81,7 @@ const std::string Logger::getLevelName(LogLevel level) {
 }
 
 const std::string Logger::getCurrentHour() {
-	time_t     rawTime;
+    time_t     rawTime;
     struct tm* timeInfo;
     char       buffer[80];
 
@@ -97,58 +102,57 @@ const std::string Logger::getCurrentTimestamp() {
     return std::string(buffer);
 }
 
+static const char* getColor(LogLevel level) {
+    switch (level) {
+        case LOG_LEVEL_DEBUG: return Logger::PURPLE;
+        case LOG_LEVEL_INFO: return Logger::GREEN;
+        case LOG_LEVEL_WARNING: return Logger::YELLOW;
+        case LOG_LEVEL_ERROR: return Logger::RED;
+        case LOG_LEVEL_CRITICAL: return Logger::RED;
+        default: return Logger::RESET;
+    }
+}
 
 void Logger::log(LogLevel level, const std::string& message) {
     if (level < _currentLevel || level >= LOG_LEVEL_NONE || message.empty()) {
         return;
     }
 
-	std::stringstream logMessage;
-	std::string color = RESET;
-	std::string level_prefix;
-	level_prefix = "[" + getLevelName(level) + "] ";
+    std::stringstream logMessage;
+    std::string       color = RESET;
+    std::string       level_prefix;
+    level_prefix = "[" + getLevelName(level) + "] ";
 
-	if (_logToFile && _logFile.is_open()) {
+    if (_logToFile && _logFile.is_open()) {
         _logFile.seekp(0, std::ios::end);
-        if (_logFile.tellp() > static_cast<std::streampos>(MAX_LOG_SIZE)) {  // 10MB
+        if (_logFile.tellp() >
+            static_cast<std::streampos>(MAX_LOG_SIZE)) {  // 10MB
             _logFile.close();
             _logFile.open(_logFilename.c_str(), std::ios::trunc);
         }
     }
 
-    if (_useColors) {
-        switch (level) {
-            case LOG_LEVEL_DEBUG: {
-                color = PURPLE;
-                break;
-            }
-            case LOG_LEVEL_INFO: {
-                color = GREEN;
-                break;
-            }
-            case LOG_LEVEL_WARNING: {
-                color = YELLOW;
-                break;
-            }
-            case LOG_LEVEL_ERROR: {
-                color = RED;
-                break;
-            }
-            case LOG_LEVEL_CRITICAL: {
-                color = RED;
-                break;
-            }
-            default: break;
-        }
-    }
+    if (_useColors)
+        color = getColor(level);
 
     std::string timestamp = "[" + getCurrentHour() + "]" + " ";
 
-	if (_logToFile) {
-		_logFile << timestamp << level_prefix << message << "\n";
-		_logFile.flush();
-	}
-	std::cout << color << ( _useTimestamps ? timestamp : "" ) << level_prefix << RESET << message << "\n";
+    if (_logToFile) {
+        if (!_logFile.is_open() || _logFile.fail() ||
+            access(_logFilename.c_str(), R_OK | W_OK) != 0) {
+            _logFile.close();
+            _logFile.open(_logFilename.c_str(), std::ios::app);
+        }
+        if (!_logFile.is_open()) {
+            std::cout << "[ERROR] Failed to reopen log file: " << _logFilename
+                      << "\n";
+            return;
+        }
+        _logFile << timestamp << level_prefix << message << "\n";
+        _logFile.flush();
+    }
+    std::cout << color << (_useTimestamps ? timestamp : "") << level_prefix
+              << RESET << message << "\n";
 }
 
 LogStream Logger::debug() {
@@ -187,4 +191,11 @@ void Logger::error(const std::string& msg) {
 
 void Logger::critical(const std::string& msg) {
     log(LOG_LEVEL_ERROR, msg);
+}
+
+void Logger::cleanup() {
+    if (_logToFile && _logFile.is_open()) {
+        _logFile.flush();
+        _logFile.close();
+    }
 }
