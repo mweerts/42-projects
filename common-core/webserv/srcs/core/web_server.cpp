@@ -71,6 +71,11 @@ void WebServer::Run() {
 
     Logger::info() << "WebServer is running...";
 
+	if (!server_configs_.empty()) {
+		std::string path = server_configs_[0].getRoot() + "webserv.log";
+		Logger::setLogFile(path);
+	} 
+
     if (connection_manager_) {
         connection_manager_->Run();
     }
