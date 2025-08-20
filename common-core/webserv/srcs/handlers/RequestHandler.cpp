@@ -78,7 +78,6 @@ void RequestHandler::handleRequest() {
         std::ostringstream oss;
         oss << _response.getStatusCode();
         const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
-        // Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
         if (errorPage) {
             std::ifstream file((_rootPath + "/" + *errorPage).c_str());
             if (file.fail()) {
@@ -120,8 +119,7 @@ void RequestHandler::processRequest() {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
             // TODO: Needs to be dynamic
-            _response.setLocation("http://localhost:8080" +
-                                  urlDecode(*location->getReturn()));
+            _response.setLocation("http://localhost:8080" + urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
             return;
@@ -343,16 +341,16 @@ bool RequestHandler::processCgi() {
 bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
     if (!_cgiHandler) {
         return true;
-	}
+    }
 
-	if (_cgiHandler->isTimedOut()) {
-		Logger::warning() << "CGI process timed out";
-		_response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
-		_cgiHandler->cleanupAsyncCgi();
-		delete _cgiHandler;
-		_cgiHandler = NULL;
-		return true;
-	}
+    if (_cgiHandler->isTimedOut()) {
+        Logger::warning() << "CGI process timed out";
+        _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;
+    }
 
     bool done = _cgiHandler->handleFdEvent(fd, revents);
     if (done) {
