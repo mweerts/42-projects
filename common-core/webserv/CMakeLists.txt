@@ -19,12 +19,20 @@ set(SOURCES
     srcs/core/client_connection.cpp
 	srcs/core/connection_manager.cpp
 	srcs/core/tcp_server.cpp
+	srcs/core/server_status.cpp
 	
-    
+    srcs/handlers/cgi_handler.cpp
+    srcs/handlers/cgi_process.cpp
+    srcs/handlers/file_streaming.cpp
+	srcs/handlers/response_streamer.cpp
+    srcs/handlers/RequestHandler.cpp
+	
+    # srcs/http/HttpRequest.cpp
     srcs/http/HttpRequest.cpp
+    srcs/http/MultipartParser.cpp
     srcs/http/HttpResponse.cpp
     srcs/http/MimeTypes.cpp
-    srcs/http/RequestHandler.cpp
+    srcs/http/RequestParser.cpp
     srcs/http/utils.cpp
     
     srcs/parsing/ConfigProcessor.cpp
@@ -36,7 +44,12 @@ set(SOURCES
     srcs/parsing/CgiBin.cpp
     
     srcs/lib/socket_guard.cpp
+    srcs/lib/fd_guard.cpp
     srcs/lib/logger.cpp
+    srcs/lib/file_utils.cpp
+	srcs/lib/stream_buffer.cpp
+	srcs/lib/file_io.cpp
+    srcs/lib/utils.cpp
     srcs/tests.cpp
 )
 
@@ -48,7 +61,7 @@ target_compile_definitions(webserv_test PRIVATE TEST=1)
 target_link_libraries(webserv_test ${LIBS})
 
 add_custom_target(run
-    COMMAND ./webserv
+    COMMAND ./webserv -v
     DEPENDS webserv
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -59,3 +72,4 @@ add_custom_target(test
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running tests..."
 )
+

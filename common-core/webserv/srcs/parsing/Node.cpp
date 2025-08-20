@@ -37,7 +37,7 @@ void Node::addDefualtParm(void) {
     //prmtrs.insert(std::make_pair("root", vecRoot));
     if (this->name == "server") {
         std::vector<std::string> vec;
-        vec.push_back("10485760");
+        vec.push_back("10485760"); //10MB
         prmtrs.insert(std::make_pair("client_max_body_size", vec));
         std::vector<std::string> vecIp;
         vecIp.push_back("127.0.0.1");

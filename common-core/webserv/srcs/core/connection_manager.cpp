@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   connection_manager.cpp                              :+:      :+:    :+:   */
+/*   connection_manager.cpp                              :+:      :+:    :+: */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -9,8 +9,6 @@
 /*   Updated: 2025/01/XX XX:XX:XX by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// this is the tcp handler maybe it should be called tcp_manager
 
 #include "connection_manager.hpp"
 
@@ -24,11 +22,13 @@
 #include <cstring>
 #include <iostream>
 
+#include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
-#include "../parsing/GlobalConfig.hpp"
+#include "server_status.hpp"
 
-ConnectionManager::ConnectionManager() : running_(false), shutdown_flag_(NULL) {}
+ConnectionManager::ConnectionManager()
+    : running_(false), shutdown_flag_(NULL) {}
 
 ConnectionManager::~ConnectionManager() {
     for (ClientIterator it = clients_.begin(); it != clients_.end(); ++it) {
@@ -37,11 +37,52 @@ ConnectionManager::~ConnectionManager() {
     clients_.clear();
 }
 
+void ConnectionManager::RegisterFds() {
+    poll_fds_.clear();
+    aux_fd_owner_.clear();
+
+    for (ServerConstIterator it = servers_.begin(); it != servers_.end();
+         ++it) {
+        pollfd pfd;
+        pfd.fd = it->first;
+        pfd.events = POLLIN;
+        pfd.revents = 0;
+        poll_fds_.push_back(pfd);
+    }
+
+    for (ClientConstIterator it = clients_.begin(); it != clients_.end();
+         ++it) {
+        ClientConnection* client = it->second;
+
+        pollfd pfd;
+        pfd.fd = it->first;
+        pfd.events = 0;
+        pfd.revents = 0;
+
+        if (client->NeedsToRead()) {
+            pfd.events |= POLLIN;
+        }
+        if (client->NeedsToWrite()) {
+            pfd.events |= POLLOUT;
+        }
+        if (pfd.events != 0) {
+            poll_fds_.push_back(pfd);
+        }
+
+		// register auxiliary fds (files, cgi pipes)
+        std::vector<pollfd> extra = client->GetAuxPollFds();
+        for (size_t i = 0; i < extra.size(); ++i) {
+            poll_fds_.push_back(extra[i]);
+            aux_fd_owner_[extra[i].fd] = client;
+        }
+    }
+}
+
 void ConnectionManager::Run() {
     running_ = true;
-    
+
     while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
-        SetupPolling();
+        RegisterFds();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
 
         if (ready < 0 && errno != EINTR) {
@@ -61,7 +102,18 @@ void ConnectionManager::Run() {
 
             --ready;
             int fd = poll_fds_[i].fd;
-            
+
+            // Route aux fds (file/cgipipe) back to their owners
+            // still need review
+            std::map<int, ClientConnection*>::iterator a =
+                aux_fd_owner_.find(fd);
+            if (a != aux_fd_owner_.end()) {
+                if (!a->second->HandleAuxEvent(fd, poll_fds_[i].revents)) {
+                    RemoveClient(a->second->GetSocketFd());
+                }
+                continue;
+            }
+
             if (IsServerSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
@@ -69,12 +121,12 @@ void ConnectionManager::Run() {
             }
         }
     }
-	std::cout << "\n";
+    std::cout << "\n";
 }
 
 void ConnectionManager::Stop() {
     running_ = false;
-    
+
     while (!clients_.empty()) {
         RemoveClient(clients_.begin()->first);
     }
@@ -90,49 +142,15 @@ void ConnectionManager::AddServer(TcpServer* server) {
     }
 }
 
-void ConnectionManager::SetupPolling() {
-    poll_fds_.clear();
-
-    for (ServerConstIterator it = servers_.begin(); it != servers_.end(); ++it) {
-        pollfd pfd;
-        pfd.fd = it->first;
-        pfd.events = POLLIN;
-        pfd.revents = 0;
-        poll_fds_.push_back(pfd);
-    }
-
-    for (ClientConstIterator it = clients_.begin(); it != clients_.end(); ++it) {
-        ClientConnection* client = it->second;
-
-        if (client->ShouldClose()) {
-            continue;
-        }
-
-        pollfd pfd;
-        pfd.fd = it->first;
-        pfd.events = 0;
-        pfd.revents = 0;
-
-        if (client->NeedsToRead()) {
-            pfd.events |= POLLIN;
-        }
-        if (client->NeedsToWrite()) {
-            pfd.events |= POLLOUT;
-        }
-        if (pfd.events != 0) {
-            poll_fds_.push_back(pfd);
-        }
-    }
-}
-
 void ConnectionManager::HandleNewConnection(int listening_fd) {
     struct sockaddr_in client_addr;
-    socklen_t clen = sizeof(client_addr);
+    socklen_t          clen = sizeof(client_addr);
     int client_fd = accept(listening_fd, (struct sockaddr*)&client_addr, &clen);
-    
+
     if (client_fd < 0) {
         if (errno != EWOULDBLOCK && errno != EAGAIN) {
-            Logger::warning() << "Failed to accept connection: " << strerror(errno);
+            Logger::warning()
+                << "Failed to accept connection: " << strerror(errno);
         }
         return;
     }
@@ -155,25 +173,30 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
+	ServerStatus::getInstance().onConnectionEstablished();
+
+    // only for info logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
-    Logger::info() << "New client connected: fd=" << client_fd << " from "
+    Logger::debug() << "New client connected: fd=" << client_fd << " from "
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << clients_.size();
 }
 
-void ConnectionManager::HandleClientEvent(int fd, short events) {
+int ConnectionManager::HandleClientEvent(int fd, short events) {
     ClientIterator it = clients_.find(fd);
     if (it == clients_.end()) {
         Logger::warning() << "Event for unknown client fd=" << fd;
-        return;
+        return -1;
     }
 
     ClientConnection* client = it->second;
     if (!client->HandleEvent(events)) {
         RemoveClient(fd);
+        return -1;
     }
+    return 0;
 }
 
 void ConnectionManager::RemoveClient(int client_fd) {
@@ -188,15 +211,18 @@ void ConnectionManager::RemoveClient(int client_fd) {
     delete client;
     clients_.erase(it);
 
-    Logger::debug() << "Removed client fd=" << client_fd
-                    << ". Active clients: " << clients_.size();
+	ServerStatus::getInstance().onConnectionClosed();
+
+    Logger::debug() << "Removed client " << client_fd << ". Active clients: "
+                   << clients_.size();
 }
 
 void ConnectionManager::CleanupTimedOutClients() {
     std::vector<int> clients_to_close;
 
-    for (ClientConstIterator it = clients_.begin(); it != clients_.end(); ++it) {
-        int client_fd = it->first;
+    for (ClientConstIterator it = clients_.begin(); it != clients_.end();
+         ++it) {
+        int               client_fd = it->first;
         ClientConnection* client = it->second;
 
         if (client->IsTimedOut()) {
@@ -220,7 +246,7 @@ const ServerConfig& ConnectionManager::GetServerConfig(int fd) const {
     if (it != servers_.end()) {
         return it->second->GetConfig();
     }
-    
+
     Logger::critical() << "No server config found for fd: " << fd;
     static ServerConfig dummy;
     return dummy;
@@ -232,8 +258,8 @@ size_t ConnectionManager::GetActiveClientCount() const {
 
 bool ConnectionManager::IsRunning() const {
     return running_;
-} 
+}
 
 void ConnectionManager::SetShutdownFlag(shutdown_flag_t* shutdown_flag) {
     shutdown_flag_ = shutdown_flag;
-} 
+}

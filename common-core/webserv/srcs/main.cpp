@@ -6,38 +6,52 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
-/*   Updated: 2025/07/19 02:10:08 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:31:26 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "Logger.hpp"
 #include "core/web_server.hpp"
+#include "handlers/cgi_handler.hpp"
 #include "parsing/GlobalConfig.hpp"
 
+void initializeCgiBin(const std::vector<ServerConfig>& servers) {
+    Logger::info() << "Initializing CGI bin...";
+
+    for (size_t i = 0; i < servers.size(); i++) {
+        const CgiBin& cgiBin = servers[i].getCgiBin();
+        if (!cgiBin.getExt().empty() && !cgiBin.getPath().empty()) {
+            CgiHandler::initializeCgiBin(cgiBin);
+        }
+    }
+}
+
 int main(int argc, char* argv[]) {
-    if (argc > 2) {
-        std::cerr << "Usage: " << argv[0] << " [config_file]" << std::endl;
-        return 1;
+    Logger::setLevel(LOG_LEVEL_INFO);
+
+    std::string config_file = "config/lucas.conf";
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
+            config_file = static_cast<std::string>(argv[i + 1]);
+            Logger::info() << "Using config file: " << config_file;
+        } else if (strcmp(argv[i], "-v") == 0) {
+            Logger::setLevel(LOG_LEVEL_DEBUG);
+        }
     }
 
     try {
         GlobalConfig config;
 
-        if (argc == 2) {
-            if (!config.loadConfig(argv[1])) {
-                Logger::error() << "Failed to load configuration file";
-                return 1;
-            }
-        } else {
-            if (!config.loadConfig("config/lucas.conf")) {
-                Logger::error() << "Failed to load default configuration file";
-                return 1;
-            }
+        if (!config.loadConfig(config_file)) {
+            Logger::error() << "Failed to load configuration file";
+            return 1;
         }
 
+        initializeCgiBin(config.getServers());
         WebServer server(config);
         if (!server.Start()) {
             Logger::error() << "Failed to start server";

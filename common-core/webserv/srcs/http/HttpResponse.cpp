@@ -14,8 +14,7 @@ HttpResponse::HttpResponse() {
     _contentType = "text/html";
     _contentLength = 0;
     _lastModified = "";
-    _connection = "keep-alive";  // HTTP/1.1 default is keep-alive. HTTP/1.0
-                                 // default is close
+    _connection = "keep-alive";
     _content = "";
 }
 
@@ -42,6 +41,14 @@ void HttpResponse::setLastModified(const std::string& lastModified) {
     _lastModified = lastModified;
 }
 
+void HttpResponse::setLocation(const std::string& location) {
+    _location = location;
+}
+
+void HttpResponse::setContentLength(int length) {
+    _contentLength = length;
+}
+
 void HttpResponse::setDate(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -65,7 +72,7 @@ std::string HttpResponse::getConnection() const {
     return _connection;
 }
 
-std::string HttpResponse::toString() {
+std::string HttpResponse::headersToString() {
     std::string        response;
     std::ostringstream oss;
     std::ostringstream contentLengthStream;
@@ -83,12 +90,18 @@ std::string HttpResponse::toString() {
     if (!_contentType.empty())
         response += "Content-Type: " + _contentType + "\r\n";
     response += "Content-Length: " + contentLengthStream.str() + "\r\n";
+    if (!_location.empty())
+        response += "Location: " + _location + "\r\n";
     if (!_lastModified.empty())
         response += "Last-Modified: " + _lastModified + "\r\n";
     if (!_connection.empty())
         response += "Connection: " + _connection + "\r\n";
-
     response += "\r\n";
+    return response;
+}
+
+std::string HttpResponse::toString() {
+    std::string response = headersToString();
     response += _content;
     return response;
 }

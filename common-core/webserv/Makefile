@@ -12,11 +12,11 @@
 
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -std=c++98
+FLAGS = -Wall -Wextra -Werror -g3
 
 SRCS_DIR = srcs
 OBJS_DIR = objs
-SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/parsing/test/*")
+SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/parsing/test/*" ! -path "srcs/tests/*")
 
 
 INC = -I ./includes/
@@ -37,14 +37,15 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 -include $(DEPS)
 
 run: all
-	./$(NAME)
+	./$(NAME) -v
 
 clean:
 	rm -rf $(OBJS_DIR)
-	rm -rf build
 
 fclean: clean
+	rm -rf build
 	rm -f $(NAME)
+	rm -rf ./www/tmp
 
 re: fclean all
 	
@@ -63,6 +64,9 @@ cbuild-test:
 cclean:
 	@rm -rf build
 # @rm -f compile_commands.json
+
+cdev: cbuild
+	@./build/webserv $(filter-out $@,$(MAKECMDGOALS)) -v
 
 crun: cbuild
 	@./build/webserv $(filter-out $@,$(MAKECMDGOALS))

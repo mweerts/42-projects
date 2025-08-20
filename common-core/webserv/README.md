@@ -1,49 +1,38 @@
 # webserver
 
+## To discuss
+- does the parsing protect from difference between number of cgi language and paths?
+- make content-length not an int, it's not enough and could cause issue.
+- location is broken with autodindex not working, it works by default not when the location is configured (je me rappelle plus trop comment tester ca)
+
+## to do max
+- verifier que les urls "index%copy.html" marche parce que je crois pas qu'elles fonctionne
+- Location doit etre dynamique dans process request, la c'est tout le temps localhost:8080
+
+## To do cgi 
+
+* Upload streaming:
+	* Wire FileWriteStream into the event loop:
+		* Client POLLIN → inBuf_ → file POLLOUT (one write per ready event).
+		* When body complete and inBuf_ empty → close file → send 201/204.
+* Error mapping polish:
+	* File/CGI failures → precise HTTP codes (404/403/500/507), consistent default error pages.
+
 ## To do Lucas ## 
-- [ ] use size limits in request Parsing
-- [ ] move request parsing outside of Client connection?
+- [URGENT]  REFACTOR PARSE REQUEST TO ONLY SAVE THE REQUEST TO A FILE WHEN NECESSARY
+- [URGENT]  REFACTOR PARSE REQUEST TO ONLY SAVE THE REQUEST TO A FILE WHEN NECESSARY
+- [URGENT]  REFACTOR PARSE REQUEST TO ONLY SAVE THE REQUEST TO A FILE WHEN NECESSARY
 
-## to implement ##
-- [ ] Config parser
-- [x] Core Server (NonBlocking I/O)
-- [ ] Request parse (HttpRequest class)
-- [ ] Response builder ()
-- [ ] CGI
-- [ ] Cookie
+- [ ] make better pages for files and add option to delete from page
 
-### Core server ###
-- [x] Server initialization # from default config if none given
-- [x] Non blocking and Event-driven I/O using epoll/select)
-- [x] Socket connection
+// should be done but need to make sure
+- [/] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf_ → file POLLOUT, with body completion flags and backpressure. 
 
 
-### config parser ###
-- [ ] default params
-- [ ] asterisk ?? (server_name *.example.com )
-- [ ] remove comments
-- [ ] refers to default.conf for each param to handle
-- [ ]
-
-### request parser ###
-- [ ] methods (GET...)
-- [ ] Host
-- [ ] Parsing State
-- [ ] Body
-- [ ] feed class until all packet received
-- [ ] handle weird char (\r\n) in image or pdf for example
-- [ ]
-
-### Response Builder ###
-- [ ] status
-- [ ] headers
-- [ ] body
-- [ ] content-type
-- [ ] content-length
-- [ ]
-
-### CGI ###
-- [ ]
-
-### Cookie ###
-- [ ]
+## Tests ##
+* Tests:
+	* [ ] Large static file GET.
+	* [ ] Slow client (backpressure).
+	* [ ] Large upload (multipart).
+	* [ ] CGI that writes slowly/large output.
+	* [ ] Keep-alive multiple sequential requests.

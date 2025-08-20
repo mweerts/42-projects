@@ -15,6 +15,11 @@
 
 #include "ConfigProcessor.hpp"
 
+typedef struct LocalConfig{
+    bool autoIndex;
+
+} LocalConfig;
+
 struct CgiBin {
     CgiBin(const std::map<std::string, std::vector<std::string> >& passprmtrs,
            const std::string& nameLocation);
@@ -22,9 +27,9 @@ struct CgiBin {
     std::map<std::string, std::vector<std::string> > prmtrs;
     CgiBin();
 
-    const std::vector<std::string>* getPath(void) const;
-    const std::vector<std::string>* getExt(void) const;
-    const std::string*              getRoot(void) const;
+    const std::vector<std::string>& getPath(void) const;
+    const std::vector<std::string>& getExt(void) const;
+    const std::string               getRoot(void) const;
 };
 
 class Location {
@@ -51,7 +56,8 @@ class ServerConfig {
    private:
     std::string                                      name;
     std::map<std::string, std::vector<std::string> > prmtrs;
-    CgiBin                                           CGIloc;
+    static CgiBin                                    globalCgiBin_;
+    static bool                                      globalCgiInitialized_;
     bool                                             Cgi;
 
    public:
@@ -92,8 +98,8 @@ class GlobalConfig {
     GlobalConfig() {};
     GlobalConfig(const ConfigProcessor& Parser);
     GlobalConfig(const GlobalConfig& other);
-	
-	bool loadConfig(const std::string& path);
+
+    bool loadConfig(const std::string& path);
 
     void CreateServerAndLocation(void);
     virtual ~GlobalConfig();
@@ -109,8 +115,7 @@ class GlobalConfig {
     // only server-level configuration.♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
     //		//♡♡♡ Does not consider URI-specific location blocks.
     // ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
-    const std::string* getErrorPage(int port, const std::string& error)
-    const;
+    const std::string* getErrorPage(int port, const std::string& error) const;
     //
     const std::vector<ServerConfig> getServers() const;
 

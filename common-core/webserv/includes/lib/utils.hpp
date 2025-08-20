@@ -12,6 +12,8 @@
 
 #include <sstream>
 #include <string>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 namespace lib {
@@ -22,4 +24,8 @@ std::string to_string(T value) {
     oss << value;
     return oss.str();
 }
-}  // namespace utils
+
+std::string extractQueryFromUri(const std::string uri);
+std::string extractPathFromUri(const std::string uri);
+bool checkSocketError(int socket_fd);
+}  // namespace lib

@@ -44,6 +44,7 @@ class ConnectionManager {
 
    private:
     std::vector<pollfd>              poll_fds_;
+    std::map<int, ClientConnection*> aux_fd_owner_;
     std::map<int, TcpServer*>        servers_;
     std::map<int, ClientConnection*> clients_;
     bool                             running_;
@@ -56,9 +57,9 @@ class ConnectionManager {
     typedef std::map<int, TcpServer*>::const_iterator ServerConstIterator;
 
    private:
-    void SetupPolling();
+    void RegisterFds();
     void HandleNewConnection(int fd);
-    void HandleClientEvent(int fd, short events);
+    int HandleClientEvent(int fd, short events);
     void CleanupTimedOutClients();
     void RemoveClient(int client_fd);
 

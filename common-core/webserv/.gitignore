@@ -1,8 +1,10 @@
 webserv
 objs
+*.log
 build
 .cache
-www/uploads/*
+www/uploads
+www/tmp/*
 # Prerequisites
 *.d
 
@@ -15,6 +17,9 @@ www/uploads/*
 # Precompiled Headers
 *.gch
 *.pch
+
+# Cursor
+.cursor
 
 # Compiled Dynamic libraries
 *.so
@@ -40,3 +45,5 @@ www/uploads/*
 # IDE
 
 *.vscode
+.DS_Store
+/config/*

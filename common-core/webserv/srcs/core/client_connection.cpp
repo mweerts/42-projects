@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-// TODO: refactor this file
-
 #include "client_connection.hpp"
 
 #include <sys/poll.h>
@@ -22,42 +20,65 @@
 #include <cerrno>
 #include <cstring>
 #include <ctime>
+#include <iostream>
+#include <vector>
 
+#include "../handlers/RequestHandler.hpp"
 #include "Logger.hpp"
-#include "RequestHandler.hpp"
+#include "http_status_code.hpp"
+#include "lib/utils.hpp"
 
 ClientConnection::ClientConnection(int                 socket_fd,
-                                   const ServerConfig& serverConfig)
+                                   const ServerConfig& server_config)
     : socket_fd_(socket_fd),
-      server_config_(serverConfig),
-      state_(READING_REQUEST),
-      keep_alive_(true),
+      server_config_(server_config),
       last_activity_(time(0)),
-      bytes_sent_(0),
-      is_closed_(false) {
+      request_parser_(NULL),
+      request_handler_(NULL),
+      state_(READING_REQUEST),
+      is_closed_(false),
+      request_ready_(false) {
     UpdateActivity();
+    request_parser_ = new RequestParser(current_request_, server_config_);
+}
+
+ClientConnection::~ClientConnection() {
+    if (request_parser_) {
+        request_parser_->cleanup();
+        delete request_parser_;
+        request_parser_ = NULL;
+    }
+    if (request_handler_) {
+        delete request_handler_;
+        request_handler_ = NULL;
+    }
+
+    Close();
 }
 
 bool ClientConnection::HandleEvent(short revents) {
     UpdateActivity();
 
     if (revents & (POLLHUP | POLLERR | POLLNVAL)) {
-        Logger::debug() << "Client " << socket_fd_ << " disconnected";
+        Logger::debug() << "Socket error detected: revents=" << revents;
         return false;
     }
 
-    if (revents & POLLIN) {
-        if (!HandleRead()) {
-            return false;
-        }
-    }
+    switch (state_) {
+        case READING_REQUEST:
+            if (revents & POLLIN) {
+                return HandleRead();
+            }
+            break;
 
-	// TODO: why does this work being commented out?
-    // if (revents & POLLOUT) {
-    //     if (!HandleWrite()) {
-    //         return false;
-    //     }
-    // }
+        case WRITING_RESPONSE:
+            if (revents & POLLOUT) {
+                return HandleWrite();
+            }
+            break;
+        case ERROR: return false;
+        default: return false;
+    }
 
     if (ShouldClose()) {
         return false;
@@ -66,19 +87,29 @@ bool ClientConnection::HandleEvent(short revents) {
     return true;
 }
 
+static void prepareResponse(RequestHandler*   request_handler,
+                            ResponseStreamer& response_streamer) {
+    if (!request_handler)
+        return;
+
+    HttpResponse& response = request_handler->getResponse();
+    if (request_handler->isStaticFileResponse()) {
+        response_streamer.prepareStaticFile(
+            response, request_handler->getStaticFilePath());
+    } else {
+        response_streamer.prepareResponse(response);
+    }
+}
+
 bool ClientConnection::HandleRead() {
+    if (request_ready_) {
+        return true;
+    }
+
     ssize_t bytes_read = recv(socket_fd_, read_buffer_, BUFFER_SIZE - 1, 0);
     if (bytes_read < 0) {
-        int       err = 0;
-        socklen_t len = sizeof(err);
-        getsockopt(socket_fd_, SOL_SOCKET, SO_ERROR, &err, &len);
-
-        if (!err) {
-            return true;
-        }
-
-        Logger::error() << "Socket error on client " << socket_fd_;
-        return false;
+        Logger::error() << "Socket error after recv";
+        return lib::checkSocketError(socket_fd_);
     }
 
     if (bytes_read == 0) {
@@ -87,52 +118,158 @@ bool ClientConnection::HandleRead() {
     }
 
     read_buffer_[bytes_read] = '\0';
-    try {
-        // TODO: implement saving the request to a file
-        request_buffer_.append(read_buffer_, bytes_read);
-    } catch (std::exception& e) {
-        Logger::error() << e.what();
+
+    RequestParser::Status parse_status =
+        request_parser_->parse(read_buffer_, bytes_read);
+
+    switch (parse_status) {
+        case RequestParser::ERROR: {
+            Logger::error()
+                << "Error parsing request: " << request_parser_->getStatusCode()
+                << " " << request_parser_->getStatusMessage();
+            return false;
+        }
+        case RequestParser::NEED_MORE_DATA: {
+            return true;
+        }
+        case RequestParser::COMPLETE: {
+            Logger::debug() << "======== Request parsing complete ========";
+
+            request_ready_ = true;
+            request_handler_ =
+                new RequestHandler(current_request_, server_config_);
+            request_handler_->handleRequest();
+
+            if (!request_handler_->hasCgiRunning()) {
+                prepareResponse(request_handler_, response_streamer_);
+            }
+
+            state_ = WRITING_RESPONSE;
+            return true;
+        }
+        default:
+            Logger::error() << "Unknown parse result: " << parse_status;
+            return false;
+    }
+
+    return true;
+}
+
+bool ClientConnection::HandleWrite() {
+    if (request_handler_ && request_handler_->hasCgiRunning()) {
+        return true;
+    }
+
+    ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
+    if (n == -1) {
+        return false;
+    } else if (n == -2) {
+        return true;  // EAGAIN or EWOULDBLOCK: try again later
+    }
+
+    if (response_streamer_.isComplete()) {
+        return finalizeResponse();
+    }
+    return true;
+}
+
+bool ClientConnection::finalizeResponse() {
+    Logger::debug() << "Response sent to client " << socket_fd_;
+
+    if (request_handler_->shouldCloseConnection()) {
+        Logger::debug() << "Connection should be closed";
+        Close();
         return false;
     }
 
-    Logger::debug() << "read " << bytes_read << " bytes";
-    Logger::debug() << read_buffer_;
+    // Reset for next request
+    delete request_handler_;
+    request_handler_ = NULL;
+    delete request_parser_;
+    request_parser_ = NULL;
 
-    RequestHandler handler = RequestHandler(server_config_);
-    handler.handleRequest(read_buffer_);
-    handler.sendResponse(socket_fd_);
+    current_request_.reset();
+    response_streamer_.reset();
+    state_ = READING_REQUEST;
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
 
     return true;
 }
 
 void ClientConnection::Close() {
-    if (is_closed_) {
+    if (is_closed_)
         return;
-    }
 
-    if (close(socket_fd_) < 0) {
-        Logger::error() << "Failed to close socket fd=" << socket_fd_ << ": "
-                        << strerror(errno);
-    }
+    if (close(socket_fd_) < 0)
+        Logger::error() << "Failed to close socket: " << strerror(errno);
 
-    request_buffer_.clear();
-    // response_buffer_.clear();
     is_closed_ = true;
     socket_fd_ = -1;
 }
 
-void ClientConnection::UpdateActivity() {
-    last_activity_ = time(NULL);
+// ============ OTHER FD EVENTS HANDLING ============ //
+
+// still need review
+std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
+    std::vector<pollfd> out;
+    // Static file: poll file for POLLIN when buffer has space
+    if (response_streamer_.isStreamingFile() &&
+        response_streamer_.wantsFileRead()) {
+        pollfd p;
+        p.fd = response_streamer_.getFileStream().fileFd();
+        p.events = POLLIN;
+        p.revents = 0;
+        out.push_back(p);
+    }
+
+    // CGI pipes: poll stdin for POLLOUT, stdout for POLLIN
+    if (request_handler_ && request_handler_->hasCgiRunning()) {
+        int inFd = request_handler_->getCgiInputPipe();
+        int outFd = request_handler_->getCgiOutputPipe();
+
+        if (inFd != -1) {
+            pollfd p;
+            p.fd = inFd;
+            p.events = POLLOUT;
+            p.revents = 0;
+            out.push_back(p);
+        }
+
+        if (outFd != -1) {
+            pollfd p;
+            p.fd = outFd;
+            p.events = POLLIN;
+            p.revents = 0;
+            out.push_back(p);
+        }
+    }
+    return out;
 }
 
-bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (keep_alive_) {
-        return (time(NULL) - last_activity_) > timeout_seconds;
+// still need review
+bool ClientConnection::HandleAuxEvent(int fd, short revents) {
+    // Static file event: read more data into buffer
+    if (response_streamer_.isStreamingFile() &&
+        fd == response_streamer_.getFileStream().fileFd() &&
+        (revents & POLLIN)) {
+        response_streamer_.getFileStream().onFileReadable();
     }
+
+    // CGI event: handle CGI I/O
+    if (request_handler_ && request_handler_->hasCgiRunning()) {
+        bool done = request_handler_->handleCgiFdEvent(fd, revents);
+        if (done) {
+            Logger::debug() << "CGI completed, preparing response";
+            response_streamer_.prepareCgiResponse(
+                request_handler_->getResponse());
+        }
+    }
+
     return true;
 }
 
-// State Queries
+// ========== State Queries ========== //
 
 bool ClientConnection::NeedsToRead() const {
     return state_ == READING_REQUEST;
@@ -143,13 +280,26 @@ bool ClientConnection::NeedsToWrite() const {
 }
 
 bool ClientConnection::ShouldClose() const {
-    return state_ == CLOSING;
+    return state_ == ERROR;
 }
 
-int ClientConnection::GetSocket() const {
+int ClientConnection::GetSocketFd() const {
     return socket_fd_;
 }
 
 ClientConnection::State ClientConnection::GetState() const {
     return state_;
+}
+
+// ========== Helpers ========== //
+
+void ClientConnection::UpdateActivity() {
+    last_activity_ = time(NULL);
+}
+
+bool ClientConnection::IsTimedOut(int timeout_seconds) const {
+    if (current_request_.shouldKeepAlive()) {
+        return (time(NULL) - last_activity_) > timeout_seconds;
+    }
+    return false;
 }

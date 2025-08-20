@@ -1,5 +1,9 @@
 #include "GlobalConfig.hpp"
 
+// Initialize static members
+CgiBin ServerConfig::globalCgiBin_;
+bool ServerConfig::globalCgiInitialized_ = false;
+
 ServerConfig::ServerConfig(
     const std::map<std::string, std::vector<std::string> >& prmtrs,
     const std::string&                                      name)
@@ -7,7 +11,7 @@ ServerConfig::ServerConfig(
     return;
 }
 
-const std::string ServerConfig::getUplaodDir( void ) const
+const std::string ServerConfig::getUploadDir( void ) const
 {
     std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("upload_dir");
     if (it != prmtrs.end() && !it->second.empty())
@@ -56,7 +60,7 @@ size_t ServerConfig::getClientMaxBodySize() const {
         prmtrs.find("client_max_body_size");
     if (it != prmtrs.end() && !it->second.empty())
         return static_cast<size_t>(std::atoi(it->second[0].c_str()));
-    return 1024;
+    return 1048576; // 1mb
 }
 
 bool ServerConfig::getAutoIndex() const {
@@ -143,6 +147,7 @@ const std::string* ServerConfig::getErrorPageLocation(
 const std::string* ServerConfig::getErrorPage(
     const std::string& nbrError) const {
     size_t pos;
+	static std::string def = "";
     for (std::map<std::string, std::vector<std::string> >::const_iterator it =
              prmtrs.begin();
          it != prmtrs.end(); ++it) {
@@ -158,13 +163,14 @@ const char* ServerConfig::NotFoundUri::what() const throw() {
 }
 
 void ServerConfig::setCgi(const CgiBin& add) {
-    if (this->Cgi == true)
+    if (globalCgiInitialized_)
         return;
     else {
-        this->CGIloc = add;
+        globalCgiBin_ = add;
+        globalCgiInitialized_ = true;
     }
     this->Cgi = true;
 }
 const CgiBin& ServerConfig::getCgiBin(void) const {
-    return this->CGIloc;
+    return globalCgiBin_;
 }
