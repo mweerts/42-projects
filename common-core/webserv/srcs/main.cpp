@@ -6,11 +6,12 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
-/*   Updated: 2025/07/19 02:10:08 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:31:26 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "Logger.hpp"

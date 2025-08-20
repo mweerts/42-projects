@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Logger.cpp                                         :+:      :+:    :+:   */
+/*   logger.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/09 19:02:07 by llebugle          #+#    #+#             */
-/*   Updated: 2025/05/09 19:02:07 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/20 18:33:46 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ bool Logger::setLogFile(const std::string& filename) {
     if (_logToFile) {
         _logFile.close();
     }
-    _logFile.open(filename, std::ios::app);
+    _logFile.open(filename.c_str(), std::ios::app);
     if (!_logFile.is_open()) {
         return false;
     }

@@ -341,8 +341,9 @@ bool RequestHandler::processCgi() {
 }
 
 bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
-    if (!_cgiHandler)
+    if (!_cgiHandler) {
         return true;
+	}
 
 	if (_cgiHandler->isTimedOut()) {
 		Logger::warning() << "CGI process timed out";
