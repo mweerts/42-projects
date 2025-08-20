@@ -35,6 +35,7 @@ RequestParser::RequestParser(HttpRequest& request, const ServerConfig& config)
     status_message_.clear();
     headers_end_pos_ = 0;
     request_size_ = 0;
+	req_buffer_.clear();
     req_filename_.clear();
 }
 
@@ -64,7 +65,13 @@ RequestParser::Status RequestParser::parse(const char* buffer,
         return ERROR;
     }
 
-    if (!saveToFile(buffer, buffer_size)) {
+	if (current_phase_ <= HEADERS && !hasBody()) {
+		req_buffer_.append(buffer, buffer_size);
+		if (req_buffer_.size() > HEADER_BUFFER_SIZE) {
+			setError(HTTP_REQUEST_ENTITY_TOO_LARGE, "Request headers too large");
+			return ERROR;
+		}
+	} else if (!saveToFile(buffer, buffer_size)) {
         Logger::error() << "Failed to save request data";
         setError(HTTP_INTERNAL_SERVER_ERROR);
         return ERROR;

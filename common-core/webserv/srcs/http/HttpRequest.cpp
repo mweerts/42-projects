@@ -288,6 +288,9 @@ std::string HttpRequest::getContentType() const {
 bool HttpRequest::shouldKeepAlive() const {
     std::map<std::string, std::string>::const_iterator it;
     it = _headers.find("Connection");
+	if (it == _headers.end()) {
+		it = _headers.find("connection");
+	}
     if (it != _headers.end()) {
         if (it->second.find("close") != std::string::npos) {
             return false;

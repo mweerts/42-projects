@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "../core/server_status.hpp"
 #include "../handlers/cgi_handler.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
@@ -18,7 +19,7 @@
 #include "http_status_code.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
-#include "../core/server_status.hpp"
+#include "Logger.hpp"
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -28,8 +29,7 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _rootPath(serverConfig.getRoot()),
       _autoindex(serverConfig.getAutoIndex()),
       _isStaticFile(false),
-      _staticFilePath("")
-	  {};
+      _staticFilePath("") {};
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -73,7 +73,6 @@ void RequestHandler::handleRequest() {
     } else {
         _response.setConnection("close");
     }
-
     if (_response.getStatusCode() != HTTP_OK &&
         _response.getStatusCode() != HTTP_MOVED_PERMANENTLY) {
         std::ostringstream oss;
@@ -100,7 +99,7 @@ void RequestHandler::handleRequest() {
         }
         _response.setConnection("close");
     }
-	ServerStatus::getInstance().onRequestProcessed();
+    ServerStatus::getInstance().onRequestProcessed();
 }
 
 // void RequestHandler::sendResponse(int socket_fd) {
@@ -115,28 +114,27 @@ void RequestHandler::processRequest() {
     _internalUri = lib::extractPathFromUri(_request.getUri());
     const Location*    location = _serverConfig.getLocation(_internalUri);
     const std::string& method = _request.getMethod();
-	
-	if (method == "GET" || method == "POST") {
-		_queryString = lib::extractQueryFromUri(_request.getUri());
-	}
-	
+
+    if (method == "GET" || method == "POST") {
+        _queryString = lib::extractQueryFromUri(_request.getUri());
+    }
+
     Logger::debug() << "processing request for uri: " << _internalUri;
     if (!_queryString.empty())
         Logger::debug() << "query string: " << _queryString;
-		
+
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
-			// TODO: Needs to be dynamic
+            // TODO: Needs to be dynamic
             _response.setLocation("http://localhost:8080" +
                                   urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
             return;
         } else if (location->getAlias()) {
-            _internalUri =
-                *location->getAlias() +
-                _internalUri.substr((location->getName()).length());
+            _internalUri = *location->getAlias() +
+                           _internalUri.substr((location->getName()).length());
         } else if (*location->getRoot() != "./")
             _rootPath = *location->getRoot();
         _autoindex = location->getAutoIndex();
@@ -166,15 +164,15 @@ void RequestHandler::processRequest() {
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
-
 // ============ GET ============ //
 
 void RequestHandler::handleStatusRequest() {
-	_response.setStatusCode(HTTP_OK);
-	_response.setContent(ServerStatus::getInstance().getJson());
-	_response.setContentType("application/json");
-	_response.setConnection("close");
+    _response.setStatusCode(HTTP_OK);
+    _response.setContent(ServerStatus::getInstance().getJson());
+    _response.setContentType("application/json");
+    // _response.setConnection("close");
 }
+
 void RequestHandler::processGetRequest() {
     std::string     fullPath;
     const Location* location = _serverConfig.getLocation(_internalUri);
@@ -199,10 +197,10 @@ void RequestHandler::processGetRequest() {
         }
     }
 
-	if (_internalUri == "/status") {
-		handleStatusRequest();
-		return;
-	}
+    if (_internalUri == "/status") {
+        handleStatusRequest();
+        return;
+    }
 
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
@@ -225,7 +223,7 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-	// needed for the response streamer
+    // needed for the response streamer
     _isStaticFile = true;
     _staticFilePath = fullPath;
     struct stat st;
@@ -245,7 +243,7 @@ void RequestHandler::processPostRequest() {
         _cgiHandler = initCgiHandler();
         if (!_cgiHandler)
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-        return ;
+        return;
     }
 
     // Regular file upload handling
@@ -313,7 +311,7 @@ void RequestHandler::processDeleteRequest() {
 
 CgiHandler* RequestHandler::initCgiHandler() {
     CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
-	cgiHandler->setQueryString(_queryString);
+    cgiHandler->setQueryString(_queryString);
     if (cgiHandler->startAsyncCgi(_internalUri))
         return cgiHandler;
     delete cgiHandler;
@@ -378,11 +376,11 @@ int RequestHandler::getCgiOutputPipe() const {
 // ============ UTILS ============ //
 
 bool RequestHandler::isStaticFileResponse() const {
-	return _isStaticFile;
+    return _isStaticFile;
 }
 
 const std::string& RequestHandler::getStaticFilePath() const {
-	return _staticFilePath;
+    return _staticFilePath;
 }
 
 HttpResponse& RequestHandler::getResponse() {
@@ -390,12 +388,12 @@ HttpResponse& RequestHandler::getResponse() {
 }
 
 void RequestHandler::generateErrorResponse(StatusCode         status_code,
-	const std::string& error_msg) {
-(void)error_msg;  // not implemented
-_response.setStatusCode(status_code);
-_response.setContent(GetHtmlErrorPage(_response));
-_response.setContentType("text/html");
-_response.setConnection("close");
+                                           const std::string& error_msg) {
+    (void)error_msg;  // not implemented
+    _response.setStatusCode(status_code);
+    _response.setContent(GetHtmlErrorPage(_response));
+    _response.setContentType("text/html");
+    _response.setConnection("close");
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {

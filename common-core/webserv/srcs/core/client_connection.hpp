@@ -21,7 +21,7 @@
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
 #include "../http/RequestParser.hpp"
-#include "response_streamer.hpp"
+#include "../handlers/response_streamer.hpp"
 
 class ServerConfig;
 class RequestHandler;

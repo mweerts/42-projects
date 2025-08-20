@@ -20,11 +20,11 @@ set(SOURCES
 	srcs/core/connection_manager.cpp
 	srcs/core/tcp_server.cpp
 	srcs/core/server_status.cpp
-	srcs/core/response_streamer.cpp
 	
     srcs/handlers/cgi_handler.cpp
     srcs/handlers/cgi_process.cpp
     srcs/handlers/file_streaming.cpp
+	srcs/handlers/response_streamer.cpp
     srcs/handlers/RequestHandler.cpp
 	
     # srcs/http/HttpRequest.cpp

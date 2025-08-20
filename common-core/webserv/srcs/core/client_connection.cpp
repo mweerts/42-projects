@@ -60,6 +60,7 @@ bool ClientConnection::HandleEvent(short revents) {
     UpdateActivity();
 
     if (revents & (POLLHUP | POLLERR | POLLNVAL)) {
+        Logger::debug() << "Socket error detected: revents=" << revents;
         return false;
     }
 
