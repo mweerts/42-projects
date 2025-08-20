@@ -49,12 +49,12 @@ void RequestParser::cleanup() {
     }
 
     // Comment this to keep the file for debugging
-    // if (!req_filename_.empty() && lib::pathExist(req_filename_)) {
-    //     if (remove(req_filename_.c_str()) != 0) {
-    //         Logger::warning() << "Failed to remove temporary request file: "
-    //                           << req_filename_;
-    //     }
-    // }
+    if (!req_filename_.empty() && lib::pathExist(req_filename_)) {
+        if (remove(req_filename_.c_str()) != 0) {
+            Logger::warning() << "Failed to remove temporary request file: "
+                              << req_filename_;
+        }
+    }
 }
 
 RequestParser::Status RequestParser::parse(const char* buffer,
