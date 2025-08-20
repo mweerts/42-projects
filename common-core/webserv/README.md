@@ -6,7 +6,6 @@
 - location is broken with autodindex not working, it works by default not when the location is configured (je me rappelle plus trop comment tester ca)
 
 ## to do max
-- verifier que les urls "index%copy.html" marche parce que je crois pas qu'elles fonctionne
 - Location doit etre dynamique dans process request, la c'est tout le temps localhost:8080
 
 ## To do cgi 

@@ -219,15 +219,6 @@ int ConfigProcessor::validateForbiddenParameters(void) const {
 					}
 				}
             }
-			else
-			{
-                if (it_->children[i].prmtrs.count("root") < 1) 
-				{
-                    Logger::error()
-                        << "missing root in: " << it_->children[i].name;
-                    return (1);
-				}
-			}
         }
         ++it_;
     }
