@@ -19,7 +19,6 @@
 #include "http_status_code.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
-#include "Logger.hpp"
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -139,9 +138,6 @@ void RequestHandler::processRequest() {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
         }
     } else if (method == "POST") {
-        if (!location) {
-            Logger::warning() << "No location found for POST request";
-        }
         if (!location || (location && location->getMethodIsAllowed("POST")))
             processPostRequest();
         else

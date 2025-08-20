@@ -33,7 +33,7 @@ void initializeCgiBin(const std::vector<ServerConfig>& servers) {
 int main(int argc, char* argv[]) {
     Logger::setLevel(LOG_LEVEL_INFO);
 
-    std::string config_file = "config/lucas.conf";
+    std::string config_file = "config/max.conf";
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
             config_file = static_cast<std::string>(argv[i + 1]);

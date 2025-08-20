@@ -19,7 +19,7 @@
 #include <iostream>
 #include <string>
 
-static const size_t MAX_LOG_SIZE = 1024 * 1024;  // 1MB
+static const size_t MAX_LOG_SIZE = 1024 * 1024 * 1024;  // 1GB
 
 const char* Logger::RESET = "\033[0m";
 const char* Logger::GREEN = "\033[32m";
