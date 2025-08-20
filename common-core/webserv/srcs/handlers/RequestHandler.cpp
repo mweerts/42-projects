@@ -102,13 +102,6 @@ void RequestHandler::handleRequest() {
     ServerStatus::getInstance().onRequestProcessed();
 }
 
-// void RequestHandler::sendResponse(int socket_fd) {
-//     std::string responseString = _response.toString();
-//     Logger::debug() << "Sending response...";
-//     // Logger::debug() << responseString;
-//     send(socket_fd, responseString.c_str(), responseString.size(), 0);
-// }
-
 // TODO: maybe make this a bit cleaner or easy to read?
 void RequestHandler::processRequest() {
     _internalUri = lib::extractPathFromUri(_request.getUri());
@@ -350,6 +343,16 @@ bool RequestHandler::processCgi() {
 bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
     if (!_cgiHandler)
         return true;
+
+	if (_cgiHandler->isTimedOut()) {
+		Logger::warning() << "CGI process timed out";
+		_response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+		_cgiHandler->cleanupAsyncCgi();
+		delete _cgiHandler;
+		_cgiHandler = NULL;
+		return true;
+	}
+
     bool done = _cgiHandler->handleFdEvent(fd, revents);
     if (done) {
         _cgiHandler->buildCgiResponse(_response);
