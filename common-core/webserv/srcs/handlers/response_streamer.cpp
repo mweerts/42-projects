@@ -110,7 +110,7 @@ static ssize_t sendWrapper(int socket_fd, const char* data, size_t len) {
 
     ssize_t n = send(socket_fd, data, len, MSG_NOSIGNAL);
     if (n == 0) {
-        Logger::warning() << "Socket closed while sending";
+        Logger::debug() << "Socket closed while sending";
         return -1;
     }
     if (n < 0) {
