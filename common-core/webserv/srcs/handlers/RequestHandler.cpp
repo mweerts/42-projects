@@ -65,6 +65,20 @@ bool RequestHandler::shouldCloseConnection() const {
     return !_request.shouldKeepAlive();
 }
 
+static void replaceErrorPlaceholders(std::string& content, const HttpResponse& response) {
+	std::string errCode = lib::to_string(response.getStatusCode());
+	
+	size_t pos = 0;
+	while ((pos = content.find("{{ERROR_CODE}}")) != std::string::npos) {
+		content.replace(pos, 14, errCode);
+	}
+
+	while ((pos = content.find("{{ERROR_MESSAGE}}")) != std::string::npos) {
+		std::string errMessage = GetHttpStatusText(response.getStatusCode());
+		content.replace(pos, 17, errMessage);
+	}
+}
+
 void RequestHandler::handleRequest() {
     processRequest();
 
@@ -87,7 +101,10 @@ void RequestHandler::handleRequest() {
             }
             std::ostringstream ss;
             ss << file.rdbuf();
-            _response.setContent(ss.str());
+			std::string content = ss.str();
+
+			replaceErrorPlaceholders(content, _response);
+            _response.setContent(content);
             _response.setContentType(
                 MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
             _response.setLastModified(
