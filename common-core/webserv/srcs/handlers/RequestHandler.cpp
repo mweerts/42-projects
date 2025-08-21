@@ -26,6 +26,7 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _request(request),
       _cgiHandler(NULL),
       _rootPath(serverConfig.getRoot()),
+      _internalUri(""),
       _autoindex(serverConfig.getAutoIndex()),
       _isStaticFile(false),
       _staticFilePath("") {};
@@ -118,7 +119,8 @@ void RequestHandler::processRequest() {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
             // TODO: Needs to be dynamic
-            _response.setLocation("http://localhost:8080" + urlDecode(*location->getReturn()));
+            _response.setLocation("http://localhost:8080" +
+                                  urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
             return;
@@ -161,10 +163,14 @@ void RequestHandler::handleStatusRequest() {
 }
 
 void RequestHandler::processGetRequest() {
-    std::string     fullPath;
+    std::string     fullPath = "";
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
+    if (fullPath.empty() || _rootPath.empty() || _internalUri.empty()) {
+        _response.setStatusCode(HTTP_BAD_REQUEST);
+        return;
+    }
     CgiHandler tmpCgi(_request, &_serverConfig);
     if (tmpCgi.isCgiScript(_internalUri)) {
         _cgiHandler = initCgiHandler();
@@ -172,7 +178,10 @@ void RequestHandler::processGetRequest() {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-
+    if (!pathExist(fullPath)) {
+        _response.setStatusCode(HTTP_NOT_FOUND);
+        return;
+    }
     if (lib::isDirectory(fullPath)) {
         if (location && location->getIndex() &&
             lib::isReadable(fullPath + "/" + *location->getIndex())) {
