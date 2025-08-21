@@ -122,9 +122,6 @@ std::string HttpResponse::headersToString() {
         response += "Last-Modified: " + _lastModified + "\r\n";
     if (!_connection.empty())
         response += "Connection: " + _connection + "\r\n";
-    if (_statusCode != HTTP_OK && _statusCode != HTTP_MOVED_PERMANENTLY &&
-        _statusCode != HTTP_NO_CONTENT)
-        response += "error-code: " + std::to_string(_statusCode) + "\r\n";
     std::map<std::string, std::string>::const_iterator it;
     for (it = _additionnalHeaders.begin(); it != _additionnalHeaders.end();
          it++) {
