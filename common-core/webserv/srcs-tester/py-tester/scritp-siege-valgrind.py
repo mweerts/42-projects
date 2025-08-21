@@ -5,9 +5,16 @@ import signal
 
 url = "http://127.0.0.1:8080/"
 urlApi = "http://127.0.0.1:8081/"
+MAX_REQUEST_CURL = 100;
+MAX_CURL_SLOW = 10;
 fileName = "file_40mb.txt"
-size_mb = 40
+size_mb = 40 #♡♡♡♡♡♡♡♡♡♡♡ITERATORE CICLO CREAZIONE BIF FILE 
 chunk_size = 1024 * 1024  # 1 MB
+
+with open(fileName, "wb") as f:
+    for _ in range(size_mb):
+        f.write(b'\x00' * chunk_size)
+
 config_list = [
     "../../config/TestConf/HeritanceBody.conf",
     "../../config/default2.conf",
@@ -25,53 +32,37 @@ parser_list = [
     "../../config/ParserConf/noRootCGI.conf",
     "../../config/ParserConf/noPort.conf",
     "../../config/ParserConf/noCgiBin.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinLocation00.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinLocation01.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinLocation02.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinCGI00.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinCGI01.conf",
-    "../../config/ParserConf/noForbitenPrmtrsinCGI02.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinLocation00.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinLocation01.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinLocation02.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinCGI00.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinCGI01.conf",
+    "../../config/ParserConf/ForbitenPrmtrsinCGI02.conf",
     "../../config/ParserConf/noCgiBin.conf",
     "../../config/ParserConf/noValadePort.conf",
     "../../config/ParserConf/samePortSever.conf",
 
 ]
-
-# Creo il file una volta sola fuori dal ciclo
-for i in range(5)
+##♡♡♡♡♡♡♡♡♡♡♡TESTIAMO IL PARSER TUTTE IL SERVER NON SI DEVE AVVIARE♡♡♡♡♡♡♡♡♡♡♡
+for i in range(len(parser_list))
     print(f"\n==== PARSER TEST {i+1} ====")
-    cont  = input("Touch me for continue...")
     print(parser_list[ciclo])
+    cont  = input("Touch me for continue...")
     if (cont == "kill"):
-        proc.send_signal(signal.SIGINT)
         exit();
     if (cont == "continue"):
-        proc.send_signal(signal.SIGINT)
         continue ;
     if (cont == "break"):
-        proc.send_signal(signal.SIGINT)
         break ;
     cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
     subprocess.run(cmdValgrind)
     sleep(3);
     cont  = input("Touch me for continue...")
-    print(parser_list[ciclo])
-    if (cont == "continue"):
-        proc.send_signal(signal.SIGINT)
-        continue ;
-    if (cont == "break"):
-        proc.send_signal(signal.SIGINT)
-        break ;
     
-with open(fileName, "wb") as f:
-    for _ in range(size_mb):
-        f.write(b'\x00' * chunk_size)
-
-for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
+for ciclo in range(len(config_list)):
 
     print(f"\n==== INIZIO CICLO {ciclo+1} ====")
 
-    # Start Valgrind (test più esterno - prima)
     print("### AVVIO VALGRIND ###")
     cmdValgrind = ["valgrind", "../../webserv", "-c", config_list[ciclo]]
     print(config_list[ciclo])
@@ -86,8 +77,8 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     proc = subprocess.Popen(cmdValgrind)
     time.sleep(4)
 
-    # Primo gruppo di richieste curl senza limitazione (100 richieste)
-    for i in range(100):
+##♡♡♡♡♡♡♡♡♡♡♡100 RIHIESTE CURL VELOCI TIME REALE♡♡♡♡♡♡♡♡♡♡♡
+    for i in range(MAX_REQUEST_CURL):
         result = subprocess.run(
             ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", url],
             capture_output=True,
@@ -105,8 +96,9 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
         print(f"RequestApi {i+1}: \033[92mOK\033[0m" if codeApi == "200" else f"RequestApi {i+1}: \033[91mERROR {codeApi}\033[0m")
         #time.sleep(0.5);
 
-    # Secondo gruppo di richieste curl con limitazione di banda (10 richieste)
-    for i in range(10):
+
+#♡♡♡♡♡♡♡♡♡♡♡LIMITAZIONE MANDA SIMULAZIONE UTENTI LENTI♡♡♡♡♡♡♡♡♡♡♡
+    for i in range(MAX_CURL_SLOW):
         result = subprocess.run(
             ["curl", "--limit-rate", "50k", "-s", "-o", "/dev/null", "-w", "%{http_code}", url],
             capture_output=True,
@@ -128,7 +120,9 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     url = "http://127.0.0.1:8080/upload"
     urlApi = "http://127.0.0.1:8081/upload"
 
-    # Upload file (40 MB)
+#♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
+##CREATE A FILE 40mb ##
+fileName = "file_40mb.txt"
     cmdUpload = [
         "curl",
         "-X", "POST",
@@ -153,11 +147,13 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     print("STDOUT:\n", result.stdout)
     print("STDERR:\n", result.stderr)
 
-    # Slow output test
+###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
+
+#TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO♡♡♡♡♡♡♡♡♡♡♡
     print("### TEST CGI SLOW OUTPUT ###")
     subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
 
-    # Siege tests
+##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
     cmdMini = ["siege", url, "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
     cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
     cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
@@ -176,6 +172,7 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
         continue ;
         
         
+######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
     subprocess.run(cmdLow)
     time.sleep(1)
     print("### MINI TEST SIEGE ####")
@@ -194,7 +191,7 @@ for ciclo in range(5):  # Puoi cambiare 10 con quante iterazioni vuoi
     input("Touch me for continue...")
     #subprocess.run(cmdBanch)
 
-    # End Valgrind (test più esterno - dopo tutto)
+    # ♡♡♡♡♡♡♡♡♡♡♡End Valgrind (test più esterno - dopo tutto)♡♡♡♡♡♡♡♡♡♡♡
     print("### FINE VALGRIND ###")
 
     print(f"==== FINE CICLO {ciclo+1} ====")
