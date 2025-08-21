@@ -266,7 +266,7 @@ int ConfigProcessor::validateCgiBin(void) const {
                 count++;
         }
         if (count < 1) {
-            Logger::error() << "Cgi-bin, is mandatory parameter";
+            Logger::error() << "Cgi-bin, is a mandatory parameter";
             return (1);
         }
         ++it_;

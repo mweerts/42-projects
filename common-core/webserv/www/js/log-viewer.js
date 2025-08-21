@@ -7,7 +7,6 @@ let isRequestInProgress = false; // Prevent multiple simultaneous requests
 document.addEventListener('DOMContentLoaded', () => {
     init();
     
-    // Cleanup on page unload
     window.addEventListener('beforeunload', () => {
         if (autoRefreshInterval) {
             clearInterval(autoRefreshInterval);
@@ -31,7 +30,6 @@ function applyConfiguration() {
     const linesSelect = document.getElementById('logLinesSelect');
     const newLogLines = parseInt(linesSelect.value);
     
-    // Only reload if the value actually changed
     if (newLogLines !== logLines) {
         logLines = newLogLines;
         loadLogs();
@@ -44,7 +42,6 @@ function startAutoRefresh() {
     }
     
     autoRefreshInterval = setInterval(() => {
-        // Only make request if no other request is in progress
         if (!isRequestInProgress) {
             loadLogs();
         }
@@ -52,7 +49,6 @@ function startAutoRefresh() {
 }
 
 async function loadLogs() {
-    // Prevent multiple simultaneous requests
     if (isRequestInProgress) {
         console.log('Request already in progress, skipping...');
         return;
