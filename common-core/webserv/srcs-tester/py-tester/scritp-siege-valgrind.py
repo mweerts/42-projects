@@ -40,24 +40,25 @@ parser_list = [
     "../../config/ParserConf/ForbitenPrmtrsinCGI02.conf",
     "../../config/ParserConf/noCgiBin.conf",
     "../../config/ParserConf/noValadePort.conf",
-    "../../config/ParserConf/samePortSever.conf",
+    "../../config/ParserConf/samePortSever.conf"
 
 ]
+
 ##♡♡♡♡♡♡♡♡♡♡♡TESTIAMO IL PARSER TUTTE IL SERVER NON SI DEVE AVVIARE♡♡♡♡♡♡♡♡♡♡♡
-for i in range(len(parser_list))
-    print(f"\n==== PARSER TEST {i+1} ====")
-    print(parser_list[ciclo])
-    cont  = input("Touch me for continue...")
-    if (cont == "kill"):
-        exit();
-    if (cont == "continue"):
-        continue ;
-    if (cont == "break"):
-        break ;
-    cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
-    subprocess.run(cmdValgrind)
-    sleep(3);
-    cont  = input("Touch me for continue...")
+#for i in range(len(parser_list)):
+#    print(f"\n==== PARSER TEST {i+1} ====")
+#    print(parser_list[ciclo])
+#    cont  = input("Touch me for continue...")
+#    if (cont == "kill"):
+#        exit();
+#    if (cont == "continue"):
+#        continue ;
+#    if (cont == "break"):
+#        break ;
+#    cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
+#    subprocess.run(cmdValgrind)
+#    sleep(3);
+#    cont  = input("Touch me for continue...")
     
 for ciclo in range(len(config_list)):
 
@@ -122,7 +123,7 @@ for ciclo in range(len(config_list)):
 
 #♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
 ##CREATE A FILE 40mb ##
-fileName = "file_40mb.txt"
+    fileName = "file_40mb.txt"
     cmdUpload = [
         "curl",
         "-X", "POST",
