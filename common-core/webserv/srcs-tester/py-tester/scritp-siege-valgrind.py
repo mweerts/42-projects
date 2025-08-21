@@ -25,6 +25,7 @@ config_list = [
     "../../config/TestConf/portNameLocalHost.conf",
 #    "../../config/TestConf/HeritanceErrorPage.conf",
     "../../config/TestConf/noUploadDir.conf"
+#    "../../config/TestConf/3Server.conf",
 ]
 parser_list = [
     "../../config/ParserConf/noRootServer.conf",
@@ -41,26 +42,45 @@ parser_list = [
     "../../config/ParserConf/noCgiBin.conf",
     "../../config/ParserConf/noValadePort.conf",
     "../../config/ParserConf/samePortSever.conf"
+    #"../../config/ParserConf/badSyntax.conf"
+    #"../../config/ParserConf/isAdir.conf"
+    #"../../config/ParserConf/no.conf.rand"
 
 ]
 
 ##♡♡♡♡♡♡♡♡♡♡♡TESTIAMO IL PARSER TUTTE IL SERVER NON SI DEVE AVVIARE♡♡♡♡♡♡♡♡♡♡♡
-for i in range(len(parser_list)):
+i = 0;
+while i < (len(parser_list)):
     print(f"\n==== PARSER TEST {i+1} ====")
     print(parser_list[i])
     cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
     process = subprocess.Popen(cmdValgrind)
     time.sleep(2)
+    for l in range(len(parser_list)):
+        print(parser_list[l], f"index is {l}")
     cont  = input("Touch me for continue...")
     if (cont == "kill"):
         process.send_signal(signal.SIGINT)
         exit();
     if (cont == "break"):
         break ;
+    if cont == "":
+        i += 1
+    else:
+        try:
+            new_index = int(cont)
+            if 0 <= new_index < len(parser_list):
+                i = new_index
+            else:
+                print(" Indice fuori range. Continuo al prossimo.")
+                i += 1
+        except ValueError:
+            print(" Input non valido. Continuo al prossimo.")
+            i += 1
     process.send_signal(signal.SIGINT)
 
-    
-for ciclo in range(len(config_list)):
+ciclo = 0;    
+while ciclo < len(config_list):
 
     print(f"\n==== INIZIO CICLO {ciclo+1} ====")
     url = "http://127.0.0.1:8080/"
@@ -156,10 +176,10 @@ for ciclo in range(len(config_list)):
     subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
 
 ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
-    cmdMini = ["siege", "-f","urlBasic.tx", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
+    cmdMini = ["siege", "-f","urlBasic.txt", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
     cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
     cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
-    cmdBanch = ["siege", "-b", "-f", "urlBasic.txt"]
+    cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "15s"]
     cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
 
     time.sleep(5)
@@ -174,7 +194,7 @@ for ciclo in range(len(config_list)):
         continue ;
         
         
-######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
+#######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
     subprocess.run(cmdLow)
     time.sleep(1)
     print("### MINI TEST SIEGE ####")
@@ -223,6 +243,23 @@ for ciclo in range(len(config_list)):
     print(f"==== FINE CICLO {ciclo+1} ====")
     print("Invio Ctrl+C al processo...")
     proc.send_signal(signal.SIGINT)
-    input("Touch me for continue...")
-    time.sleep(5)
+    time.sleep(2);
+    for y in range(len(config_list)):
+        print(config_list[y], f"index is {y}:")
+    cont = input("Touch me for continue...")
+    if (cont == "kill"):
+        exit();
+    if cont == "":
+        ciclo += 1  # continua normalmente
+    else:
+        try:
+            new_index = int(cont)
+            if 0 <= new_index < len(config_list):
+                ciclo = new_index
+            else:
+                print(" Indice fuori range. Continuo al prossimo.")
+                ciclo += 1
+        except ValueError:
+            print(" Input non valido. Continuo al prossimo.")
+            ciclo += 1
 
