@@ -26,6 +26,7 @@ config_list = [
 #    "../../config/TestConf/HeritanceErrorPage.conf",
     "../../config/TestConf/noUploadDir.conf"
 #    "../../config/TestConf/3Server.conf",
+#    "../../config/TestConf/JustRootServerNoName.conf",
 ]
 parser_list = [
     "../../config/ParserConf/noRootServer.conf",
@@ -140,6 +141,11 @@ while ciclo < len(config_list):
 
     url = "http://127.0.0.1:8080/upload"
     urlApi = "http://127.0.0.1:8081/upload"
+    #TODO: Special case with 3server
+    #TODO: curl --resolve
+    #TODO: curl create a error
+    #TODO: keep a live and close
+    #TODO: Contemporary CGI with siege
 
 #♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
 ##CREATE A FILE 40mb ##
@@ -171,7 +177,7 @@ while ciclo < len(config_list):
     url = "http://127.0.0.1:8080/"
 ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
 
-#TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO♡♡♡♡♡♡♡♡♡♡♡
+#TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO ADD WWW/CGI♡♡♡♡♡♡♡♡♡♡♡
     print("### TEST CGI SLOW OUTPUT ###")
     subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
 
