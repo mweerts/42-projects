@@ -16,14 +16,14 @@ with open(fileName, "wb") as f:
         f.write(b'\x00' * chunk_size)
 
 config_list = [
-    "../../config/TestConf/HeritanceBody.conf",
-    "../../config/default2.conf",
-    "../../config/TestConf/noErrorPage.conf",
-    "../../config/TestConf/noBindPort.conf",
     "../../config/TestConf/JusteServer.conf",
+    "../../config/default2.conf",
+#    "../../config/TestConf/HeritanceBody.conf",
+#    "../../config/TestConf/noErrorPage.conf",
+    "../../config/TestConf/noBindPort.conf",
     "../../config/TestConf/1kb.conf",
     "../../config/TestConf/portNameLocalHost.conf",
-    "../../config/TestConf/HeritanceErrorPage.conf",
+#    "../../config/TestConf/HeritanceErrorPage.conf",
     "../../config/TestConf/noUploadDir.conf"
 ]
 parser_list = [
@@ -45,27 +45,31 @@ parser_list = [
 ]
 
 ##♡♡♡♡♡♡♡♡♡♡♡TESTIAMO IL PARSER TUTTE IL SERVER NON SI DEVE AVVIARE♡♡♡♡♡♡♡♡♡♡♡
-#for i in range(len(parser_list)):
-#    print(f"\n==== PARSER TEST {i+1} ====")
-#    print(parser_list[ciclo])
-#    cont  = input("Touch me for continue...")
-#    if (cont == "kill"):
-#        exit();
-#    if (cont == "continue"):
-#        continue ;
-#    if (cont == "break"):
-#        break ;
-#    cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
-#    subprocess.run(cmdValgrind)
-#    sleep(3);
-#    cont  = input("Touch me for continue...")
+for i in range(len(parser_list)):
+    print(f"\n==== PARSER TEST {i+1} ====")
+    print(parser_list[i])
+    cmdValgrind = ["valgrind", "../../webserv", "-c", parser_list[i]]
+    process = subprocess.Popen(cmdValgrind)
+    time.sleep(2)
+    cont  = input("Touch me for continue...")
+    if (cont == "kill"):
+        process.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "break"):
+        break ;
+    process.send_signal(signal.SIGINT)
+
     
 for ciclo in range(len(config_list)):
 
     print(f"\n==== INIZIO CICLO {ciclo+1} ====")
+    url = "http://127.0.0.1:8080/"
+    urlApi = "http://127.0.0.1:8081/"
 
     print("### AVVIO VALGRIND ###")
     cmdValgrind = ["valgrind", "../../webserv", "-c", config_list[ciclo]]
+    proc = subprocess.Popen(cmdValgrind)
+    time.sleep(2)
     print(config_list[ciclo])
     cont  = input("Touch me for continue...")
     if (cont == "kill"):
@@ -74,10 +78,6 @@ for ciclo in range(len(config_list)):
     if (cont == "continue"):
         proc.send_signal(signal.SIGINT)
         continue ;
-        
-    proc = subprocess.Popen(cmdValgrind)
-    time.sleep(4)
-
 ##♡♡♡♡♡♡♡♡♡♡♡100 RIHIESTE CURL VELOCI TIME REALE♡♡♡♡♡♡♡♡♡♡♡
     for i in range(MAX_REQUEST_CURL):
         result = subprocess.run(
@@ -148,6 +148,7 @@ for ciclo in range(len(config_list)):
     print("STDOUT:\n", result.stdout)
     print("STDERR:\n", result.stderr)
 
+    url = "http://127.0.0.1:8080/"
 ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
 
 #TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO♡♡♡♡♡♡♡♡♡♡♡
@@ -155,10 +156,10 @@ for ciclo in range(len(config_list)):
     subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
 
 ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
-    cmdMini = ["siege", url, "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
+    cmdMini = ["siege", "-f","urlBasic.tx", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
     cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
     cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
-    cmdBanch = ["siege", "-b", "urlBasic.txt"]
+    cmdBanch = ["siege", "-b", "-f", "urlBasic.txt"]
     cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
 
     time.sleep(5)
@@ -178,19 +179,43 @@ for ciclo in range(len(config_list)):
     time.sleep(1)
     print("### MINI TEST SIEGE ####")
     input("Touch me for continue...")
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue;
     subprocess.run(cmdMini)
     time.sleep(1)
     print("### FULL TEST SIEGE ####")
     input("Touch me for continue...")
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue;
     subprocess.run(cmdFull)
     time.sleep(1)
     print("### TEST JUST ALLOWMETHOD ####")
     input("Touch me for continue...")
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue;
     subprocess.run(cmdBasic)
     time.sleep(1)
     print("### TEST BENCHMARK ####")
     input("Touch me for continue...")
-    #subprocess.run(cmdBanch)
+    if (cont == "kill"):
+        proc.send_signal(signal.SIGINT)
+        exit();
+    if (cont == "continue"):
+        proc.send_signal(signal.SIGINT)
+        continue;
+    subprocess.run(cmdBanch)
 
     # ♡♡♡♡♡♡♡♡♡♡♡End Valgrind (test più esterno - dopo tutto)♡♡♡♡♡♡♡♡♡♡♡
     print("### FINE VALGRIND ###")

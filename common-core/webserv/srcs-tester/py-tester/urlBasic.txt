@@ -1,16 +1,16 @@
 # --- SERVER: 127.0.0.1:8080 ---
 
 # /uploads → allow_methods POST GET
-http://127.0.0.1:8080/upload GET
-http://127.0.0.1:8080/upload POST
+http://127.0.0.1:8080/ GET
+http://127.0.0.1:8080/ POST
 
 # /cgi-bin → nessun allow_methods presente → NON INCLUSO
 
 # --- SERVER: 127.0.0.1:8081 ---
 
 # /uploads → allow_methods GET DELETE
-http://127.0.0.1:8081/upload GET
-http://127.0.0.1:8081/upload DELETE
+http://127.0.0.1:8081/ GET
+http://127.0.0.1:8081/ POST
 
 # /cgi-bin → nessun allow_methods presente → NON INCLUSO
 
