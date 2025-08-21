@@ -18,7 +18,17 @@ const std::string ServerConfig::getUploadDir( void ) const
 	{
         return (it->second[0]);
 	}
-	return getRoot();
+	return "";
+}
+
+const std::string ServerConfig::getTmpFolder( void ) const
+{
+    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("tmp_folder");
+    if (it != prmtrs.end() && !it->second.empty())
+	{
+        return (it->second[0]);
+	}
+	return "";
 }
 
 const std::string ServerConfig::getServerName( void ) const
@@ -130,7 +140,8 @@ const std::string* ServerConfig::getErrorPageLocation(
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-    return NULL;
+	static std::string empty = "";
+    return &empty;
 }
 
 const std::string* ServerConfig::getErrorPage(
@@ -143,8 +154,10 @@ const std::string* ServerConfig::getErrorPage(
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-    return &def;
+	static std::string empty = "";
+    return &empty;
 }
+
 const char* ServerConfig::NotFoundUri::what() const throw() {
     return "URI not found";
 }

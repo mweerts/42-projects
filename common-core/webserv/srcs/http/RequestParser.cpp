@@ -35,6 +35,7 @@ RequestParser::RequestParser(HttpRequest& request, const ServerConfig& config)
     status_message_.clear();
     headers_end_pos_ = 0;
     request_size_ = 0;
+	req_buffer_.clear();
     req_filename_.clear();
 }
 
@@ -64,7 +65,12 @@ RequestParser::Status RequestParser::parse(const char* buffer,
         return ERROR;
     }
 
-    if (!saveToFile(buffer, buffer_size)) {
+	// needs to be done only in parseBody
+	// because we need to know the content length 
+	// to see if we need to save to file or not
+	// performance boost is way better when only saving to file when needed
+	// for post requests most of the time we don't need to save to file
+	if (!saveToFile(buffer, buffer_size)) {
         Logger::error() << "Failed to save request data";
         setError(HTTP_INTERNAL_SERVER_ERROR);
         return ERROR;
@@ -315,8 +321,9 @@ RequestParser::Status RequestParser::parseBody() {
     if (content_length > 0) {
         if (request_size_ >= (headers_end_pos_ + content_length)) {
             if (content_length <= 8192) {  // Small body: store as string
-                std::string body =
+                std::string body = 
                     readFromFile(headers_end_pos_, content_length);
+				//std::string body = req_buffer_.substr(headers_end_pos_, content_length);
                 request_.setBody(body);
             } else {
                 request_.setBodyParams(req_filename_, headers_end_pos_,

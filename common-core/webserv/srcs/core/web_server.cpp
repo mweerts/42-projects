@@ -35,6 +35,7 @@ WebServer::WebServer(const std::vector<ServerConfig>& server_configs)
 
 WebServer::~WebServer() {
     CleanupServers();
+	Logger::cleanup();
     if (connection_manager_) {
         delete connection_manager_;
     }
@@ -70,6 +71,11 @@ void WebServer::Run() {
     signal(SIGTERM, signal_handler);
 
     Logger::info() << "WebServer is running...";
+
+	if (!server_configs_.empty()) {
+		std::string path = server_configs_[0].getRoot() + "/webserv.log";
+		Logger::setLogFile(path);
+	} 
 
     if (connection_manager_) {
         connection_manager_->Run();

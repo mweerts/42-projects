@@ -36,19 +36,9 @@ Having the same upload section on both home page and upload page is redundant. N
 
 ### 5. Server Status Dashboard <!-- a simple get request to specific endpoint might do the trick but not sure-->
 - **Real-time stats**: Active connections, requests/second, uptime
-- **Performance metrics**: CPU usage, memory, bandwidth
 - **Live logs**: Recent HTTP requests with status codes
 - **Health indicators**: Server status, active connections, error rates
-- **example**:
-```
-// just need to protect if location already exists
-if (request.path == "/api/status") {
-    // Return JSON with server stats
-    std::string json = "{\"uptime\":\"" + getUptime() + "\",\"connections\":" + std::to_string(activeConnections) + "}";
-    response.setBody(json);
-    response.setHeader("Content-Type", "application/json");
-}
-```
+
 
 ### 7. API Testing Interface
 - **HTTP method tester**: GET, POST, DELETE with custom headers

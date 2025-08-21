@@ -21,7 +21,7 @@
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
 #include "../http/RequestParser.hpp"
-#include "response_streamer.hpp"
+#include "../handlers/response_streamer.hpp"
 
 class ServerConfig;
 class RequestHandler;
@@ -40,7 +40,7 @@ class ClientConnection {
     bool NeedsToRead() const;
     bool NeedsToWrite() const;
     bool ShouldClose() const;
-    bool IsTimedOut(int timeout_seconds = 60) const;  // default nginx
+    bool IsTimedOut(int timeout_seconds = 30) const;
 
     int   GetSocketFd() const;
     State GetState() const;
@@ -48,7 +48,7 @@ class ClientConnection {
     void Close();
 
     // Expose aux fds for polling (files, cgi pipes)
-    void GetAuxPollFds(std::vector<pollfd>& out) const;
+    std::vector<pollfd> GetAuxPollFds() const;
     bool HandleAuxEvent(int fd, short revents);
 
    private:
@@ -69,7 +69,6 @@ class ClientConnection {
 	
     bool request_ready_;
 
-    // Response streaming - replaces all the old streaming logic
     ResponseStreamer response_streamer_;
 
    private:

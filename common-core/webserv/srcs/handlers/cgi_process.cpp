@@ -21,16 +21,19 @@
 #include <string>
 #include <vector>
 
-// add all methods to check
-// - cleanup [x]
+#include "Logger.hpp"
+#include "lib/fd_guard.hpp"
 
-// - startProcess [x]
-// should be able to remove fcntl this if going through poll
-// auto close fds?
+CgiProcess::CgiProcess()
+    : childPid_(-1),
+      inputPipe_(-1),
+      outputPipe_(-1),
+      startTime_(time(NULL)),
+      isValid_(false) {}
 
-// - flushInputOnce [x]
-// - readOutputOnce [x]
-// - hasExited [x]
+CgiProcess::~CgiProcess() {
+    cleanup();
+}
 
 void CgiProcess::cleanup() {
     if (inputPipe_ != -1) {
@@ -53,32 +56,36 @@ bool CgiProcess::startProcess(const std::string&              exec_path,
                               const std::vector<std::string>& args,
                               const std::vector<std::string>& env,
                               const std::string&              workingDir) {
+
+	if (exec_path.empty() || args.empty())
+		return false;
+
     int inPipe[2] = {-1, -1};
     int outPipe[2] = {-1, -1};
 
     if (pipe(inPipe) == -1)
         return false;
+
     if (pipe(outPipe) == -1) {
         close(inPipe[0]);
         close(inPipe[1]);
         return false;
     }
 
-    // should be able to remove this if going through poll
-    fcntl(inPipe[1], F_SETFL, O_NONBLOCK);
-    fcntl(outPipe[0], F_SETFL, O_NONBLOCK);
+    FdGuard inReadGuard(inPipe[0]);
+    FdGuard inWriteGuard(inPipe[1]);
+    FdGuard outReadGuard(outPipe[0]);
+    FdGuard outWriteGuard(outPipe[1]);
+
+    fcntl(inWriteGuard.get(), F_SETFL, O_NONBLOCK);
+    fcntl(outReadGuard.get(), F_SETFL, O_NONBLOCK);
 
     pid_t pid = fork();
     if (pid == -1) {
-        close(inPipe[0]);
-        close(inPipe[1]);
-        close(outPipe[0]);
-        close(outPipe[1]);
         return false;
     }
 
     if (pid == 0) {
-        // Reset flags for duped fds
         fcntl(inPipe[0], F_SETFL, 0);
         fcntl(outPipe[1], F_SETFL, 0);
 
@@ -115,40 +122,43 @@ bool CgiProcess::startProcess(const std::string&              exec_path,
     }
 
     childPid_ = pid;
-    close(inPipe[0]);
-    close(outPipe[1]);
-    inputPipe_ = inPipe[1];
-    outputPipe_ = outPipe[0];
+    inputPipe_ = inWriteGuard.release();
+    outputPipe_ = outReadGuard.release();
+
     isValid_ = true;
     startTime_ = time(NULL);
     return true;
+}
+
+static void resetFd(int& fd) {
+	if (fd != -1) {
+		close(fd);
+		fd = -1;
+	}
 }
 
 bool CgiProcess::flushInputOnce() {
     if (inputPipe_ == -1)
         return true;
     if (inputBuffer_.empty()) {
-        close(inputPipe_);
-        inputPipe_ = -1;
+        resetFd(inputPipe_);
         return true;
     }
     ssize_t w = write(inputPipe_, inputBuffer_.data(), inputBuffer_.size());
-    if (w > 0) {
-        inputBuffer_.erase(0, static_cast<size_t>(w));
-        if (inputBuffer_.empty()) {
-            close(inputPipe_);
-            inputPipe_ = -1;
-            return true;
-        }
+    if (w < 0) {
+        resetFd(inputPipe_);
+        Logger::error("Flush input once failed");
         return false;
+    } else if (w == 0) {
+        resetFd(inputPipe_);
+        return true;
     }
-    if (w < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
-        return false;
+    inputBuffer_.erase(0, static_cast<size_t>(w));
+    if (inputBuffer_.empty()) {
+        resetFd(inputPipe_);
+        return true;
     }
-    // On error, close to avoid spinning
-    close(inputPipe_);
-    inputPipe_ = -1;
-    return true;
+    return false;
 }
 
 bool CgiProcess::readOutputOnce() {
@@ -156,22 +166,16 @@ bool CgiProcess::readOutputOnce() {
         return true;
     char    buf[4096];
     ssize_t r = read(outputPipe_, buf, sizeof(buf));
-    if (r > 0) {
-        outputBuffer_.append(buf, r);
-        return false;
-    }
-    if (r == 0) {
-        close(outputPipe_);
-        outputPipe_ = -1;
+    if (r < 0) {
+        Logger::error("Read output once failed");
+        resetFd(outputPipe_);
+        return true;
+    } else if (r == 0) {
+        resetFd(outputPipe_);
         return true;
     }
-    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-        return false;
-    }
-    // Error: close and mark complete
-    close(outputPipe_);
-    outputPipe_ = -1;
-    return true;
+    outputBuffer_.append(buf, r);
+    return false;
 }
 
 bool CgiProcess::hasExited(int* status) {

@@ -1,9 +1,10 @@
 webserv
 objs
+*.log
 build
 .cache
 www/uploads
-www/tmp/*
+www/tmp
 # Prerequisites
 *.d
 

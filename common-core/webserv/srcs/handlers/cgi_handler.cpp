@@ -60,7 +60,10 @@ CgiHandler::CgiHandler(const HttpRequest& request)
 
 CgiHandler::CgiHandler(const HttpRequest&  request,
                        const ServerConfig* serverConfig)
-    : request_(request), serverConfig_(serverConfig), async_process_(NULL) {
+    : request_(request),
+      serverConfig_(serverConfig),
+      async_process_(NULL),
+      queryString_("") {
     if (!cgiBinInitialized_) {
         setDefaultCgiBin();
         cgiBinInitialized_ = true;
@@ -125,8 +128,8 @@ static char to_upper_char(char c) {
     return static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
 }
 
-std::string CgiHandler::buildQueryString() {
-    return lib::extractQueryFromUri(request_.getUri());
+void CgiHandler::setQueryString(const std::string& queryString) {
+    queryString_ = queryString;
 }
 
 const std::vector<std::string> CgiHandler::buildEnvironment() {
@@ -134,7 +137,8 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.reserve(12);  // minimum env variables
 
     env.push_back("REQUEST_METHOD=" + request_.getMethod());
-    env.push_back("QUERY_STRING=" + buildQueryString());
+    env.push_back("QUERY_STRING=" + queryString_);
+    Logger::debug() << "QUERY_STRING=" << queryString_;
     env.push_back("CONTENT_LENGTH=" +
                   lib::to_string(request_.getContentLength()));
     env.push_back("CONTENT_TYPE=" + request_.getContentType());
@@ -147,6 +151,7 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("SERVER_PORT=" + port);
     env.push_back("SERVER_PROTOCOL=HTTP/1.1");
     env.push_back("SERVER_SOFTWARE=webserv/1.0");
+    env.push_back("LOG_FILE=" + Logger::getLogFilename());
     env.push_back("UPLOADS_DIR=" +
                   (serverConfig_ ? serverConfig_->getUploadDir() : ""));
 
@@ -214,6 +219,22 @@ void CgiHandler::cleanupAsyncCgi() {
     }
 }
 
+static void LogCgiError(CgiProcess* async_process) {
+    if (!async_process || !async_process->isValid())
+        return;
+
+    int status;
+    if (async_process->hasExited(&status)) {
+        if (WIFEXITED(status) && WEXITSTATUS(status) != 0) {
+            Logger::warning()
+                << "CGI process exited with status: " << WEXITSTATUS(status);
+        } else if (WIFSIGNALED(status)) {
+            Logger::warning()
+                << "CGI process terminated by signal: " << WTERMSIG(status);
+        }
+    }
+}
+
 bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
     std::string work_dir;
     size_t      slash = scriptPath.find_last_of('/');
@@ -256,8 +277,7 @@ bool CgiHandler::processCgiIO() {
     bool eof = async_process_->readOutputOnce();
 
     if (eof) {
-        int status;
-        async_process_->hasExited(&status);
+        LogCgiError(async_process_);
         return true;
     }
     return false;
@@ -270,28 +290,24 @@ bool CgiHandler::handleFdEvent(int fd, short revents) {
     int inFd = async_process_->getInputPipe();
     int outFd = async_process_->getOutputPipe();
 
-    // Write to CGI stdin when POLLOUT
     if (fd == inFd && (revents & POLLOUT)) {
         if (async_process_->getInputBuffer().empty()) {
             if (request_.getContentLength() > 0 || request_.hasMoreBody()) {
-                // Simple: push all at once (can be improved to incremental)
+                // push all at once (not scalable)
                 async_process_->setInputBuffer(request_.readBodyAll());
             } else {
                 async_process_->setInputBuffer("");
             }
         }
         (void)async_process_->flushInputOnce();
-        // Not complete yet; wait for stdout EOF
         return false;
     }
 
-    // Read from CGI stdout when POLLIN
     if (fd == outFd && (revents & POLLIN)) {
         bool eof = async_process_->readOutputOnce();
         if (eof) {
-            int status;
-            (void)async_process_->hasExited(&status);
-            return true;  // Completed
+            LogCgiError(async_process_);
+            return true;
         }
         return false;
     }
@@ -299,14 +315,28 @@ bool CgiHandler::handleFdEvent(int fd, short revents) {
     // Treat HUP/ERR/NVAL on any pipe as completion for safety
     if ((fd == outFd || fd == inFd) &&
         (revents & (POLLHUP | POLLERR | POLLNVAL))) {
-        int status;
-        (void)async_process_->hasExited(&status);
+        LogCgiError(async_process_);
         return true;
     }
     return false;
 }
 
-// need to clean this up a bit too
+static void extractKeyAndValue(std::string& line, std::string& key,
+                               std::string& value) {
+    if (!line.empty() && line[line.size() - 1] == '\r')
+        line.erase(line.size() - 1);
+
+    size_t p = line.find(':');
+    if (p == std::string::npos)
+        return;
+    key = line.substr(0, p);
+    value = line.substr(p + 1);
+    while (!value.empty() && value[0] == ' ')
+        value.erase(0, 1);
+}
+
+// need to clean this up a bit too but need
+// httpResponse to handle arbitrary headers
 static void parseCgiHeadersAndBody(const std::string& raw,
                                    HttpResponse&      response) {
     if (raw.empty()) {
@@ -329,42 +359,33 @@ static void parseCgiHeadersAndBody(const std::string& raw,
         body = raw;
     }
 
-    // Minimal header parsing
     std::istringstream hs(headers);
     std::string        line;
-    bool               hasStatus = false;
+    StatusCode         statusCode = HTTP_OK;
+
     while (std::getline(hs, line)) {
-        if (!line.empty() && line[line.size() - 1] == '\r')
-            line.erase(line.size() - 1);
         if (line.empty())
             continue;
-        size_t p = line.find(':');
-        if (p == std::string::npos)
-            continue;
-        std::string key = line.substr(0, p);
-        std::string value = line.substr(p + 1);
-        while (!value.empty() && value[0] == ' ') value.erase(0, 1);
+
+        std::string key, value;
+        extractKeyAndValue(line, key, value);
 
         if (key == "Status") {
             size_t      sp = value.find(' ');
             std::string code =
                 (sp == std::string::npos) ? value : value.substr(0, sp);
-            response.setStatusCode(
-                static_cast<StatusCode>(std::atoi(code.c_str())));
-            hasStatus = true;
+            statusCode = static_cast<StatusCode>(std::atoi(code.c_str()));
         } else if (key == "Content-Type") {
             response.setContentType(value);
         } else if (key == "Location") {
             response.setLocation(value);
         } else {
-            // TODO: support setting arbitrary headers if HttpResponse supports
-            // it
+            // not implemented in httpResponse
+            // response.setHeader(key, value);
         }
     }
 
-    if (!hasStatus) {
-        response.setStatusCode(HTTP_OK);
-    }
+    response.setStatusCode(statusCode);
     response.setContent(body);
 }
 

@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.hpp                                          :+:      :+:    :+:   */
+/*   fd_guard.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: llebugle <llebugle@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/28 22:53:46 by llebugle          #+#    #+#             */
-/*   Updated: 2025/06/28 22:53:47 by llebugle         ###   ########.fr       */
+/*   Created: 2025/08/18 16:08:39 by llebugle          #+#    #+#             */
+/*   Updated: 2025/08/18 16:08:40 by llebugle         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sstream>
-#include <string>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "lib/fd_guard.hpp"
 
+FdGuard::FdGuard(int fd) : fd_(fd), released_(false) {}
 
-namespace lib {
-
-template <typename T>
-std::string to_string(T value) {
-    std::ostringstream oss;
-    oss << value;
-    return oss.str();
+FdGuard::~FdGuard() {
+    if (fd_ >= 0 && !released_) {
+        close(fd_);
+		fd_ = -1;
+    }
 }
 
-std::string extractQueryFromUri(const std::string uri);
-std::string extractPathFromUri(const std::string uri);
-bool checkSocketError(int socket_fd);
-}  // namespace lib
+int FdGuard::release() {
+    released_ = true;
+	int tmp = fd_;
+	fd_ = -1;
+    return tmp;
+}
+
+int FdGuard::get() const {
+    return fd_;
+}

@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/21 16:41:06 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/19 19:41:58 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,8 +175,6 @@ int ConfigProcessor::heandelError(
         itPrmtrs->second[0] = "8080";
     } catch (std::exception& e) {
         Logger::error() << e.what() << " " << itPrmtrs->first;
-        ;
-        //	this->~ConfigProcessor(); //Cannon
         return (1);
     }
     return (0);
@@ -205,6 +203,21 @@ int ConfigProcessor::validateForbiddenParameters(void) const {
                         << "missing root in: " << it_->children[i].name;
                     return (1);
                 }
+				if ((it_->children[i].prmtrs.count("cgi_path") >= 1) && (it_->children[i].prmtrs.count("cgi_ext") >= 1))
+				{
+					std::vector<std::string> bin = it_->children[i].prmtrs.at("cgi_path");
+					std::vector<std::string> ext = it_->children[i].prmtrs.at("cgi_ext");
+					if (bin.size() != ext.size())
+					{
+						Logger::error()
+						 << "Mismatch between CGI interpreters and extensions in configuration block: "
+						 << it_->children[i].name
+						 << ". Found " << bin.size() << " 'cgi_path' entries but " << ext.size()
+						 << " 'cgi_ext' entries.";
+		
+						return (1);
+					}
+				}
             }
         }
         ++it_;
@@ -219,6 +232,7 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
     vecNoAll.push_back("host");
     vecNoAll.push_back("server_name");
 	vecNoAll.push_back("upload_dir");
+	vecNoAll.push_back("tmp_folder");
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
         vecNoAll.push_back("allow_methods");  // TODO: Check if possible in cgi
@@ -308,6 +322,16 @@ int ConfigProcessor::validateDifferentPortServer(void) const {
     }
     return (0);
 }
+static	int	isKnownParameter(const std::string& key, const std::string& nameREF)
+{		
+	Logger::warning() << "Parameter \"" << key << "\" in configuration section \"" << nameREF 
+                  << "\" is not recognized. Press any key to continue, or 'n' to abort.";
+	std::string in;
+	std::cin >> in;
+	if (in == "n")
+		return 1;
+	return 0;
+}
 
 int ConfigProcessor::validationParameters(void) {
     if (validateCgiBin() == 1)
@@ -321,8 +345,9 @@ int ConfigProcessor::validationParameters(void) {
     while (it_ != tree.end()) {
         std::map<std::string, std::vector<std::string> >::iterator itPrmtrs =
             it_->prmtrs.begin();
-        if (it_->prmtrs.count("listen") < 1) {
-            Logger::error() << "listening port, is mandatory parameter";
+        if (it_->prmtrs.count("listen") < 1 ||
+				it_->prmtrs.count("root") < 1) {
+            Logger::error() << "listening port and root, is mandatory parameter";
             return (1);
         }
         if (it_->prmtrs.count("alias") != 0 ||
@@ -340,6 +365,11 @@ int ConfigProcessor::validationParameters(void) {
                 if (heandelError(func, itPrmtrs, it_->name) == 1)
                     return (1);
             }
+			else if (itPrmtrs->first != "index" && itPrmtrs->first.rfind("error_page ", 0) != 0){
+				if (isKnownParameter(itPrmtrs->first, it_->name) == 1){
+					return 1;
+				}
+			}
             ++itPrmtrs;
         }
         std::vector<Node>::iterator itChild = it_->children.begin();
@@ -353,7 +383,13 @@ int ConfigProcessor::validationParameters(void) {
                     ValidateFunction func = itFunc->second;
                     if (heandelError(func, itPrmtrs, itChild->name) == 1)
                         return (1);
+
                 }
+				else if (itPrmtrs->first != "index" && itPrmtrs->first.rfind("error_page ", 0) != 0){
+					if (isKnownParameter(itPrmtrs->first, itChild->name) == 1){
+						return 1;
+					}
+				}
                 ++itPrmtrs;
             }
             itChild++;
@@ -484,22 +520,54 @@ int ConfigProcessor::checkBraces(const std::string& str) const {
 	return (0);
 }
 
+#include <stack>
+
 int ConfigProcessor::countBracket() const {
-    int bracket = 0;
-    for (size_t i = 0; i < Buffer.length(); ++i) {
-        if (this->Buffer[i] == '{')
-            bracket++;
-        if (this->Buffer[i] == '}')
-            bracket--;
-    }
-    if (bracket != 0) {
-        Logger::error() << "Brackets don't close properly";
-        return (1);
-    }
-	if (checkBraces(this->Buffer) == 1){
-		return (1);
-	}
-    return (0);
+	std::stack<char> c;
+    size_t  i = 0;
+	std::string s = this->Buffer;
+    if (s.size() <= 1)
+        return 1;
+     while (i < s.size())
+     {
+        if ( s[i] == '(' || s[i] == '[' || s[i] == '{')
+        {
+            c.push(s[i]);
+        }
+        if ( (s[i] == ')' || s[i] == ']' || s[i] == '}') && !c.empty())
+        {
+            if (s[i] == ')' && c.top() != '(')
+            {
+                return 1;
+            }
+            else if (s[i] == '}' && c.top() != '{')
+            {
+                return 1;
+            }
+            else if (s[i] == ']' && c.top() != '[')
+            {
+                return 1;
+            }
+            else if (s[i] == ')' && c.top() == '(')
+            {
+                c.pop();
+            }
+            else if (s[i] == '}' && c.top() == '{')
+            {
+                c.pop();
+            }
+            else if (s[i] == ']' && c.top() == '[')
+            {
+                c.pop();
+            }
+        }
+        else if ( ( s[i] == ')' || s[i] == ']' || s[i] == '}' ) && c.size() == 0)
+            return 1;
+        i++;
+     }
+     if (c.size() == 0)	
+         return 0;
+     return 1;
 }
 
 int ConfigProcessor::recursiveMap(void) {
@@ -593,7 +661,10 @@ int ConfigProcessor::tokenize(void) {
    */
     this->Buffer = findRemplaceComment(this->Buffer, "#", "\n", "\n");
     if (countBracket() == 1)
+	{
+		Logger::error() << "Close Bracket pls";
         return (1);
+	}
     /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
      * Create a stringstream from the cleaned buffer, allowing tokenization
      using >>.

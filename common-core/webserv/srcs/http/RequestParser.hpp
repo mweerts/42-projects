@@ -70,6 +70,8 @@ class RequestParser {
     size_t       headers_end_pos_;
     size_t       request_size_;
 
+	std::string req_buffer_;
+	
     // File management
     std::string   req_filename_;
     std::ofstream request_file_;

@@ -28,10 +28,6 @@
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
 
-// TODO:
-// - [ ] Create a CgiManager class that handle the cgi or let the cgi handler do
-// it?
-
 ClientConnection::ClientConnection(int                 socket_fd,
                                    const ServerConfig& server_config)
     : socket_fd_(socket_fd),
@@ -64,6 +60,7 @@ bool ClientConnection::HandleEvent(short revents) {
     UpdateActivity();
 
     if (revents & (POLLHUP | POLLERR | POLLNVAL)) {
+        Logger::debug() << "Socket error detected: revents=" << revents;
         return false;
     }
 
@@ -88,6 +85,20 @@ bool ClientConnection::HandleEvent(short revents) {
     }
 
     return true;
+}
+
+static void prepareResponse(RequestHandler*   request_handler,
+                            ResponseStreamer& response_streamer) {
+    if (!request_handler)
+        return;
+
+    HttpResponse& response = request_handler->getResponse();
+    if (request_handler->isStaticFileResponse()) {
+        response_streamer.prepareStaticFile(
+            response, request_handler->getStaticFilePath());
+    } else {
+        response_streamer.prepareResponse(response);
+    }
 }
 
 bool ClientConnection::HandleRead() {
@@ -122,23 +133,15 @@ bool ClientConnection::HandleRead() {
             return true;
         }
         case RequestParser::COMPLETE: {
-            Logger::debug()
-                << "=========== Request parsing complete ===========";
-            request_ready_ = true;
+            Logger::debug() << "======== Request parsing complete ========";
 
+            request_ready_ = true;
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
             request_handler_->handleRequest();
 
-            if (request_handler_->hasCgiRunning()) {
-                Logger::debug() << "CGI is running";
-            } else if (request_handler_->isStaticFileResponse()) {
-                response_streamer_.prepareStaticFile(
-                    request_handler_->getResponse(),
-                    request_handler_->getStaticFilePath());
-            } else {
-                response_streamer_.prepareResponse(
-                    request_handler_->getResponse());
+            if (!request_handler_->hasCgiRunning()) {
+                prepareResponse(request_handler_, response_streamer_);
             }
 
             state_ = WRITING_RESPONSE;
@@ -154,21 +157,43 @@ bool ClientConnection::HandleRead() {
 
 bool ClientConnection::HandleWrite() {
     if (request_handler_ && request_handler_->hasCgiRunning()) {
-        return true;  // should i let the request handler handle the cgi?
+        return true;
     }
 
     ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
-
     if (n == -1) {
         return false;
     } else if (n == -2) {
-        // EAGAIN or EWOULDBLOCK: try again later
-        return true;
+        return true;  // EAGAIN or EWOULDBLOCK: try again later
     }
 
     if (response_streamer_.isComplete()) {
         return finalizeResponse();
     }
+    return true;
+}
+
+bool ClientConnection::finalizeResponse() {
+    Logger::debug() << "Response sent to client " << socket_fd_;
+
+    if (request_handler_->shouldCloseConnection()) {
+        Logger::debug() << "Connection should be closed";
+        Close();
+        return false;
+    }
+
+    // Reset for next request
+    delete request_handler_;
+    request_handler_ = NULL;
+    delete request_parser_;
+    request_parser_ = NULL;
+
+    current_request_.reset();
+    response_streamer_.reset();
+    state_ = READING_REQUEST;
+    request_parser_ = new RequestParser(current_request_, server_config_);
+    request_ready_ = false;
+
     return true;
 }
 
@@ -183,41 +208,11 @@ void ClientConnection::Close() {
     socket_fd_ = -1;
 }
 
-void ClientConnection::UpdateActivity() {
-    last_activity_ = time(NULL);
-}
-
-bool ClientConnection::IsTimedOut(int timeout_seconds) const {
-    if (current_request_.shouldKeepAlive()) {
-        return (time(NULL) - last_activity_) > timeout_seconds;
-    }
-    return false;
-}
-
-// State Queries
-
-bool ClientConnection::NeedsToRead() const {
-    return state_ == READING_REQUEST;
-}
-
-bool ClientConnection::NeedsToWrite() const {
-    return state_ == WRITING_RESPONSE;
-}
-
-bool ClientConnection::ShouldClose() const {
-    return state_ == ERROR;
-}
-
-int ClientConnection::GetSocketFd() const {
-    return socket_fd_;
-}
-
-ClientConnection::State ClientConnection::GetState() const {
-    return state_;
-}
+// ============ OTHER FD EVENTS HANDLING ============ //
 
 // still need review
-void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
+std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
+    std::vector<pollfd> out;
     // Static file: poll file for POLLIN when buffer has space
     if (response_streamer_.isStreamingFile() &&
         response_streamer_.wantsFileRead()) {
@@ -249,6 +244,7 @@ void ClientConnection::GetAuxPollFds(std::vector<pollfd>& out) const {
             out.push_back(p);
         }
     }
+    return out;
 }
 
 // still need review
@@ -264,7 +260,6 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         bool done = request_handler_->handleCgiFdEvent(fd, revents);
         if (done) {
-            // CGI complete: prepare response and start streaming
             Logger::debug() << "CGI completed, preparing response";
             response_streamer_.prepareCgiResponse(
                 request_handler_->getResponse());
@@ -274,26 +269,37 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
     return true;
 }
 
-bool ClientConnection::finalizeResponse() {
-    Logger::debug() << "Response sent to client " << socket_fd_;
+// ========== State Queries ========== //
 
-    if (request_handler_->shouldCloseConnection()) {
-        Logger::debug() << "Connection should be closed";
-        Close();
-        return false;
+bool ClientConnection::NeedsToRead() const {
+    return state_ == READING_REQUEST;
+}
+
+bool ClientConnection::NeedsToWrite() const {
+    return state_ == WRITING_RESPONSE;
+}
+
+bool ClientConnection::ShouldClose() const {
+    return state_ == ERROR;
+}
+
+int ClientConnection::GetSocketFd() const {
+    return socket_fd_;
+}
+
+ClientConnection::State ClientConnection::GetState() const {
+    return state_;
+}
+
+// ========== Helpers ========== //
+
+void ClientConnection::UpdateActivity() {
+    last_activity_ = time(NULL);
+}
+
+bool ClientConnection::IsTimedOut(int timeout_seconds) const {
+    if (current_request_.shouldKeepAlive()) {
+        return (time(NULL) - last_activity_) > timeout_seconds;
     }
-
-    // Reset for next request
-    delete request_handler_;
-    request_handler_ = NULL;
-    delete request_parser_;
-    request_parser_ = NULL;
-
-    current_request_.reset();
-    response_streamer_.reset();
-    state_ = READING_REQUEST;
-    request_parser_ = new RequestParser(current_request_, server_config_);
-    request_ready_ = false;
-
-    return true;
+    return false;
 }

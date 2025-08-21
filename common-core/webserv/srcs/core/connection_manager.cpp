@@ -25,6 +25,7 @@
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "lib/socket_guard.hpp"
+#include "server_status.hpp"
 
 ConnectionManager::ConnectionManager()
     : running_(false), shutdown_flag_(NULL) {}
@@ -36,7 +37,7 @@ ConnectionManager::~ConnectionManager() {
     clients_.clear();
 }
 
-void ConnectionManager::SetupPolling() {
+void ConnectionManager::RegisterFds() {
     poll_fds_.clear();
     aux_fd_owner_.clear();
 
@@ -68,12 +69,11 @@ void ConnectionManager::SetupPolling() {
             poll_fds_.push_back(pfd);
         }
 
-        // auxiliary fds (files, cgi pipes)
-        std::vector<pollfd> extra;
-        client->GetAuxPollFds(extra);
-        for (size_t k = 0; k < extra.size(); ++k) {
-            poll_fds_.push_back(extra[k]);
-            aux_fd_owner_[extra[k].fd] = client;
+		// register auxiliary fds (files, cgi pipes)
+        std::vector<pollfd> extra = client->GetAuxPollFds();
+        for (size_t i = 0; i < extra.size(); ++i) {
+            poll_fds_.push_back(extra[i]);
+            aux_fd_owner_[extra[i].fd] = client;
         }
     }
 }
@@ -82,7 +82,7 @@ void ConnectionManager::Run() {
     running_ = true;
 
     while (running_ && (shutdown_flag_ == NULL || !*shutdown_flag_)) {
-        SetupPolling();
+        RegisterFds();
         int ready = poll(poll_fds_.data(), poll_fds_.size(), 100);
 
         if (ready < 0 && errno != EINTR) {
@@ -173,11 +173,13 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
+	ServerStatus::getInstance().onConnectionEstablished();
+
     // only for info logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
-    Logger::info() << "New client connected: fd=" << client_fd << " from "
+    Logger::debug() << "New client connected: fd=" << client_fd << " from "
                    << client_ip << ":" << ntohs(client_addr.sin_port)
                    << ". Active clients: " << clients_.size();
 }
@@ -208,6 +210,8 @@ void ConnectionManager::RemoveClient(int client_fd) {
     client->Close();
     delete client;
     clients_.erase(it);
+
+	ServerStatus::getInstance().onConnectionClosed();
 
     Logger::debug() << "Removed client " << client_fd << ". Active clients: "
                    << clients_.size();

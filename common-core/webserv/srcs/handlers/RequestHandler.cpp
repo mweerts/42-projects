@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "../core/server_status.hpp"
 #include "../handlers/cgi_handler.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
@@ -60,7 +61,6 @@ bool RequestHandler::shouldCloseConnection() const {
     if (_response.getStatusCode() != HTTP_OK) {
         return true;
     }
-
     return !_request.shouldKeepAlive();
 }
 
@@ -72,13 +72,11 @@ void RequestHandler::handleRequest() {
     } else {
         _response.setConnection("close");
     }
-
     if (_response.getStatusCode() != HTTP_OK &&
         _response.getStatusCode() != HTTP_MOVED_PERMANENTLY) {
         std::ostringstream oss;
         oss << _response.getStatusCode();
         const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
-        // Logger::debug() << "ERROR PAGE :" + *errorPage + "  " + _rootPath;
         if (errorPage) {
             std::ifstream file((_rootPath + "/" + *errorPage).c_str());
             if (file.fail()) {
@@ -99,33 +97,34 @@ void RequestHandler::handleRequest() {
         }
         _response.setConnection("close");
     }
+    ServerStatus::getInstance().onRequestProcessed();
 }
 
-// void RequestHandler::sendResponse(int socket_fd) {
-//     std::string responseString = _response.toString();
-//     Logger::debug() << "Sending response...";
-//     // Logger::debug() << responseString;
-//     send(socket_fd, responseString.c_str(), responseString.size(), 0);
-// }
-
+// TODO: maybe make this a bit cleaner or easy to read?
 void RequestHandler::processRequest() {
-    const Location*    location = _serverConfig.getLocation(_request.getUri());
+    _internalUri = lib::extractPathFromUri(_request.getUri());
+    const Location*    location = _serverConfig.getLocation(_internalUri);
     const std::string& method = _request.getMethod();
 
-    _internalUri = _request.getUri();
+    if (method == "GET" || method == "POST") {
+        _queryString = lib::extractQueryFromUri(_request.getUri());
+    }
+
     Logger::debug() << "processing request for uri: " << _internalUri;
+    if (!_queryString.empty())
+        Logger::debug() << "query string: " << _queryString;
+
     if (location) {
         if (location->getReturn()) {
             _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
-            _response.setLocation("http://localhost:8080" +
-                                  urlDecode(*location->getReturn()));
+            // TODO: Needs to be dynamic
+            _response.setLocation("http://localhost:8080" + urlDecode(*location->getReturn()));
             _response.setContent(GetHtmlErrorPage(_response));
             _response.setContentType("text/html");
             return;
         } else if (location->getAlias()) {
-            _internalUri =
-                *location->getAlias() +
-                _request.getUri().substr((location->getName()).length());
+            _internalUri = *location->getAlias() +
+                           _internalUri.substr((location->getName()).length());
         } else if (*location->getRoot() != "./")
             _rootPath = *location->getRoot();
         _autoindex = location->getAutoIndex();
@@ -139,9 +138,6 @@ void RequestHandler::processRequest() {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
         }
     } else if (method == "POST") {
-        if (!location) {
-            Logger::warning() << "No location found for POST request";
-        }
         if (!location || (location && location->getMethodIsAllowed("POST")))
             processPostRequest();
         else
@@ -155,24 +151,26 @@ void RequestHandler::processRequest() {
         _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
 }
 
+// ============ GET ============ //
+
+void RequestHandler::handleStatusRequest() {
+    _response.setStatusCode(HTTP_OK);
+    _response.setContent(ServerStatus::getInstance().getJson());
+    _response.setContentType("application/json");
+    // _response.setConnection("close");
+}
+
 void RequestHandler::processGetRequest() {
     std::string     fullPath;
     const Location* location = _serverConfig.getLocation(_internalUri);
 
     fullPath = _rootPath + _internalUri;
-
-    CgiHandler tempCgiHandler(_request, &_serverConfig);
-    if (tempCgiHandler.isCgiScript(_internalUri)) {
-        Logger::info() << "Executing CGI script";
-        _cgiHandler = new CgiHandler(_request, &_serverConfig);
-        if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;
-        } else {
-            delete _cgiHandler;
-            _cgiHandler = NULL;
+    CgiHandler tmpCgi(_request, &_serverConfig);
+    if (tmpCgi.isCgiScript(_internalUri)) {
+        _cgiHandler = initCgiHandler();
+        if (!_cgiHandler)
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-            return;
-        }
+        return;
     }
 
     if (lib::isDirectory(fullPath)) {
@@ -185,6 +183,12 @@ void RequestHandler::processGetRequest() {
             fullPath += "/" + *_serverConfig.getIndex();
         }
     }
+
+    if (_internalUri == "/status") {
+        handleStatusRequest();
+        return;
+    }
+
     if (!pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
@@ -206,36 +210,27 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    // Mark for streaming by connection layer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
-    // TODO: make a utils function for this and maybe move it to the response
-    // streamer
+    // needed for the response streamer
     _isStaticFile = true;
     _staticFilePath = fullPath;
     struct stat st;
     if (stat(fullPath.c_str(), &st) == 0) {
         _response.setContentLength(static_cast<int>(st.st_size));
     }
+
     _response.setContentType(MimeTypes::getType(fullPath.c_str()));
     _response.setLastModified(getLastModifiedTime(fullPath));
 }
 
+// ============ POST ============ //
+
 void RequestHandler::processPostRequest() {
-    // make a utils function for this because it's the same for the get request
-    CgiHandler tempCgiHandler(_request, &_serverConfig);
-    if (tempCgiHandler.isCgiScript(_internalUri)) {
-        _cgiHandler = new CgiHandler(_request, &_serverConfig);
-        if (_cgiHandler->startAsyncCgi(_internalUri)) {
-            return;
-        } else {
-            delete _cgiHandler;
-            _cgiHandler = NULL;
+    CgiHandler tmpCgi(_request, &_serverConfig);
+    if (tmpCgi.isCgiScript(_internalUri)) {
+        _cgiHandler = initCgiHandler();
+        if (!_cgiHandler)
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-            return;
-        }
+        return;
     }
 
     // Regular file upload handling
@@ -283,6 +278,8 @@ void RequestHandler::processPostRequest() {
     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
 }
 
+// ============ DELETE ============ //
+
 void RequestHandler::processDeleteRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
@@ -297,17 +294,15 @@ void RequestHandler::processDeleteRequest() {
     _response.setStatusCode(HTTP_NO_CONTENT);
 }
 
-void RequestHandler::generateErrorResponse(StatusCode         status_code,
-                                           const std::string& error_msg) {
-    (void)error_msg;  // use this to pass the error message to the response
-    _response.setStatusCode(status_code);
-    _response.setContent(GetHtmlErrorPage(_response));
-    _response.setContentType("text/html");
-    _response.setConnection("close");
-}
+// ============ CGI ============ //
 
-HttpResponse& RequestHandler::getResponse() {
-    return _response;
+CgiHandler* RequestHandler::initCgiHandler() {
+    CgiHandler* cgiHandler = new CgiHandler(_request, &_serverConfig);
+    cgiHandler->setQueryString(_queryString);
+    if (cgiHandler->startAsyncCgi(_internalUri))
+        return cgiHandler;
+    delete cgiHandler;
+    return NULL;
 }
 
 bool RequestHandler::hasCgiRunning() const {
@@ -339,6 +334,31 @@ bool RequestHandler::processCgi() {
     return false;
 }
 
+bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
+    if (!_cgiHandler) {
+        return true;
+    }
+
+    if (_cgiHandler->isTimedOut()) {
+        Logger::warning() << "CGI process timed out";
+        _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;
+    }
+
+    bool done = _cgiHandler->handleFdEvent(fd, revents);
+    if (done) {
+        _cgiHandler->buildCgiResponse(_response);
+        _cgiHandler->cleanupAsyncCgi();
+        delete _cgiHandler;
+        _cgiHandler = NULL;
+        return true;
+    }
+    return false;
+}
+
 int RequestHandler::getCgiInputPipe() const {
     if (_cgiHandler)
         return _cgiHandler->getInputPipe();
@@ -351,18 +371,27 @@ int RequestHandler::getCgiOutputPipe() const {
     return -1;
 }
 
-bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
-    if (!_cgiHandler)
-        return true;
-    bool done = _cgiHandler->handleFdEvent(fd, revents);
-    if (done) {
-        _cgiHandler->buildCgiResponse(_response);
-        _cgiHandler->cleanupAsyncCgi();
-        delete _cgiHandler;
-        _cgiHandler = NULL;
-        return true;
-    }
-    return false;
+// ============ UTILS ============ //
+
+bool RequestHandler::isStaticFileResponse() const {
+    return _isStaticFile;
+}
+
+const std::string& RequestHandler::getStaticFilePath() const {
+    return _staticFilePath;
+}
+
+HttpResponse& RequestHandler::getResponse() {
+    return _response;
+}
+
+void RequestHandler::generateErrorResponse(StatusCode         status_code,
+                                           const std::string& error_msg) {
+    (void)error_msg;  // not implemented
+    _response.setStatusCode(status_code);
+    _response.setContent(GetHtmlErrorPage(_response));
+    _response.setContentType("text/html");
+    _response.setConnection("close");
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {

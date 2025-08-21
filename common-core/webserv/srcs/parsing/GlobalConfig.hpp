@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:27:30 by jfranco           #+#    #+#             */
-/*   Updated: 2025/07/18 22:17:27 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/19 16:42:49 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,15 +41,15 @@ class Location {
     const std::string&                               getName(void) const;
     Location(const std::map<std::string, std::vector<std::string> >& passprmtrs,
              const std::string& nameLocation);
-    size_t             getClientMaxBodySize(void) const;
-    bool               getAutoIndex(void) const;
-    const std::string* getRoot(void) const;
-    const std::string* getIndex(void) const;
-    bool               getMethodIsAllowed(const std::string& method) const;
-    const std::string* getAlias(void) const;
-    const std::string* getReturn(void) const;
-    size_t             getHost(void) const;
-    int                getPort(void) const;
+    size_t				getClientMaxBodySize( void )const;
+	bool				getAutoIndex( void ) const;
+	const std::string*	getRoot( void ) const;
+	const std::string*	getIndex( void ) const;
+	bool				getMethodIsAllowed(const std::string& method) const;
+	const std::string*	getAlias( void ) const;
+	const std::string*	getReturn( void ) const;
+//    size_t				getHost( void )const;
+//    int					getPort( void ) const;
 };
 
 class ServerConfig {
@@ -64,12 +64,13 @@ class ServerConfig {
     ServerConfig() {};
     ServerConfig(
         const std::map<std::string, std::vector<std::string> >& passprmtrs,
-        const std::string&                                      nameServer);
-
-    void setCgi(const CgiBin& add);
-    /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
-    const std::string  getUploadDir(void) const;
-    const std::string  getServerName(void) const;
+        const std::string&                                      nameServer);\
+	
+    void               setCgi(const CgiBin& add);
+/* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
+	const std::string	getUploadDir( void ) const;
+	const std::string	getTmpFolder( void ) const;
+	const std::string	getServerName( void ) const;
     const std::string& getName(void) const;
     const std::string  getHost(void) const;
     size_t             getClientMaxBodySize(void) const;

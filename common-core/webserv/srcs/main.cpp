@@ -6,11 +6,16 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/08/18 15:59:28 by jfranco          ###   ########.fr       */
+=======
+/*   Updated: 2025/08/20 18:31:26 by llebugle         ###   ########.fr       */
+>>>>>>> main
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 #include "Logger.hpp"
@@ -32,7 +37,11 @@ void initializeCgiBin(const std::vector<ServerConfig>& servers) {
 int main(int argc, char* argv[]) {
     Logger::setLevel(LOG_LEVEL_INFO);
 
+<<<<<<< HEAD
     std::string config_file = "config/default2.conf";
+=======
+    std::string config_file = "config/max.conf";
+>>>>>>> main
     for (int i = 1; i < argc; i++) {
         if (std::string(argv[i]) == "-c" && i + 1 < argc) {
             config_file = static_cast<std::string>(argv[i + 1]);

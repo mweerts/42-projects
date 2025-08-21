@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WebServ | Log Viewer</title>
+        <link rel="stylesheet" href="/css/global.css" />
+        <script src="/js/tailwind.js"></script>
+    </head>
+    <body class="bg-black min-h-screen text-white overflow-x-hidden">
+        <!-- Animated grid background -->
+        <div class="fixed inset-0 opacity-20 z-0">
+            <div
+                class="absolute inset-0"
+                style="
+                    background-image:
+                        linear-gradient(cyan 1px, transparent 1px),
+                        linear-gradient(90deg, cyan 1px, transparent 1px);
+                    background-size: 50px 50px;
+                "
+            ></div>
+        </div>
+
+        <!-- Glowing orbs -->
+        <div
+            class="fixed top-10 left-10 w-32 h-32 bg-pink-500 rounded-full opacity-30 blur-xl animate-pulse z-0"
+        ></div>
+        <div
+            class="fixed bottom-10 right-10 w-40 h-40 bg-cyan-500 rounded-full opacity-20 blur-xl animate-pulse z-0"
+            style="animation-delay: 1s"
+        ></div>
+        <div
+            class="fixed top-1/2 left-1/4 w-24 h-24 bg-green-500 rounded-full opacity-20 blur-xl animate-pulse z-0"
+            style="animation-delay: 2s"
+        ></div>
+
+        <div class="relative z-10">
+            <!-- Header/Hero Section -->
+            <header class="text-center pt-16 pb-8 px-6 relative">
+                <div class="mb-8">
+                    <h1
+                        class="relative text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-cyan-400 animate-pulse mb-4"
+                    >
+                        WEBSERV
+                    </h1>
+
+                    <p
+                        class="text-xl md:text-2xl font-mono text-cyan-300 tracking-wider"
+                    >
+                        <span class="text-pink-400">[</span> LOG VIEWER
+                        <span class="text-pink-400">]</span>
+                    </p>
+                    <p class="text-lg font-mono text-green-400 mt-2">
+                        &gt; Real-time Server Logs
+                    </p>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="mt-8 mb-8">
+                    <div class="flex justify-center space-x-8 relative">
+                        <a
+                            href="/index.html"
+                            class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-cyan-400 text-cyan-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-xl hover:shadow-cyan-400/30"
+                        >
+                            <span class="relative z-10">[ HOME ]</span>
+                        </a>
+                        <a
+                            href="/upload.html"
+                            class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-pink-400 text-pink-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-pink-400 hover:text-black hover:shadow-xl hover:shadow-pink-400/30"
+                        >
+                            <span class="relative z-10">[ UPLOAD ]</span>
+                        </a>
+                        <a
+                            href="/status-page.html"
+                            class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-green-400 text-green-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-green-400 hover:text-black hover:shadow-xl hover:shadow-green-400/30"
+                        >
+                            <span class="relative z-10">[ STATUS ]</span>
+                        </a>
+                        <a
+                            href="/log-viewer.html"
+                            class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-yellow-400 text-yellow-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-xl hover:shadow-yellow-400/30"
+                        >
+                            <span class="relative z-10">[ LOGS ]</span>
+                        </a>
+                    </div>
+                </nav>
+            </header>
+
+            <!-- Main Content -->
+            <main class="max-w-6xl mx-auto px-6 pb-16">
+                <!-- Log Viewer Container -->
+                <div class="border border-yellow-400/50 bg-black/40 p-6 relative group hover:border-yellow-400 transition-all duration-300">
+                    <div class="absolute top-0 left-0 bg-yellow-400 text-black px-3 py-1 font-mono font-bold text-xs">
+                        LOGS.EXE
+                    </div>
+                    
+                    <div class="mt-6 mb-4 flex justify-between items-center">
+                        <h2 class="text-xl font-mono text-yellow-300">Server Logs</h2>
+                        <div class="flex space-x-4">
+                            <!-- Configuration Dropdown (always visible) -->
+                            <div class="flex items-center space-x-2">
+                                <label class="text-yellow-300 text-sm font-mono">Lines:</label>
+                                <select id="logLinesSelect" class="bg-black/60 border border-yellow-400/50 text-white font-mono text-sm px-3 py-2 rounded focus:border-yellow-400 focus:outline-none">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                    <option value="200">200</option>
+                                    <option value="500">500</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Display Area -->
+                    <div id="logContainer" class="bg-black/60 border border-gray-700 rounded p-4 h-full overflow-y-auto font-mono text-sm">
+                        <div class="text-center text-gray-500 py-8">
+                            <div class="text-2xl mb-2">📋</div>
+                            <div>Loading logs...</div>
+                        </div>
+                    </div>
+
+                    <!-- Status Bar -->
+                    <div class="mt-4 flex justify-between items-center text-xs text-gray-400 font-mono">
+                        <span id="logStatus">Ready</span>
+                        <span id="lastUpdated">Last updated: Never</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <script src="/js/log-viewer.js"></script>
+    </body>
+</html>
