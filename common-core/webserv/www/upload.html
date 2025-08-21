@@ -72,128 +72,165 @@
 						class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-yellow-400 text-yellow-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-xl hover:shadow-yellow-400/30">
 						<span class="relative z-10">[ LOGS ]</span>
 					</a>
+				</div>
 			</nav>
 		</header>
 
 		<!-- Main Content -->
-		<main class="max-w-4xl mx-auto px-6 pb-16">
-			<!-- Command Interface -->
-			<div class="border border-pink-400/50 bg-black/30 p-8 relative">
-				<div class="absolute top-0 left-0 bg-pink-400 text-black px-4 py-1 font-mono font-bold text-sm">
-					UPLOAD_INTERFACE.EXE
+		<main class="max-w-3xl mx-auto px-6 pb-16">
+			<!-- File Upload Interface -->
+			<div
+				class="border border-pink-400/50 bg-black/40 p-6 relative group hover:border-pink-400 transition-all duration-300">
+				<div class="absolute top-0 left-0 bg-pink-400 text-black px-3 py-1 font-mono font-bold text-xs">
+					FILE_UPLOAD.EXE
 				</div>
-
-				<div class="mt-8">
+				<div class="mt-6">
 					<div class="flex items-center mb-4">
 						<span class="text-pink-500 mr-2">webserv@localhost:~$</span>
-						<span class="text-pink-300 font-mono">ready_for_commands</span>
+						<span class="text-pink-300 font-mono text-sm">upload --help</span>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-						<!-- File Upload -->
-						<div class="space-y-4">
-							<h3 class="text-pink-400 font-mono font-bold">
-								&gt; FILE UPLOAD
-							</h3>
-							<form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data"
-								class="space-y-3">
-								<!-- Drag & Drop Area -->
-								<div id="drop-zone"
-									class="border-2 border-dashed border-pink-400/50 rounded-lg p-4 text-center transition-all duration-300 hover:border-pink-400 hover:bg-gradient-to-br hover:from-pink-400/10 hover:to-purple-400/5 cursor-pointer relative group overflow-hidden">
-									<!-- Animated background gradient -->
-									<div
-										class="absolute inset-0 bg-gradient-to-br from-pink-400/5 via-transparent to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-									</div>
+					<form id="upload-form" action="/upload" method="POST" enctype="multipart/form-data" class="space-y-4">
+						<!-- Drag & Drop Area -->
+						<div id="drop-zone" class="border-2 border-dashed border-pink-400/50 rounded-lg p-6 text-center transition-all duration-300 hover:border-pink-400 hover:bg-gradient-to-br hover:from-pink-400/10 hover:to-purple-400/5 cursor-pointer relative group overflow-hidden">
+							<!-- Animated background gradient -->
+							<div class="absolute inset-0 bg-gradient-to-br from-pink-400/5 via-transparent to-purple-400/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-									<!-- Pulsing border effect -->
-									<div
-										class="absolute inset-0 border-2 border-pink-400/30 rounded-lg opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-300">
-									</div>
+							<!-- Pulsing border effect -->
+							<div class="absolute inset-0 border-2 border-pink-400/30 rounded-lg opacity-0 group-hover:opacity-100 animate-pulse transition-opacity duration-300"></div>
 
-									<div class="flex items-center justify-center space-x-3 relative z-10">
-										<svg class="w-5 h-5 text-pink-400/50 group-hover:text-pink-400 transition-colors duration-300 group-hover:scale-110 transform"
-											fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-												d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
-											</path>
-										</svg>
-										<span
-											class="text-pink-300 font-mono text-sm group-hover:text-pink-200 transition-colors duration-300 font-semibold">
-											Drag files here or click to select
-										</span>
-									</div>
-									<input type="file" name="file" id="file-input" class="hidden" multiple />
-								</div>
+							<div class="flex flex-col items-center justify-center space-y-3 relative z-10">
+								<svg class="w-8 h-8 text-pink-400/50 group-hover:text-pink-400 transition-colors duration-300 group-hover:scale-110 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+								</svg>
+								<span class="text-pink-300 font-mono text-base group-hover:text-pink-200 transition-colors duration-300 font-semibold">
+									Drag files here or click to select
+								</span>
+								<span class="text-pink-400/60 font-mono text-xs">
+									Supports multiple files
+								</span>
+							</div>
+							<input type="file" name="file" id="file-input" class="hidden" multiple />
+						</div>
 
-								<!-- Selected Files Display -->
-								<div id="selected-files" class="hidden space-y-2">
-									<div class="text-pink-300 font-mono text-xs">Selected files:</div>
-									<div id="files-list" class="space-y-1"></div>
-								</div>
+						<button type="submit" class="w-full px-6 py-3 mt-2 bg-black border border-pink-400 text-pink-400 font-mono text-sm uppercase tracking-wider hover:bg-pink-400 hover:text-black hover:shadow-lg hover:shadow-pink-400/30 transition-all duration-300 transform hover:scale-105 relative group rounded-md">
+							<span class="relative z-10">[ UPLOAD FILES ]</span>
+							<div class="absolute inset-0 bg-pink-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-md"></div>
+						</button>
 
-								<button type="submit"
-									class="px-6 py-2 mt-4 w-full bg-black border border-pink-400 text-pink-400 font-mono text-sm uppercase tracking-wider hover:bg-pink-400 hover:text-black hover:shadow-lg hover:shadow-pink-400/30 transition-all duration-300 transform hover:scale-105 relative group">
-									<span class="relative z-10">[ UPLOAD ]</span>
-									<div
-										class="absolute inset-0 bg-pink-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded">
-									</div>
-								</button>
-							</form>
+						<!-- Selected Files Display -->
+						<div id="selected-files" class="hidden">
+							<div class="text-pink-300 font-mono text-sm font-medium">Selected files:</div>
+							<div id="files-list" class="space-y-2"></div>
+						</div>
+					</form>
 
-							<div id="upload-status"
-								class="hidden p-3 border border-green-400/50 bg-gradient-to-r from-green-400/10 to-emerald-400/5 font-mono text-xs rounded-lg relative overflow-hidden">
-								<!-- Animated background -->
-								<div
-									class="absolute inset-0 bg-gradient-to-r from-green-400/5 via-transparent to-emerald-400/5 opacity-0 animate-pulse">
-								</div>
+					<!-- Upload Status -->
+					<div id="upload-status"
+						class="hidden mt-4 p-3 border border-green-400/50 bg-gradient-to-r from-green-400/10 to-emerald-400/5 font-mono text-sm rounded-lg relative overflow-hidden">
+						<!-- Animated background -->
+						<div
+							class="absolute inset-0 bg-gradient-to-r from-green-400/5 via-transparent to-emerald-400/5 opacity-0 animate-pulse">
+						</div>
 
-								<div class="relative z-10">
-									<span class="text-green-400 font-bold">$</span>
-									<span id="upload-message" class="text-green-300 font-semibold">Ready</span>
-								</div>
+						<div class="relative z-10 flex items-center">
+							<span class="text-green-400 font-bold mr-2">$</span>
+							<span id="upload-message" class="text-green-300 font-semibold">Ready</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- File Management Interface -->
+			<div
+				class="border border-cyan-400/50 bg-black/40 p-6 mt-8 relative group hover:border-cyan-400 transition-all duration-300">
+				<div class="absolute top-0 left-0 bg-cyan-400 text-black px-3 py-1 font-mono font-bold text-xs">
+					FILE_MANAGER.EXE
+				</div>
+				<div class="mt-6">
+					<div class="flex items-center mb-4">
+						<span class="text-cyan-500 mr-2">webserv@localhost:~$</span>
+						<span class="text-cyan-300 font-mono text-sm">ls -la /uploads/</span>
+					</div>
+
+					<div class="flex justify-between items-center mb-4">
+						<h3 class="text-cyan-400 font-mono font-bold text-sm">
+							&gt; FILE_LIST
+						</h3>
+						<button onclick="refreshFileList()"
+							class="px-3 py-1 border border-cyan-400/50 text-cyan-400 font-mono text-xs uppercase hover:bg-cyan-400 hover:text-black hover:shadow-lg hover:shadow-cyan-400/30 transition-all duration-300 transform hover:scale-105 relative group rounded">
+							<span class="relative z-10">[ REFRESH ]</span>
+							<div
+								class="absolute inset-0 bg-cyan-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded">
+							</div>
+						</button>
+					</div>
+
+					<div
+						class="border border-cyan-400/30 bg-gradient-to-br from-black/50 to-cyan-900/10 p-4 font-mono text-xs h-full overflow-y-auto relative rounded">
+						<!-- Terminal background effect -->
+						<div
+							class="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-transparent to-transparent opacity-50 rounded">
+						</div>
+
+						<div class="text-cyan-400 mb-3 relative z-10">
+							<span class="text-green-400">$</span> ls -la /uploads/
+						</div>
+						<div id="file-list" class="text-cyan-300 relative z-10 space-y-1">
+							<div class="animate-pulse text-green-400">
+								<span class="text-green-500">></span> Scanning filesystem...
 							</div>
 						</div>
 					</div>
-
 				</div>
-
 			</div>
-			<div class="mt-12 space-y-4">
-				<div class="px-8 flex justify-between items-center">
-					<h3 class="text-cyan-400 font-mono font-bold">
-						&gt; FILE_LIST
-					</h3>
+
+			<!-- Status Bar -->
+			<div
+				class="border border-yellow-400/50 bg-black/40 p-6 mt-8 relative group hover:border-yellow-400 transition-all duration-300">
+				<div class="absolute top-0 left-0 bg-yellow-400 text-black px-3 py-1 font-mono font-bold text-xs">
+					STATUS_BAR.EXE
+				</div>
+				<div class="mt-6 flex flex-col md:flex-row items-center justify-between text-sm font-mono">
+					<div class="text-yellow-300 mb-2 md:mb-0">
+						Last refresh: <span id="last-refresh-time" class="text-white">Never</span>
+					</div>
+					<div class="text-cyan-300">
+						Files: <span id="file-count" class="text-white">--</span>
+					</div>
 					<button onclick="refreshFileList()"
-						class="px-3 py-1 border border-cyan-400/50 text-cyan-400 font-mono text-xs uppercase hover:bg-cyan-400 hover:text-black hover:shadow-lg hover:shadow-cyan-400/30 transition-all duration-300 transform hover:scale-105 relative group">
-						<span class="relative z-10">[ REFRESH ]</span>
-						<div
-							class="absolute inset-0 bg-cyan-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded">
-						</div>
+						class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-yellow-300 bg-black border border-yellow-400 rounded-md hover:bg-yellow-400 hover:text-black transition-all duration-300 mt-2 md:mt-0">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+								d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+							</path>
+						</svg>
+						[ REFRESH ]
 					</button>
 				</div>
-				<div
-					class="border px-8 border-cyan-400/30 bg-gradient-to-br from-black/50 to-cyan-900/10 p-4 font-mono text-xs overflow-y-auto relative">
-					<!-- Terminal background effect -->
-					<div
-						class="absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-transparent to-transparent opacity-50">
-					</div>
-
-					<div class="text-cyan-400 mb-2 relative z-10">
-						<span class="text-green-400">$</span> ls -la /uploads/
-					</div>
-					<div id="file-list" class="text-cyan-300 relative z-10 space-y-1">
-						<div class="animate-pulse text-green-400">
-							<span class="text-green-500">></span> Scanning filesystem...
-						</div>
-					</div>
-				</div>
 			</div>
-
 		</main>
 	</div>
 
 	<style>
+		/* Enhanced scrollbar styling */
+		::-webkit-scrollbar {
+			width: 8px;
+		}
 
+		::-webkit-scrollbar-track {
+			background: rgba(34, 211, 238, 0.1);
+			border-radius: 4px;
+		}
+
+		::-webkit-scrollbar-thumb {
+			background: rgba(34, 211, 238, 0.5);
+			border-radius: 4px;
+		}
+
+		::-webkit-scrollbar-thumb:hover {
+			background: rgba(34, 211, 238, 0.7);
+		}
 	</style>
 
 	<script src="/js/upload.js"></script>

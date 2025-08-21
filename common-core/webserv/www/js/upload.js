@@ -189,7 +189,7 @@ async function deleteFile(filename) {
     try {
         // Get the current location path and append the filename
         const currentPath = window.location.pathname.split('/').slice(0, -1).join('/');
-        const deleteUrl = currentPath + '/' + filename;
+        const deleteUrl = currentPath + '/uploads/' + filename;
         
         const response = await fetch(deleteUrl, {
             method: 'DELETE',
