@@ -144,8 +144,9 @@ void RequestHandler::processRequest() {
         } else if (location->getAlias()) {
             _internalUri = *location->getAlias() +
                            _internalUri.substr((location->getName()).length());
-        } else if (*location->getRoot() != "./")
+        } else if (location->getRoot()) {
             _rootPath = *location->getRoot();
+        }
         _autoindex = location->getAutoIndex();
     } else
         _rootPath = _serverConfig.getRoot();
