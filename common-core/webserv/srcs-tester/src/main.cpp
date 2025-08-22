@@ -1,33 +1,105 @@
 
 
-#include "../srcs/parser/GlobalConfig.hpp"
-#include "../srcs/parser/ConfigProcessor.hpp"
-#include "../srcs/lib/Logger.hpp"
+#include "../../srcs/parsing/GlobalConfig.hpp"
+#include "../../srcs/parsing/ConfigProcessor.hpp"
+#include "../../srcs/parsing/GlobalConfig.hpp"
+#include "../../includes/Logger.hpp"
+#include <fstream>
+
 /*GET http://localhost:8080/
 POST http://localhost:8080/api/login
 PUT http://localhost:8080/api/user/42
 DELETE http://localhost:8080/api/user/42*/
 
-
-void GenerateSigeConf(const GlobalConfig const & GlobREF)
+void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 {
-	std::vector<Server> root = GlobalConfig.getServers();
+	std::ofstream basic("urlBasic.txt");
+
+	std::vector<ServerConfig> root = GlobREF.getServers();
 	std::vector<Location> Loc;
-	std::vector<std::string> method = {"GET", "DELETE", "POST", "UKWN"}
+	std::vector<std::string> method = {"GET", "DELETE", "POST", "UKWN"};
 	for (size_t i = 0; i < root.size(); ++i)
 	{
-		std::string location = "htpp:://" + root[i].getHost() + ":" + root[i].getPort();
-		for (size_t y = 0; y < method.size(); ++y)
-		{
-			std::cout << method[y] << location << "\n";
-		}
+		//std::string urlMain = "htpp:://" + root[i].getHost() + ":" + root[i].getPort();
+		int port = root[i].getPort();
+		std::stringstream ss;
+		ss << "http://" << root[i].getHost() << ":" << port;
+		std::string urlMain = ss.str();
+		basic << urlMain << "/ " << method[0] << "\n";
 		Loc = root[i].location_;
-		for(size_t f = 0)
+		for(size_t f = 0; f < Loc.size(); ++f)
+		{
+			for (size_t l = 0; l < method.size(); ++l)
+			{
+				if (Loc[f].getMethodIsAllowed(method[l]) == true)
+				{
+					basic << urlMain << Loc[f].getName() << "/ " << method[l] << "\n";
+				}
+			}
+		}
 	}
+	basic.close();
+
+}
+void ft_ciclo_di_copia(std::ofstream &ofREF, const std::vector<std::string> & vecREF, std::string url, std::string separator1, std::string separator2)
+{
+	for (size_t i = 0; i < vecREF.size(); ++i)
+	{
+		ofREF << url << separator1 << vecREF[i] << separator2;
+	}
+}
+
+void ft_ciclo_di_copia(std::ofstream &ofREF, const std::vector<std::string> & vecREF, std::string url, std::string separator1, std::string separator2, const std::vector<std::string> vecREF2)
+{
+	for (size_t i = 0; i < vecREF.size(); ++i)
+	{
+		for (size_t y = 0; y < vecREF2.size(); ++y)
+		{
+			ofREF << url << vecREF[i] << separator1 << vecREF2[y] << separator2;
+		}
+	}
+}
+
+void GenerateSigeConfAdvance(const GlobalConfig & GlobREF)
+{
+	std::ofstream full("urlFull.txt");
+
+	if (!full.is_open()) 
+	{
+		std::cerr << "Errore apertura file di output\n";
+		return;
+	}
+	std::vector<std::string> static_paths = {"/index.html", "/css/global.css", "/img/logo.png", "/empty.html","/upload.html"};
+	std::vector<std::string> error_paths = {"/doesnotexist", "/404", "/invalid/path"};
+	std::vector<std::string> query_paths = {"/search?q=test", "/user?id=42", "/api/data?page=1"};
+	std::vector<ServerConfig> root = GlobREF.getServers();
+	std::vector<std::string> method = {"GET", "DELETE", "POST", "UKWN"};
+	std::vector<Location> Loc;
+	for (size_t i = 0; i < root.size(); ++i)
+	{
+		int port = root[i].getPort();
+		std::stringstream ss;
+		ss << "http://" << root[i].getHost() << ":" << port;
+		std::string urlMainServer = ss.str();
+
+		ft_ciclo_di_copia(full, method, urlMainServer," ",  "\n");
+		ft_ciclo_di_copia(full, static_paths, urlMainServer, " ", "\n", method);
+		ft_ciclo_di_copia(full, error_paths, urlMainServer," ", "\n", method);
+		Loc = root[i].location_;
+		full << urlMainServer << "/\n";
+		for(size_t f = 0; f < Loc.size(); ++f)
+		{
+			std::string uriloc = urlMainServer + Loc[f].getName();
+			ft_ciclo_di_copia(full, method, uriloc, " ", "\n");
+			ft_ciclo_di_copia(full, static_paths, uriloc, " ", "\n", method);
+			ft_ciclo_di_copia(full, error_paths, uriloc, " ", "\n", method);
+		}
+	}
+	full.close();
 
 }
 
-int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv)
 {
 	if (argc != 2)
 	{
@@ -37,6 +109,7 @@ int	main(int argc, char **argv, char **envp)
 	GlobalConfig run;
 	if (run.loadConfig(argv[1]) == false)
 		return (1);
-	GenerateSigeConf(run);
+	GenerateSigeConfAdvance(run);
+	GenerateSigeConfBasic(run);
     return 0;
 }

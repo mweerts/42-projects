@@ -22,7 +22,7 @@ cmdMini = ["siege", "-f","urlBasic.txt", "-c", "2", "-v", "-d", "0.5", "-t", "10
 cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
 cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
 cmdCGI = ["siege", "-f", "urlCGI.txt", "-c", "10", "-t", "1m"]
-cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "15s"]
+cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "20s"]
 cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
 
 config_list = [
@@ -59,6 +59,10 @@ parser_list = [
     #"../../config/ParserConf/no.conf.rand"
 ]
 
+def ft_startGeneratorTxtSiege(index):
+    cmdGeneratorTxt = ["./GeneratoreTester", config_list[index]]
+    subprocess.run(cmdGeneratorTxt, capture_output = True)
+    
 def ft_cmdGenerator(index):
         return ["valgrind", "../../webserv", "-c", config_list[index]]
 
@@ -164,6 +168,7 @@ def ft_for_func(rng, ft1, ft2, info1, info2 ):
         ft2(info2, i);
 
 
+
 def ft_siege(cmd, strPrint, sleepTime):
     print(strPrint)
     subprocess.run(cmd)
@@ -176,40 +181,29 @@ def ft_full_test(start_index):
         print(f"\n==== INIZIO CICLO {ciclo+1} ====")
         url = "http://127.0.0.1:8080/"
         urlApi = "http://127.0.0.1:8081/"
-    
         print("### AVVIO VALGRIND ###")
-        cmdValgrind = ["valgrind", "../../webserv", "-c", config_list[ciclo]]
-        proc = subprocess.Popen(cmdValgrind)
+        ft_startGeneratorTxtSiege(ciclo);
+        proc = subprocess.Popen(ft_cmdGenerator(ciclo))
         time.sleep(2)
         print(config_list[ciclo])
-    
-        #TODO: curl --resolve
-        #TODO: curl create a error
-        #TODO: keep a live and close
-        #TODO: Contemporary CGI with siege
-        #TODO: Special case with 3server
-    
+        ft_for_func(10, ft_limit_rate_curl, ft_limit_rate_curl, url, urlApi)
+        ft_for_func(100, ft_real_time_curl, ft_real_time_curl, url, urlApi)
     #♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
     ##CREATE A FILE 40mb ##
         fileName = "file_40mb.txt"
-    
-    
+        ft_post_curl(urlup, fileName);
+        ft_post_curl(urlupApi, fileName);
     ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
-    
     #TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO ADD WWW/CGI♡♡♡♡♡♡♡♡♡♡♡
-        print("### TEST CGI SLOW OUTPUT ###")
-        subprocess.run(["curl", "http://127.0.0.1:8080/cgi-bin/slow_output.py"])
-    
+        ft_test_one_siege(ft_input_index(0), ft_siege, cmdCGI, MSG_C_T, 1);
     ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
         i = ft_agrate_test_siege(proc);
         if (i == -1): break;
         elif (y == -2): i + 1; continue;
-    
         time.sleep(2)
     #######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
         # ♡♡♡♡♡♡♡♡♡♡♡End Valgrind (test più esterno - dopo tutto)♡♡♡♡♡♡♡♡♡♡♡
         print("### FINE VALGRIND ###")
-    
         print(f"==== FINE CICLO {ciclo+1} ====")
         print("Invio Ctrl+C al processo...")
         proc.send_signal(signal.SIGINT)
@@ -243,11 +237,13 @@ def ft_test_siege(start_index):
     i = start_index;
     while i < len(config_list):
         proc = subprocess.Popen(ft_cmdGenerator(i))
+        time.sleep(3);
         y = ft_agrate_test_siege(proc);
         if (y == -1): break;
         elif (y == -2): i + 1; continue;
         ft_print_list(config_list)
         i = ft_input_index(i);
+        proc.send_signal(signal.SIGINT)
         if (i > 0):
             if (i == -1):
                 exit();
@@ -257,18 +253,43 @@ def ft_test_siege(start_index):
 def ft_test_one_siege(start_index, ft1, cmd, MSG, nbr):
     i = start_index;
     while i < len(config_list):
+        ft_startGeneratorTxtSiege(i);
         proc = subprocess.Popen(ft_cmdGenerator(i))
+        time.sleep(3);
         ft1(cmd, MSG, 1);
         y = ft_input(proc);
         if (y == -1): break;
         elif (y == -2): i + 1; continue;
         ft_print_list(config_list)
         i = ft_input_index(i);
+        proc.send_signal(signal.SIGINT)
         if (i > 0):
             if (i == -1):
                 exit();
             elif (i == -2):
                 break;
+def ft_curl_webserv(flags, start_index):
+    i = start_index;
+    while i < len(config_list):
+        ft_startGeneratorTxtSiege(i);
+        proc = subprocess.Popen(ft_cmdGenerator(i))
+        time.sleep(3);
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
+        if (flags < 0):
+            ft_for_func(10, ft_limit_rate_curl, ft_limit_rate_curl, url, urlApi)
+        else:
+            ft_for_func(100, ft_real_time_curl, ft_real_time_curl, url, urlApi)
+        ft_print_list(config_list)
+        i = ft_input_index(i);
+        proc.send_signal(signal.SIGINT)
+        if (i > 0):
+            if (i == -1):
+                exit();
+            elif (i == -2):
+                break;
+
         
 
 
@@ -285,10 +306,16 @@ def main():
             ft_test_siege(ft_input_index(0))
         elif inpu == "curl":
             ft_print_list(config_list)
-            ft_for_func(10, ft_limit_rate_curl, ft_limit_rate_curl, url, urlApi)
-
-       # elif inpu == "full":
-       # elif inpu == "cgi curl":
+            ft_curl_webserv(1, ft_input_index(0))
+        elif inpu == "curl slow":
+            ft_print_list(config_list)
+            ft_curl_webserv(-1, ft_input_index(0))
+        elif inpu == "full":
+            ft_print_list(config_list)
+            ft_full_test(ft_input_index(0))
+       # elif inpu == "curl  post":
+       # elif inpu == "curl --resolve":
+        #elif inpu == "keep-alive":
         elif inpu == "cgi siege":
             ft_print_list(config_list)
             ft_test_one_siege(ft_input_index(0), ft_siege, cmdCGI, MSG_C_T, 1);
