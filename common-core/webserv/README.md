@@ -18,15 +18,15 @@ location / {
 
 ## To do cgi
 
-- Upload streaming:
-  - Wire FileWriteStream into the event loop:
-    - Client POLLIN → inBuf\_ → file POLLOUT (one write per ready event).
-    - When body complete and inBuf\_ empty → close file → send 201/204.
+
+// blocking right now
+// but need a not a small refactor..
+* - Upload streaming:
+  * - Wire FileWriteStream into the event loop:
+  * - [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf\_ → file POLLOUT, with body 		completion flags and backpressure. 
 
 ## To do Lucas
 
-// should be done but need to make sure
-- [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf\_ → file POLLOUT, with body completion flags and backpressure. // blocking right now
 
 ## Tests
 
