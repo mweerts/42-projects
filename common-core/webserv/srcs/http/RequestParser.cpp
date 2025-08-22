@@ -65,11 +65,6 @@ RequestParser::Status RequestParser::parse(const char* buffer,
         return ERROR;
     }
 
-	// needs to be done only in parseBody
-	// because we need to know the content length 
-	// to see if we need to save to file or not
-	// performance boost is way better when only saving to file when needed
-	// for post requests most of the time we don't need to save to file
 	if (!saveToFile(buffer, buffer_size)) {
         Logger::error() << "Failed to save request data";
         setError(HTTP_INTERNAL_SERVER_ERROR);
@@ -78,7 +73,6 @@ RequestParser::Status RequestParser::parse(const char* buffer,
 
     if (current_phase_ <= HEADERS) {
         header_buffer_.append(buffer, buffer_size);
-        // maybe add HEADER_BUFFER_SIZE to the config?
         if (header_buffer_.size() > HEADER_BUFFER_SIZE) {
             setError(HTTP_REQUEST_ENTITY_TOO_LARGE,
                      "Request headers too large");
@@ -137,7 +131,24 @@ RequestParser::Status RequestParser::parse(const char* buffer,
 
 std::string RequestParser::createRequestFilePath() {
     if (req_filename_.empty()) {
-        std::string dir = server_config_.getRoot() + "/tmp";
+		std::string path;
+		if (server_config_.getTmpFolder().empty()) {
+			path = server_config_.getRoot() + "/";
+		} else {
+			path = server_config_.getTmpFolder();
+			if (!lib::pathExist(path)) {
+				Logger::debug() << "Creating tmp directory for request: " << path;
+				if (mkdir(path.c_str(), 0755) != 0) {
+					throw std::runtime_error("Failed to create tmp directory for request");
+				}
+			} else if (!lib::isDirectory(path)) {
+				throw std::runtime_error("tmp path exists but is not a directory");
+			} else if (!lib::isWritable(path)) {
+				throw std::runtime_error("tmp directory is not writable");
+			}
+		}
+
+        std::string dir = path + "/webserv_tmp";
 
         if (!lib::pathExist(dir)) {
             Logger::debug() << "Creating tmp directory for request: " << dir;
@@ -153,8 +164,6 @@ std::string RequestParser::createRequestFilePath() {
 
         req_filename_ = dir + "/" + lib::to_string(time(NULL)) + "_" +
                         lib::to_string(request_counter_++);
-
-        Logger::debug() << "Created tmp request file";
     }
     return req_filename_;
 }
@@ -456,10 +465,6 @@ bool RequestParser::needMoreData() const {
 
 bool RequestParser::hasError() const {
     return current_phase_ == ERROR_PHASE;
-}
-
-const HttpRequest& RequestParser::getRequest() const {
-    return request_;
 }
 
 void RequestParser::setError(StatusCode         status_code,

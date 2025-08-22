@@ -2,8 +2,8 @@
 
 ## To discuss
 
-- make DELETE not allowed by default?
-- DELETE not protected, i was able to delete webserver.log with this in config 
+- [ ] make DELETE disallowed by default? (it's the case for apache or nginx)
+- [ ] DELETE not protected, i was able to delete webserver.log with this in config 
 ```
 location / {
     allow_methods GET POST;
@@ -26,7 +26,7 @@ location / {
 ## To do Lucas
 
 // should be done but need to make sure
-- [/] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf\_ → file POLLOUT, with body completion flags and backpressure.
+- [ ] Integrate uploads (POST) with FileWriteStream: wire client POLLIN → inBuf\_ → file POLLOUT, with body completion flags and backpressure. // blocking right now
 
 ## Tests
 

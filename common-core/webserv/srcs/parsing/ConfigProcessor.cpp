@@ -235,10 +235,10 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
 	vecNoAll.push_back("tmp_folder");
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
-        vecNoAll.push_back("allow_methods");  // TODO: Check if possible in cgi
-        vecNoAll.push_back("autoindex");      // TODO: Check if possible in cgi
-        vecNoAll.push_back("alias");
-        vecNoAll.push_back("return");
+        vecNoAll.push_back("allow_methods");  // TODO: needs to be configured at the location level
+        vecNoAll.push_back("autoindex"); // TODO: remove this, not allowed in cgi-bin
+        vecNoAll.push_back("alias"); // TODO: remove this, not allowed in cgi-bin
+        vecNoAll.push_back("return"); // TODO: remove this, not allowed in cgi-bin
     } else {
         vecNoAll.push_back("cgi_ext");
         vecNoAll.push_back("cgi_path");

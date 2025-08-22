@@ -69,7 +69,6 @@ void ConnectionManager::RegisterFds() {
             poll_fds_.push_back(pfd);
         }
 
-		// register auxiliary fds (files, cgi pipes)
         std::vector<pollfd> extra = client->GetAuxPollFds();
         for (size_t i = 0; i < extra.size(); ++i) {
             poll_fds_.push_back(extra[i]);
@@ -104,17 +103,11 @@ void ConnectionManager::Run() {
             int fd = poll_fds_[i].fd;
 
             // Route aux fds (file/cgipipe) back to their owners
-            // still need review
-            std::map<int, ClientConnection*>::iterator a =
+            std::map<int, ClientConnection*>::iterator it =
                 aux_fd_owner_.find(fd);
-            if (a != aux_fd_owner_.end()) {
-                if (!a->second->HandleAuxEvent(fd, poll_fds_[i].revents)) {
-                    RemoveClient(a->second->GetSocketFd());
-                }
-                continue;
-            }
-
-            if (IsServerSocket(fd)) {
+            if (it != aux_fd_owner_.end()) {
+                it->second->HandleAuxEvent(fd, poll_fds_[i].revents);
+            } else if (IsServerSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
                 HandleClientEvent(fd, poll_fds_[i].revents);
@@ -173,15 +166,15 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
     clients_[client_fd] = new ClientConnection(client_fd, server_config);
     guard.release();
 
-	ServerStatus::getInstance().onConnectionEstablished();
+    ServerStatus::getInstance().onConnectionEstablished();
 
-    // only for info logging
+    // only for debug logging
     char client_ip[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, INET_ADDRSTRLEN);
 
     Logger::debug() << "New client connected: fd=" << client_fd << " from "
-                   << client_ip << ":" << ntohs(client_addr.sin_port)
-                   << ". Active clients: " << clients_.size();
+                    << client_ip << ":" << ntohs(client_addr.sin_port)
+                    << ". Active clients: " << clients_.size();
 }
 
 int ConnectionManager::HandleClientEvent(int fd, short events) {
@@ -211,10 +204,10 @@ void ConnectionManager::RemoveClient(int client_fd) {
     delete client;
     clients_.erase(it);
 
-	ServerStatus::getInstance().onConnectionClosed();
+    ServerStatus::getInstance().onConnectionClosed();
 
-    Logger::debug() << "Removed client " << client_fd << ". Active clients: "
-                   << clients_.size();
+    Logger::debug() << "Removed client " << client_fd
+                    << ". Active clients: " << clients_.size();
 }
 
 void ConnectionManager::CleanupTimedOutClients() {

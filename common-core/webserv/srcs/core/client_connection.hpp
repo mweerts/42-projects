@@ -49,7 +49,7 @@ class ClientConnection {
 
     // Expose aux fds for polling (files, cgi pipes)
     std::vector<pollfd> GetAuxPollFds() const;
-    bool HandleAuxEvent(int fd, short revents);
+    void HandleAuxEvent(int fd, short revents);
 
    private:
     static const size_t BUFFER_SIZE = 4096;

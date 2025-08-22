@@ -422,7 +422,6 @@ void RequestHandler::generateErrorResponse(StatusCode         status_code,
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {
-    // Chercher "boundary=" dans le Content-Type
     size_t boundary_pos = content_type.find("boundary=");
     if (boundary_pos == std::string::npos) {
         return "";

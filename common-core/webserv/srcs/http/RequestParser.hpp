@@ -39,10 +39,6 @@ class RequestParser {
     StatusCode  getStatusCode() const;
     std::string getStatusMessage() const;
 
-    // shouldn't be needed
-    // the object already is updating the request passed at initialization
-    const HttpRequest& getRequest() const;
-
     void cleanup();
 
    private:
@@ -82,7 +78,6 @@ class RequestParser {
 
     void setError(StatusCode status_code, const std::string& message = "");
 
-    // only used in parseBody() to create a buffer if small body
     std::string readFromFile(size_t start_pos = 0, size_t length = 0) const;
     std::string createRequestFilePath();
     bool        saveToFile(const char* buffer, size_t size);
