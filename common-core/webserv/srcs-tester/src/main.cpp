@@ -33,7 +33,7 @@ void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 			{
 				if (Loc[f].getMethodIsAllowed(method[l]) == true)
 				{
-					basic << urlMain << Loc[f].getName() << "/ " << method[l] << "\n";
+					basic << urlMain << Loc[f].getName() << " " << method[l] << "\n";
 				}
 			}
 		}
