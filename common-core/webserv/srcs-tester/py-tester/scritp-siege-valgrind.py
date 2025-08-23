@@ -290,7 +290,27 @@ def ft_curl_webserv(flags, start_index):
             elif (i == -2):
                 break;
 
-        
+def ft_post_location(start_index):
+    i = start_index;
+    while i < len(config_list):
+        ft_startGeneratorTxtSiege(i)
+        proc = subprocess.Popen(ft_cmdGenerator(i))
+        time.sleep(3);
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
+        # add pos
+        ft_post_curl(urlup, fileName)
+        ft_post_curl(urlupApi, fileName)
+        ft_print_list(config_list)
+        i = ft_input_index(i);
+        proc.send_signal(signal.SIGINT)
+        if (i > 0):
+            if (i == -1):
+                exit();
+            elif (i == -2):
+                break;
+  
 
 
 
@@ -313,7 +333,9 @@ def main():
         elif inpu == "full":
             ft_print_list(config_list)
             ft_full_test(ft_input_index(0))
-       # elif inpu == "curl  post":
+        elif inpu == "curl  post":
+            ft_print_list(config_list)
+            ft_post_curl(ft_input_index(0))
        # elif inpu == "curl --resolve":
         #elif inpu == "keep-alive":
         elif inpu == "cgi siege":

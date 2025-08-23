@@ -14,7 +14,8 @@ COPY . .
 # (Opzionale) Compila il programma
 RUN make re .
 RUN chmod 777 ./webserv
-RUN mkdir -p www && chmod 777 www
+RUN mkdir -p www && chmod 755 www
+RUN mkdir -p www/cgi-bin && chmod 755 www/cgi-bin/*.py
 RUN ls -l
 
 
@@ -25,4 +26,4 @@ RUN mv GeneratoreTester  /usr/local/app/srcs-tester/py-tester/.
 WORKDIR /usr/local/app/srcs-tester/py-tester/
 
 # Esegui lo script Python
-#CMD ["python3", "scritp-siege-valgrind.py"]
+CMD ["python3", "scritp-siege-valgrind.py"]
