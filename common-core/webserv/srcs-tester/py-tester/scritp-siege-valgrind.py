@@ -315,6 +315,7 @@ def ft_post_location(start_index):
 
 
 def main():
+    ft_create_big_file():
     print("♡♡♡ Test Suite ♡♡♡ | Commands: parser-parse | siege-siege | curl-HTTP (soon) | full-full suite (soon) | cgi curl-CGI curl (soon) | cgi siege-CGI Siege (soon) | siege bench-benchmark (soon) | exit-quit | Usage: enter command, choose index or Enter to skip, 'kill' stops process, 'break' stops loop, 'exit' quits | ♡♡♡ Happy testing! ♡♡♡")
     while True:
         inpu = input("\nEnter command: ");
