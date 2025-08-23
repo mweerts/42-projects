@@ -4,6 +4,7 @@ import sys
 import json
 import re
 from datetime import datetime
+from collections import deque
 
 def parse_log_line(line):
     """Parse a log line and extract structured data"""
@@ -21,14 +22,13 @@ def parse_log_line(line):
         # Remove timestamp from message
         message = re.sub(r'\[\d{2}:\d{2}:\d{2}\]\s*', '', message)
     
-    # Look for log level [LEVEL]
-    level_match = re.search(r'\[(INFO|WARNING|ERROR|CRITICAL)\]', message)
+    level_match = re.search(r'\[(DEBUG|INFO|WARNING|ERROR|CRITICAL)\]', message)
     if level_match:
         level = level_match.group(1)
         # Remove level from message
-        message = re.sub(r'\[(INFO|WARNING|ERROR|CRITICAL)\]\s*', '', message)
+        message = re.sub(r'\[(DEBUG|INFO|WARNING|ERROR|CRITICAL)\]\s*', '', message)
     else:
-        return None
+        level = "UNKNOWN"
     
     return {
         "timestamp": timestamp,
@@ -37,13 +37,12 @@ def parse_log_line(line):
         "raw_line": line
     }
 
-def read_logs(max_lines=100):
-    """Read logs from the webserv log file"""
+def read_logs(max_lines=100, level_filter='ALL'):
     possible_paths = [
-        os.environ.get('LOG_FILE', ''),  # From environment variable
-        'webserv.log',                   # Current directory
-        '../webserv.log',                # Parent directory
-        '/tmp/webserv.log'               # Common temp location
+        os.environ.get('LOG_FILE', ''),
+        'webserv.log',
+        '../webserv.log',
+        '/tmp/webserv.log'
     ]
     
     log_file = None
@@ -59,34 +58,122 @@ def read_logs(max_lines=100):
         }
     
     try:
-        with open(log_file, 'r') as f:
-            lines = f.readlines()
+        file_size = os.path.getsize(log_file)
         
-        parsed_logs = []
-        for line in lines:
-            if line.strip():  # Skip empty lines
-                parsed_log = parse_log_line(line)
-                if parsed_log:
-                    parsed_logs.append(parsed_log)
+        if file_size > 10 * 1024 * 1024:  # 10MB
+            return read_logs_tail(log_file, max_lines, level_filter)
         
-        if len(parsed_logs) > max_lines:
-            parsed_logs = parsed_logs[-max_lines:]
-        
-        return {
-            "logs": parsed_logs,
-            "total_lines": len(parsed_logs),
-            "log_file": log_file,
-            "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB"
-        }
+        return read_logs_in_memory(log_file, max_lines, level_filter)
         
     except Exception as e:
-        return {
-            "error": f"Error reading log file: {str(e)}",
-            "log_file": log_file
-        }
+        return {"error": f"Error reading log file: {str(e)}"}
+
+def read_logs_in_memory(log_file, max_lines, level_filter='ALL'):
+    """Read logs efficiently for smaller files with level filtering"""
+    parsed_logs = deque(maxlen=max_lines)
+    raw_lines = deque(maxlen=max_lines)
+    
+    with open(log_file, 'r') as f:
+        for line in f:
+            if line.strip():
+                raw_lines.append(line)
+                parsed_log = parse_log_line(line)
+                if parsed_log:
+                    if level_filter == 'ALL' or parsed_log['level'] == level_filter:
+                        parsed_logs.append(parsed_log)
+    
+    return {
+        "logs": list(parsed_logs),
+        "total_lines": len(parsed_logs),
+        "log_file": log_file,
+        "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB",
+        "level_filter": level_filter
+    }
+
+def read_logs_tail(log_file, max_lines, level_filter='ALL'):
+    """Use system tail command for accurate line counting"""
+    try:
+        import subprocess
+        
+        # Use system tail - it's designed exactly for this purpose
+        result = subprocess.run(
+            ['tail', '-n', str(max_lines), log_file],
+            capture_output=True, 
+            text=True, 
+            timeout=10
+        )
+        
+        if result.returncode == 0:
+            parsed_logs = []
+            for line in result.stdout.splitlines():
+                if line.strip():
+                    parsed_log = parse_log_line(line)
+                    if parsed_log:
+                        # Apply level filter
+                        if level_filter == 'ALL' or parsed_log['level'] == level_filter:
+                            parsed_logs.append(parsed_log)
+            
+            return {
+                "logs": parsed_logs,
+                "total_lines": len(parsed_logs),
+                "log_file": log_file,
+                "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB",
+                "method": "system_tail"
+            }
+    except Exception as e:
+        pass
+    
+    # Fallback: read entire file but limit output
+    parsed_logs = deque(maxlen=max_lines)
+    total_lines = 0
+    
+    with open(log_file, 'r') as f:
+        for line in f:
+            total_lines += 1
+            if line.strip():
+                parsed_log = parse_log_line(line)
+                if parsed_log:
+                    # Apply level filter
+                    if level_filter == 'ALL' or parsed_log['level'] == level_filter:
+                        parsed_logs.append(parsed_log)
+    
+    return {
+        "logs": list(parsed_logs),
+        "total_lines": len(parsed_logs),
+        "log_file": log_file,
+        "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB",
+    }
+
+def read_logs_ultra_fast(log_file, max_lines):
+    """Ultra-fast version using system 'tail' command when available"""
+    try:
+        import subprocess
+        # Use system tail command for maximum speed
+        result = subprocess.run(['tail', '-n', str(max_lines), log_file], 
+                              capture_output=True, text=True, timeout=5)
+        
+        if result.returncode == 0:
+            parsed_logs = []
+            for line in result.stdout.splitlines():
+                if line.strip():
+                    parsed_log = parse_log_line(line)
+                    if parsed_log:
+                        parsed_logs.append(parsed_log)
+            
+            return {
+                "logs": parsed_logs,
+                "total_lines": len(parsed_logs),
+                "log_file": log_file,
+                "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB",
+                "method": "system_tail"
+            }
+    except (ImportError, subprocess.TimeoutExpired, FileNotFoundError):
+        pass
+    
+    # Fallback to Python implementation
+    return read_logs_in_memory(log_file, max_lines)
 
 def main():
-    # Get query parameters
     query_string = os.environ.get('QUERY_STRING', '')
     params = {}
     if query_string:
@@ -96,16 +183,14 @@ def main():
                 params[key] = value
     
     max_lines = int(params.get('lines', 100))
+    level_filter = params.get('level', 'ALL')  # Add level filter parameter
     
-    # Read and parse logs
-    result = read_logs(max_lines)
+    result = read_logs(max_lines, level_filter)  # Pass level filter
     
-    # Output JSON
     print("Content-Type: application/json")
-    print("Access-Control-Allow-Origin: *")  # Allow CORS if needed
+    print("Access-Control-Allow-Origin: *")
     print()
     
-    # Convert to JSON and print
     print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":
