@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 namespace lib {
+// if not released, automatically closes the socket on scope exit
 class SocketGuard {
    public:
     explicit SocketGuard(int& fd) : fd_(fd), released_(false) {}

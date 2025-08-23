@@ -154,8 +154,7 @@ const std::string* ServerConfig::getErrorPage(
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-	static std::string empty = "";
-    return &empty;
+	return NULL;
 }
 
 const char* ServerConfig::NotFoundUri::what() const throw() {

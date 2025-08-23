@@ -18,7 +18,12 @@ class HttpResponse {
     void        setLastModified(const std::string& lastModified);
     void        setLocation(const std::string& location);
     void        setContentLength(int length);
-    
+	void        setHeader(const std::string& key, const std::string& value);
+
+	void        removeAdditionnalHeader(const std::string& key);
+	const std::map<std::string, std::string>& getAdditionnalHeaders() const;
+	std::string getAdditionnalHeader(const std::string& key) const;
+	
     StatusCode  getStatusCode() const;
     std::string getServerName() const;
     std::string getConnection() const;
@@ -39,6 +44,7 @@ class HttpResponse {
     std::string _connection;
     std::string _content;
     std::string _location;
+	std::map<std::string, std::string> _additionnalHeaders;
 
     void setDate(void);
 };

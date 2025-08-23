@@ -9,6 +9,21 @@
 class ServerConfig;
 class CgiHandler;
 
+enum RequestMethod {
+    GET,
+    POST,
+    DELETE,
+	OPTIONS,
+	HEAD,
+	CONNECT,
+	TRACE,
+	PATCH,
+	PUT,
+	PROPFIND,
+	PROPPATCH,
+	UNKNOWN,
+};
+
 class RequestHandler {
    public:
     RequestHandler(const HttpRequest&  request,
@@ -58,7 +73,8 @@ class RequestHandler {
 
     std::string extractBoundary(const std::string& content_type);
 
-
+	RequestMethod getRequestMethod(const std::string& method);
+	void handleRedirect();
 };
 
 #endif

@@ -210,7 +210,6 @@ void ClientConnection::Close() {
 
 // ============ OTHER FD EVENTS HANDLING ============ //
 
-// still need review
 std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
     std::vector<pollfd> out;
     // Static file: poll file for POLLIN when buffer has space
@@ -247,13 +246,12 @@ std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
     return out;
 }
 
-// still need review
-bool ClientConnection::HandleAuxEvent(int fd, short revents) {
-    // Static file event: read more data into buffer
+void ClientConnection::HandleAuxEvent(int fd, short revents) {
+    // FILE event: read more data into buffer
     if (response_streamer_.isStreamingFile() &&
-        fd == response_streamer_.getFileStream().fileFd() &&
+        (fd == response_streamer_.getFileStream().fileFd()) &&
         (revents & POLLIN)) {
-        response_streamer_.getFileStream().onFileReadable();
+        (void)response_streamer_.getFileStream().onFileReadable();
     }
 
     // CGI event: handle CGI I/O
@@ -265,8 +263,6 @@ bool ClientConnection::HandleAuxEvent(int fd, short revents) {
                 request_handler_->getResponse());
         }
     }
-
-    return true;
 }
 
 // ========== State Queries ========== //

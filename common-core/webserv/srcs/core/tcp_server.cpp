@@ -58,8 +58,7 @@ bool TcpServer::Initialize() {
         return false;
     }
 
-    lib::SocketGuard guard(listen_fd_);  // if not released, automatically
-                                         // closes the socket on scope exit
+    lib::SocketGuard guard(listen_fd_);
 
     int opt = 1;
     if (setsockopt(listen_fd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) <
@@ -72,7 +71,7 @@ bool TcpServer::Initialize() {
         return false;
     }
 
-    const int kBacklog = 1024;  // pending connections queue (128 is standard)
+    const int kBacklog = 128;  // pending connections queue (128 is standard)
     if (listen(listen_fd_, kBacklog) < 0) {
         Logger::error() << "Listen failed for " << config_.getName();
         return false;

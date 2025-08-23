@@ -119,6 +119,7 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     Logger::debug() << "Script path: " << script_path;
 
     // If no interpreter, the script itself must be executable.
+	// this won't happen because if the file has no extension, it's not a cgi script
     return lib::isExecutable(script_path);
 }
 
@@ -244,8 +245,14 @@ bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
     std::string interpreter = getCgiInterpreter(scriptPath);
 
     std::vector<std::string> args;
-    if (!interpreter.empty())
+    if (!interpreter.empty()) {
+        if (!lib::pathExist(interpreter)) {
+            Logger::warning() << "Interpreter: " << interpreter << " not found";
+            return false;
+        }
         args.push_back(interpreter);
+    }
+
     args.push_back(scriptPath);
 
     std::vector<std::string> env = buildEnvironment();
@@ -331,8 +338,7 @@ static void extractKeyAndValue(std::string& line, std::string& key,
         return;
     key = line.substr(0, p);
     value = line.substr(p + 1);
-    while (!value.empty() && value[0] == ' ')
-        value.erase(0, 1);
+    while (!value.empty() && value[0] == ' ') value.erase(0, 1);
 }
 
 // need to clean this up a bit too but need

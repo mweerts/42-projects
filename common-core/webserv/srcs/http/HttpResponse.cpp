@@ -49,6 +49,18 @@ void HttpResponse::setContentLength(int length) {
     _contentLength = length;
 }
 
+void HttpResponse::setHeader(const std::string& key, const std::string& value) {
+    if (key.empty()) {
+        Logger::debug() << "setHeader: key is empty";
+        return;
+    }
+    _additionnalHeaders[key] = value;
+}
+
+void HttpResponse::removeAdditionnalHeader(const std::string& key) {
+    _additionnalHeaders.erase(key);
+}
+
 void HttpResponse::setDate(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -70,6 +82,20 @@ std::string HttpResponse::getServerName() const {
 
 std::string HttpResponse::getConnection() const {
     return _connection;
+}
+
+const std::map<std::string, std::string>& HttpResponse::getAdditionnalHeaders()
+    const {
+    return _additionnalHeaders;
+}
+
+std::string HttpResponse::getAdditionnalHeader(const std::string& key) const {
+    std::map<std::string, std::string>::const_iterator it =
+        _additionnalHeaders.find(key);
+    if (it == _additionnalHeaders.end()) {
+        return "";
+    }
+    return it->second;
 }
 
 std::string HttpResponse::headersToString() {
@@ -96,6 +122,11 @@ std::string HttpResponse::headersToString() {
         response += "Last-Modified: " + _lastModified + "\r\n";
     if (!_connection.empty())
         response += "Connection: " + _connection + "\r\n";
+    std::map<std::string, std::string>::const_iterator it;
+    for (it = _additionnalHeaders.begin(); it != _additionnalHeaders.end();
+         it++) {
+        response += it->first + ": " + it->second + "\r\n";
+    }
     response += "\r\n";
     return response;
 }
