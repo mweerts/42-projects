@@ -26,6 +26,10 @@ void ft_ciclo_di_copia(std::ofstream &ofREF, const std::vector<std::string> & ve
 		for (size_t y = 0; y < vecREF2.size(); ++y)
 		{
 			//ofREF << url << << separator1 << vecREF[i] << separator2;
+			if (vecREF2[y] == "POST")
+			{
+				separator2 = " <./file_40mb.txt\n";
+			}
 			ofREF << url << vecREF[i] << separator1 << vecREF2[y] << separator2;
 		}
 	}
@@ -80,7 +84,7 @@ void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 			{
 				if (Loc[f].getMethodIsAllowed(method[l]) == true)
 				{
-					basic << urlMain << Loc[f].getName() << " " << method[l] << "\n";
+					basic << urlMain << Loc[f].getName() << " " << method[l] << " <./file_40mb.txt\n";
 				}
 			}
 		}

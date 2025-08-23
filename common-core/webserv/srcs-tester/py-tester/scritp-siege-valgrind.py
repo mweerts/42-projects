@@ -147,7 +147,7 @@ def ft_limit_rate_curl(url, i):
     code = result.stdout.strip()
     ft_print_error_curl(code, i);
 
-def ft_post_curl(url, i, fileName):
+def ft_post_curl(url, fileName):
     cmdUpload = [
         "curl",
         "-X", "POST",
@@ -334,7 +334,7 @@ def main():
         elif inpu == "full":
             ft_print_list(config_list)
             ft_full_test(ft_input_index(0))
-        elif inpu == "curl  post":
+        elif inpu == "curl post":
             ft_print_list(config_list)
             ft_post_curl(ft_input_index(0))
        # elif inpu == "curl --resolve":
