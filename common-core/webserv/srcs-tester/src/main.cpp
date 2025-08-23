@@ -25,9 +25,17 @@ void ft_ciclo_di_copia(std::ofstream &ofREF, const std::vector<std::string> & ve
 	{
 		for (size_t y = 0; y < vecREF2.size(); ++y)
 		{
+			//ofREF << url << << separator1 << vecREF[i] << separator2;
 			ofREF << url << vecREF[i] << separator1 << vecREF2[y] << separator2;
 		}
 	}
+}
+void ft_ciclo_cgi(std::ofstream &ofREF, const std::vector<std::string> & vecREF, std::string url, std::string separator1, std::string separator2, const std::string stringREF)
+{
+		for (size_t y = 0; y < vecREF.size(); ++y)
+		{
+			ofREF <<  url << vecREF[y] << separator1 << stringREF << separator2;
+		}
 }
 
 void GenerateCgiBin(const GlobalConfig & GlobREF)
@@ -43,8 +51,7 @@ void GenerateCgiBin(const GlobalConfig & GlobREF)
 		std::stringstream ss;
 		ss << "http://" << root[i].getHost() << ":" << port;
 		std::string urlMain = ss.str();
-		ft_ciclo_di_copia(cgi, cgi_bin, urlMain,"",  "\n");
-		Loc = root[i].location_;
+		ft_ciclo_cgi(cgi, cgi_bin, urlMain," ",  "\n", "");
 	}
 	cgi.close();
 }
@@ -55,7 +62,7 @@ void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 
 	std::vector<ServerConfig> root = GlobREF.getServers();
 	std::vector<Location> Loc;
-	std::vector<std::string> method = {"GET", "DELETE", "POST", "UKWN"};
+	std::vector<std::string> method = {"", "POST"};
 	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/slow_cgi.py", "/cgi-bin"};
 	for (size_t i = 0; i < root.size(); ++i)
 	{
@@ -64,8 +71,8 @@ void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 		std::stringstream ss;
 		ss << "http://" << root[i].getHost() << ":" << port;
 		std::string urlMain = ss.str();
-		basic << urlMain << "/ " << method[0] << "\n";
-		ft_ciclo_di_copia(basic, cgi_bin, urlMain,"",  "\n");
+		basic << urlMain << "/ " << "\n";
+		ft_ciclo_cgi(basic, cgi_bin, urlMain," ",  "\n", "");
 		Loc = root[i].location_;
 		for(size_t f = 0; f < Loc.size(); ++f)
 		{
@@ -96,7 +103,7 @@ void GenerateSigeConfAdvance(const GlobalConfig & GlobREF)
 	std::vector<std::string> query_paths = {"/search?q=test", "/user?id=42", "/api/data?page=1"};
 	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/slow_cgi.py", "/cgi-bin"};
 	std::vector<ServerConfig> root = GlobREF.getServers();
-	std::vector<std::string> method = {"GET", "DELETE", "POST", "UKWN"};
+	std::vector<std::string> method = {"", "POST"};
 	std::vector<Location> Loc;
 	for (size_t i = 0; i < root.size(); ++i)
 	{
@@ -106,7 +113,7 @@ void GenerateSigeConfAdvance(const GlobalConfig & GlobREF)
 		std::string urlMainServer = ss.str();
 
 		ft_ciclo_di_copia(full, method, urlMainServer,"/ ",  "\n");
-		ft_ciclo_di_copia(full, cgi_bin, urlMainServer,"",  "\n");
+		ft_ciclo_cgi(full, cgi_bin, urlMainServer," ",  "\n", method[0]);
 		ft_ciclo_di_copia(full, static_paths, urlMainServer, " ", "\n", method);
 		ft_ciclo_di_copia(full, error_paths, urlMainServer," ", "\n", method);
 		Loc = root[i].location_;
