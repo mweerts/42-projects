@@ -1,5 +1,7 @@
 # Usa un'immagine base ufficiale
 FROM ubuntu:22.04
+EXPOSE 8080
+EXPOSE 8081
 
 # Imposta la directory di lavoro
 WORKDIR /usr/local/app/
@@ -8,20 +10,19 @@ RUN apt-get update && \
     apt-get install -y python3 python3-pip make curl siege valgrind && \
     apt-get clean
 
-# Copia tutto il contenuto della repo nel container
 COPY . .
 
 # (Opzionale) Compila il programma
-RUN make re .
-RUN chmod 777 ./webserv
+# RUN make .
+# RUN chmod 777 ./webserv
 RUN mkdir -p www && chmod 755 www
 RUN mkdir -p www/cgi-bin && chmod 755 www/cgi-bin/*.py
 RUN ls -l
 
 
 # Imposta la directory dove si trova lo script
-WORKDIR /usr/local/app/srcs-tester/src/
 RUN make re .
+WORKDIR /usr/local/app/srcs-tester/src/
 RUN mv GeneratoreTester  /usr/local/app/srcs-tester/py-tester/.
 WORKDIR /usr/local/app/srcs-tester/py-tester/
 
