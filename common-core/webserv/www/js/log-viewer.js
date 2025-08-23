@@ -214,3 +214,15 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    autoRefreshInterval = setInterval(() => {
+        if (!isRequestInProgress) {
+            loadLogs();
+        }
+    }, REFRESH_INTERVAL);
+}
