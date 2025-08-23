@@ -234,10 +234,6 @@ void RequestHandler::processGetRequest() {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-    if (!pathExist(fullPath)) {
-        _response.setStatusCode(HTTP_NOT_FOUND);
-        return;
-    }
 
     if (lib::isDirectory(fullPath)) {
         resolveIndexFile(fullPath, location, _serverConfig.getIndex());
@@ -248,7 +244,7 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    if (!pathExist(fullPath)) {
+    if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
