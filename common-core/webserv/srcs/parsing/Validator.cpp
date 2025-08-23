@@ -35,8 +35,10 @@ Validator::Validator() {
     this->funcMap.insert(std::make_pair("cgi_ext", &Validator::validateCgiExt));
     this->funcMap.insert(
         std::make_pair("error_page", &Validator::validateErrorPage));
-	this->funcMap.insert(std::make_pair("upload_dir", &Validator::validateUploadDir));
-	this->funcMap.insert(std::make_pair("tmp_folder", &Validator::validateUploadDir));
+    this->funcMap.insert(
+        std::make_pair("upload_dir", &Validator::validateUploadDir));
+    this->funcMap.insert(
+        std::make_pair("tmp_folder", &Validator::validateUploadDir));
     return;
 }
 /*♡♡♡♡♡♡♡♡♡♡♡♡FT_FOR_VALIDATION♡♡♡♡♡♡♡♡♡♡♡*/
@@ -50,16 +52,15 @@ void Validator::validateErrorPage(const std::vector<std::string>& prmtrs) {
     validatePath(prmtrs[0]);
 }
 
-void	Validator::validateUploadDir( const std::vector<std::string>& prmtrs )
-{
-	if (prmtrs.size() > 1)
-		throw VectorSizeToHight();
-	if (prmtrs.size() < 1)
-		throw VectorSizeToLow();
-	if (prmtrs[0].size() < 1)
-		throw Empty();
-	validatePath(prmtrs[0]);
-//	Logger::valide() << "Upload_dir";
+void Validator::validateUploadDir(const std::vector<std::string>& prmtrs) {
+    if (prmtrs.size() > 1)
+        throw VectorSizeToHight();
+    if (prmtrs.size() < 1)
+        throw VectorSizeToLow();
+    if (prmtrs[0].size() < 1)
+        throw Empty();
+    validatePath(prmtrs[0]);
+    //	Logger::valide() << "Upload_dir";
 }
 
 void Validator::validateCgiExt(const std::vector<std::string>& prmtrs) {
@@ -118,8 +119,8 @@ void Validator::validateListen(const std::vector<std::string>& prmtrs) {
     ss >> nbr;
     if (nbr > 65535 || nbr < 0)
         throw OutOfRange();
-    //if (nbr < 1023 && nbr > 0)
-     //   throw PortAccessDeniedException();
+    // if (nbr < 1023 && nbr > 0)
+    //    throw PortAccessDeniedException();
     // Logger::valide() << "listen";
 }
 
@@ -136,13 +137,19 @@ void Validator::validateAutoIndex(const std::vector<std::string>& prmtrs) {
     // Logger::valide() << "autoIndex";
 }
 
+static inline bool isMethod(const std::string& method) {
+    return method == "GET" || method == "POST" || method == "DELETE" ||
+           method == "PUT" || method == "PATCH" || method == "HEAD" ||
+           method == "OPTIONS" || method == "CONNECT" || method == "TRACE" ||
+           method == "PROPFIND" || method == "PROPPATCH";
+}
 void Validator::validateMethods(const std::vector<std::string>& prmtrs) {
     if (prmtrs.size() < 1)
         throw VectorSizeToLow();
     for (size_t i = 0; i < prmtrs.size(); i++) {
         if (prmtrs[i].size() < 1)
             throw Empty();
-        if (prmtrs[i] != "GET" && prmtrs[i] != "POST" && prmtrs[i] != "DELETE")
+        if (!isMethod(prmtrs[i]))
             throw unknownMethods();
     }
     // Logger::valide() << "allow_methods";
@@ -159,11 +166,11 @@ void Validator::validateClienMaxBody(const std::vector<std::string>& prmtrs) {
             throw InvalidCharEx();
         }
     }
-//    std::stringstream ss(prmtrs[0]);
-//    long long         nbr;
-//    ss >> nbr;
-//    if (nbr > MAX_BODY_SIZE)
-//        throw OutOfRange();
+    //    std::stringstream ss(prmtrs[0]);
+    //    long long         nbr;
+    //    ss >> nbr;
+    //    if (nbr > MAX_BODY_SIZE)
+    //        throw OutOfRange();
     // Logger::valide() << "Client_Max_Body";
 }
 
@@ -211,10 +218,10 @@ static bool InvalidChar(char c) {
 }
 
 void Validator::validateServerName(const std::vector<std::string>& prmtrs) {
-	if (prmtrs.size() > 1)
-		throw VectorSizeToHight();
-	if (prmtrs.size() < 1)
-		throw VectorSizeToLow();
+    if (prmtrs.size() > 1)
+        throw VectorSizeToHight();
+    if (prmtrs.size() < 1)
+        throw VectorSizeToLow();
     for (size_t i = 0; i < prmtrs.size(); i++) {
         if (prmtrs[i].size() < 1)
             throw Empty();

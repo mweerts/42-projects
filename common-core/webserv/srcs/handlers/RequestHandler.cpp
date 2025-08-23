@@ -65,18 +65,19 @@ bool RequestHandler::shouldCloseConnection() const {
     return !_request.shouldKeepAlive();
 }
 
-static void replaceErrorPlaceholders(std::string& content, const HttpResponse& response) {
-	std::string errCode = lib::to_string(response.getStatusCode());
-	
-	size_t pos = 0;
-	while ((pos = content.find("{{ERROR_CODE}}")) != std::string::npos) {
-		content.replace(pos, 14, errCode);
-	}
+static void replaceErrorPlaceholders(std::string&        content,
+                                     const HttpResponse& response) {
+    std::string errCode = lib::to_string(response.getStatusCode());
 
-	while ((pos = content.find("{{ERROR_MESSAGE}}")) != std::string::npos) {
-		std::string errMessage = GetHttpStatusText(response.getStatusCode());
-		content.replace(pos, 17, errMessage);
-	}
+    size_t pos = 0;
+    while ((pos = content.find("{{ERROR_CODE}}")) != std::string::npos) {
+        content.replace(pos, 14, errCode);
+    }
+
+    while ((pos = content.find("{{ERROR_MESSAGE}}")) != std::string::npos) {
+        std::string errMessage = GetHttpStatusText(response.getStatusCode());
+        content.replace(pos, 17, errMessage);
+    }
 }
 
 void RequestHandler::handleRequest() {
@@ -101,9 +102,9 @@ void RequestHandler::handleRequest() {
             }
             std::ostringstream ss;
             ss << file.rdbuf();
-			std::string content = ss.str();
+            std::string content = ss.str();
 
-			replaceErrorPlaceholders(content, _response);
+            replaceErrorPlaceholders(content, _response);
             _response.setContent(content);
             _response.setContentType(
                 MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
@@ -118,57 +119,72 @@ void RequestHandler::handleRequest() {
     ServerStatus::getInstance().onRequestProcessed();
 }
 
-// TODO: maybe make this a bit cleaner or easy to read?
+// Handles redirects, aliases and root paths
+void RequestHandler::handleRedirect() {
+    const Location* location = _serverConfig.getLocation(_internalUri);
+
+    if (!location) {
+        _rootPath = _serverConfig.getRoot();
+        return;
+    }
+    if (location->getReturn()) {
+		_response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+        std::string redirect = *location->getReturn();
+		std::string port = lib ::to_string(_serverConfig.getPort());
+        _response.setLocation("http://" + _serverConfig.getHost() + ":" + port + urlDecode(redirect));
+        _response.setContent(GetHtmlErrorPage(_response)); // 301
+        _response.setContentType("text/html");
+        Logger::info() << "redirecting to: " << urlDecode(redirect);
+        return;
+    }
+    if (location->getAlias()) {
+        std::string alias = *location->getAlias();
+        std::string name = location->getName();
+        _internalUri = alias + _internalUri.substr(name.length());
+        Logger::debug() << "aliasing to: " << _internalUri;
+    } else if (location->getRoot()) {
+        _rootPath = *location->getRoot();
+    }
+}
+
 void RequestHandler::processRequest() {
     _internalUri = lib::extractPathFromUri(_request.getUri());
-    const Location*    location = _serverConfig.getLocation(_internalUri);
     const std::string& method = _request.getMethod();
 
     if (method == "GET" || method == "POST") {
         _queryString = lib::extractQueryFromUri(_request.getUri());
     }
 
-    Logger::debug() << "processing request for uri: " << _internalUri;
-    if (!_queryString.empty())
-        Logger::debug() << "query string: " << _queryString;
+    Logger::debug() << "processing request for uri: " << _internalUri
+                    << (!_queryString.empty() ? " query: " + _queryString : "");
 
+    handleRedirect();
+
+    RequestMethod requestMethod = getRequestMethod(method);
+
+    const Location* location = _serverConfig.getLocation(_internalUri);
     if (location) {
-        if (location->getReturn()) {
-            _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
-            // TODO: Needs to be dynamic
-            _response.setLocation("http://localhost:8080" +
-                                  urlDecode(*location->getReturn()));
-            _response.setContent(GetHtmlErrorPage(_response));
-            _response.setContentType("text/html");
+        if (!location->getMethodIsAllowed(method)) {
+            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
             return;
-        } else if (location->getAlias()) {
-            _internalUri = *location->getAlias() +
-                           _internalUri.substr((location->getName()).length());
-        } else if (location->getRoot()) {
-            _rootPath = *location->getRoot();
         }
         _autoindex = location->getAutoIndex();
-    } else
-        _rootPath = _serverConfig.getRoot();
+    }
 
-    if (method == "GET") {
-        if (!location || (location && location->getMethodIsAllowed("GET")))
-            processGetRequest();
-        else {
-            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-        }
-    } else if (method == "POST") {
-        if (!location || (location && location->getMethodIsAllowed("POST")))
-            processPostRequest();
-        else
-            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-    } else if (method == "DELETE") {
-        if (!location || (location && location->getMethodIsAllowed("DELETE")))
-            processDeleteRequest();
-        else
-            _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
-    } else
-        _response.setStatusCode(HTTP_NOT_IMPLEMENTED);
+    switch (requestMethod) {
+        case GET: processGetRequest(); break;
+        case POST: processPostRequest(); break;
+        case DELETE: processDeleteRequest(); break;
+        case PUT:
+        case PATCH:
+        case HEAD:
+        case OPTIONS:
+        case CONNECT:
+        case TRACE:
+        case PROPFIND:
+        case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
+        case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
+    }
 }
 
 // ============ GET ============ //
@@ -450,4 +466,49 @@ std::string RequestHandler::extractBoundary(const std::string& content_type) {
     }
 
     return boundary;
+}
+
+RequestMethod RequestHandler::getRequestMethod(const std::string& method) {
+    if (method.length() > 10)
+        return UNKNOWN;
+
+    switch (method[0]) {
+        case 'G':
+            if (method == "GET")
+                return GET;
+            break;
+        case 'P':
+            if (method == "POST")
+                return POST;
+            if (method == "PUT")
+                return PUT;
+            if (method == "PATCH")
+                return PATCH;
+            if (method == "PROPFIND")
+                return PROPFIND;
+            if (method == "PROPPATCH")
+                return PROPPATCH;
+            break;
+        case 'D':
+            if (method == "DELETE")
+                return DELETE;
+            break;
+        case 'H':
+            if (method == "HEAD")
+                return HEAD;
+            break;
+        case 'O':
+            if (method == "OPTIONS")
+                return OPTIONS;
+            break;
+        case 'C':
+            if (method == "CONNECT")
+                return CONNECT;
+            break;
+        case 'T':
+            if (method == "TRACE")
+                return TRACE;
+            break;
+    }
+    return UNKNOWN;
 }

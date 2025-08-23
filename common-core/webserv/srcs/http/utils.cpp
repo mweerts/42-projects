@@ -47,14 +47,17 @@ bool isPhpFile(const std::string& path) {
 }
 
 std::string GetHtmlErrorPage(HttpResponse& response) {
-    std::ostringstream oss;
-    oss << response.getStatusCode();
-    return "<html><head><title>" + oss.str() + " " +
-           GetHttpStatusText(response.getStatusCode()) +
-           "</title></head><body><center><h1>" + oss.str() + " " +
+	response.setContentType("text/html");
+	std::string html = "<html><head><title>" + std::to_string(response.getStatusCode()) +
+           " " + GetHttpStatusText(response.getStatusCode()) +
+           "</title></head><body><center><h1>" +
+           std::to_string(response.getStatusCode()) + " " +
            GetHttpStatusText(response.getStatusCode()) +
            "</h1></center><hr><center>" + response.getServerName() +
            "</center></body></html>";
+    response.setContent(html);
+	response.setContentLength(html.size());
+    return html;
 }
 
 static std::string getLastModifiedTime(const std::string& path) {
