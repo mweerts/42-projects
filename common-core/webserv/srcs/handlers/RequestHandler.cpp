@@ -164,6 +164,10 @@ void RequestHandler::processRequest() {
     RequestMethod requestMethod = getRequestMethod(method);
 
     const Location* location = _serverConfig.getLocation(_internalUri);
+	if (!location && method == "DELETE") {
+		_response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
+		return;
+	}
     if (location) {
         if (!location->getMethodIsAllowed(method)) {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
