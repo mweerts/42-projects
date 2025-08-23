@@ -128,11 +128,12 @@ void RequestHandler::handleRedirect() {
         return;
     }
     if (location->getReturn()) {
-		_response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+        _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
         std::string redirect = *location->getReturn();
-		std::string port = lib ::to_string(_serverConfig.getPort());
-        _response.setLocation("http://" + _serverConfig.getHost() + ":" + port + urlDecode(redirect));
-        _response.setContent(GetHtmlErrorPage(_response)); // 301
+        std::string port = lib ::to_string(_serverConfig.getPort());
+        _response.setLocation("http://" + _serverConfig.getHost() + ":" + port +
+                              urlDecode(redirect));
+        _response.setContent(GetHtmlErrorPage(_response));  // 301
         _response.setContentType("text/html");
         Logger::info() << "redirecting to: " << urlDecode(redirect);
         return;

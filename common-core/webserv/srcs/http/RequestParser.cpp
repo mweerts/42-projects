@@ -148,7 +148,7 @@ std::string RequestParser::createRequestFilePath() {
 			}
 		}
 
-        std::string dir = path + "/webserv_tmp";
+        std::string dir = path + "/req_tmp";
 
         if (!lib::pathExist(dir)) {
             Logger::debug() << "Creating tmp directory for request: " << dir;
