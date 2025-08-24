@@ -41,8 +41,7 @@ config_list = [
 ]
 parser_list = [
     "../../config/ParserConf/noRootServer.conf",
-    "../../config/ParserConf/noRootLocation.conf",
-    "../../config/ParserConf/noRootCGI.conf",
+    "../../config/ParserConf/noRandomBracketClose.conf",
     "../../config/ParserConf/noPort.conf",
     "../../config/ParserConf/noCgiBin.conf",
     "../../config/ParserConf/ForbitenPrmtrsinLocation00.conf",
@@ -53,10 +52,15 @@ parser_list = [
     "../../config/ParserConf/ForbitenPrmtrsinCGI02.conf",
     "../../config/ParserConf/noCgiBin.conf",
     "../../config/ParserConf/noValadePort.conf",
-    "../../config/ParserConf/samePortSever.conf"
-    #"../../config/ParserConf/badSyntax.conf"
-    #"../../config/ParserConf/isAdir.conf"
-    #"../../config/ParserConf/no.conf.rand"
+    "../../config/ParserConf/samePortSever.conf",
+    "../../config/ParserConf/badSyntax.conf",
+    "../../config/ParserConf/badSyntax01.conf",
+    "../../config/ParserConf/badSyntax02.conf",
+    "../../config/ParserConf/isAdir.conf",
+    "../../config/ParserConf/no.conf.conf.conf.",
+    "../../config/ParserConf/justEmpty.conf",
+    "../../config/ParserConf/noAccessRoot.conf"
+
 ]
 
 def ft_startGeneratorTxtSiege(index):
@@ -147,15 +151,18 @@ def ft_limit_rate_curl(url, i):
     code = result.stdout.strip()
     ft_print_error_curl(code, i);
 
-def ft_post_curl(url, fileName):
+def ft_post_curl(urlA, fileToName):
     cmdUpload = [
         "curl",
         "-X", "POST",
-        url,
-        "-F", f"file=@{fileName}"
+        urlA,
+        "-F", f"file=@{fileToName}"
     ]
+    print("DEBUG cmdUpload =", cmdUpload)
+    print("DEBUG types =", [type(x) for x in cmdUpload])
+
     result = subprocess.run(cmdUpload, capture_output=True, text=True)
-    print(f"## TEST POST IN {url}")
+    print(f"## TEST POST IN {urlA}")
     print("Status code:", result.returncode)
     print("STDOUT:\n", result.stdout)
     print("STDERR:\n", result.stderr)
@@ -190,7 +197,6 @@ def ft_full_test(start_index):
         ft_for_func(100, ft_real_time_curl, ft_real_time_curl, url, urlApi)
     #♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
     ##CREATE A FILE 40mb ##
-        fileName = "file_40mb.txt"
         ft_post_curl(urlup, fileName);
         ft_post_curl(urlupApi, fileName);
     ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
@@ -297,7 +303,7 @@ def ft_curl_webserv(flags, start_index):
             elif (i == -2):
                 break;
 
-def ft_post_location(start_index, fileName):
+def ft_post_location(start_index, fileToName):
     i = start_index;
     while i < len(config_list):
         ft_startGeneratorTxtSiege(i)
@@ -306,9 +312,8 @@ def ft_post_location(start_index, fileName):
         y = ft_input(proc);
         if (y == -1): break;
         elif (y == -2): i + 1; continue;
-        # add pos
-        ft_post_curl(urlup, fileName)
-        ft_post_curl(urlupApi, fileName)
+        ft_post_curl(urlup, fileToName)
+        ft_post_curl(urlupApi, fileToName)
         ft_print_list(config_list)
         i = ft_input_index(i);
         proc.send_signal(signal.SIGINT)
@@ -345,7 +350,7 @@ def main():
         elif inpu == "curl post":
             ft_print_list(config_list)
             fileToPost = fileName;
-            ft_post_curl(ft_input_index(0), fileToPost)
+            ft_post_location(ft_input_index(0), fileToPost)
        # elif inpu == "curl --resolve":
         #elif inpu == "keep-alive":
         elif inpu == "cgi siege":
