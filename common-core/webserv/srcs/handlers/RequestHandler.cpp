@@ -144,7 +144,6 @@ void RequestHandler::handleRedirect() {
         std::string alias = *location->getAlias();
         std::string name = location->getName();
         _internalUri = alias + _internalUri.substr(name.length());
-        Logger::critical() << _internalUri;
         Logger::debug() << "aliasing to: " << _internalUri;
         return;
     }
@@ -255,7 +254,6 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    Logger::critical() << fullPath;
     if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
