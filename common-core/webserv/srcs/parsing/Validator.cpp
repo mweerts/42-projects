@@ -6,7 +6,7 @@
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 13:42:00 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/24 14:48:31 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/24 17:15:29 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ Validator::Validator() {
         std::make_pair("allow_methods", &Validator::validateMethods));
     this->funcMap.insert(std::make_pair("listen", &Validator::validateListen));
     this->funcMap.insert(std::make_pair("root", &Validator::validateRoot));
-    this->funcMap.insert(std::make_pair("return", &Validator::validateRoot));
-    this->funcMap.insert(std::make_pair("alias", &Validator::validateRoot));
+    this->funcMap.insert(std::make_pair("return", &Validator::validateErrorPage));
+    this->funcMap.insert(std::make_pair("alias", &Validator::validateErrorPage));
     this->funcMap.insert(
         std::make_pair("cgi_path", &Validator::validateCgiPath));
     this->funcMap.insert(std::make_pair("cgi_ext", &Validator::validateCgiExt));
@@ -94,6 +94,7 @@ void Validator::validateCgiPath(const std::vector<std::string>& prmtrs) {
     }
     // Logger::valide() << "cgi path";
 }
+
 void Validator::validateRoot(const std::vector<std::string>& prmtrs) {
     if (prmtrs.size() > 1)
         throw VectorSizeToHight();
