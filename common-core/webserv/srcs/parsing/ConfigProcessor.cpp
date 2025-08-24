@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 19:41:58 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/24 14:53:34 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 /*♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
 ConfigProcessor::ConfigProcessor(const std::string& Path) : PathFile(Path) {
-    std::cout << this->PathFile << "\n";
+	Logger::info() << this->PathFile << "\n";
 }
 
 ConfigProcessor::ConfigProcessor() : PathFile("") {
@@ -76,7 +76,7 @@ void ConfigProcessor::prepareForCore(void) {
 void ConfigProcessor::printAllTree(void) const {
     std::vector<Node>::const_iterator it = tree.begin();
     while (it != tree.end()) {
-        Logger::info() << "Schema Alberi e nodi";
+        Logger::debug() << "Schema Alberi e nodi";
         it->printTree();
         ++it;
     }
@@ -161,7 +161,7 @@ int ConfigProcessor::heandelError(
     std::map<std::string, std::vector<std::string> >::iterator itPrmtrs,
     const std::string&                                         name) {
     try {
-        Logger::info() << "Try validate: " << itPrmtrs->first << " in " << name;
+        Logger::debug() << "Try validate: " << itPrmtrs->first << " in " << name;
         (this->valval.*fun)(itPrmtrs->second);
     } catch (Validator::DontValidIp& e) {
         Logger::error() << e.what() << " " << itPrmtrs->first;
@@ -174,7 +174,7 @@ int ConfigProcessor::heandelError(
         Logger::warning() << "Defalt port setting";
         itPrmtrs->second[0] = "8080";
     } catch (std::exception& e) {
-        Logger::error() << e.what() << " " << itPrmtrs->first;
+        Logger::error() << e.what() << " " << itPrmtrs->first << " in block: " << name;;
         return (1);
     }
     return (0);
@@ -236,6 +236,7 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
         vecNoAll.push_back("allow_methods");  // TODO: needs to be configured at the location level
+        vecNoAll.push_back("index");  // TODO: needs to be configured at the location level
         vecNoAll.push_back("autoindex"); // TODO: remove this, not allowed in cgi-bin
         vecNoAll.push_back("alias"); // TODO: remove this, not allowed in cgi-bin
         vecNoAll.push_back("return"); // TODO: remove this, not allowed in cgi-bin
@@ -409,7 +410,7 @@ void ConfigProcessor::RicorsiveTree(std::stringstream& sstoken, bool flags) {
     sstoken >> std::ws;  // salta spazi bianchi (spazi, tab, newline)
     c = sstoken.peek();
     if (token == "server" && c == '{' && flags == true) {
-        Logger::info() << "Push one tree";
+        Logger::debug() << "Push one tree";
         sstoken.get();
         Node root;
         root.name = token;          // salva il tipo di blocco
@@ -432,7 +433,7 @@ void ConfigProcessor::treeParser(std::stringstream& sstoken, Node& current) {
                 rest.clear();
                 treeParser(sstoken, child);
                 current.children.push_back(child);
-                Logger::info() << "Push Node: " << child.name;
+                Logger::debug() << "Push Node: " << child.name;
             } else {
                 Logger::error() << "Bracket don't open corretly";
                 return;
@@ -461,7 +462,7 @@ int ConfigProcessor::StreamErrorFind(std::stringstream& ss) const {
         }
         return (1);
     } else {
-        Logger::info() << "Stream OK!";
+        Logger::debug() << "Stream OK!";
     }
     return (0);
 }
@@ -473,7 +474,7 @@ int ConfigProcessor::ValidationPath() const {
     struct stat       sb;
     if (posDoth != std::string::npos) {
         if (posDoth == (PathFile.length() - exte.length())) {
-            Logger::info() << "Valid extension, try open file";
+            Logger::debug() << "Valid extension, try open file";
             if (stat(PathFile.c_str(), &sb) == 0 && (sb.st_mode & S_IFDIR)) {
                 Logger::error() << "the configuration must be a file";
                 return (1);
@@ -607,7 +608,7 @@ static bool CheckFileStream(std::ifstream& file, const std::string& filename) {
     }
 
     if (file.good())
-        Logger::info() << "File stream is valid: " << filename;
+        Logger::debug() << "File stream is valid: " << filename;
 
     return true;
 }
