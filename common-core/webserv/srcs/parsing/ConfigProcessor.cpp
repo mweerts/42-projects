@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/24 14:53:34 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/24 19:32:55 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -633,6 +633,13 @@ int ConfigProcessor::valideteSize(void) const {
 	
 }
 
+static std::string trim(std::string str)
+{
+    str.erase(str.find_last_not_of('\n') + 1);  // Suffixing spaces
+    str.erase(0, str.find_first_not_of('\n'));  // Prefixing spaces
+    return str;
+}
+
 int ConfigProcessor::tokenize(void) {
     if (ValidationPath() == 1)
         return (1);
@@ -661,6 +668,11 @@ int ConfigProcessor::tokenize(void) {
      ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡
    */
     this->Buffer = findRemplaceComment(this->Buffer, "#", "\n", "\n");
+	if ( trim(this->Buffer).empty() ) 
+	{
+		Logger::error() << "No found a valid config ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡";
+        return (1);
+	}
     if (countBracket() == 1)
 	{
 		Logger::error() << "Close Bracket pls";
