@@ -199,7 +199,6 @@ async function deleteFile(filename) {
         });
 
         if (response.ok) {
-            // Refresh the file list after successful deletion
             refreshFileList();
         } else {
             console.error('Failed to delete file:', response.status);

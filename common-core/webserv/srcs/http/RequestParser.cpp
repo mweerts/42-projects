@@ -43,6 +43,19 @@ RequestParser::~RequestParser() {
     cleanup();
 }
 
+void RequestParser::reset(const HttpRequest& request) {
+	cleanup();
+	request_ = request;
+    current_phase_ = REQUEST_LINE;
+    status_code_ = HTTP_OK;
+    status_message_.clear();
+    headers_end_pos_ = 0;
+    request_size_ = 0;
+	req_buffer_.clear();
+    req_filename_.clear();
+	header_buffer_.clear();
+}
+
 void RequestParser::cleanup() {
     if (request_file_.is_open()) {
         request_file_.close();

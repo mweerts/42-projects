@@ -39,6 +39,7 @@ class RequestParser {
     StatusCode  getStatusCode() const;
     std::string getStatusMessage() const;
 
+    void reset(const HttpRequest& request);
     void cleanup();
 
    private:

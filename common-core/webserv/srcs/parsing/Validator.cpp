@@ -6,11 +6,12 @@
 /*   By: jfranco <jfranco@student.s19.be>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/08 13:42:00 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 16:25:08 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/24 14:48:31 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <functional>
+#include "lib/file_utils.hpp"
 
 #include "ConfigProcessor.hpp"
 /*♡♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡*/
@@ -42,6 +43,12 @@ Validator::Validator() {
     return;
 }
 /*♡♡♡♡♡♡♡♡♡♡♡♡FT_FOR_VALIDATION♡♡♡♡♡♡♡♡♡♡♡*/
+void Validator::validateDir(const std::string& path)
+{
+	if (!( lib::pathExist(path) && lib::isDirectory(path) && lib::isWritable(path) && lib::isReadable(path)))
+		throw IsNotAValidPath();
+
+}
 void Validator::validateErrorPage(const std::vector<std::string>& prmtrs) {
     if (prmtrs.size() > 1)
         throw VectorSizeToHight();
@@ -60,6 +67,7 @@ void Validator::validateUploadDir(const std::vector<std::string>& prmtrs) {
     if (prmtrs[0].size() < 1)
         throw Empty();
     validatePath(prmtrs[0]);
+	validateDir(prmtrs[0]);
     //	Logger::valide() << "Upload_dir";
 }
 
@@ -94,13 +102,20 @@ void Validator::validateRoot(const std::vector<std::string>& prmtrs) {
     if (prmtrs[0].size() < 1)
         throw Empty();
     validatePath(prmtrs[0]);
+	validateDir(prmtrs[0]);
+	
     // Logger::valide() << "root";
 }
 void Validator::validatePath(const std::string& prmtrs) {
     size_t pos = 0;
     pos = prmtrs.find("//");
     if (pos != std::string::npos)
-        throw OutOfRange();
+		throw PathDontExist();
+//	if (!lib::pathExist(prmtrs))
+//	{
+//		std::cout << prmtrs;
+//		throw PathDontExist();
+//	}
 }
 void Validator::validateListen(const std::vector<std::string>& prmtrs) {
     if (prmtrs.size() > 1)
@@ -241,6 +256,16 @@ const char* Validator::unknownMethods::what() const throw() {
 const char* Validator::ToManyDoth::what() const throw() {
     return "Too many dots in IP address";
 }
+
+const char* Validator::PathDontExist::what() const throw() {
+    return "Validation failed: the specified path was not found.";
+}
+
+const char* Validator::IsNotAValidPath::what() const throw() {
+    return "Invalid path: the specified path either does not exist, "
+           "is not a directory, or lacks necessary read/write permissions.";
+}
+
 
 const char* Validator::OutOfRange::what() const throw() {
     return "out of range: ";

@@ -1,5 +1,6 @@
 // Log viewer state
 let logLines = 50;
+let logLevel = 'ALL';
 let autoRefreshInterval = null;
 let REFRESH_INTERVAL = 1000; // 1 second
 let isRequestInProgress = false; // Prevent multiple simultaneous requests
@@ -24,28 +25,34 @@ function bindEvents() {
     document.getElementById('logLinesSelect').addEventListener('change', () => {
         applyConfiguration();
     });
+    
+    // Add level filter event listener
+    document.getElementById('logLevelSelect').addEventListener('change', () => {
+        applyConfiguration();
+    });
 }
 
 function applyConfiguration() {
     const linesSelect = document.getElementById('logLinesSelect');
+    const levelSelect = document.getElementById('logLevelSelect');
     const newLogLines = parseInt(linesSelect.value);
+    const newLogLevel = levelSelect.value;
+    
+    let configChanged = false;
     
     if (newLogLines !== logLines) {
         logLines = newLogLines;
-        loadLogs();
-    }
-}
-
-function startAutoRefresh() {
-    if (autoRefreshInterval) {
-        clearInterval(autoRefreshInterval);
+        configChanged = true;
     }
     
-    autoRefreshInterval = setInterval(() => {
-        if (!isRequestInProgress) {
-            loadLogs();
-        }
-    }, REFRESH_INTERVAL);
+    if (newLogLevel !== logLevel) {
+        logLevel = newLogLevel;
+        configChanged = true;
+    }
+    
+    if (configChanged) {
+        loadLogs();
+    }
 }
 
 async function loadLogs() {
@@ -59,8 +66,14 @@ async function loadLogs() {
     try {
         updateStatus('Loading logs...');
         
-        const queryString = `?lines=${logLines}`;
-        const fullUrl = `/log-viewer.py${queryString}`;
+        const params = new URLSearchParams();
+        params.append('lines', logLines);
+        if (logLevel !== 'ALL') {
+            params.append('level', logLevel);
+        }
+        
+        const queryString = params.toString();
+        const fullUrl = `/log-viewer.py${queryString ? '?' + queryString : ''}`;
         
         // Add timeout to prevent hanging requests
         const controller = new AbortController();
@@ -71,7 +84,6 @@ async function loadLogs() {
         });
         
         clearTimeout(timeoutId);
-        
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -86,7 +98,6 @@ async function loadLogs() {
         }
         
         displayLogs(data.logs);
-        // updateStatus(`Loaded ${data.logs ? data.logs.length : 0} log entries (${logLines} lines)`);
         updateLastUpdated();
         
     } catch (error) {
@@ -111,7 +122,7 @@ function displayLogs(logs) {
         container.innerHTML = `
             <div class="text-center text-gray-500 py-8">
                 <div class="text-2xl mb-2">📭</div>
-                <div>No logs found</div>
+                <div>No logs found${logLevel !== 'ALL' ? ` for level: ${logLevel}` : ''}</div>
             </div>
         `;
         return;
@@ -202,4 +213,16 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+    }
+    
+    autoRefreshInterval = setInterval(() => {
+        if (!isRequestInProgress) {
+            loadLogs();
+        }
+    }, REFRESH_INTERVAL);
 }
