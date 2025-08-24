@@ -141,7 +141,7 @@ def read_logs_tail(log_file, max_lines, level_filter='ALL'):
         "logs": list(parsed_logs),
         "total_lines": len(parsed_logs),
         "log_file": log_file,
-        "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB",
+        "file_size": f"{os.path.getsize(log_file) / 1024:.1f} KB"
     }
 
 def read_logs_ultra_fast(log_file, max_lines):

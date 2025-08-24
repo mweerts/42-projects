@@ -184,15 +184,17 @@ bool ClientConnection::finalizeResponse() {
     }
 
     // Reset for next request
+    // delete request_parser_;
+    // request_parser_ = NULL;
+    // request_parser_ = new RequestParser(current_request_, server_config_);
+
+	request_parser_->reset(current_request_);
     delete request_handler_;
     request_handler_ = NULL;
-    delete request_parser_;
-    request_parser_ = NULL;
 
     current_request_.reset();
     response_streamer_.reset();
     state_ = READING_REQUEST;
-    request_parser_ = new RequestParser(current_request_, server_config_);
     request_ready_ = false;
 
     return true;

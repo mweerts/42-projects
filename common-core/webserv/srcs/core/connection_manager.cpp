@@ -192,7 +192,7 @@ void ConnectionManager::HandleNewConnection(int listening_fd) {
 int ConnectionManager::HandleClientEvent(int fd, short events) {
     ClientIterator it = clients_.find(fd);
     if (it == clients_.end()) {
-        Logger::warning() << "Event for unknown client fd=" << fd;
+        Logger::debug() << "Event for unknown client fd=" << fd;
         return -1;
     }
 

@@ -52,7 +52,7 @@ class ClientConnection {
     void HandleAuxEvent(int fd, short revents);
 
    private:
-    static const size_t BUFFER_SIZE = 4096;
+    static const size_t BUFFER_SIZE = 16384; // 16kb
 
     char                read_buffer_[BUFFER_SIZE];
     int                 socket_fd_;
