@@ -81,6 +81,7 @@ static void replaceErrorPlaceholders(std::string&        content,
 }
 
 void RequestHandler::handleRequest() {
+	ServerStatus::getInstance().onRequestStarted();
     processRequest();
 
     if (_request.shouldKeepAlive()) {
