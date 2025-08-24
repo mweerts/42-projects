@@ -20,7 +20,7 @@ else ifeq ($(MODE), noflags)
 CFLAGS = -std=c++98
 endif
 INC = -I ../../includes/
-SRC_SRC = $(wildcard ../../srcs/parsing/*.cpp ../../srcs/lib/logger.cpp)
+SRC_SRC = $(wildcard ../../srcs/parsing/*.cpp ../../srcs/lib/logger.cpp ../../srcs/lib/file_utils.cpp)
 SRC_LIB = main.cpp
 SRCS = $(SRC_SRC) $(SRC_LIB)
 

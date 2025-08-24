@@ -27,4 +27,4 @@ RUN mv GeneratoreTester  /usr/local/app/srcs-tester/py-tester/.
 WORKDIR /usr/local/app/srcs-tester/py-tester/
 
 # Esegui lo script Python
-#CMD ["python3", "scritp-siege-valgrind.py"]
+CMD ["python3", "scritp-siege-valgrind.py"]

@@ -21,7 +21,7 @@ chunk_size = 1024 * 1024  # 1 MB
 cmdMini = ["siege", "-f","urlBasic.txt", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
 cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
 cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
-cmdCGI = ["siege", "-f", "urlCGI.txt", "-c", "10", "-t", "1m"]
+cmdCGI = ["siege", "-f", "urlCGI.txt", "-c", "10", "-t", "25s"]
 cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "20s"]
 cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
 
@@ -216,17 +216,22 @@ def ft_full_test(start_index):
 
 def ft_agrate_test_siege(proc):
         print("### TEST SIEGE ####")
+        print(MSG_L_T)
         ft_siege(cmdLow, MSG_L_T, 1)
         i = ft_input(proc);
+        print(MSG_M_T)
         if (i < 0): return i
         ft_siege(cmdMini, MSG_M_T, 1);
         i = ft_input(proc);
+        print(MSG_F_T)
         if (i < 0): return i
         ft_siege(cmdFull, MSG_F_T, 1);
         i = ft_input(proc);
+        print(MSG_J_T)
         if (i < 0): return i
         ft_siege(cmdBasic, MSG_J_T, 1);
         i = ft_input(proc);
+        print(MSG_B_T)
         if (i < 0): return i
         ft_siege(cmdBanch, MSG_B_T, 1);
         i = ft_input(proc);
@@ -236,6 +241,7 @@ def ft_agrate_test_siege(proc):
 def ft_test_siege(start_index):
     i = start_index;
     while i < len(config_list):
+        ft_startGeneratorTxtSiege(i);
         proc = subprocess.Popen(ft_cmdGenerator(i))
         time.sleep(3);
         y = ft_agrate_test_siege(proc);
@@ -253,7 +259,7 @@ def ft_test_siege(start_index):
 def ft_test_one_siege(start_index, ft1, cmd, MSG, nbr):
     i = start_index;
     while i < len(config_list):
-        ft_startGeneratorTxtSiege(i);
+        ft_startGeneratorTxtSiege(i)
         proc = subprocess.Popen(ft_cmdGenerator(i))
         time.sleep(3);
         ft1(cmd, MSG, 1);
@@ -268,6 +274,7 @@ def ft_test_one_siege(start_index, ft1, cmd, MSG, nbr):
                 exit();
             elif (i == -2):
                 break;
+
 def ft_curl_webserv(flags, start_index):
     i = start_index;
     while i < len(config_list):
@@ -290,7 +297,7 @@ def ft_curl_webserv(flags, start_index):
             elif (i == -2):
                 break;
 
-def ft_post_location(start_index):
+def ft_post_location(start_index, fileName):
     i = start_index;
     while i < len(config_list):
         ft_startGeneratorTxtSiege(i)
@@ -316,6 +323,7 @@ def ft_post_location(start_index):
 
 def main():
     ft_create_big_file()
+    ft_startGeneratorTxtSiege(0);
     print("♡♡♡ Test Suite ♡♡♡ | Commands: parser-parse | siege-siege | curl-HTTP (soon) | full-full suite (soon) | cgi curl-CGI curl (soon) | cgi siege-CGI Siege (soon) | siege bench-benchmark (soon) | exit-quit | Usage: enter command, choose index or Enter to skip, 'kill' stops process, 'break' stops loop, 'exit' quits | ♡♡♡ Happy testing! ♡♡♡")
     while True:
         inpu = input("\nEnter command: ");
@@ -336,7 +344,8 @@ def main():
             ft_full_test(ft_input_index(0))
         elif inpu == "curl post":
             ft_print_list(config_list)
-            ft_post_curl(ft_input_index(0))
+            fileToPost = fileName;
+            ft_post_curl(ft_input_index(0), fileToPost)
        # elif inpu == "curl --resolve":
         #elif inpu == "keep-alive":
         elif inpu == "cgi siege":
