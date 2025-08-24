@@ -81,7 +81,7 @@ static void replaceErrorPlaceholders(std::string&        content,
 }
 
 void RequestHandler::handleRequest() {
-	ServerStatus::getInstance().onRequestStarted();
+    ServerStatus::getInstance().onRequestStarted();
     processRequest();
 
     if (_request.shouldKeepAlive()) {
@@ -140,12 +140,17 @@ void RequestHandler::handleRedirect() {
         return;
     }
     if (location->getAlias()) {
+        
         std::string alias = *location->getAlias();
         std::string name = location->getName();
         _internalUri = alias + _internalUri.substr(name.length());
+        Logger::critical() << _internalUri;
         Logger::debug() << "aliasing to: " << _internalUri;
-    } else if (location->getRoot()) {
+        return;
+    }
+    if (location->getRoot()) {
         _rootPath = *location->getRoot();
+        return;
     }
 }
 
@@ -161,6 +166,10 @@ void RequestHandler::processRequest() {
     }
 
     handleRedirect();
+
+    if (_response.getStatusCode() == HTTP_MOVED_PERMANENTLY) {
+        return;
+    }
 
     RequestMethod requestMethod = getRequestMethod(method);
 
@@ -191,6 +200,7 @@ void RequestHandler::processRequest() {
         case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
         case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
     }
+    Logger::critical() << _response.toString();
 }
 
 // ============ GET ============ //
@@ -245,6 +255,7 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
+    Logger::critical() << fullPath;
     if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
