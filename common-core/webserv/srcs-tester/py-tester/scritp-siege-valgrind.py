@@ -194,17 +194,32 @@ def ft_full_test(start_index):
         time.sleep(2)
         print(config_list[ciclo])
         ft_for_func(10, ft_limit_rate_curl, ft_limit_rate_curl, url, urlApi)
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
+    ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
         ft_for_func(100, ft_real_time_curl, ft_real_time_curl, url, urlApi)
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
+    ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
     #♡♡♡♡♡♡♡♡♡♡♡CURL SEND BIG FILE ###♡♡♡♡♡♡♡♡♡♡♡    
     ##CREATE A FILE 40mb ##
         ft_post_curl(urlup, fileName);
         ft_post_curl(urlupApi, fileName);
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
+    ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
     ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
     #TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO ADD WWW/CGI♡♡♡♡♡♡♡♡♡♡♡
-        ft_test_one_siege(ft_input_index(0), ft_siege, cmdCGI, MSG_C_T, 1);
+        ft_siege(cmdCGI, MSG_C_T, 1)
+        y = ft_input(proc);
+        if (y == -1): break;
+        elif (y == -2): i + 1; continue;
     ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
-        i = ft_agrate_test_siege(proc);
-        if (i == -1): break;
+        y = ft_agrate_test_siege(proc);
+        if (y == -1): break;
         elif (y == -2): i + 1; continue;
         time.sleep(2)
     #######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
