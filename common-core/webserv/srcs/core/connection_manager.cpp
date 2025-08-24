@@ -28,7 +28,13 @@
 #include "server_status.hpp"
 
 ConnectionManager::ConnectionManager()
-    : running_(false), shutdown_flag_(NULL) {}
+    : running_(false), shutdown_flag_(NULL) {
+    // Pre-allocate space for poll_fds this
+    // Connection is created once and is not destroyed
+    // until the server is stopped so we can safely pre-allocate
+	// "slower" at startup but faster at runtime
+    poll_fds_.reserve(1024);
+}
 
 ConnectionManager::~ConnectionManager() {
     for (ClientIterator it = clients_.begin(); it != clients_.end(); ++it) {
@@ -103,10 +109,16 @@ void ConnectionManager::Run() {
             int fd = poll_fds_[i].fd;
 
             // Route aux fds (file/cgipipe) back to their owners
-            std::map<int, ClientConnection*>::iterator it =
-                aux_fd_owner_.find(fd);
+            ClientIterator it = aux_fd_owner_.find(fd);
             if (it != aux_fd_owner_.end()) {
-                it->second->HandleAuxEvent(fd, poll_fds_[i].revents);
+                ClientConnection* client = it->second;
+                if (client != NULL) {
+                    it->second->HandleAuxEvent(fd, poll_fds_[i].revents);
+                } else {
+					close(it->first);
+                    aux_fd_owner_.erase(it);
+                    Logger::debug() << "Cleaned up orphaned aux fd: " << fd;
+                }
             } else if (IsServerSocket(fd)) {
                 HandleNewConnection(fd);
             } else {
@@ -199,6 +211,16 @@ void ConnectionManager::RemoveClient(int client_fd) {
         return;
     }
 
+	// Remove aux fds owned by this client
+	for (ClientIterator aux_it = aux_fd_owner_.begin(); aux_it != aux_fd_owner_.end();) {
+		if (aux_it->second->GetSocketFd() == client_fd) {
+			close(aux_it->first);
+			aux_fd_owner_.erase(aux_it++);
+		} else {
+			++aux_it;
+		}
+	}
+
     ClientConnection* client = it->second;
     client->Close();
     delete client;
@@ -215,12 +237,12 @@ void ConnectionManager::CleanupTimedOutClients() {
 
     for (ClientConstIterator it = clients_.begin(); it != clients_.end();
          ++it) {
-        int               client_fd = it->first;
-        ClientConnection* client = it->second;
-
-        if (client->IsTimedOut()) {
-            Logger::debug() << "Client fd=" << client_fd << " timed out";
-            clients_to_close.push_back(client_fd);
+		if (it->second == NULL) {
+			continue;
+		}
+        if (it->second->IsTimedOut()) {
+            Logger::debug() << "Client fd=" << it->first << " timed out";
+            clients_to_close.push_back(it->first);
         }
     }
 

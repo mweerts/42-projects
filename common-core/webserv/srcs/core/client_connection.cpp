@@ -37,7 +37,8 @@ ClientConnection::ClientConnection(int                 socket_fd,
       request_handler_(NULL),
       state_(READING_REQUEST),
       is_closed_(false),
-      request_ready_(false) {
+      request_ready_(false),
+      response_streamer_() {
     UpdateActivity();
     request_parser_ = new RequestParser(current_request_, server_config_);
 }
