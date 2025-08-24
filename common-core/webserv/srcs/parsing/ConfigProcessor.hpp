@@ -37,6 +37,7 @@ struct Validator {
     void validateAutoIndex(const std::vector<std::string>& prmtrs);
     void validateMethods(const std::vector<std::string>& prmtrs);
     void validateCgiExt(const std::vector<std::string>& prmtrs);
+	void validateDir(const std::string &path);
 
     /*♡♡♡♡♡♡♡♡♡♡♡EXCPTION♡♡♡♡♡♡♡♡♡♡♡♡♡*/
     class PortAccessDeniedException : public std::exception {
@@ -81,6 +82,14 @@ struct Validator {
        public:
         virtual const char* what() const throw();  // dichiarazione
     };
+
+	class PathDontExist : public std::exception {
+		virtual const char* what() const throw();
+	};
+
+	class IsNotAValidPath : public std::exception{
+		virtual const char* what() const throw();
+	};
 };
 
 struct Node {

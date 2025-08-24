@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 19:28:53 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 19:41:58 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/24 14:53:34 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,7 @@ int ConfigProcessor::heandelError(
         Logger::warning() << "Defalt port setting";
         itPrmtrs->second[0] = "8080";
     } catch (std::exception& e) {
-        Logger::error() << e.what() << " " << itPrmtrs->first;
+        Logger::error() << e.what() << " " << itPrmtrs->first << " in block: " << name;;
         return (1);
     }
     return (0);
@@ -236,6 +236,7 @@ int ConfigProcessor::verifyInvalidParamsInContext(const std::string& name,
     //	vecNoAll.push_back("error_page");
     if (name == "cgi-bin") {
         vecNoAll.push_back("allow_methods");  // TODO: needs to be configured at the location level
+        vecNoAll.push_back("index");  // TODO: needs to be configured at the location level
         vecNoAll.push_back("autoindex"); // TODO: remove this, not allowed in cgi-bin
         vecNoAll.push_back("alias"); // TODO: remove this, not allowed in cgi-bin
         vecNoAll.push_back("return"); // TODO: remove this, not allowed in cgi-bin
