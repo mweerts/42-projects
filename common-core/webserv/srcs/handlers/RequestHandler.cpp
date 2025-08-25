@@ -19,6 +19,7 @@
 #include "http_status_code.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
+#include <sstream>
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -199,7 +200,6 @@ void RequestHandler::processRequest() {
         case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
         case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
     }
-    Logger::critical() << _response.toString();
 }
 
 // ============ GET ============ //
@@ -251,6 +251,11 @@ void RequestHandler::processGetRequest() {
 
     if (_internalUri == "/status") {
         handleStatusRequest();
+        return;
+    } else if (_internalUri == "/config") {
+        _response.setStatusCode(HTTP_OK);
+        _response.setContent(JsonifyServerConfig());
+        _response.setContentType("application/json");
         return;
     }
 
@@ -533,4 +538,63 @@ RequestMethod RequestHandler::getRequestMethod(const std::string& method) {
             break;
     }
     return UNKNOWN;
+}
+
+std::string RequestHandler::JsonifyServerConfig() {
+	std::stringstream json;
+
+	json << "{" << std::endl;
+	json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\"," << std::endl;
+	json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
+	json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
+	const char* index = _serverConfig.getIndex()->c_str();
+	json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
+	json << "  \"autoindex\": " << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << "," << std::endl;
+	json << "  \"locations\": [" << std::endl;
+	
+	for (std::map<std::string, Location>::const_iterator it = _serverConfig.route.begin(); it != _serverConfig.route.end(); ++it) {
+		const Location& location = it->second;
+		json << "    {" << std::endl;
+		json << "      \"path\": \"" << location.getName() << "\"," << std::endl;
+		json << "      \"root\": \"" << (location.getRoot() ? *location.getRoot() : "") << "\"," << std::endl;
+		json << "      \"methods\": [" << std::endl;
+		
+		bool firstMethod = true;
+		if (location.getMethodIsAllowed("GET")) {
+			if (!firstMethod) json << "," << std::endl;
+			json << "        \"GET\"";
+			firstMethod = false;
+		}
+		if (location.getMethodIsAllowed("POST")) {
+			if (!firstMethod) json << "," << std::endl;
+			json << "        \"POST\"";
+			firstMethod = false;
+		}
+		if (location.getMethodIsAllowed("DELETE")) {
+			if (!firstMethod) json << "," << std::endl;
+			json << "        \"DELETE\"";
+			firstMethod = false;
+		}
+		
+		json << std::endl << "      ]," << std::endl;
+		json << "      \"autoindex\": " << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << "," << std::endl;
+		const std::string* index = location.getIndex();
+		json << "      \"index\": \"" << (index ? *index : "") << "\"," << std::endl;
+		const std::string* return_value = location.getReturn();
+		json << "      \"return\": \"" << (return_value ? *return_value : "") << "\"," << std::endl;
+		const std::string* alias = location.getAlias();
+		json << "      \"alias\": \"" << (alias ? *alias : "") << "\"" << std::endl;
+		json << "    }";
+		
+		// Add comma if this isn't the last location
+		if (std::next(it) != _serverConfig.route.end()) {
+			json << ",";
+		}
+		json << std::endl;
+	}
+	
+	json << "  ]" << std::endl;
+	json << "}" << std::endl;
+
+	return json.str();
 }

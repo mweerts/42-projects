@@ -74,6 +74,7 @@ class RequestHandler {
     std::string extractBoundary(const std::string& content_type);
 
 	RequestMethod getRequestMethod(const std::string& method);
+	std::string JsonifyServerConfig();
 	void handleRedirect();
 };
 
