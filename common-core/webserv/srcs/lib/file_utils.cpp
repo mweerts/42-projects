@@ -62,7 +62,7 @@ bool isExecutable(const std::string& path) {
     return (fileInfo.st_mode & S_IXUSR) != 0;
 }
 
-off_t getFileSize(const std::string& path) {
+long getFileSize(const std::string& path) {
     struct stat fileInfo;
     if (stat(path.c_str(), &fileInfo) == 0) {
         return fileInfo.st_size;

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "Logger.hpp"
+#include "lib/utils.hpp"
 
 bool pathExist(const std::string& path) {
     struct stat fileInfo;
@@ -48,10 +49,10 @@ bool isPhpFile(const std::string& path) {
 
 std::string GetHtmlErrorPage(HttpResponse& response) {
 	response.setContentType("text/html");
-	std::string html = "<html><head><title>" + std::to_string(response.getStatusCode()) +
+	std::string html = "<html><head><title>" + lib::to_string(response.getStatusCode()) +
            " " + GetHttpStatusText(response.getStatusCode()) +
            "</title></head><body><center><h1>" +
-           std::to_string(response.getStatusCode()) + " " +
+           lib::to_string(response.getStatusCode()) + " " +
            GetHttpStatusText(response.getStatusCode()) +
            "</h1></center><hr><center>" + response.getServerName() +
            "</center></body></html>";

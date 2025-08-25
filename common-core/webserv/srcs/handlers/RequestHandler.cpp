@@ -614,7 +614,9 @@ std::string RequestHandler::JsonifyServerConfig() {
         json << "    }";
 
         // Add comma if this isn't the last location
-        if (std::next(it) != _serverConfig.route.end()) {
+        std::map<std::string, Location>::const_iterator it_temp = it;
+        ++it_temp;
+        if (it_temp != _serverConfig.route.end()) {
             json << ",";
         }
         json << std::endl;
