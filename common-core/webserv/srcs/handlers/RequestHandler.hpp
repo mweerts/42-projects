@@ -8,21 +8,7 @@
 
 class ServerConfig;
 class CgiHandler;
-
-enum RequestMethod {
-    GET,
-    POST,
-    DELETE,
-	OPTIONS,
-	HEAD,
-	CONNECT,
-	TRACE,
-	PATCH,
-	PUT,
-	PROPFIND,
-	PROPPATCH,
-	UNKNOWN,
-};
+class MultipartParser;
 
 class RequestHandler {
    public:
@@ -31,7 +17,6 @@ class RequestHandler {
     ~RequestHandler();
 
     void handleRequest();
-    // void sendResponse(int socket_fd);
     bool shouldCloseConnection() const;
 
     HttpResponse& getResponse();
@@ -47,8 +32,13 @@ class RequestHandler {
     int  getCgiOutputPipe() const;
     bool handleCgiFdEvent(int fd, short revents);
 
-    bool isStaticFileResponse() const;
+    bool               isStaticFileResponse() const;
     const std::string& getStaticFilePath() const;
+
+    bool               hasUploadInProgress() const;
+    bool               uploadSucceeded() const;
+    bool               processUploadChunk();
+    const std::string& uploadErrorMessage() const;
 
    private:
     const ServerConfig& _serverConfig;
@@ -56,26 +46,30 @@ class RequestHandler {
     CgiHandler*         _cgiHandler;
     HttpResponse        _response;
     std::string         _rootPath;
-	std::string         _queryString;
+    std::string         _queryString;
     std::string         _internalUri;
     bool                _autoindex;
     bool                _isStaticFile;
     std::string         _staticFilePath;
 
-    void setResponse(const HttpResponse& response);
+    bool             _uploadInProgress;
+    bool             _uploadDone;
+    bool             _uploadOk;
+    std::string      _uploadErrMsg;
+    MultipartParser* _uploader;
+
     void processRequest();
     void processGetRequest();
     void processPostRequest();
     void processDeleteRequest();
-	void handleStatusRequest();
+    void handleStatusRequest();
+    bool startUpload(const std::string& boundary);
 
     CgiHandler* initCgiHandler();
 
     std::string extractBoundary(const std::string& content_type);
-
-	RequestMethod getRequestMethod(const std::string& method);
-	std::string JsonifyServerConfig();
-	void handleRedirect();
+    std::string JsonifyServerConfig();
+    void        handleRedirect();
 };
 
 #endif

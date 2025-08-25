@@ -197,6 +197,7 @@ bool MultipartParser::parseHeaders(const std::string& headers_block) {
         std::string header_name = trim(line.substr(0, colon_pos));
         std::string header_value = trim(line.substr(colon_pos + 1));
 
+		// if (header_name == "Content-Length") {
         if (header_name == "Content-Disposition") {
             if (!extractContentDisposition(header_value)) {
                 status_code_ = HTTP_BAD_REQUEST;

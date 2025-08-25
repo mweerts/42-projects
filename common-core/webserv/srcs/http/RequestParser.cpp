@@ -35,7 +35,7 @@ RequestParser::RequestParser(HttpRequest& request, const ServerConfig& config)
     status_message_.clear();
     headers_end_pos_ = 0;
     request_size_ = 0;
-	req_buffer_.clear();
+    req_buffer_.clear();
     req_filename_.clear();
 }
 
@@ -44,16 +44,16 @@ RequestParser::~RequestParser() {
 }
 
 void RequestParser::reset(const HttpRequest& request) {
-	cleanup();
-	request_ = request;
+    cleanup();
+    request_ = request;
     current_phase_ = REQUEST_LINE;
     status_code_ = HTTP_OK;
     status_message_.clear();
     headers_end_pos_ = 0;
     request_size_ = 0;
-	req_buffer_.clear();
+    req_buffer_.clear();
     req_filename_.clear();
-	header_buffer_.clear();
+    header_buffer_.clear();
 }
 
 void RequestParser::cleanup() {
@@ -64,8 +64,8 @@ void RequestParser::cleanup() {
     // Comment this to keep the file for debugging
     if (!req_filename_.empty() && lib::pathExist(req_filename_)) {
         if (remove(req_filename_.c_str()) != 0) {
-            Logger::warning() << "Failed to remove temporary request file: "
-                              << req_filename_;
+            Logger::warning()
+                << "Failed to remove temporary request file: " << req_filename_;
         }
     }
 }
@@ -78,7 +78,7 @@ RequestParser::Status RequestParser::parse(const char* buffer,
         return ERROR;
     }
 
-	if (!saveToFile(buffer, buffer_size)) {
+    if (!saveToFile(buffer, buffer_size)) {
         Logger::error() << "Failed to save request data";
         setError(HTTP_INTERNAL_SERVER_ERROR);
         return ERROR;
@@ -144,22 +144,25 @@ RequestParser::Status RequestParser::parse(const char* buffer,
 
 std::string RequestParser::createRequestFilePath() {
     if (req_filename_.empty()) {
-		std::string path;
-		if (server_config_.getTmpFolder().empty()) {
-			path = server_config_.getRoot() + "/";
-		} else {
-			path = server_config_.getTmpFolder();
-			if (!lib::pathExist(path)) {
-				Logger::debug() << "Creating tmp directory for request: " << path;
-				if (mkdir(path.c_str(), 0755) != 0) {
-					throw std::runtime_error("Failed to create tmp directory for request");
-				}
-			} else if (!lib::isDirectory(path)) {
-				throw std::runtime_error("tmp path exists but is not a directory");
-			} else if (!lib::isWritable(path)) {
-				throw std::runtime_error("tmp directory is not writable");
-			}
-		}
+        std::string path;
+        if (server_config_.getTmpFolder().empty()) {
+            path = server_config_.getRoot() + "/";
+        } else {
+            path = server_config_.getTmpFolder();
+            if (!lib::pathExist(path)) {
+                Logger::debug()
+                    << "Creating tmp directory for request: " << path;
+                if (mkdir(path.c_str(), 0755) != 0) {
+                    throw std::runtime_error(
+                        "Failed to create tmp directory for request");
+                }
+            } else if (!lib::isDirectory(path)) {
+                throw std::runtime_error(
+                    "tmp path exists but is not a directory");
+            } else if (!lib::isWritable(path)) {
+                throw std::runtime_error("tmp directory is not writable");
+            }
+        }
 
         std::string dir = path + "/req_tmp";
 
@@ -220,6 +223,7 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
     std::string        method, uri, version, extra;
 
     iss >> method >> uri >> version;
+    Logger::info() << "Request: " << method << " " << uri << " " << version;
 
     if (iss >> extra) {
         setError(HTTP_BAD_REQUEST, "Extra content in request line");
@@ -229,8 +233,13 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
         setError(HTTP_BAD_REQUEST, "Missing words in request line");
         return false;
     }
+    if (getRequestMethod(method) == UNKNOWN) {
+        setError(HTTP_METHOD_NOT_ALLOWED);
+        return false;
+    }
+
     if (version != "HTTP/1.0" && version != "HTTP/1.1") {
-        setError(HTTP_NOT_IMPLEMENTED, "Unsupported HTTP version");
+        setError(HTTP_VERSION_NOT_SUPPORTED, "Unsupported HTTP version");
         return false;
     }
 
@@ -238,7 +247,6 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
     request_.setUri(uri);
     request_.setVersion(version);
 
-    Logger::info() << "Request: " << method << " " << uri << " " << version;
     return true;
 }
 
@@ -309,6 +317,14 @@ RequestParser::Status RequestParser::parseHeaders() {
         }
 
         Logger::debug() << "Headers parsed successfully";
+
+        size_t            content_length = request_.getContentLength();
+        const std::string uri = lib::extractPathFromUri(request_.getUri());
+        const Location*   location = server_config_.getLocation(uri);
+        if (location && content_length > location->getClientMaxBodySize()) {
+            setError(HTTP_REQUEST_ENTITY_TOO_LARGE);
+            return ERROR;
+        }
         return COMPLETE;
     }
     return NEED_MORE_DATA;
@@ -336,16 +352,15 @@ RequestParser::Status RequestParser::parseBody() {
     size_t content_length = request_.getContentLength();
 
     if (content_length > server_config_.getClientMaxBodySize()) {
-        setError(HTTP_REQUEST_ENTITY_TOO_LARGE, "body size exceeds limit");
+        setError(HTTP_REQUEST_ENTITY_TOO_LARGE);
         return ERROR;
     }
 
     if (content_length > 0) {
         if (request_size_ >= (headers_end_pos_ + content_length)) {
             if (content_length <= 8192) {  // Small body: store as string
-                std::string body = 
-                    readFromFile(headers_end_pos_, content_length);
-				//std::string body = req_buffer_.substr(headers_end_pos_, content_length);
+                std::string body =
+                    getBodyFromFile(headers_end_pos_, content_length);
                 request_.setBody(body);
             } else {
                 request_.setBodyParams(req_filename_, headers_end_pos_,
@@ -392,7 +407,8 @@ static size_t calculateBodyLength(std::ifstream& file, size_t start_pos) {
     return file_size - start_pos;
 }
 
-std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
+std::string RequestParser::getBodyFromFile(size_t start_pos,
+                                           size_t length) const {
     if (req_filename_.empty()) {
         return "";
     }
@@ -415,49 +431,16 @@ std::string RequestParser::readFromFile(size_t start_pos, size_t length) const {
         return "";
     }
 
-    // for small file, 8KB threshold
-    if (length <= 8192) {
-        std::vector<char> buffer(length);
-        file.read(&buffer[0], length);
-
-        if (file.fail() && !file.eof()) {
-            Logger::error() << "Failed to read from file: " << req_filename_;
-            return "";
-        }
-
-        size_t bytes_read = static_cast<size_t>(file.gcount());
-        return std::string(&buffer[0], bytes_read);
-    }
-
-    // streaming approach for large files
-    std::string content;
-    content.reserve(length);
-
-    const size_t      CHUNK_SIZE = 4096;
-    std::vector<char> chunk(CHUNK_SIZE);  // better for binary files
-
-    size_t remaining = length;
-    while (remaining > 0) {
-        size_t to_read = (remaining < CHUNK_SIZE) ? remaining : CHUNK_SIZE;
-        file.read(&chunk[0], to_read);
-
-        size_t bytes_read = static_cast<size_t>(file.gcount());
-        if (bytes_read == 0)
-            break;
-
-        content.append(&chunk[0], bytes_read);
-        remaining -= bytes_read;
-
-        if (file.eof())
-            break;
-    }
+    std::vector<char> buffer(length);
+    file.read(&buffer[0], length);
 
     if (file.fail() && !file.eof()) {
         Logger::error() << "Failed to read from file: " << req_filename_;
         return "";
     }
 
-    return content;
+    size_t bytes_read = static_cast<size_t>(file.gcount());
+    return std::string(&buffer[0], bytes_read);
 }
 
 StatusCode RequestParser::getStatusCode() const {

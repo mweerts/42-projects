@@ -41,7 +41,7 @@ function updateServerMetrics(data) {
     const responsePercentage = Math.min(responseTime / 100, 100);
     updateProgressBar('response-progress', responsePercentage, 'bg-purple-400');
     document.getElementById('response-time').textContent = `${responseTime.toFixed(1)}ms`;
-    document.getElementById('response-avg').textContent = `${responseTime.toFixed(1)}ms avg`;
+    document.getElementById('response-avg').textContent = `${responseTime.toFixed(1)} ms avg`;
     
     const responseStatus = document.getElementById('response-status');
     if (responseTime < 100) responseStatus.textContent = 'Fast';

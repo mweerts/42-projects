@@ -124,4 +124,64 @@ inline const char* GetHttpStatusText(StatusCode status) {
     }
 }
 
+enum RequestMethod {
+    GET,
+    POST,
+    DELETE,
+    OPTIONS,
+    HEAD,
+    CONNECT,
+    TRACE,
+    PATCH,
+    PUT,
+    PROPFIND,
+    PROPPATCH,
+    UNKNOWN,
+};
+
+inline RequestMethod getRequestMethod(const std::string& method) {
+    if (method.length() > 10)
+        return UNKNOWN;
+
+    switch (method[0]) {
+        case 'G':
+            if (method == "GET")
+                return GET;
+            break;
+        case 'P':
+            if (method == "POST")
+                return POST;
+            if (method == "PUT")
+                return PUT;
+            if (method == "PATCH")
+                return PATCH;
+            if (method == "PROPFIND")
+                return PROPFIND;
+            if (method == "PROPPATCH")
+                return PROPPATCH;
+            break;
+        case 'D':
+            if (method == "DELETE")
+                return DELETE;
+            break;
+        case 'H':
+            if (method == "HEAD")
+                return HEAD;
+            break;
+        case 'O':
+            if (method == "OPTIONS")
+                return OPTIONS;
+            break;
+        case 'C':
+            if (method == "CONNECT")
+                return CONNECT;
+            break;
+        case 'T':
+            if (method == "TRACE")
+                return TRACE;
+            break;
+    }
+    return UNKNOWN;
+}
+
 #endif  // HTTP_STATUS_CODE_HPP
