@@ -14,13 +14,14 @@ MSG_J_T = "### TEST JUST ALLOWMETHOD ####";
 MSG_F_T = "### FULL TEST SIEGE ####";
 MSG_L_T ="### LOW PRESSURE SIEGE ####";
 MSG_M_T ="### MINI TEST SIEGE ####";
-MSG_C_T = "QUALCOSA";
+MSG_C_T = "##### CGI TEST SIEGE ####";
 fileName = "file_40mb.txt"
 size_mb = 40 #♡♡♡♡♡♡♡♡♡♡♡ITERATORE CICLO CREAZIONE BIF FILE 
 chunk_size = 1024 * 1024  # 1 MB
 cmdMini = ["siege", "-f","urlBasic.txt", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
 cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
 cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
+cmdMaxC = ["siege", "-f", "urlBasic.txt", "-c", "200", "-t", "25s"]
 cmdCGI = ["siege", "-f", "urlCGI.txt", "-c", "10", "-t", "25s"]
 cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "20s"]
 cmdLow = ["siege", "-c", "5", "-r", "10", "--delay", "2", "-t", "1m", url]
@@ -59,7 +60,8 @@ parser_list = [
     "../../config/ParserConf/isAdir.conf",
     "../../config/ParserConf/no.conf.conf.conf.",
     "../../config/ParserConf/justEmpty.conf",
-    "../../config/ParserConf/noAccessRoot.conf"
+    "../../config/ParserConf/noAccessRoot.conf",
+    "../../config/ParserConf/justComment.conf "
 
 ]
 
@@ -68,7 +70,7 @@ def ft_startGeneratorTxtSiege(index):
     subprocess.run(cmdGeneratorTxt, capture_output = True)
     
 def ft_cmdGenerator(index):
-        return ["valgrind", "../../webserv", "-c", config_list[index]]
+        return ["valgrind", "--track-fds=yes", "../../webserv", "-c", config_list[index]]
 
 def ft_create_big_file():
     with open(fileName, "wb") as f:
@@ -177,8 +179,8 @@ def ft_for_func(rng, ft1, ft2, info1, info2 ):
 
 
 def ft_siege(cmd, strPrint, sleepTime):
-    print(strPrint)
     subprocess.run(cmd)
+    print(strPrint)
     time.sleep(sleepTime)
 
 def ft_full_test(start_index):
@@ -239,20 +241,20 @@ def ft_agrate_test_siege(proc):
         print("### TEST SIEGE ####")
         print(MSG_L_T)
         ft_siege(cmdLow, MSG_L_T, 1)
-        i = ft_input(proc);
         print(MSG_M_T)
+        i = ft_input(proc);
         if (i < 0): return i
         ft_siege(cmdMini, MSG_M_T, 1);
-        i = ft_input(proc);
         print(MSG_F_T)
+        i = ft_input(proc);
         if (i < 0): return i
         ft_siege(cmdFull, MSG_F_T, 1);
-        i = ft_input(proc);
         print(MSG_J_T)
+        i = ft_input(proc);
         if (i < 0): return i
         ft_siege(cmdBasic, MSG_J_T, 1);
-        i = ft_input(proc);
         print(MSG_B_T)
+        i = ft_input(proc);
         if (i < 0): return i
         ft_siege(cmdBanch, MSG_B_T, 1);
         i = ft_input(proc);
@@ -374,6 +376,9 @@ def main():
         elif inpu == "siege bench":
             ft_print_list(config_list)
             ft_test_one_siege(ft_input_index(0), ft_siege, cmdBanch, MSG_B_T, 1);
+        elif inpu == "siege maxc":
+            ft_print_list(config_list)
+            ft_test_one_siege(ft_input_index(0), ft_siege, cmdMaxC, MSG_C_T, 1);
         elif inpu == "exit":
             break ;
         elif inpu == "help":
