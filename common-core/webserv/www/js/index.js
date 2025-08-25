@@ -36,7 +36,8 @@ function updateServerInfo(data) {
         'server-port': data.port || '8080',
         'server-root': data.root || '/www/',
         'server-index': data.index || 'index.html',
-        'server-autoindex': data.autoindex || 'off'
+        'server-autoindex': data.autoindex || 'off',
+		'upload-dir': data.upload_dir || 'uploads',
     };
     
     Object.entries(elements).forEach(([id, value]) => {
@@ -85,6 +86,22 @@ function createLocationCard(location, index) {
         '<span class="text-green-400">✓ ON</span>' : 
         '<span class="text-red-400">✗ OFF</span>';
     
+	// Format client_max_body_size (number of bytes) to a human-readable string (e.g., 10M, 1G)
+	function formatBytes(bytes) {
+		if (typeof bytes !== 'number' || isNaN(bytes)) return 'N/A';
+		const units = ['B', 'K', 'M', 'G', 'T'];
+		let i = 0;
+		let value = bytes;
+		while (value >= 1024 && i < units.length - 1) {
+			value /= 1024;
+			i++;
+		}
+		// Show no decimals for K/M/G/T, only for B
+		const formatted = i === 0 ? value : Math.round(value);
+		return formatted + units[i];
+	}
+	const clientMaxBodySize = location.client_max_body_size ? formatBytes(Number(location.client_max_body_size)) : '100M';
+	
     card.innerHTML = `
         <div class="flex items-center justify-between mb-3">
             <h3 class="font-mono font-bold text-pink-400 text-lg">${location.path}</h3>
@@ -107,6 +124,11 @@ function createLocationCard(location, index) {
                 <span class="font-mono">${autoindexStatus}</span>
             </div>
             
+			<div class="flex items-center justify-between">
+                <span class="text-gray-400">Client Max Body Size:</span>
+                <span class="font-mono">${clientMaxBodySize}</span>
+            </div>
+
             ${location.return ? `
             <div class="flex items-center justify-between">
                 <span class="text-gray-400">Return:</span>

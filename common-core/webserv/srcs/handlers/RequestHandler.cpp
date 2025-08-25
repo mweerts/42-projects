@@ -550,8 +550,9 @@ std::string RequestHandler::JsonifyServerConfig() {
 	const char* index = _serverConfig.getIndex()->c_str();
 	json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
 	json << "  \"autoindex\": " << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << "," << std::endl;
+	json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\"," << std::endl;
+	json << "  \"client_max_body_size\": \"" << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\"," << std::endl;
 	json << "  \"locations\": [" << std::endl;
-	
 	for (std::map<std::string, Location>::const_iterator it = _serverConfig.route.begin(); it != _serverConfig.route.end(); ++it) {
 		const Location& location = it->second;
 		json << "    {" << std::endl;
@@ -583,6 +584,7 @@ std::string RequestHandler::JsonifyServerConfig() {
 		const std::string* return_value = location.getReturn();
 		json << "      \"return\": \"" << (return_value ? *return_value : "") << "\"," << std::endl;
 		const std::string* alias = location.getAlias();
+		json << "      \"client_max_body_size\": \"" << lib::to_string(location.getClientMaxBodySize()) << "\"," << std::endl;
 		json << "      \"alias\": \"" << (alias ? *alias : "") << "\"" << std::endl;
 		json << "    }";
 		
