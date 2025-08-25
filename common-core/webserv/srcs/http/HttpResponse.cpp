@@ -45,7 +45,7 @@ void HttpResponse::setLocation(const std::string& location) {
     _location = location;
 }
 
-void HttpResponse::setContentLength(int length) {
+void HttpResponse::setContentLength(size_t length) {
     _contentLength = length;
 }
 
