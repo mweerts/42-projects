@@ -5,6 +5,7 @@ build
 .cache
 www/uploads
 www/tmp
+www/req_tmp
 # Prerequisites
 *.d
 

@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 #include "../core/server_status.hpp"
 #include "../handlers/cgi_handler.hpp"
@@ -19,7 +20,6 @@
 #include "http_status_code.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
-#include <sstream>
 
 RequestHandler::RequestHandler(const HttpRequest&  request,
                                const ServerConfig& serverConfig)
@@ -141,7 +141,6 @@ void RequestHandler::handleRedirect() {
         return;
     }
     if (location->getAlias()) {
-        
         std::string alias = *location->getAlias();
         std::string name = location->getName();
         _internalUri = alias + _internalUri.substr(name.length());
@@ -326,7 +325,12 @@ void RequestHandler::processPostRequest() {
         std::string     chunk;
         while (_request.readBodyChunk(chunk)) {
             if (!parser.parseChunk(chunk)) {
-                _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+                // just a protection in case the status code was not set
+                if (parser.getStatusCode() == HTTP_OK) {
+                    _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+                } else {
+                    _response.setStatusCode(parser.getStatusCode());
+                }
                 _response.setContent("Failed to parse multipart data");
                 return;
             }
@@ -541,62 +545,83 @@ RequestMethod RequestHandler::getRequestMethod(const std::string& method) {
 }
 
 std::string RequestHandler::JsonifyServerConfig() {
-	std::stringstream json;
+    std::stringstream json;
 
-	json << "{" << std::endl;
-	json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\"," << std::endl;
-	json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
-	json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
-	const char* index = _serverConfig.getIndex()->c_str();
-	json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
-	json << "  \"autoindex\": " << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << "," << std::endl;
-	json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\"," << std::endl;
-	json << "  \"client_max_body_size\": \"" << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\"," << std::endl;
-	json << "  \"locations\": [" << std::endl;
-	for (std::map<std::string, Location>::const_iterator it = _serverConfig.route.begin(); it != _serverConfig.route.end(); ++it) {
-		const Location& location = it->second;
-		json << "    {" << std::endl;
-		json << "      \"path\": \"" << location.getName() << "\"," << std::endl;
-		json << "      \"root\": \"" << (location.getRoot() ? *location.getRoot() : "") << "\"," << std::endl;
-		json << "      \"methods\": [" << std::endl;
-		
-		bool firstMethod = true;
-		if (location.getMethodIsAllowed("GET")) {
-			if (!firstMethod) json << "," << std::endl;
-			json << "        \"GET\"";
-			firstMethod = false;
-		}
-		if (location.getMethodIsAllowed("POST")) {
-			if (!firstMethod) json << "," << std::endl;
-			json << "        \"POST\"";
-			firstMethod = false;
-		}
-		if (location.getMethodIsAllowed("DELETE")) {
-			if (!firstMethod) json << "," << std::endl;
-			json << "        \"DELETE\"";
-			firstMethod = false;
-		}
-		
-		json << std::endl << "      ]," << std::endl;
-		json << "      \"autoindex\": " << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << "," << std::endl;
-		const std::string* index = location.getIndex();
-		json << "      \"index\": \"" << (index ? *index : "") << "\"," << std::endl;
-		const std::string* return_value = location.getReturn();
-		json << "      \"return\": \"" << (return_value ? *return_value : "") << "\"," << std::endl;
-		const std::string* alias = location.getAlias();
-		json << "      \"client_max_body_size\": \"" << lib::to_string(location.getClientMaxBodySize()) << "\"," << std::endl;
-		json << "      \"alias\": \"" << (alias ? *alias : "") << "\"" << std::endl;
-		json << "    }";
-		
-		// Add comma if this isn't the last location
-		if (std::next(it) != _serverConfig.route.end()) {
-			json << ",";
-		}
-		json << std::endl;
-	}
-	
-	json << "  ]" << std::endl;
-	json << "}" << std::endl;
+    json << "{" << std::endl;
+    json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\","
+         << std::endl;
+    json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
+    json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
+    const char* index = _serverConfig.getIndex()->c_str();
+    json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
+    json << "  \"autoindex\": "
+         << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+         << std::endl;
+    json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\","
+         << std::endl;
+    json << "  \"client_max_body_size\": \""
+         << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\","
+         << std::endl;
+    json << "  \"locations\": [" << std::endl;
+    for (std::map<std::string, Location>::const_iterator it =
+             _serverConfig.route.begin();
+         it != _serverConfig.route.end(); ++it) {
+        const Location& location = it->second;
+        json << "    {" << std::endl;
+        json << "      \"path\": \"" << location.getName() << "\","
+             << std::endl;
+        json << "      \"root\": \""
+             << (location.getRoot() ? *location.getRoot() : "") << "\","
+             << std::endl;
+        json << "      \"methods\": [" << std::endl;
 
-	return json.str();
+        bool firstMethod = true;
+        if (location.getMethodIsAllowed("GET")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"GET\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("POST")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"POST\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("DELETE")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"DELETE\"";
+            firstMethod = false;
+        }
+
+        json << std::endl << "      ]," << std::endl;
+        json << "      \"autoindex\": "
+             << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+             << std::endl;
+        const std::string* index = location.getIndex();
+        json << "      \"index\": \"" << (index ? *index : "") << "\","
+             << std::endl;
+        const std::string* return_value = location.getReturn();
+        json << "      \"return\": \"" << (return_value ? *return_value : "")
+             << "\"," << std::endl;
+        const std::string* alias = location.getAlias();
+        json << "      \"client_max_body_size\": \""
+             << lib::to_string(location.getClientMaxBodySize()) << "\","
+             << std::endl;
+        json << "      \"alias\": \"" << (alias ? *alias : "") << "\""
+             << std::endl;
+        json << "    }";
+
+        // Add comma if this isn't the last location
+        if (std::next(it) != _serverConfig.route.end()) {
+            json << ",";
+        }
+        json << std::endl;
+    }
+
+    json << "  ]" << std::endl;
+    json << "}" << std::endl;
+
+    return json.str();
 }
