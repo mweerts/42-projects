@@ -108,10 +108,10 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
-
+Logger::critical() << script_path;
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
-
+    
     std::string interp = getCgiInterpreter(script_path);
     if (!interp.empty()) {
         return lib::isExecutable(interp);

@@ -291,6 +291,7 @@ void RequestHandler::processGetRequest() {
 
 void RequestHandler::processPostRequest() {
     CgiHandler tmpCgi(_request, &_serverConfig);
+    Logger::critical() << _internalUri;
     if (tmpCgi.isCgiScript(_internalUri)) {
         _cgiHandler = initCgiHandler();
         if (!_cgiHandler)
