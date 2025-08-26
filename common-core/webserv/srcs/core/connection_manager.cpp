@@ -27,12 +27,11 @@
 #include "lib/socket_guard.hpp"
 #include "server_status.hpp"
 
-ConnectionManager::ConnectionManager()
-    : running_(false), shutdown_flag_(NULL) {
+ConnectionManager::ConnectionManager() : running_(false), shutdown_flag_(NULL) {
     // Pre-allocate space for poll_fds this
     // Connection is created once and is not destroyed
     // until the server is stopped so we can safely pre-allocate
-	// "slower" at startup but faster at runtime
+    // "slower" at startup but faster at runtime
     poll_fds_.reserve(1024);
 }
 
@@ -115,7 +114,7 @@ void ConnectionManager::Run() {
                 if (client != NULL) {
                     it->second->HandleAuxEvent(fd, poll_fds_[i].revents);
                 } else {
-					close(it->first);
+                    close(it->first);
                     aux_fd_owner_.erase(it);
                     Logger::debug() << "Cleaned up orphaned aux fd: " << fd;
                 }
@@ -211,15 +210,16 @@ void ConnectionManager::RemoveClient(int client_fd) {
         return;
     }
 
-	// Remove aux fds owned by this client
-	for (ClientIterator aux_it = aux_fd_owner_.begin(); aux_it != aux_fd_owner_.end();) {
-		if (aux_it->second->GetSocketFd() == client_fd) {
-			close(aux_it->first);
-			aux_fd_owner_.erase(aux_it++);
-		} else {
-			++aux_it;
-		}
-	}
+    // Remove aux fds owned by this client
+    for (ClientIterator aux_it = aux_fd_owner_.begin();
+         aux_it != aux_fd_owner_.end();) {
+        if (aux_it->second->GetSocketFd() == client_fd) {
+            close(aux_it->first);
+            aux_fd_owner_.erase(aux_it++);
+        } else {
+            ++aux_it;
+        }
+    }
 
     ClientConnection* client = it->second;
     client->Close();
@@ -237,9 +237,18 @@ void ConnectionManager::CleanupTimedOutClients() {
 
     for (ClientConstIterator it = clients_.begin(); it != clients_.end();
          ++it) {
-		if (it->second == NULL) {
-			continue;
-		}
+        if (it->second == NULL) {
+            continue;
+        }
+
+        const int kHeaderTimeout = 20;
+        if (it->second->GetState() == ClientConnection::READING_REQUEST &&
+            it->second->IsHeaderTimedOut(kHeaderTimeout)) {
+            Logger::debug() << "Client fd=" << it->first << " header timed out";
+            clients_to_close.push_back(it->first);
+            continue;
+        }
+
         if (it->second->IsTimedOut()) {
             Logger::debug() << "Client fd=" << it->first << " timed out";
             clients_to_close.push_back(it->first);

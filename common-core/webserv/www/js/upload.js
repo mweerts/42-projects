@@ -54,14 +54,14 @@ function handleFiles(files) {
 
 function displaySelectedFiles(files) {
     if (files.length === 0) {
-        selectedFilesDiv.classList.add('hidden');
+		filesList.innerHTML = '<div class="text-pink-400/60 font-mono text-xs">No files selected</div>';
         return;
     }
 
     selectedFilesDiv.classList.remove('hidden');
     filesList.innerHTML = files.map(file => `
         <div class="flex justify-between items-center py-2 px-3 bg-gradient-to-r from-pink-400/10 to-purple-400/5 border border-pink-400/30 rounded-lg text-xs hover:border-pink-400/50 hover:bg-gradient-to-r hover:from-pink-400/15 hover:to-purple-400/10 transition-all duration-300 group">
-            <span class="text-pink-300 font-mono font-semibold group-hover:text-pink-200 transition-colors duration-300">${file.name}</span>
+            <span class="text-pink-300 font-mono font-semibold group-hover:text-pink-200 transition-colors duration-300 pr-2">${file.name}</span>
             <span class="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">${formatFileSize(file.size)}</span>
         </div>
     `).join('');
@@ -103,8 +103,8 @@ document
                     "border-green-400",
                 );
 
-                // Clear selected files after successful upload
-                selectedFilesDiv.classList.add('hidden');
+                // Clear selected files list after successful upload (but keep section visible)
+                filesList.innerHTML = '<div class="text-pink-400/60 font-mono text-xs">No files selected</div>';
                 fileInput.value = '';
                 refreshFileList();
                 setTimeout(() => {

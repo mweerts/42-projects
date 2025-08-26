@@ -9,14 +9,17 @@
 
 #include "Logger.hpp"
 #include "lib/file_utils.hpp"
+#include "lib/utils.hpp"
 
 MultipartParser::MultipartParser(const std::string& boundary,
                                  const std::string& upload_dir)
     : boundary_("--" + boundary),
       upload_dir_(upload_dir),
-      state_(PARSING_BOUNDARY) {
+      state_(PARSING_BOUNDARY),
+      status_code_(HTTP_OK) {
     if (!lib::pathExist(upload_dir_)) {
         if (mkdir(upload_dir_.c_str(), 0755) != 0) {
+            status_code_ = HTTP_INTERNAL_SERVER_ERROR;
             setError("Failed to create upload directory");
             return;
         }
@@ -82,6 +85,7 @@ bool MultipartParser::parseChunk(const std::string& chunk) {
 
                 std::string headers_block = buffer_.substr(0, headers_end - 2);
                 if (!parseHeaders(headers_block)) {
+                    Logger::debug() << "Failed to parse headers";
                     return false;
                 }
 
@@ -112,6 +116,7 @@ bool MultipartParser::parseChunk(const std::string& chunk) {
                                 current_file_path_.c_str(),
                                 std::ios::binary | std::ios::out);
                             if (!current_file_.is_open()) {
+                                status_code_ = HTTP_INTERNAL_SERVER_ERROR;
                                 setError("Failed to create file: " +
                                          current_file_path_);
                                 return false;
@@ -145,6 +150,7 @@ bool MultipartParser::parseChunk(const std::string& chunk) {
                                 current_file_path_.c_str(),
                                 std::ios::binary | std::ios::out);
                             if (!current_file_.is_open()) {
+                                status_code_ = HTTP_INTERNAL_SERVER_ERROR;
                                 setError("Failed to create file: " +
                                          current_file_path_);
                                 return false;
@@ -191,8 +197,10 @@ bool MultipartParser::parseHeaders(const std::string& headers_block) {
         std::string header_name = trim(line.substr(0, colon_pos));
         std::string header_value = trim(line.substr(colon_pos + 1));
 
+		// if (header_name == "Content-Length") {
         if (header_name == "Content-Disposition") {
             if (!extractContentDisposition(header_value)) {
+                status_code_ = HTTP_BAD_REQUEST;
                 setError("Invalid Content-Disposition header");
                 return false;
             }
@@ -202,6 +210,7 @@ bool MultipartParser::parseHeaders(const std::string& headers_block) {
     }
 
     if (current_name_.empty()) {
+        status_code_ = HTTP_BAD_REQUEST;
         setError("Missing name in Content-Disposition");
         return false;
     }
@@ -230,7 +239,7 @@ bool MultipartParser::extractContentDisposition(
         }
     }
 
-    return !current_name_.empty();
+    return !current_name_.empty() && !current_filename_.empty();
 }
 
 std::string MultipartParser::generateFilePath(const std::string& filename) {
@@ -289,7 +298,8 @@ void MultipartParser::setState(State new_state) {
 void MultipartParser::setError(const std::string& message) {
     error_message_ = message;
     state_ = ERROR_STATE;
-    Logger::error() << "MultipartParser error: " << message;
+    Logger::error() << "MultipartParser error: " << message << " ("
+                    << status_code_ << ")";
 }
 
 std::string MultipartParser::trim(const std::string& str) {
@@ -327,4 +337,8 @@ const std::map<std::string, std::string>& MultipartParser::getFormFields()
 
 std::string MultipartParser::getErrorMessage() const {
     return error_message_;
+}
+
+StatusCode MultipartParser::getStatusCode() const {
+    return status_code_;
 }

@@ -14,14 +14,15 @@
 #define CLIENT_CONNECTION_HPP
 
 #include <sys/poll.h>
+
 #include <ctime>
 #include <string>
 #include <vector>
 
+#include "../handlers/response_streamer.hpp"
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
 #include "../http/RequestParser.hpp"
-#include "../handlers/response_streamer.hpp"
 
 class ServerConfig;
 class RequestHandler;
@@ -41,6 +42,7 @@ class ClientConnection {
     bool NeedsToWrite() const;
     bool ShouldClose() const;
     bool IsTimedOut(int timeout_seconds = 30) const;
+    bool IsHeaderTimedOut(int timeout_seconds = 10) const;
 
     int   GetSocketFd() const;
     State GetState() const;
@@ -49,15 +51,16 @@ class ClientConnection {
 
     // Expose aux fds for polling (files, cgi pipes)
     std::vector<pollfd> GetAuxPollFds() const;
-    void HandleAuxEvent(int fd, short revents);
+    void                HandleAuxEvent(int fd, short revents);
 
    private:
-    static const size_t BUFFER_SIZE = 16384; // 16kb
+    static const size_t BUFFER_SIZE = 16384;  // 16kb
 
     char                read_buffer_[BUFFER_SIZE];
     int                 socket_fd_;
     const ServerConfig& server_config_;
     time_t              last_activity_;
+    time_t              header_start_time_;
 
     RequestParser*  request_parser_;
     RequestHandler* request_handler_;
@@ -66,7 +69,7 @@ class ClientConnection {
     // State management
     State state_;
     bool  is_closed_;
-	
+
     bool request_ready_;
 
     ResponseStreamer response_streamer_;

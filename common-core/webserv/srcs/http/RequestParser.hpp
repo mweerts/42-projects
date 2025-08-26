@@ -79,7 +79,7 @@ class RequestParser {
 
     void setError(StatusCode status_code, const std::string& message = "");
 
-    std::string readFromFile(size_t start_pos = 0, size_t length = 0) const;
+    std::string getBodyFromFile(size_t start_pos = 0, size_t length = 0) const;
     std::string createRequestFilePath();
     bool        saveToFile(const char* buffer, size_t size);
     bool        validateAndSetRequestLine(const std::string& line);

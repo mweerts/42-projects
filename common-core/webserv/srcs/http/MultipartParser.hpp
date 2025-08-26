@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "http_status_code.hpp"
+
 class MultipartParser {
    public:
     enum State {
@@ -36,6 +38,7 @@ class MultipartParser {
     const std::map<std::string, std::string>& getFormFields() const;
 
     std::string getErrorMessage() const;
+    StatusCode  getStatusCode() const;
 
    private:
     std::string boundary_;
@@ -53,6 +56,8 @@ class MultipartParser {
 
     std::vector<FileInfo>              files_;
     std::map<std::string, std::string> form_fields_;
+
+    StatusCode status_code_;
 
     bool        parseHeaders(const std::string& headers_block);
     bool        extractContentDisposition(const std::string& header_value);
