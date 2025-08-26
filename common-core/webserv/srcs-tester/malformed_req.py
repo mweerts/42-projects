@@ -1,15 +1,49 @@
 #!/usr/bin/env python3
 import socket
 
+def recv_all(sock):
+    data = b""
+    while b"\r\n\r\n" not in data:
+        chunk = sock.recv(4096)
+        if not chunk:
+            return data
+        data += chunk
+
+    headers, rest = data.split(b"\r\n\r\n", 1)
+    content_length = None
+    for line in headers.split(b"\r\n")[1:]:
+        k, sep, v = line.partition(b":")
+        if k.lower() == b"content-length":
+            try:
+                content_length = int(v.strip())
+            except ValueError:
+                pass
+
+    if content_length is not None:
+        body = rest
+        while len(body) < content_length:
+            chunk = sock.recv(4096)
+            if not chunk:
+                break
+            body += chunk
+        return headers + b"\r\n\r\n" + body
+
+    body = rest
+    while True:
+        chunk = sock.recv(4096)
+        if not chunk:
+            break
+        body += chunk
+    return headers + b"\r\n\r\n" + body
+
 def test_request(request):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(('localhost', 8080))
-    sock.send(request)
-    response = sock.recv(1024).decode()
-    sock.close()
-    
-    print(f"Request: {repr(request)}")
-    print(f"Response: {response}")
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('localhost', 8080))
+    s.sendall(request)
+    resp = recv_all(s)
+    s.close()
+    print(f"Request: {request!r}")
+    print(f"Response: {resp.decode(errors='replace')}")
     print("---")
 
 test_requests = [
