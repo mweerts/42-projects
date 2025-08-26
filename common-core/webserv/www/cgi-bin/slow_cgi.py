@@ -9,5 +9,5 @@ print("Content-Type: text/plain\n")
 for i in range(1, 501):  # 500 righe
     print(f"Linea {i}: Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
     sys.stdout.flush()  # forza l’invio al client
-    time.sleep(0.05)    # 50ms di ritardo per simulare lentezza
+    #time.sleep(0.05)    # 50ms di ritardo per simulare lentezza
 

@@ -2,6 +2,7 @@
 FROM ubuntu:22.04
 EXPOSE 8080
 EXPOSE 8081
+ENV FULL=0;
 
 # Imposta la directory di lavoro
 WORKDIR /usr/local/app/
@@ -13,18 +14,19 @@ RUN apt-get update && \
 COPY . .
 
 # (Opzionale) Compila il programma
-# RUN make .
-# RUN chmod 777 ./webserv
+RUN make re .
+RUN chmod 777 ./webserv
 RUN mkdir -p www && chmod 755 www
 RUN mkdir -p www/cgi-bin && chmod 755 www/cgi-bin/*.py
 RUN ls -l
 
 
 # Imposta la directory dove si trova lo script
+WORKDIR /usr/local/app/srcs-tester/src/
 RUN make re .
 WORKDIR /usr/local/app/srcs-tester/src/
 RUN mv GeneratoreTester  /usr/local/app/srcs-tester/py-tester/.
 WORKDIR /usr/local/app/srcs-tester/py-tester/
 
 # Esegui lo script Python
-#CMD ["python3", "scritp-siege-valgrind.py"]
+CMD ["python3", "scritp-siege-valgrind.py"]
