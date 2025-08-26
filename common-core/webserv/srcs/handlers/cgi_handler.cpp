@@ -110,7 +110,7 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
-    
+
     std::string interp = getCgiInterpreter(script_path);
     if (!interp.empty()) {
         return lib::isExecutable(interp);
@@ -118,7 +118,8 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     Logger::debug() << "Script path: " << script_path;
 
     // If no interpreter, the script itself must be executable.
-	// this won't happen because if the file has no extension, it's not a cgi script
+    // this won't happen because if the file has no extension, it's not a cgi
+    // script
     return lib::isExecutable(script_path);
 }
 
@@ -155,6 +156,7 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("UPLOADS_DIR=" +
                   (serverConfig_ ? serverConfig_->getUploadDir() : ""));
 
+    env.push_back("REDIRECT_STATUS=200");
     const std::map<std::string, std::string>& headers = request_.getHeaders();
     for (std::map<std::string, std::string>::const_iterator it =
              headers.begin();
@@ -386,7 +388,7 @@ static void parseCgiHeadersAndBody(const std::string& raw,
             response.setLocation(value);
         } else {
             // not implemented in httpResponse
-             response.setHeader(key, value);
+            response.setHeader(key, value);
         }
     }
 

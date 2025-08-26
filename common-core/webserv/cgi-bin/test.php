@@ -7,6 +7,8 @@ echo "<title>Test PHP</title>";
 echo "</head>";
 echo "<body>";
 echo "<h1>Le serveur PHP fonctionne !</h1>";
+echo "<p>Date et heure actuelles : " . date('Y-m-d H:i:s') . "</p>";
+echo "<p>Version de PHP : " . phpversion() . "</p>";
 echo "</body>";
 echo "</html>";
 ?>

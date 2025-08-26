@@ -63,12 +63,13 @@ void ClientConnection::Close() {
     if (is_closed_)
         return;
 
-    if (close(socket_fd_) < 0)
+    if (close(socket_fd_) < 0) {
         Logger::error() << "Failed to close socket: " << strerror(errno);
+    }
 
-	if (request_parser_) {
-		request_parser_->cleanup();
-	}
+    if (request_parser_) {
+        request_parser_->cleanup();
+    }
 
     is_closed_ = true;
     socket_fd_ = -1;
@@ -149,7 +150,7 @@ bool ClientConnection::HandleRead() {
                 request_parser_->getStatusCode(),
                 request_parser_->getStatusMessage());
             prepareResponse(request_handler_, response_streamer_);
-			request_handler_->getResponse().setConnection("close");
+            request_handler_->getResponse().setConnection("close");
             state_ = WRITING_RESPONSE;
             return true;
         }
@@ -230,7 +231,7 @@ bool ClientConnection::finalizeResponse() {
     response_streamer_.reset();
     state_ = READING_REQUEST;
     request_ready_ = false;
-	header_start_time_ = time(0);
+    header_start_time_ = time(0);
 
     return true;
 }
@@ -328,8 +329,8 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
 }
 
 bool ClientConnection::IsHeaderTimedOut(int timeout_seconds) const {
-	if (state_ != READING_REQUEST) {
-		return false;
-	}
-	return (time(NULL) - header_start_time_) > timeout_seconds;
+    if (state_ != READING_REQUEST) {
+        return false;
+    }
+    return (time(NULL) - header_start_time_) > timeout_seconds;
 }
