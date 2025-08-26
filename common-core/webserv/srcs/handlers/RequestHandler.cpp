@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 
 #include "../core/server_status.hpp"
 #include "../handlers/cgi_handler.hpp"
@@ -29,7 +30,12 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _internalUri(""),
       _autoindex(serverConfig.getAutoIndex()),
       _isStaticFile(false),
-      _staticFilePath("") {};
+      _staticFilePath(""),
+      _uploadInProgress(false),
+      _uploadDone(false),
+      _uploadOk(false),
+      _uploadErrMsg(),
+      _uploader(NULL) {};
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -37,10 +43,10 @@ RequestHandler::~RequestHandler() {
         delete _cgiHandler;
         _cgiHandler = NULL;
     }
-}
-
-void RequestHandler::setResponse(const HttpResponse& response) {
-    _response = response;
+    if (_uploader) {
+        delete _uploader;
+        _uploader = NULL;
+    }
 }
 
 const std::string RequestHandler::getRootPath() const {
@@ -82,6 +88,10 @@ static void replaceErrorPlaceholders(std::string&        content,
 
 void RequestHandler::handleRequest() {
     ServerStatus::getInstance().onRequestStarted();
+
+    Logger::info() << "Request: " << _request.getMethod() << " "
+                   << _request.getUri() << " " << _request.getVersion();
+
     processRequest();
 
     if (_request.shouldKeepAlive()) {
@@ -140,11 +150,9 @@ void RequestHandler::handleRedirect() {
         return;
     }
     if (location->getAlias()) {
-        
         std::string alias = *location->getAlias();
         std::string name = location->getName();
         _internalUri = alias + _internalUri.substr(name.length());
-        Logger::critical() << _internalUri;
         Logger::debug() << "aliasing to: " << _internalUri;
         return;
     }
@@ -200,7 +208,6 @@ void RequestHandler::processRequest() {
         case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
         case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
     }
-    Logger::critical() << _response.toString();
 }
 
 // ============ GET ============ //
@@ -253,9 +260,13 @@ void RequestHandler::processGetRequest() {
     if (_internalUri == "/status") {
         handleStatusRequest();
         return;
+    } else if (_internalUri == "/config") {
+        _response.setStatusCode(HTTP_OK);
+        _response.setContent(JsonifyServerConfig());
+        _response.setContentType("application/json");
+        return;
     }
 
-    Logger::critical() << fullPath;
     if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
@@ -282,7 +293,7 @@ void RequestHandler::processGetRequest() {
     _staticFilePath = fullPath;
     struct stat st;
     if (stat(fullPath.c_str(), &st) == 0) {
-        _response.setContentLength(static_cast<int>(st.st_size));
+        _response.setContentLength(static_cast<size_t>(st.st_size));
     }
 
     _response.setContentType(MimeTypes::getType(fullPath.c_str()));
@@ -300,10 +311,17 @@ void RequestHandler::processPostRequest() {
         return;
     }
 
+    // const Location* location = _serverConfig.getLocation(_internalUri);
+    // if (location &&
+    //     _request.getContentLength() > location->getClientMaxBodySize()) {
+    //     _response.setStatusCode(HTTP_REQUEST_ENTITY_TOO_LARGE);
+    //     _response.setContent(GetHtmlErrorPage(_response));
+    //     return;
+    // }
+
     // Regular file upload handling
     std::ofstream file;
     std::string   fullPath = _rootPath + _internalUri;
-
     if (_request.getContentType().find("multipart/form-data") !=
         std::string::npos) {
         if (_serverConfig.getUploadDir().empty()) {
@@ -318,28 +336,11 @@ void RequestHandler::processPostRequest() {
             return;
         }
 
-        Logger::debug() << "upload dir: " << _serverConfig.getUploadDir();
-        MultipartParser parser(boundary, _serverConfig.getUploadDir());
-        std::string     chunk;
-        while (_request.readBodyChunk(chunk)) {
-            if (!parser.parseChunk(chunk)) {
-                _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-                _response.setContent("Failed to parse multipart data");
-                return;
-            }
+        if (!startUpload(boundary)) {
+            _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+            _response.setContent("Failed to initialize upload parsing");
         }
-        if (parser.hasError()) {
-            _response.setStatusCode(HTTP_BAD_REQUEST);
-            _response.setContent("Multipart parsing error: " +
-                                 parser.getErrorMessage());
-            return;
-        }
-        if (!parser.isComplete()) {
-            _response.setStatusCode(HTTP_BAD_REQUEST);
-            _response.setContent("Incomplete multipart data");
-            return;
-        }
-        _response.setStatusCode(HTTP_CREATED);
+
         return;
     }
     _response.setStatusCode(HTTP_UNSUPPORTED_MEDIA_TYPE);
@@ -350,7 +351,7 @@ void RequestHandler::processPostRequest() {
 void RequestHandler::processDeleteRequest() {
     std::string fullPath = _rootPath + _request.getUri();
 
-    if (!pathExist(fullPath)) {
+    if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }
@@ -492,47 +493,174 @@ std::string RequestHandler::extractBoundary(const std::string& content_type) {
     return boundary;
 }
 
-RequestMethod RequestHandler::getRequestMethod(const std::string& method) {
-    if (method.length() > 10)
-        return UNKNOWN;
+std::string RequestHandler::JsonifyServerConfig() {
+    std::stringstream json;
 
-    switch (method[0]) {
-        case 'G':
-            if (method == "GET")
-                return GET;
-            break;
-        case 'P':
-            if (method == "POST")
-                return POST;
-            if (method == "PUT")
-                return PUT;
-            if (method == "PATCH")
-                return PATCH;
-            if (method == "PROPFIND")
-                return PROPFIND;
-            if (method == "PROPPATCH")
-                return PROPPATCH;
-            break;
-        case 'D':
-            if (method == "DELETE")
-                return DELETE;
-            break;
-        case 'H':
-            if (method == "HEAD")
-                return HEAD;
-            break;
-        case 'O':
-            if (method == "OPTIONS")
-                return OPTIONS;
-            break;
-        case 'C':
-            if (method == "CONNECT")
-                return CONNECT;
-            break;
-        case 'T':
-            if (method == "TRACE")
-                return TRACE;
-            break;
+    json << "{" << std::endl;
+    json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\","
+         << std::endl;
+    json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
+    json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
+    const char* index = _serverConfig.getIndex()->c_str();
+    json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
+    json << "  \"autoindex\": "
+         << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+         << std::endl;
+    json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\","
+         << std::endl;
+    json << "  \"client_max_body_size\": \""
+         << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\","
+         << std::endl;
+    json << "  \"locations\": [" << std::endl;
+    for (std::map<std::string, Location>::const_iterator it =
+             _serverConfig.route.begin();
+         it != _serverConfig.route.end(); ++it) {
+        const Location& location = it->second;
+        json << "    {" << std::endl;
+        json << "      \"path\": \"" << location.getName() << "\","
+             << std::endl;
+        json << "      \"root\": \""
+             << (location.getRoot() ? *location.getRoot() : "") << "\","
+             << std::endl;
+        json << "      \"methods\": [" << std::endl;
+
+        bool firstMethod = true;
+        if (location.getMethodIsAllowed("GET")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"GET\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("POST")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"POST\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("DELETE")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"DELETE\"";
+            firstMethod = false;
+        }
+
+        json << std::endl << "      ]," << std::endl;
+        json << "      \"autoindex\": "
+             << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+             << std::endl;
+        const std::string* index = location.getIndex();
+        json << "      \"index\": \"" << (index ? *index : "") << "\","
+             << std::endl;
+        const std::string* return_value = location.getReturn();
+        json << "      \"return\": \"" << (return_value ? *return_value : "")
+             << "\"," << std::endl;
+        const std::string* alias = location.getAlias();
+        json << "      \"client_max_body_size\": \""
+             << lib::to_string(location.getClientMaxBodySize()) << "\","
+             << std::endl;
+        json << "      \"alias\": \"" << (alias ? *alias : "") << "\""
+             << std::endl;
+        json << "    }";
+
+        // Add comma if this isn't the last location
+        std::map<std::string, Location>::const_iterator it_temp = it;
+        ++it_temp;
+        if (it_temp != _serverConfig.route.end()) {
+            json << ",";
+        }
+        json << std::endl;
     }
-    return UNKNOWN;
+
+    json << "  ]" << std::endl;
+    json << "}" << std::endl;
+
+    return json.str();
+}
+
+bool RequestHandler::startUpload(const std::string& boundary) {
+    if (_uploadInProgress || _uploader) {
+        return false;
+    }
+    _uploader = new MultipartParser(boundary, _serverConfig.getUploadDir());
+    if (_uploader == NULL) {
+        return false;
+    }
+    _request.resetBodyReader();
+    _uploadInProgress = true;
+    _uploadDone = false;
+    _uploadOk = false;
+    _uploadErrMsg.clear();
+    return true;
+}
+
+// ============ UPLOAD PROCESSING ============ //
+
+bool RequestHandler::hasUploadInProgress() const {
+    return _uploadInProgress && !_uploadDone;
+}
+
+bool RequestHandler::processUploadChunk() {
+    if (!_uploadInProgress || _uploadDone || _uploader == NULL) {
+        return _uploadDone;
+    }
+
+    std::string chunk;
+
+    // 256kb per chunk, to adjust if needed
+    const size_t step_budget = 256 * 1024;
+    if (!_request.readBodyChunk(chunk, step_budget)) {
+        if (_request.hasMoreBody()) {
+            _uploadErrMsg = "Failed to read request body";
+            _uploadOk = false;
+            _uploadDone = true;
+            _uploadInProgress = false;
+            return true;
+        }
+
+        if (_uploader->hasError()) {
+            _uploadErrMsg = _uploader->getErrorMessage();
+            _uploadOk = false;
+        } else if (!_uploader->isComplete()) {
+            _uploadErrMsg = "Incomplete multipart data";
+            _uploadOk = false;
+        } else {
+            _uploadOk = true;
+        }
+        _uploadDone = true;
+        _uploadInProgress = false;
+        return true;
+    }
+
+    if (!_uploader->parseChunk(chunk)) {
+        _uploadErrMsg = _uploader->getErrorMessage();
+        _uploadDone = true;
+        _uploadOk = false;
+        _uploadInProgress = false;
+        return true;
+    }
+
+    if (!_request.hasMoreBody()) {
+        if (_uploader->hasError()) {
+            _uploadErrMsg = _uploader->getErrorMessage();
+            _uploadOk = false;
+        } else if (!_uploader->isComplete()) {
+            _uploadErrMsg = "Incomplete multipart data";
+            _uploadOk = false;
+        } else {
+            _uploadOk = true;
+        }
+        _uploadDone = true;
+        _uploadInProgress = false;
+        return true;
+    }
+
+    return false;
+}
+
+bool RequestHandler::uploadSucceeded() const {
+    return _uploadDone && _uploadOk;
+}
+
+const std::string& RequestHandler::uploadErrorMessage() const {
+    return _uploadErrMsg;
 }

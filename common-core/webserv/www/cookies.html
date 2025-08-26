@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Test Sessions avec CGI</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 30px;
+      }
+      #loginForm,
+      #welcome {
+        margin-top: 20px;
+      }
+      input,
+      button {
+        padding: 8px;
+        margin: 5px;
+      }
+      #loginForm {
+        display: none;
+      }
+      #welcome {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Test de connexion avec cookies & CGI</h1>
+
+    <!-- Formulaire de login -->
+    <div id="loginForm">
+      <input type="text" id="username" placeholder="Nom d'utilisateur" /><br />
+      <input type="password" id="password" placeholder="Mot de passe" /><br />
+      <button onclick="login()">Se connecter</button>
+    </div>
+
+    <!-- Message de bienvenue -->
+    <div id="welcome">
+      <h2 id="welcomeMessage"></h2>
+      <button onclick="logout()">Se déconnecter</button>
+    </div>
+
+    <script>
+      async function checkSession() {
+        try {
+          let res = await fetch("/me.py", { credentials: "include" });
+          if (res.ok) {
+            let data = await res.json();
+            document.getElementById("welcomeMessage").innerText =
+              "Bienvenue, " + data.username + "!";
+            document.getElementById("welcome").style.display = "block";
+            document.getElementById("loginForm").style.display = "none";
+          } else {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("welcome").style.display = "none";
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function login() {
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+
+        let res = await fetch("/login.py", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
+        });
+
+        if (res.ok) {
+          await checkSession();
+        } else {
+          alert("Login échoué !");
+        }
+      }
+
+      async function logout() {
+        await fetch("/logout.py", { method: "POST", credentials: "include" });
+        document.getElementById("loginForm").style.display = "block";
+        document.getElementById("welcome").style.display = "none";
+      }
+
+      // Vérifie la session dès le chargement de la page
+      checkSession();
+    </script>
+  </body>
+</html>

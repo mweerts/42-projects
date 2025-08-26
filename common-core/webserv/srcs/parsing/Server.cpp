@@ -81,6 +81,10 @@ const std::string ServerConfig::getRoot() const {
     return "./";
 }
 
+const std::vector<Location>& ServerConfig::getLocations(void) const {
+    return this->location_;
+}
+
 const std::string* ServerConfig::getIndex() const {
     std::map<std::string, std::vector<std::string> >::const_iterator it =
         prmtrs.find("index");

@@ -81,6 +81,7 @@ class ServerConfig {
     const std::string* getIndex(void) const;
     int                getPort(void) const;
     const Location*    getLocation(const std::string& uri) const;
+	const std::vector<Location>& getLocations(void) const;
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
 	const std::map<int, std::string> getMapErrorPage(void) const;

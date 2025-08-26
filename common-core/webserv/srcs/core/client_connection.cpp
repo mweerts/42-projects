@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "../handlers/RequestHandler.hpp"
+#include "../http/utils.hpp"
 #include "Logger.hpp"
 #include "http_status_code.hpp"
 #include "lib/utils.hpp"
@@ -33,6 +34,7 @@ ClientConnection::ClientConnection(int                 socket_fd,
     : socket_fd_(socket_fd),
       server_config_(server_config),
       last_activity_(time(0)),
+      header_start_time_(time(0)),
       request_parser_(NULL),
       request_handler_(NULL),
       state_(READING_REQUEST),
@@ -55,6 +57,22 @@ ClientConnection::~ClientConnection() {
     }
 
     Close();
+}
+
+void ClientConnection::Close() {
+    if (is_closed_)
+        return;
+
+    if (close(socket_fd_) < 0) {
+        Logger::error() << "Failed to close socket: " << strerror(errno);
+    }
+
+    if (request_parser_) {
+        request_parser_->cleanup();
+    }
+
+    is_closed_ = true;
+    socket_fd_ = -1;
 }
 
 bool ClientConnection::HandleEvent(short revents) {
@@ -125,10 +143,16 @@ bool ClientConnection::HandleRead() {
 
     switch (parse_status) {
         case RequestParser::ERROR: {
-            Logger::error()
-                << "Error parsing request: " << request_parser_->getStatusCode()
-                << " " << request_parser_->getStatusMessage();
-            return false;
+            request_ready_ = true;
+            request_handler_ =
+                new RequestHandler(current_request_, server_config_);
+            request_handler_->generateErrorResponse(
+                request_parser_->getStatusCode(),
+                request_parser_->getStatusMessage());
+            prepareResponse(request_handler_, response_streamer_);
+            request_handler_->getResponse().setConnection("close");
+            state_ = WRITING_RESPONSE;
+            return true;
         }
         case RequestParser::NEED_MORE_DATA: {
             return true;
@@ -161,6 +185,22 @@ bool ClientConnection::HandleWrite() {
         return true;
     }
 
+    if (request_handler_ && request_handler_->hasUploadInProgress()) {
+        bool finished = request_handler_->processUploadChunk();
+        if (finished) {
+            HttpResponse& response = request_handler_->getResponse();
+            if (request_handler_->uploadSucceeded()) {
+                response.setStatusCode(HTTP_CREATED);
+            } else {
+                response.setStatusCode(HTTP_BAD_REQUEST);
+                response.setContent(GetHtmlErrorPage(
+                    response, request_handler_->uploadErrorMessage()));
+            }
+            prepareResponse(request_handler_, response_streamer_);
+        }
+        return true;
+    }
+
     ssize_t n = response_streamer_.writeNextChunk(socket_fd_);
     if (n == -1) {
         return false;
@@ -183,12 +223,7 @@ bool ClientConnection::finalizeResponse() {
         return false;
     }
 
-    // Reset for next request
-    // delete request_parser_;
-    // request_parser_ = NULL;
-    // request_parser_ = new RequestParser(current_request_, server_config_);
-
-	request_parser_->reset(current_request_);
+    request_parser_->reset(current_request_);
     delete request_handler_;
     request_handler_ = NULL;
 
@@ -196,19 +231,9 @@ bool ClientConnection::finalizeResponse() {
     response_streamer_.reset();
     state_ = READING_REQUEST;
     request_ready_ = false;
+    header_start_time_ = time(0);
 
     return true;
-}
-
-void ClientConnection::Close() {
-    if (is_closed_)
-        return;
-
-    if (close(socket_fd_) < 0)
-        Logger::error() << "Failed to close socket: " << strerror(errno);
-
-    is_closed_ = true;
-    socket_fd_ = -1;
 }
 
 // ============ OTHER FD EVENTS HANDLING ============ //
@@ -301,4 +326,11 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
+}
+
+bool ClientConnection::IsHeaderTimedOut(int timeout_seconds) const {
+    if (state_ != READING_REQUEST) {
+        return false;
+    }
+    return (time(NULL) - header_start_time_) > timeout_seconds;
 }

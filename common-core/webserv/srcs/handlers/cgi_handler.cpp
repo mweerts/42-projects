@@ -108,7 +108,6 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
-
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
 
@@ -119,7 +118,8 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
     Logger::debug() << "Script path: " << script_path;
 
     // If no interpreter, the script itself must be executable.
-	// this won't happen because if the file has no extension, it's not a cgi script
+    // this won't happen because if the file has no extension, it's not a cgi
+    // script
     return lib::isExecutable(script_path);
 }
 
@@ -135,7 +135,7 @@ void CgiHandler::setQueryString(const std::string& queryString) {
 
 const std::vector<std::string> CgiHandler::buildEnvironment() {
     std::vector<std::string> env;
-    env.reserve(12);  // minimum env variables
+    env.reserve(15);  // minimum env variables
 
     env.push_back("REQUEST_METHOD=" + request_.getMethod());
     env.push_back("QUERY_STRING=" + queryString_);
@@ -155,7 +155,12 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("LOG_FILE=" + Logger::getLogFilename());
     env.push_back("UPLOADS_DIR=" +
                   (serverConfig_ ? serverConfig_->getUploadDir() : ""));
+	env.push_back("REDIRECT_STATUS=200");
+	env.push_back("SCRIPT_FILENAME=" + cgiScriptPath_);
+    env.push_back("SCRIPT_NAME=" + lib::extractPathFromUri(request_.getUri()));
+    env.push_back("PATH_INFO=");
 
+    env.push_back("REDIRECT_STATUS=200");
     const std::map<std::string, std::string>& headers = request_.getHeaders();
     for (std::map<std::string, std::string>::const_iterator it =
              headers.begin();
@@ -387,7 +392,7 @@ static void parseCgiHeadersAndBody(const std::string& raw,
             response.setLocation(value);
         } else {
             // not implemented in httpResponse
-            // response.setHeader(key, value);
+            response.setHeader(key, value);
         }
     }
 

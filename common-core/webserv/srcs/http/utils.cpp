@@ -10,54 +10,28 @@
 #include <vector>
 
 #include "Logger.hpp"
-
-bool pathExist(const std::string& path) {
-    struct stat fileInfo;
-    return stat(path.c_str(), &fileInfo) == 0;
-}
-
-bool isFile(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_ISREG(fileInfo.st_mode);
-}
-
-bool isDirectory(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_ISDIR(fileInfo.st_mode);
-}
-
-bool isReadable(const std::string& path) {
-    struct stat fileInfo;
-    stat(path.c_str(), &fileInfo);
-    return S_IRUSR & fileInfo.st_mode && !access(path.c_str(), R_OK);
-}
-
-off_t getFileSize(const std::string& path) {
-    struct stat fileInfo;
-    if (stat(path.c_str(), &fileInfo) == 0) {
-        return fileInfo.st_size;
-    }
-    return -1;
-}
+#include "lib/file_utils.hpp"
+#include "lib/utils.hpp"
 
 bool isPhpFile(const std::string& path) {
     return path.substr(path.find_last_of('.')) == ".php";
 }
 
-std::string GetHtmlErrorPage(HttpResponse& response) {
-	response.setContentType("text/html");
-	std::string html = "<html><head><title>" + std::to_string(response.getStatusCode()) +
-           " " + GetHttpStatusText(response.getStatusCode()) +
-           "</title></head><body><center><h1>" +
-           std::to_string(response.getStatusCode()) + " " +
-           GetHttpStatusText(response.getStatusCode()) +
-           "</h1></center><hr><center>" + response.getServerName() +
-           "</center></body></html>";
-    response.setContent(html);
-	response.setContentLength(html.size());
-    return html;
+std::string GetHtmlErrorPage(HttpResponse&      response,
+                             const std::string& err_message) {
+    response.setContentType("text/html");
+    std::string msg = err_message.empty() ? "" : "<h4>" + err_message + "</h4>";
+    std::ostringstream oss;
+    oss << "<html><head><title>" << lib::to_string(response.getStatusCode())
+        << " " << GetHttpStatusText(response.getStatusCode())
+        << "</title></head><body><center><h1>"
+        << lib::to_string(response.getStatusCode()) << " "
+        << GetHttpStatusText(response.getStatusCode()) << "</h1>" << msg
+        << "</center><hr><center>" << response.getServerName()
+        << "</center></body></html>";
+    response.setContent(oss.str());
+    response.setContentLength(oss.str().size());
+    return oss.str();
 }
 
 static std::string getLastModifiedTime(const std::string& path) {
@@ -178,7 +152,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
             << "\">" << croppedName << "</a>"
             << std::string(51 - croppedName.length(), ' ')
             << getLastModifiedTime(fullPath) << std::setw(8)
-            << humanReadableSize(getFileSize(fullPath)) << "\n";
+            << humanReadableSize(lib::getFileSize(fullPath)) << "\n";
     }
     oss << "</pre><hr></body></html>";
     return oss.str();
