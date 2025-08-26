@@ -86,9 +86,9 @@ class ServerConfig {
     const std::string  getErrorPage(StatusCode statusCode) const;	
     const CgiBin&      getCgiBin(void) const;
 
-    std::map<std::string, Location> route;
+	std::map<std::string, Location> route;
     std::vector<Location>           location_;
-
+	
     class NotFoundUri : public std::exception {
        public:
         virtual const char* what() const throw();  // dichiarazione

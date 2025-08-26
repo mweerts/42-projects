@@ -37,6 +37,7 @@ RequestParser::RequestParser(HttpRequest& request, const ServerConfig& config)
     request_size_ = 0;
     req_buffer_.clear();
     req_filename_.clear();
+	header_start_time_ = time(NULL);
 }
 
 RequestParser::~RequestParser() {
@@ -54,6 +55,7 @@ void RequestParser::reset(const HttpRequest& request) {
     req_buffer_.clear();
     req_filename_.clear();
     header_buffer_.clear();
+	header_start_time_ = time(NULL);
 }
 
 void RequestParser::cleanup() {
@@ -85,6 +87,10 @@ RequestParser::Status RequestParser::parse(const char* buffer,
     }
 
     if (current_phase_ <= HEADERS) {
+		if (isHeaderTimedOut(20)) {
+			setError(HTTP_GATEWAY_TIMEOUT);
+			return ERROR;
+		}
         header_buffer_.append(buffer, buffer_size);
         if (header_buffer_.size() > HEADER_BUFFER_SIZE) {
             setError(HTTP_REQUEST_ENTITY_TOO_LARGE,
@@ -223,7 +229,6 @@ bool RequestParser::validateAndSetRequestLine(const std::string& line) {
     std::string        method, uri, version, extra;
 
     iss >> method >> uri >> version;
-    Logger::info() << "Request: " << method << " " << uri << " " << version;
 
     if (iss >> extra) {
         setError(HTTP_BAD_REQUEST, "Extra content in request line");
@@ -441,6 +446,10 @@ std::string RequestParser::getBodyFromFile(size_t start_pos,
 
     size_t bytes_read = static_cast<size_t>(file.gcount());
     return std::string(&buffer[0], bytes_read);
+}
+
+bool RequestParser::isHeaderTimedOut(int timeout_seconds) const {
+    return (time(NULL) - header_start_time_) > timeout_seconds;
 }
 
 StatusCode RequestParser::getStatusCode() const {

@@ -21,9 +21,6 @@ class RequestHandler {
 
     HttpResponse& getResponse();
 
-    void generateErrorResponse(StatusCode         error_code,
-                               const std::string& error_msg);
-
     const std::string getRootPath() const;
 
     bool hasCgiRunning() const;

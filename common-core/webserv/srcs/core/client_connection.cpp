@@ -34,7 +34,6 @@ ClientConnection::ClientConnection(int                 socket_fd,
     : socket_fd_(socket_fd),
       server_config_(server_config),
       last_activity_(time(0)),
-      header_start_time_(time(0)),
       request_parser_(NULL),
       request_handler_(NULL),
       state_(READING_REQUEST),
@@ -66,9 +65,9 @@ void ClientConnection::Close() {
     if (close(socket_fd_) < 0)
         Logger::error() << "Failed to close socket: " << strerror(errno);
 
-	if (request_parser_) {
-		request_parser_->cleanup();
-	}
+    if (request_parser_) {
+        request_parser_->cleanup();
+    }
 
     is_closed_ = true;
     socket_fd_ = -1;
@@ -145,15 +144,12 @@ bool ClientConnection::HandleRead() {
             request_ready_ = true;
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
-            request_handler_->getResponse().setStatusCode(
-                request_parser_->getStatusCode());
-			
-			StatusCode err_code = request_parser_->getStatusCode();
-			const std::string path = server_config_.getErrorPage(err_code);
-            request_handler_->getResponse().setErrorPagePath(path);
-            request_handler_->getResponse().CreateErrorPage();
+
+            StatusCode err_code = request_parser_->getStatusCode();
+            Logger::error() << "Invalid request: " << GetHttpStatusText(err_code);
+            request_handler_->getResponse().CreateErrorPage(err_code);
+            request_handler_->getResponse().setConnection("close");
             prepareResponse(request_handler_, response_streamer_);
-			request_handler_->getResponse().setConnection("close");
             state_ = WRITING_RESPONSE;
             return true;
         }
@@ -177,6 +173,11 @@ bool ClientConnection::HandleRead() {
         }
         default:
             Logger::error() << "Unknown parse result: " << parse_status;
+            request_handler_->getResponse().CreateErrorPage(
+                HTTP_INTERNAL_SERVER_ERROR);
+				request_handler_->getResponse().setConnection("close");
+            prepareResponse(request_handler_, response_streamer_);
+            state_ = WRITING_RESPONSE;
             return false;
     }
 
@@ -196,7 +197,8 @@ bool ClientConnection::HandleWrite() {
                 response.setStatusCode(HTTP_CREATED);
             } else {
                 response.setStatusCode(HTTP_BAD_REQUEST);
-                response.CreateErrorPage(request_handler_->uploadErrorMessage());
+                response.setContent(request_handler_->uploadErrorMessage());
+                response.CreateErrorPage();
             }
             prepareResponse(request_handler_, response_streamer_);
         }
@@ -233,8 +235,6 @@ bool ClientConnection::finalizeResponse() {
     response_streamer_.reset();
     state_ = READING_REQUEST;
     request_ready_ = false;
-	header_start_time_ = time(0);
-
     return true;
 }
 
@@ -328,11 +328,4 @@ bool ClientConnection::IsTimedOut(int timeout_seconds) const {
         return (time(NULL) - last_activity_) > timeout_seconds;
     }
     return false;
-}
-
-bool ClientConnection::IsHeaderTimedOut(int timeout_seconds) const {
-	if (state_ != READING_REQUEST) {
-		return false;
-	}
-	return (time(NULL) - header_start_time_) > timeout_seconds;
 }

@@ -22,9 +22,9 @@
 #include "tcp_server.hpp"
 
 #if defined(__APPLE__)
-	typedef volatile sig_atomic_t shutdown_flag_t;
+typedef volatile sig_atomic_t shutdown_flag_t;
 #else
-	typedef volatile __sig_atomic_t shutdown_flag_t;
+typedef volatile __sig_atomic_t shutdown_flag_t;
 #endif
 
 class ConnectionManager {
@@ -59,10 +59,10 @@ class ConnectionManager {
    private:
     void RegisterFds();
     void HandleNewConnection(int fd);
-    int HandleClientEvent(int fd, short events);
+    int  HandleClientEvent(int fd, short events);
     void CleanupTimedOutClients();
     void RemoveClient(int client_fd);
-	
+
     bool                IsServerSocket(int fd) const;
     const ServerConfig& GetServerConfig(int fd) const;
 };

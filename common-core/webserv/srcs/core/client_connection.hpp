@@ -42,12 +42,11 @@ class ClientConnection {
     bool NeedsToWrite() const;
     bool ShouldClose() const;
     bool IsTimedOut(int timeout_seconds = 30) const;
-    bool IsHeaderTimedOut(int timeout_seconds = 10) const;
 
     int   GetSocketFd() const;
     State GetState() const;
-
-    void Close();
+    
+	void Close();
 
     // Expose aux fds for polling (files, cgi pipes)
     std::vector<pollfd> GetAuxPollFds() const;
@@ -60,7 +59,6 @@ class ClientConnection {
     int                 socket_fd_;
     const ServerConfig& server_config_;
     time_t              last_activity_;
-    time_t              header_start_time_;
 
     RequestParser*  request_parser_;
     RequestHandler* request_handler_;

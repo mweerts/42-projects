@@ -26,6 +26,7 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
     : _serverConfig(serverConfig),
       _request(request),
       _cgiHandler(NULL),
+      _response(serverConfig),
       _rootPath(serverConfig.getRoot()),
       _internalUri(""),
       _autoindex(serverConfig.getAutoIndex()),
@@ -35,11 +36,7 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _uploadDone(false),
       _uploadOk(false),
       _uploadErrMsg(),
-      _uploader(NULL) {
-			_rootPath = serverConfig.getRoot();
-			// need to create response with the map error_pages
-			// _response()
-      };
+      _uploader(NULL) {};
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -80,9 +77,6 @@ void RequestHandler::handleRequest() {
     if (_response.getStatusCode() != HTTP_OK &&
         _response.getStatusCode() != HTTP_MOVED_PERMANENTLY &&
         _response.getStatusCode() != HTTP_NO_CONTENT) {
-        const std::string error_page =
-            _serverConfig.getErrorPage(_response.getStatusCode());
-        _response.setErrorPagePath(_rootPath + "/" + error_page);
         _response.CreateErrorPage();
         _response.setConnection("close");
     }
@@ -99,12 +93,11 @@ void RequestHandler::handleRedirect() {
     }
     if (location->getReturn()) {
         _response.setStatusCode(HTTP_MOVED_PERMANENTLY);
+        _response.CreateErrorPage();
         std::string redirect = *location->getReturn();
         std::string port = lib ::to_string(_serverConfig.getPort());
         _response.setLocation("http://" + _serverConfig.getHost() + ":" + port +
                               urlDecode(redirect));
-        _response.setContent(GetHtmlErrorPage(_response));  // 301
-        _response.setContentType("text/html");
         Logger::info() << "redirecting to: " << urlDecode(redirect);
         return;
     }
@@ -175,7 +168,6 @@ void RequestHandler::handleStatusRequest() {
     _response.setStatusCode(HTTP_OK);
     _response.setContent(ServerStatus::getInstance().getJson());
     _response.setContentType("application/json");
-    // _response.setConnection("close");
 }
 
 static void resolveIndexFile(std::string& fullPath, const Location* location,
@@ -209,7 +201,6 @@ void RequestHandler::processGetRequest() {
         _cgiHandler = initCgiHandler();
         if (!_cgiHandler) {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
-            _response.setContent(GetHtmlErrorPage(_response));
         }
         return;
     }
@@ -337,7 +328,8 @@ bool RequestHandler::processCgi() {
 
     if (_cgiHandler->isTimedOut()) {
         Logger::warning() << "CGI process timed out";
-        _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+		_response.setContent("");
+		_response.CreateErrorPage(HTTP_GATEWAY_TIMEOUT);
         _cgiHandler->cleanupAsyncCgi();
         delete _cgiHandler;
         _cgiHandler = NULL;
@@ -362,7 +354,8 @@ bool RequestHandler::handleCgiFdEvent(int fd, short revents) {
 
     if (_cgiHandler->isTimedOut()) {
         Logger::warning() << "CGI process timed out";
-        _response.setStatusCode(HTTP_GATEWAY_TIMEOUT);
+		_response.setContent("");
+		_response.CreateErrorPage(HTTP_GATEWAY_TIMEOUT);
         _cgiHandler->cleanupAsyncCgi();
         delete _cgiHandler;
         _cgiHandler = NULL;
@@ -404,15 +397,6 @@ const std::string& RequestHandler::getStaticFilePath() const {
 
 HttpResponse& RequestHandler::getResponse() {
     return _response;
-}
-
-void RequestHandler::generateErrorResponse(StatusCode         status_code,
-                                           const std::string& error_msg) {
-    (void)error_msg;  // not implemented
-    _response.setStatusCode(status_code);
-    _response.setContent(GetHtmlErrorPage(_response));
-    _response.setContentType("text/html");
-    _response.setConnection("close");
 }
 
 std::string RequestHandler::extractBoundary(const std::string& content_type) {

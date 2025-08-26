@@ -1,6 +1,7 @@
 # webserver
 
 ## To discuss
+- Should server name be the real name of the server in Http response?
 
 ## to do max
 

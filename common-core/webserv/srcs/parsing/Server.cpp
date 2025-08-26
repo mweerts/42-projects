@@ -8,7 +8,7 @@ bool   ServerConfig::globalCgiInitialized_ = false;
 
 ServerConfig::ServerConfig(
     const std::map<std::string, std::vector<std::string> >& prmtrs,
-    const std::string&                                      name)
+    const std::string&                                     name)
     : name(name), prmtrs(prmtrs) {
     return;
 }
@@ -125,7 +125,8 @@ const Location* ServerConfig::getLocation(const std::string& uri) const {
 
 const std::string* ServerConfig::getErrorPageLocation(
     const std::string& uri, const std::string& nbrError) const {
-    size_t                                          pos;
+    size_t pos = 0;
+
     std::map<std::string, Location>::const_iterator itLoc = route.find(uri);
     if (itLoc != route.end()) {
         const std::map<std::string, std::vector<std::string> >& locPrm =
@@ -182,7 +183,7 @@ const std::string ServerConfig::getErrorPage(StatusCode statusCode) const {
     for (it = prmtrs.begin(); it != prmtrs.end(); ++it) {
         size_t pos = it->first.find(lib::to_string(statusCode), 0);
         if (pos != std::string::npos) {
-            return it->second[0];
+            return getRoot() + "/" + it->second[0];
         }
     }
     return "";
