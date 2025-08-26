@@ -17,7 +17,7 @@ func main() {
 	if userAgent == "" {
 		userAgent = "unknown"
 	}
-	
+
 	// Output HTTP headers
 	fmt.Println("Content-Type: text/html; charset=utf-8")
 	fmt.Println("Cache-Control: no-cache")
