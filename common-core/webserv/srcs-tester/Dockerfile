@@ -2,6 +2,7 @@
 FROM ubuntu:22.04
 EXPOSE 8080
 EXPOSE 8081
+ENV FULL=0;
 
 # Imposta la directory di lavoro
 WORKDIR /usr/local/app/

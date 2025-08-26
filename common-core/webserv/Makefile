@@ -6,7 +6,7 @@
 #    By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/25 18:26:27 by llebugle          #+#    #+#              #
-#    Updated: 2025/07/19 02:09:42 by llebugle         ###   ########.fr        #
+#    Updated: 2025/08/26 19:31:03 by jfranco          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,8 @@ INC = -I ./includes/
 OBJS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJS_DIR)/%.o)
 DEPS = $(SRCS:$(SRCS_DIR)/%.cpp=$(OBJS_DIR)/%.d)
 
-all: $(NAME)
+all: $(NAME) 
+
 
 $(NAME): $(OBJS)
 	c++ $(FLAGS) $(OBJS) -o $(NAME)
@@ -48,6 +49,12 @@ fclean: clean
 	rm -rf ./www/tmp
 
 re: fclean all
+test:
+	docker build -f srcs-tester/Dockerfile -t dockertester .
+	docker run -e FULL=1 -ti dockertester
+rtest: 
+	docker run -e FULL=0 -ti dockertester
+
 	
 .PHONY: all clean fclean re
 

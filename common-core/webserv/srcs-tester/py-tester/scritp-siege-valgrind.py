@@ -2,6 +2,7 @@ import subprocess
 import time
 import sys
 import signal
+import os
 
 url = "http://127.0.0.1:8080/"
 urlApi = "http://127.0.0.1:8081/"
@@ -346,6 +347,11 @@ def ft_post_location(start_index, fileToName):
 def main():
     ft_create_big_file()
     ft_startGeneratorTxtSiege(0);
+    if os.getenv("FULL") == "1":
+        ft_print_list(config_list)
+        ft_full_test(ft_input_index(0))
+        return ;
+
     print("♡♡♡ Test Suite ♡♡♡ | Commands: parser-parse | siege-siege | curl-HTTP (soon) | full-full suite (soon) | cgi curl-CGI curl (soon) | cgi siege-CGI Siege (soon) | siege bench-benchmark (soon) | exit-quit | Usage: enter command, choose index or Enter to skip, 'kill' stops process, 'break' stops loop, 'exit' quits | ♡♡♡ Happy testing! ♡♡♡")
     while True:
         inpu = input("\nEnter command: ");
