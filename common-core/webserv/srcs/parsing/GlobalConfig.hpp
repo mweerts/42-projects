@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:27:30 by jfranco           #+#    #+#             */
-/*   Updated: 2025/08/19 16:42:49 by jfranco          ###   ########.fr       */
+/*   Updated: 2025/08/26 18:06:09 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #define GLOBALCONFIG_HPP
 
 #include "ConfigProcessor.hpp"
+#include "http_status_code.hpp"
+#include  <utility>
 
 typedef struct LocalConfig{
     bool autoIndex;
@@ -64,7 +66,7 @@ class ServerConfig {
     ServerConfig() {};
     ServerConfig(
         const std::map<std::string, std::vector<std::string> >& passprmtrs,
-        const std::string&                                      nameServer);\
+        const std::string&                                      nameServer);
 	
     void               setCgi(const CgiBin& add);
 /* ♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡GETTER♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡♡*/
@@ -81,6 +83,7 @@ class ServerConfig {
     const Location*    getLocation(const std::string& uri) const;
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
+	const std::map<StatusCode, std::string> getMapErrorPage(void) const;
     const std::string* getErrorPage(const std::string& nbrError) const;
     const CgiBin&      getCgiBin(void) const;
 

@@ -157,6 +157,41 @@ const std::string* ServerConfig::getErrorPage(
 	return NULL;
 }
 
+static int convertStringToInt(const std::string& c)
+{
+    std::stringstream ss(c);
+    int result;
+    ss >> result;
+    return result;
+}
+
+const std::map<StatusCode, std::string> ServerConfig::getMapErrorPage(void) const 
+{
+    std::map<StatusCode, std::string> MapErrorPage;
+    size_t pos;
+    for (std::map<std::string, std::vector<std::string>>::const_iterator it = prmtrs.begin(); it != prmtrs.end(); ++it) 
+    {
+        if ((pos = it->first.find("error page", 0)) != std::string::npos)
+        {
+            std::stringstream ss(it->first);
+            std::string token;
+            while (ss >> token)
+            {
+                if (token != "error" && token != "page")
+                {
+					int errorCode = convertStringToInt(token);
+                    if (!it->second.empty() && !it->second[0].empty())
+                    {
+						MapErrorPage.insert(std::make_pair(static_cast<StatusCode>(errorCode), it->second[0]));
+                    }
+                }
+            }
+        }
+    }
+    return MapErrorPage;
+}
+
+
 const char* ServerConfig::NotFoundUri::what() const throw() {
     return "URI not found";
 }
@@ -170,6 +205,7 @@ void ServerConfig::setCgi(const CgiBin& add) {
     }
     this->Cgi = true;
 }
+
 const CgiBin& ServerConfig::getCgiBin(void) const {
     return globalCgiBin_;
 }
