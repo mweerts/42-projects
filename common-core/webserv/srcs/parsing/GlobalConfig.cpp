@@ -111,6 +111,5 @@ const std::string* GlobalConfig::getErrorPage(int                port,
     return &def;
 }
 
-GlobalConfig::~GlobalConfig() {
-    return;
-}
+GlobalConfig::~GlobalConfig() {}
+

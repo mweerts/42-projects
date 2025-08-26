@@ -70,4 +70,15 @@ long getFileSize(const std::string& path) {
     return -1;
 }
 
+std::string getLastModifiedTime(const std::string& path) {
+    struct stat fileInfo;
+    if (stat(path.c_str(), &fileInfo) == 0) {
+        char       buffer[80];
+        struct tm* tm_info = localtime(&fileInfo.st_mtime);
+        strftime(buffer, sizeof(buffer), "%d-%b-%Y %H:%M", tm_info);
+        return std::string(buffer);
+    }
+    return "";
+}
+
 }  // namespace lib 

@@ -241,14 +241,6 @@ void ConnectionManager::CleanupTimedOutClients() {
             continue;
         }
 
-        const int kHeaderTimeout = 20;
-        if (it->second->GetState() == ClientConnection::READING_REQUEST &&
-            it->second->IsHeaderTimedOut(kHeaderTimeout)) {
-            Logger::debug() << "Client fd=" << it->first << " header timed out";
-            clients_to_close.push_back(it->first);
-            continue;
-        }
-
         if (it->second->IsTimedOut()) {
             Logger::debug() << "Client fd=" << it->first << " timed out";
             clients_to_close.push_back(it->first);

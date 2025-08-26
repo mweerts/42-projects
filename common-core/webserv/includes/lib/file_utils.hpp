@@ -12,6 +12,7 @@ bool  isReadable(const std::string& path);
 bool  isWritable(const std::string& path);
 bool  isExecutable(const std::string& path);
 long  getFileSize(const std::string& path);
+std::string getLastModifiedTime(const std::string& path);
 
 }  // namespace lib
 

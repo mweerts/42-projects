@@ -14,12 +14,11 @@
 #define GLOBALCONFIG_HPP
 
 #include "ConfigProcessor.hpp"
-//#include "http_status_code.hpp"
+#include "http_utils.hpp"
 #include  <utility>
 
 typedef struct LocalConfig{
     bool autoIndex;
-
 } LocalConfig;
 
 struct CgiBin {
@@ -84,13 +83,13 @@ class ServerConfig {
 	const std::vector<Location>& getLocations(void) const;
     const std::string* getErrorPageLocation(const std::string& uri,
                                             const std::string& nbrError) const;
-	const std::map<int, std::string> getMapErrorPage(void) const;
     const std::string* getErrorPage(const std::string& nbrError) const;
+    const std::string  getErrorPage(StatusCode statusCode) const;	
     const CgiBin&      getCgiBin(void) const;
 
-    std::map<std::string, Location> route;
+	std::map<std::string, Location> route;
     std::vector<Location>           location_;
-
+	
     class NotFoundUri : public std::exception {
        public:
         virtual const char* what() const throw();  // dichiarazione

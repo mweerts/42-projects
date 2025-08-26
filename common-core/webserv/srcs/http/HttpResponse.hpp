@@ -4,11 +4,13 @@
 #include <map>
 #include <string>
 
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
+
+class ServerConfig;
 
 class HttpResponse {
    public:
-    HttpResponse();
+    HttpResponse(const ServerConfig& serverConfig);
     ~HttpResponse();
 
     void setStatusCode(StatusCode statusCode);
@@ -27,17 +29,20 @@ class HttpResponse {
     StatusCode         getStatusCode() const;
     std::string        getServerName() const;
     std::string        getConnection() const;
-    const std::string& getContent() const {
-        return _content;
-    }
-    size_t getContentLength() const {
-        return _contentLength;
-    }
+    const std::string& getContent() const;
+    size_t             getContentLength() const;
 
     std::string toString();
     std::string headersToString();
+    void        CreateErrorPage();
+    void        CreateErrorPage(StatusCode statusCode);
 
    private:
+    HttpResponse(const HttpResponse& other);
+    HttpResponse& operator=(const HttpResponse& other);
+
+    const ServerConfig& _serverConfig;
+
     StatusCode  _statusCode;
     std::string _version;
     std::string _serverName;

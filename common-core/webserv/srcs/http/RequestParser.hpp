@@ -18,7 +18,8 @@
 #include <string>
 
 #include "HttpRequest.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
+#include <ctime>
 
 class ServerConfig;
 
@@ -64,9 +65,9 @@ class RequestParser {
     // Parsing state
     ParsingPhase current_phase_;
     std::string  header_buffer_;
+	time_t       header_start_time_;
     size_t       headers_end_pos_;
     size_t       request_size_;
-
 	std::string req_buffer_;
 	
     // File management
@@ -86,6 +87,7 @@ class RequestParser {
     bool        extractHeaders(const std::string& headers_str);
     bool        findHeadersEnd();
     bool        hasBody() const;
+	bool        isHeaderTimedOut(int timeout_seconds = 20) const;
 };
 
 #endif

@@ -17,33 +17,22 @@ bool isPhpFile(const std::string& path) {
     return path.substr(path.find_last_of('.')) == ".php";
 }
 
-std::string GetHtmlErrorPage(HttpResponse&      response,
-                             const std::string& err_message) {
-    response.setContentType("text/html");
-    std::string msg = err_message.empty() ? "" : "<h4>" + err_message + "</h4>";
-    std::ostringstream oss;
-    oss << "<html><head><title>" << lib::to_string(response.getStatusCode())
-        << " " << GetHttpStatusText(response.getStatusCode())
-        << "</title></head><body><center><h1>"
-        << lib::to_string(response.getStatusCode()) << " "
-        << GetHttpStatusText(response.getStatusCode()) << "</h1>" << msg
-        << "</center><hr><center>" << response.getServerName()
-        << "</center></body></html>";
-    response.setContent(oss.str());
-    response.setContentLength(oss.str().size());
-    return oss.str();
-}
-
-static std::string getLastModifiedTime(const std::string& path) {
-    struct stat fileInfo;
-    if (stat(path.c_str(), &fileInfo) == 0) {
-        char       buffer[80];
-        struct tm* tm_info = localtime(&fileInfo.st_mtime);
-        strftime(buffer, sizeof(buffer), "%d-%b-%Y %H:%M", tm_info);
-        return std::string(buffer);
-    }
-    return "";
-}
+// std::string GetHtmlErrorPage(HttpResponse&      response,
+//                              const std::string& err_message) {
+//     response.setContentType("text/html");
+//     std::string msg = err_message.empty() ? "" : "<h4>" + err_message + "</h4>";
+//     std::ostringstream oss;
+//     oss << "<html><head><title>" << lib::to_string(response.getStatusCode())
+//         << " " << GetHttpStatusText(response.getStatusCode())
+//         << "</title></head><body><center><h1>"
+//         << lib::to_string(response.getStatusCode()) << " "
+//         << GetHttpStatusText(response.getStatusCode()) << "</h1>" << msg
+//         << "</center><hr><center>" << response.getServerName()
+//         << "</center></body></html>";
+//     response.setContent(oss.str());
+//     response.setContentLength(oss.str().size());
+//     return oss.str();
+// }
 
 std::string humanReadableSize(off_t size) {
     const char* suffixes[] = {"", "K", "M", "G", "T"};
@@ -135,7 +124,8 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
             oss << std::string(50 - croppedName.length(), ' ');
         else
             oss << std::string(51 - croppedName.length(), ' ');
-        oss << getLastModifiedTime(fullPath) << std::setw(8) << "-" << "\n";
+        oss << lib::getLastModifiedTime(fullPath) << std::setw(8) << "-"
+            << "\n";
     }
     // Add files to the output
     for (size_t i = 0; i < files.size(); ++i) {
@@ -151,7 +141,7 @@ std::string getHtmlIndexPage(const std::string& root, const std::string& uri) {
         oss << "<a href=\"" << trimSlashes(uri) << "/" << trimSlashes(name)
             << "\">" << croppedName << "</a>"
             << std::string(51 - croppedName.length(), ' ')
-            << getLastModifiedTime(fullPath) << std::setw(8)
+            << lib::getLastModifiedTime(fullPath) << std::setw(8)
             << humanReadableSize(lib::getFileSize(fullPath)) << "\n";
     }
     oss << "</pre><hr></body></html>";

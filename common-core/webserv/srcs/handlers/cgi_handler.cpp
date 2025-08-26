@@ -31,6 +31,7 @@
 
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
+#include "../http/utils.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
 #include "cgi_process.hpp"
@@ -70,8 +71,16 @@ CgiHandler::CgiHandler(const HttpRequest&  request,
     }
 }
 
+void CgiHandler::cleanupAsyncCgi() {
+    if (async_process_) {
+        async_process_->cleanup();
+        delete async_process_;
+        async_process_ = NULL;
+    }
+}
+
 CgiHandler::~CgiHandler() {
-    // Do not auto-clean here; owner controls lifecycle via cleanupAsyncCgi()
+    cleanupAsyncCgi();
 }
 
 void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
@@ -113,13 +122,18 @@ bool CgiHandler::isCgiScript(const std::string& uri) {
 
     std::string interp = getCgiInterpreter(script_path);
     if (!interp.empty()) {
+        if (!lib::pathExist(interp)) {
+            Logger::warning() << "Interpreter: " << interp << " not found";
+            return false;
+        }
         return lib::isExecutable(interp);
     }
+
     Logger::debug() << "Script path: " << script_path;
 
     // If no interpreter, the script itself must be executable.
-    // this won't happen because if the file has no extension, it's not a cgi
-    // script
+    // this won't really happen because if the file has no extension, it's not a
+    // cgi script
     return lib::isExecutable(script_path);
 }
 
@@ -131,6 +145,13 @@ static char to_upper_char(char c) {
 
 void CgiHandler::setQueryString(const std::string& queryString) {
     queryString_ = queryString;
+}
+
+static void setupGoEnv(std::vector<std::string>& env) {
+    env.push_back("HOME=/tmp/webserv-cgi");
+    env.push_back("GOCACHE=/tmp/webserv-cgi/go-cache");
+    env.push_back("GOMODCACHE=/tmp/webserv-cgi/go-mod");
+    env.push_back("PATH=/usr/local/bin:/usr/bin:/bin");
 }
 
 const std::vector<std::string> CgiHandler::buildEnvironment() {
@@ -155,10 +176,14 @@ const std::vector<std::string> CgiHandler::buildEnvironment() {
     env.push_back("LOG_FILE=" + Logger::getLogFilename());
     env.push_back("UPLOADS_DIR=" +
                   (serverConfig_ ? serverConfig_->getUploadDir() : ""));
-	env.push_back("REDIRECT_STATUS=200");
-	env.push_back("SCRIPT_FILENAME=" + cgiScriptPath_);
+    env.push_back("REDIRECT_STATUS=200");
+    env.push_back("SCRIPT_FILENAME=" + cgiScriptPath_);
     env.push_back("SCRIPT_NAME=" + lib::extractPathFromUri(request_.getUri()));
     env.push_back("PATH_INFO=");
+
+    if (cgiScriptPath_.find(".go") != std::string::npos) {
+        setupGoEnv(env);
+    }
 
     env.push_back("REDIRECT_STATUS=200");
     const std::map<std::string, std::string>& headers = request_.getHeaders();
@@ -217,14 +242,6 @@ bool CgiHandler::isTimedOut() const {
     return (time(NULL) - async_process_->getStartTime() > CGI_TIMEOUT_SECONDS);
 }
 
-void CgiHandler::cleanupAsyncCgi() {
-    if (async_process_) {
-        async_process_->cleanup();
-        delete async_process_;
-        async_process_ = NULL;
-    }
-}
-
 static void LogCgiError(CgiProcess* async_process) {
     if (!async_process || !async_process->isValid())
         return;
@@ -256,6 +273,9 @@ bool CgiHandler::startCgiProcess(const std::string& scriptPath) {
             return false;
         }
         args.push_back(interpreter);
+        if (scriptPath.find(".go") != std::string::npos) {
+            args.push_back("run");
+        }
     }
 
     args.push_back(scriptPath);
@@ -352,6 +372,8 @@ static void parseCgiHeadersAndBody(const std::string& raw,
                                    HttpResponse&      response) {
     if (raw.empty()) {
         response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+        response.setContent("");
+        response.CreateErrorPage();
         return;
     }
 
@@ -391,7 +413,6 @@ static void parseCgiHeadersAndBody(const std::string& raw,
         } else if (key == "Location") {
             response.setLocation(value);
         } else {
-            // not implemented in httpResponse
             response.setHeader(key, value);
         }
     }
