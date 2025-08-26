@@ -26,7 +26,7 @@
 #include "../handlers/RequestHandler.hpp"
 #include "../http/utils.hpp"
 #include "Logger.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 #include "lib/utils.hpp"
 
 ClientConnection::ClientConnection(int                 socket_fd,
@@ -145,9 +145,13 @@ bool ClientConnection::HandleRead() {
             request_ready_ = true;
             request_handler_ =
                 new RequestHandler(current_request_, server_config_);
-            request_handler_->generateErrorResponse(
-                request_parser_->getStatusCode(),
-                request_parser_->getStatusMessage());
+            request_handler_->getResponse().setStatusCode(
+                request_parser_->getStatusCode());
+			
+			StatusCode err_code = request_parser_->getStatusCode();
+			const std::string path = server_config_.getErrorPage(err_code);
+            request_handler_->getResponse().setErrorPagePath(path);
+            request_handler_->getResponse().CreateErrorPage();
             prepareResponse(request_handler_, response_streamer_);
 			request_handler_->getResponse().setConnection("close");
             state_ = WRITING_RESPONSE;
@@ -192,8 +196,7 @@ bool ClientConnection::HandleWrite() {
                 response.setStatusCode(HTTP_CREATED);
             } else {
                 response.setStatusCode(HTTP_BAD_REQUEST);
-                response.setContent(GetHtmlErrorPage(
-                    response, request_handler_->uploadErrorMessage()));
+                response.CreateErrorPage(request_handler_->uploadErrorMessage());
             }
             prepareResponse(request_handler_, response_streamer_);
         }

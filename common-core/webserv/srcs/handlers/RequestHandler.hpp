@@ -4,7 +4,7 @@
 #include "../http/HttpRequest.hpp"
 #include "../http/HttpResponse.hpp"
 #include "../srcs/parsing/GlobalConfig.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 
 class ServerConfig;
 class CgiHandler;

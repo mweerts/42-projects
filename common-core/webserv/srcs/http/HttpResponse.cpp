@@ -5,8 +5,26 @@
 #include <sstream>
 
 #include "Logger.hpp"
+#include "MimeTypes.hpp"
+#include "http_utils.hpp"
+#include "lib/file_utils.hpp"
+#include "lib/utils.hpp"
+#include "utils.hpp"
 
 HttpResponse::HttpResponse() {
+    _statusCode = HTTP_OK;
+    _version = "HTTP/1.1";
+    _serverName = "webserv42";
+    _date = "";
+    _contentType = "text/html";
+    _contentLength = 0;
+    _lastModified = "";
+    _connection = "keep-alive";
+    _content = "";
+}
+
+HttpResponse::HttpResponse(std::map<StatusCode, std::string> error_pages)
+    : _error_pages(error_pages) {
     _statusCode = HTTP_OK;
     _version = "HTTP/1.1";
     _serverName = "webserv42";
@@ -49,12 +67,24 @@ void HttpResponse::setContentLength(size_t length) {
     _contentLength = length;
 }
 
+const std::string& HttpResponse::getContent() const {
+    return _content;
+}
+
+size_t HttpResponse::getContentLength() const {
+    return _contentLength;
+}
+
 void HttpResponse::setHeader(const std::string& key, const std::string& value) {
     if (key.empty()) {
         Logger::debug() << "setHeader: key is empty";
         return;
     }
     _additionnalHeaders[key] = value;
+}
+
+void HttpResponse::setErrorPagePath(const std::string& error_page_path) {
+    _error_pages_path = error_page_path;
 }
 
 void HttpResponse::removeAdditionnalHeader(const std::string& key) {
@@ -129,6 +159,54 @@ std::string HttpResponse::headersToString() {
     }
     response += "\r\n";
     return response;
+}
+
+static void replaceErrorPlaceholders(std::string&        content,
+                                     const HttpResponse& response) {
+    std::string errCode = lib::to_string(response.getStatusCode());
+
+    size_t pos = 0;
+    while ((pos = content.find("{{ERROR_CODE}}")) != std::string::npos) {
+        content.replace(pos, 14, errCode);
+    }
+
+    while ((pos = content.find("{{ERROR_MESSAGE}}")) != std::string::npos) {
+        std::string errMessage = GetHttpStatusText(response.getStatusCode());
+        content.replace(pos, 17, errMessage);
+    }
+}
+
+void HttpResponse::CreateErrorPage(const std::string& extra_info) {
+	// better this way
+	// std::map<StatusCode, std::string> err_page = _serverConfig.getErrorPage() 
+	
+	const std::map<StatusCode, std::string>::const_iterator it = _error_pages.find(_statusCode);
+	if (it != _error_pages.end()) {
+		const char * err_page =  it->second.c_str();
+        std::ifstream file(err_page);
+        if (!file.fail() && file.is_open()) {
+            std::ostringstream ss;
+            ss << file.rdbuf();
+            _content = ss.str();
+
+            replaceErrorPlaceholders(_content, *this);
+            _contentType = MimeTypes::getType(err_page);
+            _lastModified = lib::getLastModifiedTime(err_page);
+            return;
+        }
+        Logger::error() << "Error page failed to open: " << err_page;
+    }
+
+    _contentType = "text/html";
+    std::string msg = extra_info.empty() ? "" : "<h4>" + extra_info + "</h4>";
+    std::ostringstream oss;
+    oss << "<html><head><title>" << lib::to_string(_statusCode) << " "
+        << GetHttpStatusText(_statusCode) << "</title></head><body><center><h1>"
+        << lib::to_string(_statusCode) << " " << GetHttpStatusText(_statusCode)
+        << "</h1>" << msg << "</center><hr><center>" << _serverName
+        << "</center></body></html>";
+    _content = oss.str();
+    _contentLength = _content.size();
 }
 
 std::string HttpResponse::toString() {

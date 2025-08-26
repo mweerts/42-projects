@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HTTP_STATUS_CODE_HPP
-#define HTTP_STATUS_CODE_HPP
+#ifndef HTTP_UTILS_HPP
+#define HTTP_UTILS_HPP
 
 /**
  * Based on IETF RFCs and HTTP/1.1 specification
@@ -184,4 +184,4 @@ inline RequestMethod getRequestMethod(const std::string& method) {
     return UNKNOWN;
 }
 
-#endif  // HTTP_STATUS_CODE_HPP
+#endif  // HTTP_UTILS_HPP

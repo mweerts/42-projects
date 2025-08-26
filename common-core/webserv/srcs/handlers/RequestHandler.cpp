@@ -17,7 +17,7 @@
 #include "../http/utils.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
 
@@ -35,7 +35,11 @@ RequestHandler::RequestHandler(const HttpRequest&  request,
       _uploadDone(false),
       _uploadOk(false),
       _uploadErrMsg(),
-      _uploader(NULL) {};
+      _uploader(NULL) {
+			_rootPath = serverConfig.getRoot();
+			// need to create response with the map error_pages
+			// _response()
+      };
 
 RequestHandler::~RequestHandler() {
     if (_cgiHandler) {
@@ -53,37 +57,11 @@ const std::string RequestHandler::getRootPath() const {
     return _rootPath;
 }
 
-static std::string getLastModifiedTime(const std::string& path) {
-    struct stat fileInfo;
-    if (stat(path.c_str(), &fileInfo) == 0) {
-        char       buffer[80];
-        struct tm* tm_info = gmtime(&fileInfo.st_mtime);
-        strftime(buffer, sizeof(buffer), "%a, %d %b %Y %H:%M:%S GMT", tm_info);
-        return std::string(buffer);
-    }
-    return "";
-}
-
 bool RequestHandler::shouldCloseConnection() const {
     if (_response.getStatusCode() != HTTP_OK) {
         return true;
     }
     return !_request.shouldKeepAlive();
-}
-
-static void replaceErrorPlaceholders(std::string&        content,
-                                     const HttpResponse& response) {
-    std::string errCode = lib::to_string(response.getStatusCode());
-
-    size_t pos = 0;
-    while ((pos = content.find("{{ERROR_CODE}}")) != std::string::npos) {
-        content.replace(pos, 14, errCode);
-    }
-
-    while ((pos = content.find("{{ERROR_MESSAGE}}")) != std::string::npos) {
-        std::string errMessage = GetHttpStatusText(response.getStatusCode());
-        content.replace(pos, 17, errMessage);
-    }
 }
 
 void RequestHandler::handleRequest() {
@@ -100,31 +78,12 @@ void RequestHandler::handleRequest() {
         _response.setConnection("close");
     }
     if (_response.getStatusCode() != HTTP_OK &&
-        _response.getStatusCode() != HTTP_MOVED_PERMANENTLY) {
-        std::ostringstream oss;
-        oss << _response.getStatusCode();
-        const std::string* errorPage = _serverConfig.getErrorPage(oss.str());
-        if (errorPage) {
-            std::ifstream file((_rootPath + "/" + *errorPage).c_str());
-            if (file.fail()) {
-                _response.setContent(GetHtmlErrorPage(_response));
-                _response.setContentType("text/html");
-                return;
-            }
-            std::ostringstream ss;
-            ss << file.rdbuf();
-            std::string content = ss.str();
-
-            replaceErrorPlaceholders(content, _response);
-            _response.setContent(content);
-            _response.setContentType(
-                MimeTypes::getType((_rootPath + "/" + *errorPage).c_str()));
-            _response.setLastModified(
-                getLastModifiedTime(_rootPath + "/" + *errorPage));
-        } else if (_response.getStatusCode() != HTTP_NO_CONTENT) {
-            _response.setContent(GetHtmlErrorPage(_response));
-            _response.setContentType("text/html");
-        }
+        _response.getStatusCode() != HTTP_MOVED_PERMANENTLY &&
+        _response.getStatusCode() != HTTP_NO_CONTENT) {
+        const std::string error_page =
+            _serverConfig.getErrorPage(_response.getStatusCode());
+        _response.setErrorPagePath(_rootPath + "/" + error_page);
+        _response.CreateErrorPage();
         _response.setConnection("close");
     }
     ServerStatus::getInstance().onRequestProcessed();
@@ -248,8 +207,10 @@ void RequestHandler::processGetRequest() {
     CgiHandler tmpCgi(_request, &_serverConfig);
     if (tmpCgi.isCgiScript(_internalUri)) {
         _cgiHandler = initCgiHandler();
-        if (!_cgiHandler)
+        if (!_cgiHandler) {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+            _response.setContent(GetHtmlErrorPage(_response));
+        }
         return;
     }
 
@@ -297,7 +258,7 @@ void RequestHandler::processGetRequest() {
     }
 
     _response.setContentType(MimeTypes::getType(fullPath.c_str()));
-    _response.setLastModified(getLastModifiedTime(fullPath));
+    _response.setLastModified(lib::getLastModifiedTime(fullPath));
 }
 
 // ============ POST ============ //
@@ -310,14 +271,6 @@ void RequestHandler::processPostRequest() {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-
-    // const Location* location = _serverConfig.getLocation(_internalUri);
-    // if (location &&
-    //     _request.getContentLength() > location->getClientMaxBodySize()) {
-    //     _response.setStatusCode(HTTP_REQUEST_ENTITY_TOO_LARGE);
-    //     _response.setContent(GetHtmlErrorPage(_response));
-    //     return;
-    // }
 
     // Regular file upload handling
     std::ofstream file;
@@ -493,90 +446,6 @@ std::string RequestHandler::extractBoundary(const std::string& content_type) {
     return boundary;
 }
 
-std::string RequestHandler::JsonifyServerConfig() {
-    std::stringstream json;
-
-    json << "{" << std::endl;
-    json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\","
-         << std::endl;
-    json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
-    json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
-    const char* index = _serverConfig.getIndex()->c_str();
-    json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
-    json << "  \"autoindex\": "
-         << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
-         << std::endl;
-    json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\","
-         << std::endl;
-    json << "  \"client_max_body_size\": \""
-         << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\","
-         << std::endl;
-    json << "  \"locations\": [" << std::endl;
-    for (std::map<std::string, Location>::const_iterator it =
-             _serverConfig.route.begin();
-         it != _serverConfig.route.end(); ++it) {
-        const Location& location = it->second;
-        json << "    {" << std::endl;
-        json << "      \"path\": \"" << location.getName() << "\","
-             << std::endl;
-        json << "      \"root\": \""
-             << (location.getRoot() ? *location.getRoot() : "") << "\","
-             << std::endl;
-        json << "      \"methods\": [" << std::endl;
-
-        bool firstMethod = true;
-        if (location.getMethodIsAllowed("GET")) {
-            if (!firstMethod)
-                json << "," << std::endl;
-            json << "        \"GET\"";
-            firstMethod = false;
-        }
-        if (location.getMethodIsAllowed("POST")) {
-            if (!firstMethod)
-                json << "," << std::endl;
-            json << "        \"POST\"";
-            firstMethod = false;
-        }
-        if (location.getMethodIsAllowed("DELETE")) {
-            if (!firstMethod)
-                json << "," << std::endl;
-            json << "        \"DELETE\"";
-            firstMethod = false;
-        }
-
-        json << std::endl << "      ]," << std::endl;
-        json << "      \"autoindex\": "
-             << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
-             << std::endl;
-        const std::string* index = location.getIndex();
-        json << "      \"index\": \"" << (index ? *index : "") << "\","
-             << std::endl;
-        const std::string* return_value = location.getReturn();
-        json << "      \"return\": \"" << (return_value ? *return_value : "")
-             << "\"," << std::endl;
-        const std::string* alias = location.getAlias();
-        json << "      \"client_max_body_size\": \""
-             << lib::to_string(location.getClientMaxBodySize()) << "\","
-             << std::endl;
-        json << "      \"alias\": \"" << (alias ? *alias : "") << "\""
-             << std::endl;
-        json << "    }";
-
-        // Add comma if this isn't the last location
-        std::map<std::string, Location>::const_iterator it_temp = it;
-        ++it_temp;
-        if (it_temp != _serverConfig.route.end()) {
-            json << ",";
-        }
-        json << std::endl;
-    }
-
-    json << "  ]" << std::endl;
-    json << "}" << std::endl;
-
-    return json.str();
-}
-
 bool RequestHandler::startUpload(const std::string& boundary) {
     if (_uploadInProgress || _uploader) {
         return false;
@@ -663,4 +532,88 @@ bool RequestHandler::uploadSucceeded() const {
 
 const std::string& RequestHandler::uploadErrorMessage() const {
     return _uploadErrMsg;
+}
+
+std::string RequestHandler::JsonifyServerConfig() {
+    std::stringstream json;
+
+    json << "{" << std::endl;
+    json << "  \"server_name\": \"" << _serverConfig.getServerName() << "\","
+         << std::endl;
+    json << "  \"port\": " << _serverConfig.getPort() << "," << std::endl;
+    json << "  \"root\": \"" << _serverConfig.getRoot() << "\"," << std::endl;
+    const char* index = _serverConfig.getIndex()->c_str();
+    json << "  \"index\": \"" << (index ? index : "") << "\"," << std::endl;
+    json << "  \"autoindex\": "
+         << (_serverConfig.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+         << std::endl;
+    json << "  \"upload_dir\": \"" << _serverConfig.getUploadDir() << "\","
+         << std::endl;
+    json << "  \"client_max_body_size\": \""
+         << lib::to_string(_serverConfig.getClientMaxBodySize()) << "\","
+         << std::endl;
+    json << "  \"locations\": [" << std::endl;
+    for (std::map<std::string, Location>::const_iterator it =
+             _serverConfig.route.begin();
+         it != _serverConfig.route.end(); ++it) {
+        const Location& location = it->second;
+        json << "    {" << std::endl;
+        json << "      \"path\": \"" << location.getName() << "\","
+             << std::endl;
+        json << "      \"root\": \""
+             << (location.getRoot() ? *location.getRoot() : "") << "\","
+             << std::endl;
+        json << "      \"methods\": [" << std::endl;
+
+        bool firstMethod = true;
+        if (location.getMethodIsAllowed("GET")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"GET\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("POST")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"POST\"";
+            firstMethod = false;
+        }
+        if (location.getMethodIsAllowed("DELETE")) {
+            if (!firstMethod)
+                json << "," << std::endl;
+            json << "        \"DELETE\"";
+            firstMethod = false;
+        }
+
+        json << std::endl << "      ]," << std::endl;
+        json << "      \"autoindex\": "
+             << (location.getAutoIndex() ? "\"on\"" : "\"off\"") << ","
+             << std::endl;
+        const std::string* index = location.getIndex();
+        json << "      \"index\": \"" << (index ? *index : "") << "\","
+             << std::endl;
+        const std::string* return_value = location.getReturn();
+        json << "      \"return\": \"" << (return_value ? *return_value : "")
+             << "\"," << std::endl;
+        const std::string* alias = location.getAlias();
+        json << "      \"client_max_body_size\": \""
+             << lib::to_string(location.getClientMaxBodySize()) << "\","
+             << std::endl;
+        json << "      \"alias\": \"" << (alias ? *alias : "") << "\""
+             << std::endl;
+        json << "    }";
+
+        // Add comma if this isn't the last location
+        std::map<std::string, Location>::const_iterator it_temp = it;
+        ++it_temp;
+        if (it_temp != _serverConfig.route.end()) {
+            json << ",";
+        }
+        json << std::endl;
+    }
+
+    json << "  ]" << std::endl;
+    json << "}" << std::endl;
+
+    return json.str();
 }

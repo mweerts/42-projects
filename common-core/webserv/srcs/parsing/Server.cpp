@@ -1,8 +1,10 @@
 #include "GlobalConfig.hpp"
+#include "http_utils.hpp"
+#include "lib/utils.hpp"
 
 // Initialize static members
 CgiBin ServerConfig::globalCgiBin_;
-bool ServerConfig::globalCgiInitialized_ = false;
+bool   ServerConfig::globalCgiInitialized_ = false;
 
 ServerConfig::ServerConfig(
     const std::map<std::string, std::vector<std::string> >& prmtrs,
@@ -11,35 +13,32 @@ ServerConfig::ServerConfig(
     return;
 }
 
-const std::string ServerConfig::getUploadDir( void ) const
-{
-    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("upload_dir");
-    if (it != prmtrs.end() && !it->second.empty())
-	{
+const std::string ServerConfig::getUploadDir(void) const {
+    std::map<std::string, std::vector<std::string> >::const_iterator it =
+        prmtrs.find("upload_dir");
+    if (it != prmtrs.end() && !it->second.empty()) {
         return (it->second[0]);
-	}
-	return "";
+    }
+    return "";
 }
 
-const std::string ServerConfig::getTmpFolder( void ) const
-{
-    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("tmp_folder");
-    if (it != prmtrs.end() && !it->second.empty())
-	{
+const std::string ServerConfig::getTmpFolder(void) const {
+    std::map<std::string, std::vector<std::string> >::const_iterator it =
+        prmtrs.find("tmp_folder");
+    if (it != prmtrs.end() && !it->second.empty()) {
         return (it->second[0]);
-	}
-	return "";
+    }
+    return "";
 }
 
-const std::string ServerConfig::getServerName( void ) const
-{
-	static const std::string DefaulServerName = "webserver";
-    std::map<std::string, std::vector<std::string> >::const_iterator it = prmtrs.find("server_name");
-    if (it != prmtrs.end() && !it->second.empty())
-	{
+const std::string ServerConfig::getServerName(void) const {
+    static const std::string DefaulServerName = "webserver";
+    std::map<std::string, std::vector<std::string> >::const_iterator it =
+        prmtrs.find("server_name");
+    if (it != prmtrs.end() && !it->second.empty()) {
         return (it->second[0]);
-	}
-	return DefaulServerName;
+    }
+    return DefaulServerName;
 }
 
 const std::string& ServerConfig::getName() const {
@@ -60,7 +59,7 @@ size_t ServerConfig::getClientMaxBodySize() const {
         prmtrs.find("client_max_body_size");
     if (it != prmtrs.end() && !it->second.empty())
         return static_cast<size_t>(std::atoi(it->second[0].c_str()));
-    return 1048576; // 1mb
+    return 1048576;  // 1mb
 }
 
 bool ServerConfig::getAutoIndex() const {
@@ -103,13 +102,14 @@ int ServerConfig::getPort() const {
 
 const Location* ServerConfig::getLocation(const std::string& uri) const {
     const Location* bestMatch = NULL;
-    size_t bestLength = 0;
+    size_t          bestLength = 0;
 
     std::map<std::string, Location>::const_iterator itFind = route.find(uri);
-    if (itFind != route.end()){
+    if (itFind != route.end()) {
         return &(itFind->second);
-	}
-    for (std::map<std::string, Location>::const_iterator it = route.begin(); it != route.end(); ++it) {
+    }
+    for (std::map<std::string, Location>::const_iterator it = route.begin();
+         it != route.end(); ++it) {
         const std::string& path = it->first;
         if (uri.compare(0, path.length(), path) == 0) {
             if (uri.length() == path.length() || uri[path.length()] == '/') {
@@ -122,7 +122,6 @@ const Location* ServerConfig::getLocation(const std::string& uri) const {
     }
     return bestMatch;
 }
-
 
 const std::string* ServerConfig::getErrorPageLocation(
     const std::string& uri, const std::string& nbrError) const {
@@ -144,21 +143,21 @@ const std::string* ServerConfig::getErrorPageLocation(
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-	static std::string empty = "";
+    static std::string empty = "";
     return &empty;
 }
 
 const std::string* ServerConfig::getErrorPage(
     const std::string& nbrError) const {
-    size_t pos;
-	static std::string def = "";
+    size_t             pos;
+    static std::string def = "";
     for (std::map<std::string, std::vector<std::string> >::const_iterator it =
              prmtrs.begin();
          it != prmtrs.end(); ++it) {
         if ((pos = it->first.find(nbrError, 0)) != std::string::npos)
             return &(it->second[0]);
     }
-	return NULL;
+    return NULL;
 }
 
 const char* ServerConfig::NotFoundUri::what() const throw() {
@@ -176,4 +175,15 @@ void ServerConfig::setCgi(const CgiBin& add) {
 }
 const CgiBin& ServerConfig::getCgiBin(void) const {
     return globalCgiBin_;
+}
+
+const std::string ServerConfig::getErrorPage(StatusCode statusCode) const {
+    std::map<std::string, std::vector<std::string> >::const_iterator it;
+    for (it = prmtrs.begin(); it != prmtrs.end(); ++it) {
+        size_t pos = it->first.find(lib::to_string(statusCode), 0);
+        if (pos != std::string::npos) {
+            return it->second[0];
+        }
+    }
+    return "";
 }

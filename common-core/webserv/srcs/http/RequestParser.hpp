@@ -18,7 +18,7 @@
 #include <string>
 
 #include "HttpRequest.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 
 class ServerConfig;
 

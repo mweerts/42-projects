@@ -22,7 +22,7 @@
 
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
 

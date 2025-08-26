@@ -36,6 +36,7 @@
 #include "cgi_process.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
+#include "../http/utils.hpp"
 
 /* potential refactors
  * functions :
@@ -347,6 +348,7 @@ static void parseCgiHeadersAndBody(const std::string& raw,
                                    HttpResponse&      response) {
     if (raw.empty()) {
         response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
+		response.setContent(GetHtmlErrorPage(response));
         return;
     }
 

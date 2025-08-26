@@ -4,11 +4,12 @@
 #include <map>
 #include <string>
 
-#include "http_status_code.hpp"
+#include "http_utils.hpp"
 
 class HttpResponse {
    public:
     HttpResponse();
+    HttpResponse(std::map<StatusCode, std::string> error_pages);
     ~HttpResponse();
 
     void setStatusCode(StatusCode statusCode);
@@ -19,6 +20,7 @@ class HttpResponse {
     void setLocation(const std::string& location);
     void setContentLength(size_t length);
     void setHeader(const std::string& key, const std::string& value);
+    void setErrorPagePath(const std::string& error_page_path);
 
     void removeAdditionnalHeader(const std::string& key);
     const std::map<std::string, std::string>& getAdditionnalHeaders() const;
@@ -27,15 +29,12 @@ class HttpResponse {
     StatusCode         getStatusCode() const;
     std::string        getServerName() const;
     std::string        getConnection() const;
-    const std::string& getContent() const {
-        return _content;
-    }
-    size_t getContentLength() const {
-        return _contentLength;
-    }
+    const std::string& getContent() const;
+    size_t             getContentLength() const;
 
     std::string toString();
     std::string headersToString();
+    void        CreateErrorPage(const std::string& extra_info = "");
 
    private:
     StatusCode  _statusCode;
@@ -49,6 +48,7 @@ class HttpResponse {
     std::string _content;
     std::string _location;
 
+    std::map<StatusCode, std::string>  _error_pages;
     std::map<std::string, std::string> _additionnalHeaders;
 
     void setDate(void);
