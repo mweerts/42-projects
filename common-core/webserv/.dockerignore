@@ -1,0 +1,7 @@
+build/
+objs/
+*.o
+*.d
+webserv
+www/uploads
+.git/
