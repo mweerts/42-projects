@@ -199,7 +199,6 @@ void RequestHandler::processRequest() {
         case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
         case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
     }
-    Logger::critical() << _response.toString();
 }
 
 // ============ GET ============ //
@@ -291,7 +290,6 @@ void RequestHandler::processGetRequest() {
 
 void RequestHandler::processPostRequest() {
     CgiHandler tmpCgi(_request, &_serverConfig);
-    Logger::critical() << _internalUri;
     if (tmpCgi.isCgiScript(_internalUri)) {
         _cgiHandler = initCgiHandler();
         if (!_cgiHandler)

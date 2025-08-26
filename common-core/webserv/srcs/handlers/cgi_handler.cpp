@@ -108,7 +108,6 @@ void CgiHandler::initializeCgiBin(const CgiBin& cgiBin) {
 
 bool CgiHandler::isCgiScript(const std::string& uri) {
     const std::string script_path = resolveScriptPath(uri);
-Logger::critical() << script_path;
     if (!lib::pathExist(script_path) || !lib::isFile(script_path))
         return false;
     
@@ -387,7 +386,7 @@ static void parseCgiHeadersAndBody(const std::string& raw,
             response.setLocation(value);
         } else {
             // not implemented in httpResponse
-            // response.setHeader(key, value);
+             response.setHeader(key, value);
         }
     }
 
