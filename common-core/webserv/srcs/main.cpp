@@ -6,7 +6,7 @@
 /*   By: llebugle <lucas.lebugle@student.s19.be>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/01 00:00:00 by llebugle          #+#    #+#             */
-/*   Updated: 2025/08/20 18:31:26 by llebugle         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:03:57 by jfranco          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,12 @@ void initializeCgiBin(const std::vector<ServerConfig>& servers) {
 
 int main(int argc, char* argv[]) {
     Logger::setLevel(LOG_LEVEL_INFO);
-
-    std::string config_file = "config/lucas.conf";
+    std::string config_file = "config/max.conf";
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-c") == 0 && i + 1 < argc) {
+        if (std::string(argv[i]) == "-c" && i + 1 < argc) {
             config_file = static_cast<std::string>(argv[i + 1]);
             Logger::info() << "Using config file: " << config_file;
-        } else if (strcmp(argv[i], "-v") == 0) {
+        } else if (std::string(argv[i]) == "-v")  {
             Logger::setLevel(LOG_LEVEL_DEBUG);
         }
     }

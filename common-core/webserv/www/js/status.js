@@ -54,10 +54,10 @@ function updateServerMetrics(data) {
 
     // Response Time
     const responseTime = data.requests?.average_response_time_ms || 0;
-    const responsePercentage = Math.min(responseTime / 1000 * 100, 100); // Normalize to 1000ms = 100%
+    const responsePercentage = Math.min(responseTime / 1000, 10); // max 10s
     updateProgressBar('response-progress', responsePercentage, 'bg-purple-600');
-    document.getElementById('response-time').textContent = `${responseTime.toFixed(1)}ms`;
-    document.getElementById('response-avg').textContent = `${responseTime.toFixed(1)}ms avg`;
+    document.getElementById('response-time').textContent = `${responseTime.toFixed(2)}ms`;
+    document.getElementById('response-avg').textContent = `${responseTime.toFixed(2)}ms avg`;
     
     const responseStatus = document.getElementById('response-status');
     if (responseTime < 100) responseStatus.textContent = 'Fast';

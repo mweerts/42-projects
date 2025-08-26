@@ -81,6 +81,7 @@ static void replaceErrorPlaceholders(std::string&        content,
 }
 
 void RequestHandler::handleRequest() {
+    ServerStatus::getInstance().onRequestStarted();
     processRequest();
 
     if (_request.shouldKeepAlive()) {
@@ -139,12 +140,17 @@ void RequestHandler::handleRedirect() {
         return;
     }
     if (location->getAlias()) {
+        
         std::string alias = *location->getAlias();
         std::string name = location->getName();
         _internalUri = alias + _internalUri.substr(name.length());
+        Logger::critical() << _internalUri;
         Logger::debug() << "aliasing to: " << _internalUri;
-    } else if (location->getRoot()) {
+        return;
+    }
+    if (location->getRoot()) {
         _rootPath = *location->getRoot();
+        return;
     }
 }
 
@@ -152,18 +158,26 @@ void RequestHandler::processRequest() {
     _internalUri = lib::extractPathFromUri(_request.getUri());
     const std::string& method = _request.getMethod();
 
+    Logger::debug() << "processing request for uri: " << _internalUri
+                    << (!_queryString.empty() ? " query: " + _queryString : "");
+
     if (method == "GET" || method == "POST") {
         _queryString = lib::extractQueryFromUri(_request.getUri());
     }
 
-    Logger::debug() << "processing request for uri: " << _internalUri
-                    << (!_queryString.empty() ? " query: " + _queryString : "");
-
     handleRedirect();
+
+    if (_response.getStatusCode() == HTTP_MOVED_PERMANENTLY) {
+        return;
+    }
 
     RequestMethod requestMethod = getRequestMethod(method);
 
     const Location* location = _serverConfig.getLocation(_internalUri);
+    if (!location && method == "DELETE") {
+        _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
+        return;
+    }
     if (location) {
         if (!location->getMethodIsAllowed(method)) {
             _response.setStatusCode(HTTP_METHOD_NOT_ALLOWED);
@@ -186,6 +200,7 @@ void RequestHandler::processRequest() {
         case PROPPATCH: _response.setStatusCode(HTTP_NOT_IMPLEMENTED); break;
         case UNKNOWN: _response.setStatusCode(HTTP_BAD_REQUEST); break;
     }
+    Logger::critical() << _response.toString();
 }
 
 // ============ GET ============ //
@@ -195,6 +210,23 @@ void RequestHandler::handleStatusRequest() {
     _response.setContent(ServerStatus::getInstance().getJson());
     _response.setContentType("application/json");
     // _response.setConnection("close");
+}
+
+static void resolveIndexFile(std::string& fullPath, const Location* location,
+                             const std::string* serverIndex) {
+    const std::string* indexFile = NULL;
+
+    if (location && location->getIndex()) {
+        indexFile = location->getIndex();
+    } else if (serverIndex) {
+        indexFile = serverIndex;
+    }
+
+    if (indexFile && !indexFile->empty()) {
+        if (lib::isReadable(fullPath + "/" + *indexFile)) {
+            fullPath += "/" + *indexFile;
+        }
+    }
 }
 
 void RequestHandler::processGetRequest() {
@@ -213,19 +245,9 @@ void RequestHandler::processGetRequest() {
             _response.setStatusCode(HTTP_INTERNAL_SERVER_ERROR);
         return;
     }
-    if (!pathExist(fullPath)) {
-        _response.setStatusCode(HTTP_NOT_FOUND);
-        return;
-    }
+
     if (lib::isDirectory(fullPath)) {
-        if (location && location->getIndex() &&
-            lib::isReadable(fullPath + "/" + *location->getIndex())) {
-            fullPath += "/" + *location->getIndex();
-        } else if (_serverConfig.getIndex() &&
-                   lib::isReadable(fullPath + "/" +
-                                   *_serverConfig.getIndex())) {
-            fullPath += "/" + *_serverConfig.getIndex();
-        }
+        resolveIndexFile(fullPath, location, _serverConfig.getIndex());
     }
 
     if (_internalUri == "/status") {
@@ -233,7 +255,8 @@ void RequestHandler::processGetRequest() {
         return;
     }
 
-    if (!pathExist(fullPath)) {
+    Logger::critical() << fullPath;
+    if (!lib::pathExist(fullPath)) {
         _response.setStatusCode(HTTP_NOT_FOUND);
         return;
     }

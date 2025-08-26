@@ -62,7 +62,7 @@ class ConnectionManager {
     int HandleClientEvent(int fd, short events);
     void CleanupTimedOutClients();
     void RemoveClient(int client_fd);
-
+	
     bool                IsServerSocket(int fd) const;
     const ServerConfig& GetServerConfig(int fd) const;
 };

@@ -2,18 +2,10 @@
 
 ## To discuss
 
-- [ ] make DELETE disallowed by default? (it's the case for apache or nginx)
-- [ ] DELETE not protected, i was able to delete webserver.log with this in config 
-```
-location / {
-    allow_methods GET POST;
-  }
-```
 - make content-length not an int, it's not enough and could cause issue.
 
 ## to do max
 
-- Location doit etre dynamique dans process request, la c'est tout le temps localhost:8080
 - Fix le soucis avec return
 
 ## To do cgi
