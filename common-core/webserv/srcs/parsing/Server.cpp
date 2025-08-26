@@ -165,9 +165,9 @@ static int convertStringToInt(const std::string& c)
     return result;
 }
 
-const std::map<StatusCode, std::string> ServerConfig::getMapErrorPage(void) const 
+const std::map<int, std::string> ServerConfig::getMapErrorPage(void) const 
 {
-    std::map<StatusCode, std::string> MapErrorPage;
+    std::map<int, std::string> MapErrorPage;
     size_t pos;
     for (std::map<std::string, std::vector<std::string>>::const_iterator it = prmtrs.begin(); it != prmtrs.end(); ++it) 
     {
@@ -182,7 +182,7 @@ const std::map<StatusCode, std::string> ServerConfig::getMapErrorPage(void) cons
 					int errorCode = convertStringToInt(token);
                     if (!it->second.empty() && !it->second[0].empty())
                     {
-						MapErrorPage.insert(std::make_pair(static_cast<StatusCode>(errorCode), it->second[0]));
+						MapErrorPage.insert(std::make_pair(errorCode, it->second[0]));
                     }
                 }
             }
