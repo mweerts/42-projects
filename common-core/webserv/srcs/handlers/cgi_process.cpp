@@ -12,7 +12,6 @@
 
 #include "cgi_process.hpp"
 
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/wait.h>

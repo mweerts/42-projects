@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cerrno>
+#include "lib/utils.hpp"
 
 FileReader::FileReader() : fd_(-1), eof_(false), err_(false) {}
 FileReader::~FileReader() {
@@ -61,11 +62,11 @@ ssize_t FileReader::readOnce(char* buf, size_t maxLen) {
         return 0;
     }
 	if (n < 0) {
-		if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            return -2; // Would block, try again later
-        }
-        err_ = true;
-        return -1;
+		if (lib::checkSocketError(fd_)) {
+			err_ = true;
+			return -1;
+		}
+        return -2; // would block try again later
     }
     return -1;
 }

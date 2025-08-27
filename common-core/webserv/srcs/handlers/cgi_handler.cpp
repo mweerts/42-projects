@@ -12,7 +12,6 @@
 
 #include "cgi_handler.hpp"
 
-#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/poll.h>
