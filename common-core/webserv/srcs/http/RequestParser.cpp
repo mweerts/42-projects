@@ -87,8 +87,8 @@ RequestParser::Status RequestParser::parse(const char* buffer,
     }
 
     if (current_phase_ <= HEADERS) {
-		if (isHeaderTimedOut(20)) {
-			setError(HTTP_GATEWAY_TIMEOUT);
+		if (isHeaderTimedOut(60)) {
+			setError(HTTP_REQUEST_TIMEOUT);
 			return ERROR;
 		}
         header_buffer_.append(buffer, buffer_size);
