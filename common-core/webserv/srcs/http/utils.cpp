@@ -13,27 +13,6 @@
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
 
-bool isPhpFile(const std::string& path) {
-    return path.substr(path.find_last_of('.')) == ".php";
-}
-
-// std::string GetHtmlErrorPage(HttpResponse&      response,
-//                              const std::string& err_message) {
-//     response.setContentType("text/html");
-//     std::string msg = err_message.empty() ? "" : "<h4>" + err_message + "</h4>";
-//     std::ostringstream oss;
-//     oss << "<html><head><title>" << lib::to_string(response.getStatusCode())
-//         << " " << GetHttpStatusText(response.getStatusCode())
-//         << "</title></head><body><center><h1>"
-//         << lib::to_string(response.getStatusCode()) << " "
-//         << GetHttpStatusText(response.getStatusCode()) << "</h1>" << msg
-//         << "</center><hr><center>" << response.getServerName()
-//         << "</center></body></html>";
-//     response.setContent(oss.str());
-//     response.setContentLength(oss.str().size());
-//     return oss.str();
-// }
-
 std::string humanReadableSize(off_t size) {
     const char* suffixes[] = {"", "K", "M", "G", "T"};
     int         i = 0;
