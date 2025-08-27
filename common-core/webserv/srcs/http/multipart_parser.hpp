@@ -61,7 +61,6 @@ class MultipartParser {
 
     bool        parseHeaders(const std::string& headers_block);
     bool        extractContentDisposition(const std::string& header_value);
-    std::string generateFilePath(const std::string& filename);
     bool        finalizCurrentPart();
     void        setState(State new_state);
     void        setError(const std::string& message);

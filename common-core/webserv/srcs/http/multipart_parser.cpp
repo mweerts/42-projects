@@ -242,12 +242,6 @@ bool MultipartParser::extractContentDisposition(
     return !current_name_.empty() && !current_filename_.empty();
 }
 
-std::string MultipartParser::generateFilePath(const std::string& filename) {
-    std::ostringstream oss;
-    oss << upload_dir_ << "/" << time(NULL) << "_" << filename;
-    return oss.str();
-}
-
 bool MultipartParser::finalizCurrentPart() {
     if (current_name_.empty()) {
         return true;
