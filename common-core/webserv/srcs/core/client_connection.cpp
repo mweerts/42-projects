@@ -243,7 +243,7 @@ bool ClientConnection::finalizeResponse() {
 
 std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
     std::vector<pollfd> out;
-    // Static file: poll file for POLLIN when buffer has space
+    // static files
     if (response_streamer_.isStreamingFile() &&
         response_streamer_.wantsFileRead()) {
         pollfd p;
@@ -253,7 +253,7 @@ std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
         out.push_back(p);
     }
 
-    // CGI pipes: poll stdin for POLLOUT, stdout for POLLIN
+    // cgi pipes
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         int inFd = request_handler_->getCgiInputPipe();
         int outFd = request_handler_->getCgiOutputPipe();
@@ -278,14 +278,14 @@ std::vector<pollfd> ClientConnection::GetAuxPollFds() const {
 }
 
 void ClientConnection::HandleAuxEvent(int fd, short revents) {
-    // FILE event: read more data into buffer
+    // FILE event
     if (response_streamer_.isStreamingFile() &&
         (fd == response_streamer_.getFileStream().fileFd()) &&
         (revents & POLLIN)) {
         (void)response_streamer_.getFileStream().onFileReadable();
     }
 
-    // CGI event: handle CGI I/O
+    // CGI event
     if (request_handler_ && request_handler_->hasCgiRunning()) {
         bool done = request_handler_->handleCgiFdEvent(fd, revents);
         if (done) {
