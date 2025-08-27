@@ -1,16 +1,15 @@
-#include "HttpResponse.hpp"
 
-#include <sys/time.h>
-
+#include <sys/time.h> 
 #include <sstream>
 
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"
-#include "MimeTypes.hpp"
+#include "mime_types.hpp"
 #include "http_utils.hpp"
 #include "lib/file_utils.hpp"
 #include "lib/utils.hpp"
 #include "utils.hpp"
+#include "http_response.hpp"
 
 HttpResponse::HttpResponse(const ServerConfig& serverConfig)
     : _serverConfig(serverConfig) {

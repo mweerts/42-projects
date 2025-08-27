@@ -1,8 +1,8 @@
 #ifndef REQUEST_HANDLER_HPP
 #define REQUEST_HANDLER_HPP
 
-#include "../http/HttpRequest.hpp"
-#include "../http/HttpResponse.hpp"
+#include "../http/http_request.hpp"
+#include "../http/http_response.hpp"
 #include "../srcs/parsing/GlobalConfig.hpp"
 #include "http_utils.hpp"
 

@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 
 #include "../handlers/file_streaming.hpp"
-#include "../http/HttpResponse.hpp"
+#include "../http/http_response.hpp"
 #include "Logger.hpp"
 #include "lib/stream_buffer.hpp"
 #include "lib/utils.hpp"

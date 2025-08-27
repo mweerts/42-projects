@@ -20,9 +20,9 @@
 #include <vector>
 
 #include "../handlers/response_streamer.hpp"
-#include "../http/HttpRequest.hpp"
-#include "../http/HttpResponse.hpp"
-#include "../http/RequestParser.hpp"
+#include "../http/http_request.hpp"
+#include "../http/http_response.hpp"
+#include "../http/request_parser.hpp"
 
 class ServerConfig;
 class RequestHandler;

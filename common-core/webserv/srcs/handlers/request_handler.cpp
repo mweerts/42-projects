@@ -1,4 +1,4 @@
-#include "RequestHandler.hpp"
+#include "request_handler.hpp"
 
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -10,10 +10,10 @@
 
 #include "../core/server_status.hpp"
 #include "../handlers/cgi_handler.hpp"
-#include "../http/HttpRequest.hpp"
-#include "../http/HttpResponse.hpp"
-#include "../http/MimeTypes.hpp"
-#include "../http/MultipartParser.hpp"
+#include "../http/http_request.hpp"
+#include "../http/http_response.hpp"
+#include "../http/mime_types.hpp"
+#include "../http/multipart_parser.hpp"
 #include "../http/utils.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"

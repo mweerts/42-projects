@@ -28,8 +28,8 @@
 #include <string>
 #include <vector>
 
-#include "../http/HttpRequest.hpp"
-#include "../http/HttpResponse.hpp"
+#include "../http/http_request.hpp"
+#include "../http/http_response.hpp"
 #include "../http/utils.hpp"
 #include "../parsing/GlobalConfig.hpp"
 #include "Logger.hpp"

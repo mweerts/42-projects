@@ -23,7 +23,7 @@
 #include <iostream>
 #include <vector>
 
-#include "../handlers/RequestHandler.hpp"
+#include "../handlers/request_handler.hpp"
 #include "../http/utils.hpp"
 #include "Logger.hpp"
 #include "http_utils.hpp"

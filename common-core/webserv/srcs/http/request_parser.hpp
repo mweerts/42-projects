@@ -17,7 +17,7 @@
 #include <map>
 #include <string>
 
-#include "HttpRequest.hpp"
+#include "http_request.hpp"
 #include "http_utils.hpp"
 #include <ctime>
 

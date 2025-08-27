@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "RequestParser.hpp"
+#include "request_parser.hpp"
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -37,7 +37,7 @@ RequestParser::RequestParser(HttpRequest& request, const ServerConfig& config)
     request_size_ = 0;
     req_buffer_.clear();
     req_filename_.clear();
-	header_start_time_ = time(NULL);
+    header_start_time_ = time(NULL);
 }
 
 RequestParser::~RequestParser() {
@@ -55,7 +55,7 @@ void RequestParser::reset(const HttpRequest& request) {
     req_buffer_.clear();
     req_filename_.clear();
     header_buffer_.clear();
-	header_start_time_ = time(NULL);
+    header_start_time_ = time(NULL);
 }
 
 void RequestParser::cleanup() {
@@ -87,10 +87,10 @@ RequestParser::Status RequestParser::parse(const char* buffer,
     }
 
     if (current_phase_ <= HEADERS) {
-		if (isHeaderTimedOut(60)) {
-			setError(HTTP_REQUEST_TIMEOUT);
-			return ERROR;
-		}
+        if (isHeaderTimedOut(60)) {
+            setError(HTTP_REQUEST_TIMEOUT);
+            return ERROR;
+        }
         header_buffer_.append(buffer, buffer_size);
         if (header_buffer_.size() > HEADER_BUFFER_SIZE) {
             setError(HTTP_REQUEST_ENTITY_TOO_LARGE,
