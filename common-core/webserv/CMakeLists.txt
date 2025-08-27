@@ -14,43 +14,38 @@ include_directories(includes)
 
 
 set(SOURCES
-    srcs/main.cpp
-    srcs/core/web_server.cpp
-    srcs/core/client_connection.cpp
+	srcs/main.cpp
+	srcs/core/client_connection.cpp 
+	srcs/core/web_server.cpp 
 	srcs/core/connection_manager.cpp
-	srcs/core/tcp_server.cpp
 	srcs/core/server_status.cpp
-	
-    srcs/handlers/cgi_handler.cpp
-    srcs/handlers/cgi_process.cpp
-    srcs/handlers/file_streaming.cpp
+	srcs/core/tcp_server.cpp
+	srcs/handlers/cgi_handler.cpp
+	srcs/handlers/cgi_process.cpp
+	srcs/handlers/file_streaming.cpp
 	srcs/handlers/response_streamer.cpp
-    srcs/handlers/RequestHandler.cpp
-	
-    # srcs/http/HttpRequest.cpp
-    srcs/http/HttpRequest.cpp
-    srcs/http/MultipartParser.cpp
-    srcs/http/HttpResponse.cpp
-    srcs/http/MimeTypes.cpp
-    srcs/http/RequestParser.cpp
-    srcs/http/utils.cpp
-    
-    srcs/parsing/ConfigProcessor.cpp
-    srcs/parsing/GlobalConfig.cpp
-    srcs/parsing/Location.cpp
-    srcs/parsing/Server.cpp
-    srcs/parsing/Node.cpp
-    srcs/parsing/Validator.cpp
-    srcs/parsing/CgiBin.cpp
-    
-    srcs/lib/socket_guard.cpp
-    srcs/lib/fd_guard.cpp
-    srcs/lib/logger.cpp
-    srcs/lib/file_utils.cpp
+	srcs/handlers/request_handler.cpp
+	srcs/http/http_request.cpp
+	srcs/http/multipart_parser.cpp
+	srcs/http/http_response.cpp
+	srcs/http/mime_types.cpp
+	srcs/http/request_parser.cpp
+	srcs/http/utils.cpp
+  	srcs/parsing/ConfigProcessor.cpp
+   	srcs/parsing/GlobalConfig.cpp
+  	srcs/parsing/Location.cpp
+   	srcs/parsing/Server.cpp
+  	srcs/parsing/Node.cpp
+   	srcs/parsing/Validator.cpp
+	srcs/parsing/CgiBin.cpp
+	srcs/lib/socket_guard.cpp
+   	srcs/lib/fd_guard.cpp
+   	srcs/lib/logger.cpp
+  	srcs/lib/file_utils.cpp
 	srcs/lib/stream_buffer.cpp
 	srcs/lib/file_io.cpp
-    srcs/lib/utils.cpp
-    srcs/tests.cpp
+	srcs/lib/utils.cpp
+	srcs/tests.cpp 
 )
 
 add_executable(webserv ${SOURCES})
