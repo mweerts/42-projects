@@ -1,96 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error - WebServ</title>
-    <link rel="stylesheet" href="/css/global.css">
-    <script src="/js/tailwind.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Error - WebServ</title>
+	<link rel="stylesheet" href="/css/global.css">
+	<script src="/js/tailwind.js"></script>
 </head>
+
 <body class="bg-black min-h-screen flex items-center justify-center overflow-hidden relative">
-    <!-- Animated grid background -->
-    <div class="absolute inset-0 opacity-20">
-        <div class="absolute inset-0" style="background-image: linear-gradient(cyan 1px, transparent 1px), linear-gradient(90deg, cyan 1px, transparent 1px); background-size: 50px 50px;"></div>
-    </div>
-    
-    <!-- Glowing orbs -->
-    <div class="absolute top-20 left-20 w-32 h-32 bg-pink-500 rounded-full opacity-30 blur-xl animate-pulse"></div>
-    <div class="absolute bottom-20 right-20 w-40 h-40 bg-cyan-500 rounded-full opacity-20 blur-xl animate-pulse" style="animation-delay: 1s;"></div>
-    
-    <div class="text-center max-w-2xl mx-auto px-6 relative z-10">
-        <!-- Dynamic error code -->
-        <div class="mb-12 relative">
-            <h1 id="error-code" class="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-cyan-400 animate-pulse">
-                {{ERROR_CODE}}
-            </h1>
-            <div id="error-shadow-1" class="absolute inset-0 text-9xl font-black text-cyan-400 opacity-50 blur-sm">{{ERROR_CODE}}</div>
-            <div id="error-shadow-2" class="absolute inset-0 text-9xl font-black text-pink-500 opacity-30 blur-md">{{ERROR_CODE}}</div>
-        </div>
-        
-        <!-- Dynamic message -->
-        <div class="mb-8">
-            <h2 class="text-2xl font-bold text-cyan-400 mb-4 tracking-wider uppercase">
-                <span class="inline-block animate-pulse">&gt;</span> 
-                <span id="error-title">{{ERROR_MESSAGE}}</span>
-                <span class="inline-block animate-pulse">&lt;</span>
-            </h2>
-            <p id="error-message" class="text-pink-300 text-lg font-mono">
-                ERROR: Page not found in the mainframe
-            </p>
-            <p class="text-cyan-300 text-sm font-mono mt-2 opacity-75">
-                [SYSTEM] Connection terminated...
-            </p>
-        </div>
-        
-        <!-- Neon button -->
-        <div class="mb-8">
-            <a href="/" 
-               class="group relative inline-flex items-center justify-center px-8 py-4 bg-black border-2 border-cyan-400 text-cyan-400 font-mono font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-lg hover:shadow-cyan-400/50">
-                <span class="relative z-10">[ RETURN TO BASE ]</span>
-                <div class="absolute inset-0 bg-cyan-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            </a>
-        </div>
-        
-        <!-- Terminal-style info -->
-        <div class="border border-green-500 bg-black bg-opacity-50 p-4 font-mono text-xs text-green-400">
-            <div class="flex items-center mb-2">
-                <span class="text-green-500 mr-2">$</span>
-                <span class="animate-pulse">system_check.exe</span>
-            </div>
-            <div class="text-green-300">Status: <span id="status-code">{{ERROR_CODE}}</span> - <span id="status-message">Not Found</span></div>
-            <div class="text-green-300">Time: <span id="timestamp"></span></div>
-            <div class="text-green-300">Path: <span id="current-url" class="text-red-400"></span></div>
-        </div>
-    </div>
-    
-    <script>
-        // Error code mappings
-        const errorInfo = {
-            '400': { title: 'Bad Request', message: 'ERROR: Invalid request format' },
-            '401': { title: 'Unauthorized', message: 'ERROR: Access credentials required' },
-            '403': { title: 'Forbidden', message: 'ERROR: Permission denied' },
-            '404': { title: 'Not Found', message: 'ERROR: Page not found in the mainframe' },
-            '405': { title: 'Method Not Allowed', message: 'ERROR: Method not allowed for this resource' },
-            '500': { title: 'Internal Server Error', message: 'ERROR: System malfunction detected' },
-            '501': { title: 'Not Implemented', message: 'ERROR: Feature not implemented' },
-            '502': { title: 'Bad Gateway', message: 'ERROR: Gateway connection failed' },
-            '503': { title: 'Service Unavailable', message: 'ERROR: Service temporarily offline' }
-        };
-        
-		const errorCode = "{{ERROR_CODE}}";
-        const info = errorInfo[errorCode] || { 
-            title: 'System Error', 
-            message: 'ERROR: Unknown system error' 
-        };
-        
-        document.getElementById('error-message').textContent = info.message;
-        document.getElementById('error-title').textContent = info.title;
-        
-        // Update page title
-        document.title = `${errorCode} - ${info.title} | WebServ`;
-        document.getElementById('status-message').textContent = info.title || "System Error";
-        document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
-        document.getElementById('current-url').textContent = window.location.pathname;
-    </script>
+	<!-- background image -->
+	<div class="fixed inset-0 z-0" loading="lazy">
+		<div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+			style="background-image: url('/cyberpunk-bg.avif');"></div>
+		<!-- Dark overlay for better text readability -->
+		<div class="absolute inset-0 bg-black/40"></div>
+	</div>
+
+	<div class="relative z-10">
+		<div class="text-center max-w-2xl mx-auto px-6 relative z-10">
+			<!-- Dynamic error code -->
+			<div class="mb-12 relative">
+				<h1 id="error-code"
+					class="text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-cyan-400 animate-pulse">
+					{{ERROR_CODE}}
+				</h1>
+				<div id="error-shadow-1" class="absolute inset-0 text-9xl font-black text-cyan-400 opacity-50 blur-sm">
+					{{ERROR_CODE}}</div>
+				<div id="error-shadow-2" class="absolute inset-0 text-9xl font-black text-pink-500 opacity-30 blur-md">
+					{{ERROR_CODE}}</div>
+			</div>
+
+			<!-- Dynamic message -->
+			<div class="mb-8">
+				<h2 class="text-2xl font-bold text-cyan-400 mb-4 tracking-wider uppercase">
+					<span class="inline-block animate-pulse">&gt;</span>
+					<span id="error-title">{{ERROR_MESSAGE}}</span>
+					<span class="inline-block animate-pulse">&lt;</span>
+				</h2>
+				<p id="error-message" class="text-pink-300 text-lg font-mono">
+					ERROR: Page not found in the mainframe
+				</p>
+				<p class="text-cyan-300 text-sm font-mono mt-2 opacity-75">
+					[SYSTEM] Connection terminated...
+				</p>
+			</div>
+
+			<!-- Neon button -->
+			<div class="mb-8">
+				<a href="/"
+					class="group relative inline-flex items-center justify-center px-8 py-4 bg-black border-2 border-cyan-400 text-cyan-400 font-mono font-bold text-lg uppercase tracking-wider transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-lg hover:shadow-cyan-400/50">
+					<span class="relative z-10">[ RETURN TO BASE ]</span>
+					<div
+						class="absolute inset-0 bg-cyan-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300">
+					</div>
+				</a>
+			</div>
+
+			<!-- Terminal-style info -->
+			<div class="border border-green-400/50 bg-black/40 p-6 font-mono text-xs text-green-300">
+				<div class="flex items-center mb-2">
+					<span class="text-green-500 mr-2">$</span>
+					<span class="animate-pulse">system_check.exe</span>
+				</div>
+				<div class="text-green-300">Status: <span id="status-code">{{ERROR_CODE}}</span> - <span
+						id="status-message">Not Found</span></div>
+				<div class="text-green-300">Time: <span id="timestamp"></span></div>
+				<div class="text-green-300">Path: <span id="current-url" class="text-red-400"></span></div>
+			</div>
+
+			<script>
+				const errorInfo = {
+					'400': { title: 'Bad Request', message: 'ERROR: Invalid request format' },
+					'401': { title: 'Unauthorized', message: 'ERROR: Access credentials required' },
+					'403': { title: 'Forbidden', message: 'ERROR: Permission denied' },
+					'404': { title: 'Not Found', message: 'ERROR: Page not found in the mainframe' },
+					'405': { title: 'Method Not Allowed', message: 'ERROR: Method not allowed for this resource' },
+					'500': { title: 'Internal Server Error', message: 'ERROR: System malfunction detected' },
+					'501': { title: 'Not Implemented', message: 'ERROR: Feature not implemented' },
+					'502': { title: 'Bad Gateway', message: 'ERROR: Gateway connection failed' },
+					'503': { title: 'Service Unavailable', message: 'ERROR: Service temporarily offline' }
+				};
+
+				const errorCode = "{{ERROR_CODE}}";
+				const info = errorInfo[errorCode] || {
+					title: 'System Error',
+					message: 'ERROR: Unknown system error'
+				};
+
+				document.getElementById('error-message').textContent = info.message;
+				document.getElementById('error-title').textContent = info.title;
+
+				document.title = `${errorCode} - ${info.title} | WebServ`;
+				document.getElementById('status-message').textContent = info.title || "System Error";
+				document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+				document.getElementById('current-url').textContent = window.location.pathname;
+			</script>
 </body>
+
 </html>

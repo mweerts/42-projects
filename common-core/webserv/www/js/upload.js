@@ -1,12 +1,15 @@
 // Handles drag & drop, file selection, uploads, and file listing
 
-// DOM elements
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
 const selectedFilesDiv = document.getElementById('selected-files');
 const filesList = document.getElementById('files-list');
 
-// Drag and drop functionality
+document.addEventListener('DOMContentLoaded', () => {
+    fetchStatus();
+    setInterval(fetchStatus, 500);
+});
+
 dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('border-pink-400', 'bg-pink-400/10');
@@ -28,7 +31,6 @@ dropZone.addEventListener('drop', (e) => {
 
 // Click handler for drop zone
 dropZone.addEventListener('click', (e) => {
-    // Add visual feedback
     dropZone.classList.add('border-pink-400', 'bg-pink-400/10');
     setTimeout(() => {
         dropZone.classList.remove('border-pink-400', 'bg-pink-400/10');
@@ -75,7 +77,6 @@ function formatFileSize(bytes) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-// File upload handling
 document
     .getElementById("upload-form")
     .addEventListener("submit", async function (e) {
@@ -103,7 +104,6 @@ document
                     "border-green-400",
                 );
 
-                // Clear selected files list after successful upload (but keep section visible)
                 filesList.innerHTML = '<div class="text-pink-400/60 font-mono text-xs">No files selected</div>';
                 fileInput.value = '';
                 refreshFileList();
@@ -151,7 +151,6 @@ async function refreshFileList() {
     }
 }
 
-// Display files in terminal style
 function displayFiles(files) {
     const fileListDiv = document.getElementById("file-list");
 
@@ -187,7 +186,6 @@ function displayFiles(files) {
 
 async function deleteFile(filename) {
     try {
-        // Get the current location path and append the filename
         const currentPath = window.location.pathname.split('/').slice(0, -1).join('/');
         const deleteUrl = currentPath + '/uploads/' + filename;
         
@@ -209,3 +207,4 @@ async function deleteFile(filename) {
 }
 
 refreshFileList();
+
