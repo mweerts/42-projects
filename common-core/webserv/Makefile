@@ -12,12 +12,10 @@
 
 NAME = webserv
 
-FLAGS = -Wall -Wextra -Werror -Wunused-function -g3
+FLAGS = -Wall -Wextra -Werror -g3
 
 SRCS_DIR = srcs
 OBJS_DIR = objs
-#SRCS = $(shell find $(SRCS_DIR) -name "*.cpp" ! -path "srcs/parsing/test/*" ! -path "srcs/tests/*")
-
 
 SRCS = 		    srcs/main.cpp \
 			    srcs/core/client_connection.cpp \
@@ -81,11 +79,10 @@ clean:
 fclean: clean
 	rm -rf build
 	rm -f $(NAME)
-	rm -rf ./www/tmp
 
 re: fclean all
 test:
-	docker build -f srcs-tester/Dockerfile -t dockertester .
+	docker build -f tester/Dockerfile -t dockertester .
 	docker run -e FULL=1 -ti dockertester
 rtest: 
 	docker run -e FULL=0 -ti dockertester

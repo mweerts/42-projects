@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import time
 import sys
+import ctypes
+
+ctypes.string_at(0)
 
 # Intestazioni CGI
 print("Content-Type: text/plain\n")
