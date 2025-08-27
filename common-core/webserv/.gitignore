@@ -3,7 +3,7 @@ objs
 *.log
 build
 .cache
-www/uploads
+www/uploads/*
 www/tmp
 www/req_tmp
 # Prerequisites
@@ -26,10 +26,6 @@ www/req_tmp
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai

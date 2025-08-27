@@ -47,9 +47,7 @@ SRCS = 		    srcs/main.cpp \
   				srcs/lib/file_utils.cpp \
 				srcs/lib/stream_buffer.cpp \
 				srcs/lib/file_io.cpp \
-				srcs/lib/utils.cpp \
-				srcs/tests.cpp 
-
+				srcs/lib/utils.cpp 
 			
 
 INC = -I ./includes/
