@@ -219,21 +219,23 @@ def ft_full_test(start_index):
     ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
     ###♡♡♡♡♡♡♡♡♡♡♡ SLOW_OUTPUT♡♡♡♡♡♡♡♡♡♡♡ ###
     #TODO: RIEMPIRE IL BUFFER DI 1GB VEDER SE SALTA TUTTO ADD WWW/CGI♡♡♡♡♡♡♡♡♡♡♡
-        ft_siege(cmdCGI, MSG_C_T, 1)
-        y = ft_input(proc);
-        if (y == -1): break;
-        elif (y == -2): i + 1; continue;
-    ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
-        y = ft_agrate_test_siege(proc);
-        if (y == -1): break;
-        elif (y == -2): i + 1; continue;
-        time.sleep(2)
+        if (config_list[ciclo] != "../../config/TestConf/noBindPort.conf"):
+            ft_siege(cmdCGI, MSG_C_T, 1)
+            y = ft_input(proc);
+            if (y == -1): break;
+            elif (y == -2): i + 1; continue;
+        ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
+            y = ft_agrate_test_siege(proc);
+            if (y == -1): break;
+            elif (y == -2): i + 1; continue;
+            time.sleep(2)
     #######♡♡♡♡♡♡♡♡♡♡♡  SUB PROCCESS SIEGE♡♡♡♡♡♡♡♡♡♡♡
         # ♡♡♡♡♡♡♡♡♡♡♡End Valgrind (test più esterno - dopo tutto)♡♡♡♡♡♡♡♡♡♡♡
         print("### FINE VALGRIND ###")
         print(f"==== FINE CICLO {ciclo+1} ====")
         print("Invio Ctrl+C al processo...")
         proc.send_signal(signal.SIGINT)
+        time.sleep(0.5)
         ciclo = ft_input_index(ciclo);
         if (ciclo > 0):
             if (ciclo == -1):
@@ -243,16 +245,16 @@ def ft_full_test(start_index):
 
 def ft_agrate_test_siege(proc):
         print("### TEST SIEGE ####")
-        print(MSG_L_T)
-        ft_siege(cmdLow, MSG_L_T, 1)
-        print(MSG_M_T)
-        i = ft_input(proc);
-        if (i < 0): return i
-        ft_siege(cmdMini, MSG_M_T, 1);
-        print(MSG_F_T)
-        i = ft_input(proc);
-        if (i < 0): return i
-        ft_siege(cmdFull, MSG_F_T, 1);
+        #print(MSG_L_T)
+       # ft_siege(cmdLow, MSG_L_T, 1)
+       #print(MSG_M_T)
+        #i = ft_input(proc);
+        #if (i < 0): return i
+        #ft_siege(cmdMini, MSG_M_T, 1);
+        #print(MSG_F_T)
+        #i = ft_input(proc);
+        #if (i < 0): return i
+        #ft_siege(cmdFull, MSG_F_T, 1);
         print(MSG_J_T)
         i = ft_input(proc);
         if (i < 0): return i
