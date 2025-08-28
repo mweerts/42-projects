@@ -48,7 +48,7 @@ void GenerateCgiBin(const GlobalConfig & GlobREF)
 
 	std::vector<ServerConfig> root = GlobREF.getServers();
 	std::vector<Location> Loc;
-	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/slow_cgi.py", "/cgi-bin"};
+	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/auth.go?login" "/cgi-bin"};
 	for (size_t i = 0; i < root.size(); ++i)
 	{
 		int port = root[i].getPort();
@@ -67,7 +67,7 @@ void GenerateSigeConfBasic(const GlobalConfig & GlobREF)
 	std::vector<ServerConfig> root = GlobREF.getServers();
 	std::vector<Location> Loc;
 	std::vector<std::string> method = {"", "POST"};
-	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/slow_cgi.py", "/cgi-bin"};
+	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/auth.go?login" "/cgi-bin"};
 	for (size_t i = 0; i < root.size(); ++i)
 	{
 		//std::string urlMain = "htpp:://" + root[i].getHost() + ":" + root[i].getPort();
@@ -105,7 +105,7 @@ void GenerateSigeConfAdvance(const GlobalConfig & GlobREF)
 	std::vector<std::string> static_paths = {"/index.html", "/css/global.css", "/img/logo.png", "/empty.html","/upload.html"};
 	std::vector<std::string> error_paths = {"/doesnotexist", "/404", "/invalid/path"};
 	std::vector<std::string> query_paths = {"/search?q=test", "/user?id=42", "/api/data?page=1"};
-	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/slow_cgi.py", "/cgi-bin"};
+	std::vector<std::string> cgi_bin = {"/cgi-bin/log-viewer.py", "/cgi-bin/auth.go?login" "/cgi-bin"};
 	std::vector<ServerConfig> root = GlobREF.getServers();
 	std::vector<std::string> method = {"", "POST"};
 	std::vector<Location> Loc;

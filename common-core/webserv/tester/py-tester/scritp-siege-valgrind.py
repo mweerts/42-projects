@@ -22,6 +22,7 @@ chunk_size = 1024 * 1024  # 1 MB
 cmdMini = ["siege", "-f","urlBasic.txt", "-c", "2", "-v", "-d", "0.5", "-t", "10s"]
 cmdFull = ["siege", "-f", "urlFull.txt", "-c", "10", "-t", "10s"]
 cmdBasic = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
+cmdSlowCgi = ["siege", "-f", "urlBasic.txt", "-c", "10", "-t", "10s"]
 cmdMaxC = ["siege", "-f", "urlBasic.txt", "-c", "200", "-t", "25s"]
 cmdCGI = ["siege", "-f", "urlCGI.txt", "-c", "10", "-t", "25s"]
 cmdBanch = ["siege", "-b", "-f", "urlBasic.txt", "-t", "20s"]
@@ -200,6 +201,8 @@ def ft_full_test(start_index):
         y = ft_input(proc);
         if (y == -1): break;
         elif (y == -2): i + 1; continue;
+        ##♡♡♡♡♡♡♡♡♡♡♡ Slow curl ♡♡♡♡♡♡♡♡♡♡♡ ##
+        ft_limit_rate_curl(url + "cgi-bin/slow_cgi.py", 1);
     ##♡♡♡♡♡♡♡♡♡♡♡ SLEEP AND TEST TO SIEGE♡♡♡♡♡♡♡♡♡♡♡ ##
         ft_for_func(100, ft_real_time_curl, ft_real_time_curl, url, urlApi)
         y = ft_input(proc);
