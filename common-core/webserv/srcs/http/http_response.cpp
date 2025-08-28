@@ -10,6 +10,7 @@
 #include "lib/utils.hpp"
 #include "utils.hpp"
 #include "http_response.hpp"
+#include <fstream>
 
 HttpResponse::HttpResponse(const ServerConfig& serverConfig)
     : _serverConfig(serverConfig) {
@@ -166,7 +167,7 @@ void HttpResponse::CreateErrorPage(StatusCode statusCode) {
     std::string err_page = _serverConfig.getErrorPage(statusCode);
     if (!err_page.empty()) {
         const char*   page = err_page.c_str();
-        std::ifstream file(err_page);
+        std::ifstream file(page);
         if (!file.fail() && file.is_open()) {
             std::ostringstream ss;
             ss << file.rdbuf();

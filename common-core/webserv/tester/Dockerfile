@@ -22,11 +22,11 @@ RUN ls -l
 
 
 # Imposta la directory dove si trova lo script
-WORKDIR /usr/local/app/srcs-tester/src/
+WORKDIR /usr/local/app/tester/src/
 RUN make re .
-WORKDIR /usr/local/app/srcs-tester/src/
-RUN mv GeneratoreTester  /usr/local/app/srcs-tester/py-tester/.
-WORKDIR /usr/local/app/srcs-tester/py-tester/
+WORKDIR /usr/local/app/tester/src/
+RUN mv GeneratoreTester  /usr/local/app/tester/py-tester/.
+WORKDIR /usr/local/app/tester/py-tester/
 
 # Esegui lo script Python
 CMD ["python3", "scritp-siege-valgrind.py"]
