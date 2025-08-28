@@ -37,31 +37,32 @@ int main(int argc, char* argv[]) {
         if (std::string(argv[i]) == "-c" && i + 1 < argc) {
             config_file = static_cast<std::string>(argv[i + 1]);
             Logger::info() << "Using config file: " << config_file;
-        } else if (std::string(argv[i]) == "-v")  {
+        } else if (std::string(argv[i]) == "-v") {
             Logger::setLevel(LOG_LEVEL_DEBUG);
         }
     }
 
-    try {
-        GlobalConfig config;
+    while (true) {
+        try {
+            GlobalConfig config;
 
-        if (!config.loadConfig(config_file)) {
-            Logger::error() << "Failed to load configuration file";
-            return 1;
+            if (!config.loadConfig(config_file)) {
+                Logger::error() << "Failed to load configuration file";
+                return 1;
+            }
+            
+            initializeCgiBin(config.getServers());
+            WebServer server(config);
+            if (!server.Start()) {
+                Logger::error() << "Failed to start server";
+                return 1;
+            }
+            server.Run();
+            break;
+
+        } catch (const std::exception& e) {
+            Logger::critical() << "Fatal error: " << e.what();
         }
-
-        initializeCgiBin(config.getServers());
-        WebServer server(config);
-        if (!server.Start()) {
-            Logger::error() << "Failed to start server";
-            return 1;
-        }
-        server.Run();  // TODO: add a loop to restart the server if it crashes
-                       // # at the end of project #
-
-    } catch (const std::exception& e) {
-        Logger::critical() << "Fatal error: " << e.what();
-        return 1;
     }
 
     return 0;
