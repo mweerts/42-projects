@@ -26,10 +26,13 @@ void ShrubberyCreationForm::doExecute(void) const {
 
     outputFile.open((this->getTarget() + "_shrubbery").c_str());
     if (!outputFile.is_open()) {
-        std::cout << "Cannot open " << this->getTarget() + "_shrubbery" << std::endl;
-		return ;
+        std::cout << "Cannot open " << this->getTarget() + "_shrubbery"
+                  << std::endl;
+        return;
     }
-	outputFile << TREE;
+    outputFile << TREE;
+    std::cout << "Shrubbery created in " << this->getTarget() + "_shrubbery"
+              << std::endl;
 }
 
 const std::string& ShrubberyCreationForm::getTarget(void) const {

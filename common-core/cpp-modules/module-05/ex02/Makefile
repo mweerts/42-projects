@@ -29,9 +29,9 @@ $(NAME) :	$(OBJS)
 
 clean: 
 		rm -rf $(OBJS)
+		rm -rf *_shrubbery
 
-fclean: 
-		rm -rf $(OBJS)
+fclean: clean
 		rm -rf $(NAME)
 
 re: fclean all
