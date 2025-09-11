@@ -81,7 +81,7 @@ int main()
 	// Test de création de formulaire avec un nom invalide
 	try
 	{
-		form = intern.makeForm("fwewef", "home");
+		form = intern.makeForm("InvalidName", "home");
 		if (form)
 		{
 			std::cout << GREEN << "Form created: " << form->getName() << NC << std::endl;
