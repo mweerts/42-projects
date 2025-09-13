@@ -1,5 +1,7 @@
 # webserv
 
+<img src="https://raw.githubusercontent.com/lulebugl/lulebugl/main/.github/images/webserv.png" alt="Top Image"/>
+
 ## Quick start (Docker)
 - Using make:
   ```
