@@ -17,7 +17,7 @@
 
 struct Validator {
     typedef void (Validator::*ValidateFunction)(
-        std::vector<std::string>&);
+        const std::vector<std::string>&);
 
     /*♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡♡♡*/
     Validator();  // ctor
@@ -33,7 +33,7 @@ struct Validator {
     void validateErrorPage(const std::vector<std::string>& prmtrs);
     void validateClienMaxBody(const std::vector<std::string>& prmtrs);
     void validatePath(const std::string& prmtrs);
-    void validateRoot(std::vector<std::string>& prmtrs);
+    void validateRoot(const std::vector<std::string>& prmtrs);
     void validateAutoIndex(const std::vector<std::string>& prmtrs);
     void validateMethods(const std::vector<std::string>& prmtrs);
     void validateCgiExt(const std::vector<std::string>& prmtrs);
