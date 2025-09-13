@@ -6,6 +6,8 @@ build
 www/uploads/*
 www/tmp
 www/req_tmp
+config/lucas.conf
+
 # Prerequisites
 *.d
 
