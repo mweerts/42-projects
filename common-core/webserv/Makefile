@@ -68,8 +68,16 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 # Include dependency files if they exist
 -include $(DEPS)
 
+docker: docker-build docker-run
+
+docker-build:
+	docker build -t webserv:dev .
+
+docker-run:
+	docker run --rm --name webserv -p 8080:8080 -p 8081:8081 webserv:dev
+
 run: all
-	./$(NAME) -v
+	./$(NAME)
 
 clean:
 	rm -rf $(OBJS_DIR)
@@ -79,8 +87,9 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean all
+
 test:
-	docker build -f tester/Dockerfile -t dockertester .
+	docker build -f testers/Dockerfile -t dockertester .
 	docker run -e FULL=1 -ti dockertester
 rtest: 
 	docker run -e FULL=0 -ti dockertester

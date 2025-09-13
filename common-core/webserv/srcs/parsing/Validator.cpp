@@ -14,6 +14,7 @@
 #include "lib/file_utils.hpp"
 
 #include "ConfigProcessor.hpp"
+#include <unistd.h>
 /*♡♡♡♡♡♡♡♡♡♡♡♡CTOR♡♡♡♡♡♡♡♡♡♡♡*/
 Validator::Validator() {
     // funcMap["host"] = &Validator::validateIp;
@@ -56,7 +57,7 @@ void Validator::validateErrorPage(const std::vector<std::string>& prmtrs) {
         throw VectorSizeToLow();
     if (prmtrs[0].size() < 1)
         throw Empty();
-    validatePath(prmtrs[0]);
+    // validatePath(prmtrs[0]);
 }
 
 void Validator::validateUploadDir(const std::vector<std::string>& prmtrs) {
@@ -95,15 +96,22 @@ void Validator::validateCgiPath(const std::vector<std::string>& prmtrs) {
     // Logger::valide() << "cgi path";
 }
 
-void Validator::validateRoot(const std::vector<std::string>& prmtrs) {
+void Validator::validateRoot(std::vector<std::string>& prmtrs) {
     if (prmtrs.size() > 1)
         throw VectorSizeToHight();
     if (prmtrs.size() < 1)
         throw VectorSizeToLow();
     if (prmtrs[0].size() < 1)
         throw Empty();
+	if (prmtrs[0].substr(0, 2) == "./") {
+		char* root = NULL;
+		getcwd(root, 1024);
+		if (root) {
+			prmtrs[0] = std::string(root) + prmtrs[0].substr(2);
+		}
+	}
     validatePath(prmtrs[0]);
-	validateDir(prmtrs[0]);
+	// validateDir(prmtrs[0]);
 	
     // Logger::valide() << "root";
 }

@@ -38,9 +38,7 @@ www/req_tmp
 *.out
 *.app
 
-/config/nginx.conf
 # IDE
-
 *.vscode
 .DS_Store
 /config/*
