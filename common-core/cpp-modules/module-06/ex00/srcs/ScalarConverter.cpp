@@ -131,7 +131,7 @@ ScalarConverter::t_value ScalarConverter::parseChar(const std::string& str) {
 
 ScalarConverter::t_value ScalarConverter::parseFloat(const std::string& str) {
     t_value ret;
-    float   val;
+    float   val = 0.0;
 
     if (strIsFloatLiteral(str)) {
         if (str == "inff" || str == "+inff")
@@ -176,7 +176,7 @@ ScalarConverter::t_value ScalarConverter::parseFloat(const std::string& str) {
 
 ScalarConverter::t_value ScalarConverter::parseDouble(const std::string& str) {
     t_value ret;
-    double  val;
+    double  val = 0.0;
 
     if (strIsDoubleLiteral(str)) {
         if (str == "inf" || str == "+inf")
