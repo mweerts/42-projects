@@ -6,7 +6,7 @@ COLOUR_END=\033[0m
 NAME = iter
 
 CC = c++
-CFLAGS = $(INC) -g -std=c++98 -Wall -Wextra -Werror 
+CFLAGS = $(INC) -std=c++98 -Wall -Wextra -Werror 
 
 INC = 
 
