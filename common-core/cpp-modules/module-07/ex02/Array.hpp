@@ -1,12 +1,14 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
+#include <stdexcept>
+
 template <typename T>
 class Array {
    public:
     Array() {
         _size = 0;
-        _array = new T[0];
+        _array = NULL;
     }
 
     Array(unsigned int n) {
@@ -31,7 +33,6 @@ class Array {
             }
         }
         return *this;
-        return this;
     }
 
     ~Array() {
@@ -40,7 +41,14 @@ class Array {
 
     T& operator[](unsigned int index) {
         if (index >= _size) {
-            throw std::out_of_range("Index out of bounds");
+            throw std::out_of_range("Index out of range");
+        }
+        return _array[index];
+    }
+
+    const T& operator[](unsigned int index) const {
+        if (index >= _size) {
+            throw std::out_of_range("Index out of range");
         }
         return _array[index];
     }
