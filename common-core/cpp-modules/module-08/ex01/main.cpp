@@ -73,7 +73,7 @@ int main(void) {
             std::cerr << e.what() << std::endl;
         }
 
-        std::cout << "addRange overflow\t: ";
+        std::cout <<  "overflow\t: ";
         try {
             sp.addRange(values.begin(), values.end());
         } catch (const std::exception& e) {
