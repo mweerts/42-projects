@@ -19,7 +19,7 @@ BitcoinExchange::BitcoinExchange(const BitcoinExchange& other) {
 
 BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& other) {
     if (this != &other) {
-        this->exchangeRates = other.exchangeRates;
+        this->_exchangeRates = other._exchangeRates;
     }
     return *this;
 }
@@ -57,10 +57,10 @@ void BitcoinExchange::loadExchangeRates(const std::string& dataFile) {
             if (!(valueStream >> value)) {
                 throw std::runtime_error("Error: bad input => invalid value.");
             }
-            exchangeRates[timestamp] = value;
+            _exchangeRates[timestamp] = value;
         }
 
-        if (exchangeRates.empty()) {
+        if (_exchangeRates.empty()) {
             throw std::runtime_error("Error: no valid data loaded.");
         }
     } catch (...) {
@@ -126,9 +126,9 @@ void BitcoinExchange::processInputFile(const std::string& inputFile) {
             }
 
             std::map<time_t, double>::iterator it =
-                exchangeRates.lower_bound(timestamp);
-            if (it == exchangeRates.end() || it->first != timestamp) {
-                if (it == exchangeRates.begin()) {
+                _exchangeRates.lower_bound(timestamp);
+            if (it == _exchangeRates.end() || it->first != timestamp) {
+                if (it == _exchangeRates.begin()) {
                     std::cerr << "Error: no earlier exchange rate available."
                               << std::endl;
                     continue;

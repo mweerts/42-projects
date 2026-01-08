@@ -14,7 +14,7 @@ class BitcoinExchange {
     void processInputFile(const std::string& inputFile);
 
    private:
-    std::map<time_t, double> exchangeRates;
+    std::map<time_t, double> _exchangeRates;
 
     void        loadExchangeRates(const std::string& dataFile);
     time_t      parseDate(const std::string& dateStr);
