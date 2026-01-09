@@ -4,6 +4,7 @@
 #include <ctime>
 #include <map>
 #include <string>
+
 class BitcoinExchange {
    public:
     BitcoinExchange();
