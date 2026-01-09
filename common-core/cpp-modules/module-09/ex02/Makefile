@@ -1,7 +1,7 @@
 NAME = PmergeMe
 
 CC = c++
-CFLAGS = $(INC) -std=c++98 #-Wall -Wextra -Werror 
+CFLAGS = $(INC) -std=c++98 -Wall -Wextra -Werror 
 
 INC = 
 

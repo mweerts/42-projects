@@ -3,21 +3,6 @@
 #include <algorithm>
 #include <iterator>
 
-PmergeMe::PmergeMe() {}
-
-PmergeMe::PmergeMe(const PmergeMe& other) {
-    *this = other;
-}
-
-PmergeMe& PmergeMe::operator=(const PmergeMe& other) {
-    if (this != &other) {
-    }
-    return *this;
-}
-
-PmergeMe::~PmergeMe() {}
-
-
 std::vector<size_t> PmergeMe::generateJacobsthalSequence(size_t n) {
     std::vector<size_t> jacobsthal;
     if (n == 0)
@@ -74,12 +59,6 @@ void PmergeMe::insertionSort(std::vector<int>& vec, size_t start, size_t end) {
 
 void PmergeMe::fordJohnsonSort(std::vector<int>& vec) {
     size_t n = vec.size();
-
-    // if (n <= 20) {
-    //     insertionSort(vec, 0, n);
-    //     return;
-    // }
-
     std::vector<std::pair<int, int> > pairs;
     int                               straggler = -1;
     bool                              hasStraggler = false;

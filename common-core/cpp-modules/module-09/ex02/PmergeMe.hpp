@@ -7,25 +7,25 @@
 
 class PmergeMe {
    public:
+    static void sort(std::vector<int>& vec);
+    static void sort(std::deque<int>& deq);
+
+   private:
     PmergeMe();
     PmergeMe(const PmergeMe& other);
     PmergeMe& operator=(const PmergeMe& other);
     ~PmergeMe();
 
-    void sort(std::vector<int>& vec);
-    void sort(std::deque<int>& deq);
+    static std::vector<size_t> generateJacobsthalSequence(size_t n);
 
-   private:
-    std::vector<size_t> generateJacobsthalSequence(size_t n);
-
-    void   fordJohnsonSort(std::vector<int>& vec);
-    void   insertionSort(std::vector<int>& vec, size_t start, size_t end);
-    size_t binarySearch(const std::vector<int>& vec, int value, size_t start,
+    static void   fordJohnsonSort(std::vector<int>& vec);
+    static void   insertionSort(std::vector<int>& vec, size_t start, size_t end);
+    static size_t binarySearch(const std::vector<int>& vec, int value, size_t start,
                         size_t end);
 
-    void   fordJohnsonSort(std::deque<int>& deq);
-    void   insertionSort(std::deque<int>& deq, size_t start, size_t end);
-    size_t binarySearch(const std::deque<int>& deq, int value, size_t start,
+    static void   fordJohnsonSort(std::deque<int>& deq);
+    static void   insertionSort(std::deque<int>& deq, size_t start, size_t end);
+    static size_t binarySearch(const std::deque<int>& deq, int value, size_t start,
                         size_t end);
 };
 

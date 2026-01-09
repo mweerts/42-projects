@@ -6,12 +6,13 @@
 
 class RPN {
    public:
-    RPN();
-    RPN(const RPN& other);
-    RPN& operator=(const RPN& other);
-    ~RPN();
+    static void processInput(const std::string& input);
 
-    void processInput(const std::string& input);
+   private:
+    RPN();
+    RPN(const RPN&);
+    RPN& operator=(const RPN&);
+    ~RPN();
 };
 
 #endif

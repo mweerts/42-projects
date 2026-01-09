@@ -8,8 +8,7 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    RPN rpnCalculator;
-    rpnCalculator.processInput(argv[1]);
+    RPN::processInput(argv[1]);
 
     return 0;
 }

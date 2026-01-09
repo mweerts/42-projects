@@ -56,12 +56,10 @@ int main(int argc, char** argv) {
     double vec_time = 0.0;
     double deq_time = 0.0;
 
-    PmergeMe sorter;
-
     {
         struct timeval start, end;
         gettimeofday(&start, NULL);
-        sorter.sort(vec);
+        PmergeMe::sort(vec);
         gettimeofday(&end, NULL);
         vec_time = (end.tv_sec - start.tv_sec) * 1000000.0 +
                    (end.tv_usec - start.tv_usec);
@@ -70,7 +68,7 @@ int main(int argc, char** argv) {
     {
         struct timeval start, end;
         gettimeofday(&start, NULL);
-        sorter.sort(deq);
+        PmergeMe::sort(deq);
         gettimeofday(&end, NULL);
         deq_time = (end.tv_sec - start.tv_sec) * 1000000.0 +
                    (end.tv_usec - start.tv_usec);
