@@ -45,18 +45,6 @@ size_t PmergeMe::binarySearch(const std::vector<int>& vec, int value,
     return left;
 }
 
-void PmergeMe::insertionSort(std::vector<int>& vec, size_t start, size_t end) {
-    for (size_t i = start + 1; i < end; ++i) {
-        int    key = vec[i];
-        size_t j = i;
-        while (j > start && vec[j - 1] > key) {
-            vec[j] = vec[j - 1];
-            --j;
-        }
-        vec[j] = key;
-    }
-}
-
 void PmergeMe::fordJohnsonSort(std::vector<int>& vec) {
     size_t n = vec.size();
     std::vector<std::pair<int, int> > pairs;
@@ -152,26 +140,8 @@ size_t PmergeMe::binarySearch(const std::deque<int>& deq, int value,
     return left;
 }
 
-void PmergeMe::insertionSort(std::deque<int>& deq, size_t start, size_t end) {
-    for (size_t i = start + 1; i < end; ++i) {
-        int    key = deq[i];
-        size_t j = i;
-        while (j > start && deq[j - 1] > key) {
-            deq[j] = deq[j - 1];
-            --j;
-        }
-        deq[j] = key;
-    }
-}
-
 void PmergeMe::fordJohnsonSort(std::deque<int>& deq) {
     size_t n = deq.size();
-
-    // if (n <= 20) {
-    //     insertionSort(deq, 0, n);
-    //     return;
-    // }
-
     std::deque<std::pair<int, int> > pairs;
     int                              straggler = -1;
     bool                             hasStraggler = false;
