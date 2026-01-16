@@ -32,4 +32,4 @@ This project builds a small containerized web stack with Docker Compose: Nginx t
 - Nginx: https://nginx.org/en/docs/
 - MariaDB: https://mariadb.com/kb/en/documentation/
 - WordPress CLI: https://developer.wordpress.org/cli/commands/
-- AI usage: GPT-5.1-Codex-Max was used to draft documentation, summarize configuration choices, and sanity-check commands; passwords and secrets were not generated or stored by AI.
+- AI usage: GPT-5.1-Codex-Max was used to draft documentation, summarize configuration choices, sanity-check commands, and assist with a few shell/bash commands

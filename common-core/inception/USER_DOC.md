@@ -10,7 +10,7 @@
 
 - Start (build + up): `make` or `make up`
 - Stop: `make down`
-- Logs: `make logs` or `docker compose -f srcs/docker-compose.yml logs -f nginx wordpress mariadb`
+- Logs: `make logs` (all) or `make logs-X` for a specific service (`X` = nginx | wordpress | mariadb)
 
 ## Accessing the Site and Admin
 
@@ -29,8 +29,9 @@
 
 ## Checking Service Health
 
-- WordPress/Nginx: `docker compose -f srcs/docker-compose.yml logs -f nginx wordpress`
-- MariaDB: `docker compose -f srcs/docker-compose.yml logs -f mariadb`
+- WordPress: `make logs-wordpress`
+- Nginx: `make logs-nginx`
+- MariaDB: `make logs-mariadb`
 - Process status: `docker compose -f srcs/docker-compose.yml ps`
 
 ## Managing Credentials
