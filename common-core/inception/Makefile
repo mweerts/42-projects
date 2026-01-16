@@ -3,8 +3,8 @@ SERVICES = mariadb nginx wordpress
 all: setup_dirs build up
 
 setup_dirs:
-	mkdir -p /home/mweerts/data/mariadb
-	mkdir -p /home/mweerts/data/wordpress
+	mkdir -p /home/maxweert/data/mariadb
+	mkdir -p /home/maxweert/data/wordpress
 
 build:
 	docker compose -f srcs/docker-compose.yml build ${SERVICES}
