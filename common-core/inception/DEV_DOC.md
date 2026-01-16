@@ -4,7 +4,7 @@
 
 - Prerequisites: Docker, Docker Compose, Make.
 - Ensure your user can run Docker (on WSL2, Docker Desktop or service must be running).
-- Export `USERNAME` if different from `mweerts` so bind mounts point to `/home/${USERNAME}/data/...`.
+- Export `USERNAME` if different from `maxweert` so bind mounts point to `/home/${USERNAME}/data/...`.
 
 ## Configuration and Secrets
 
