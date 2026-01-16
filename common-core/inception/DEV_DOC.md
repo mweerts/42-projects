@@ -35,6 +35,7 @@
 - Shell inside a service: `docker exec -it wordpress bash` (or `nginx`, `mariadb`)
 - Remove volumes if you need a clean DB/site (data loss): `docker volume rm mariadb wordpress`
 - Data paths on host (bind mounts): `/home/${USERNAME}/data/mariadb` and `/home/${USERNAME}/data/wordpress`
+- Access to the database: `docker compose -f srcs/docker-compose.yml exec mariadb mariadb -u"root" -p"qwerty123"`
 
 ## Where Things Live
 
