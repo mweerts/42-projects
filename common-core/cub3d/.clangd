@@ -1,0 +1,18 @@
+CompileFlags:
+  Add:
+    # Include paths for your actual directory structure
+    - "-I./includes"
+    - "-I./libft"
+    # Sometimes absolute paths work better
+    - "-I${workspaceFolder}/includes"
+    - "-I${workspaceFolder}/libft"
+
+#Index:
+#  Background: Build
+#  StandardLibrary: Yes
+
+Diagnostics:
+  UnusedIncludes: None
+  Suppress:
+    - unused-includes
+
