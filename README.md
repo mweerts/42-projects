@@ -1,6 +1,6 @@
 # 42 Cursus
 
-Repository showcasing my projects from [42](https://www.42network.org/).
+Repository showcasing my projects from [42 Belgium](https://42belgium.be).
 
 ## Structure
 
