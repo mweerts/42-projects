@@ -40,22 +40,22 @@ Projects completed during and around the 42 Common Core.
 | [netpractice](./netpractice) | 100/100 | Not available | — |
 | [webserv](./webserv) | 125/100 | Yes | [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe) |
 
-## C++ modules
+## Object-oriented programming
 
-| Module | Score | Bonus | Collaborators |
+| Project | Score | Bonus | Collaborators |
 |---|---|---|---|
-| [module 00](./cpp-modules/module-00) | 100/100 | Not available | — |
-| [module 01](./cpp-modules/module-01) | 100/100 | Not available | — |
-| [module 02](./cpp-modules/module-02) | 100/100 | Not available | — |
-| [module 03](./cpp-modules/module-03) | 100/100 | Not available | — |
-| [module 04](./cpp-modules/module-04) | 100/100 | Not available | — |
-| [module 05](./cpp-modules/module-05) | 100/100 | Not available | — |
-| [module 06](./cpp-modules/module-06) | 100/100 | Not available | — |
-| [module 07](./cpp-modules/module-07) | 100/100 | Not available | — |
-| [module 08](./cpp-modules/module-08) | 100/100 | Not available | — |
-| [module 09](./cpp-modules/module-09) | 100/100 | Not available | — |
+| [cpp-module00](./cpp-modules/module-00) | 100/100 | Not available | — |
+| [cpp-module01](./cpp-modules/module-01) | 100/100 | Not available | — |
+| [cpp-module02](./cpp-modules/module-02) | 100/100 | Not available | — |
+| [cpp-module03](./cpp-modules/module-03) | 100/100 | Not available | — |
+| [cpp-module04](./cpp-modules/module-04) | 100/100 | Not available | — |
+| [cpp-module05](./cpp-modules/module-05) | 100/100 | Not available | — |
+| [cpp-module06](./cpp-modules/module-06) | 100/100 | Not available | — |
+| [cpp-module07](./cpp-modules/module-07) | 100/100 | Not available | — |
+| [cpp-module08](./cpp-modules/module-08) | 100/100 | Not available | — |
+| [cpp-module09](./cpp-modules/module-09) | 100/100 | Not available | — |
 
-## ft_transcendence
+## Final project
 
 | Project | Score | Bonus | Collaborators |
 |---|---|---|---|
