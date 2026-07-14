@@ -8,13 +8,13 @@
 
 ## Configuration and Secrets
 
-- Create `.env` at repo root with at least:
+- Copy `srcs/.env.example` to `srcs/.env` and set at least:
   - `USERNAME=your_login`
-  - `DOMAIN_NAME=maxweert.42.fr`
+  - `DOMAIN_NAME=your_login.42.fr`
   - `MARIADB_DATABASE=wordpress`
   - `MARIADB_USER=wp_user`
   - `WP_ADMIN_USER=admin`, `WP_USER=author`, plus any emails/titles.
-- Secrets (one line each) in `secrets/`:
+- Copy each `secrets/*.txt.example` to `secrets/*.txt` (one line per file):
   - `mariadb_root_password.txt`
   - `mariadb_password.txt`
   - `wp_admin_password.txt`

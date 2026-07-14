@@ -18,8 +18,8 @@ This project builds a small containerized web stack with Docker Compose: Nginx t
 
 1. **Prerequisites**: Docker, Docker Compose, and Make. On Linux/WSL2, ensure your user can run Docker. Export `USERNAME` if your login differs from `maxweert` so bind mounts point to the right host path.
 2. **Prepare configuration**:
-   - Update `.env` with at least: `USERNAME=...`, `DOMAIN_NAME=maxweert.42.fr`, `MARIADB_DATABASE=wordpress`, `MARIADB_USER=wp_user`.
-   - Populate secrets files in `secrets/`: `mariadb_root_password.txt`, `mariadb_password.txt`, `wp_admin_password.txt`, `wp_user_password.txt` (one line per file).
+   - Copy `srcs/.env.example` to `srcs/.env` and update `USERNAME`, `DOMAIN_NAME`, and WordPress settings.
+   - Copy each file in `secrets/*.txt.example` to `secrets/*.txt` (one password per file).
 3. **Initialize data directories**: `make setup_dirs` (creates `/home/${USERNAME}/data/mariadb` and `/home/${USERNAME}/data/wordpress`).
 4. **Build and start**: `make` (runs build then up) or `make up` to start containers in detached mode. Logs: `make logs` or `docker compose -f srcs/docker-compose.yml logs -f nginx wordpress mariadb`.
 5. **Access the site**: Add `maxweert.42.fr` pointing to your host IP (e.g., `127.0.0.1`) in your `/etc/hosts` (or Windows hosts file). Then browse `https://maxweert.42.fr` and accept the self-signed certificate.
