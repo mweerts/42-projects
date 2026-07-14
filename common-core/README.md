@@ -4,45 +4,59 @@ Projects completed during and around the 42 Common Core.
 
 ## System administration
 
-- [born2beroot](./born2beroot)
-- [inception](./inception)
+| Project | Score |
+|---|---|
+| [born2beroot](./born2beroot) | 125 |
+| [inception](./inception) | 100 |
 
 ## System programming
 
-- [libft](./libft)
-- [get_next_line](./get_next_line)
-- [ft_printf](./ft_printf)
-- [minitalk](./minitalk)
-- [philosophers](./philosophers)
-- [minishell](./minishell) — group project with [lulebugl](https://github.com/lulebugl)
+| Project | Score | Notes |
+|---|---|---|
+| [libft](./libft) | 125 | |
+| [get_next_line](./get_next_line) | 125 | |
+| [ft_printf](./ft_printf) | 125 | |
+| [minitalk](./minitalk) | 125 | |
+| [philosophers](./philosophers) | 125 | |
+| [minishell](./minishell) | 125 | group project with [lulebugl](https://github.com/lulebugl) |
 
 ## Algorithms
 
-- [push_swap](./push_swap)
+| Project | Score |
+|---|---|
+| [push_swap](./push_swap) | 125 |
 
 ## Graphics
 
-- [fdf](./fdf)
-- [cub3d](./cub3d) — group project with [lulebugl](https://github.com/lulebugl)
+| Project | Score | Notes |
+|---|---|---|
+| [fdf](./fdf) | 125 | |
+| [cub3d](./cub3d) | 125 | group project with [lulebugl](https://github.com/lulebugl) |
 
 ## Networking
 
-- [netpractice](./netpractice)
-- [webserv](./webserv) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe)
+| Project | Score | Notes |
+|---|---|---|
+| [netpractice](./netpractice) | 100 | |
+| [webserv](./webserv) | 125 | group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe) |
 
 ## C++ modules
 
-- [module 00](./cpp-modules/module-00)
-- [module 01](./cpp-modules/module-01)
-- [module 02](./cpp-modules/module-02)
-- [module 03](./cpp-modules/module-03)
-- [module 04](./cpp-modules/module-04)
-- [module 05](./cpp-modules/module-05)
-- [module 06](./cpp-modules/module-06)
-- [module 07](./cpp-modules/module-07)
-- [module 08](./cpp-modules/module-08)
-- [module 09](./cpp-modules/module-09)
+| Module | Score |
+|---|---|
+| [module 00](./cpp-modules/module-00) | 100 |
+| [module 01](./cpp-modules/module-01) | 100 |
+| [module 02](./cpp-modules/module-02) | 100 |
+| [module 03](./cpp-modules/module-03) | 100 |
+| [module 04](./cpp-modules/module-04) | 100 |
+| [module 05](./cpp-modules/module-05) | 100 |
+| [module 06](./cpp-modules/module-06) | 100 |
+| [module 07](./cpp-modules/module-07) | 100 |
+| [module 08](./cpp-modules/module-08) | 100 |
+| [module 09](./cpp-modules/module-09) | 100 |
 
 ## ft_transcendence
 
-- [ft_transcendence](./ft_transcendence) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe), [Tayra-dev](https://github.com/Tayra-dev), [mawattier](https://github.com/mawattier)
+| Project | Score | Notes |
+|---|---|---|
+| [ft_transcendence](./ft_transcendence) | 125 | group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe), [Tayra-dev](https://github.com/Tayra-dev), [mawattier](https://github.com/mawattier) |
