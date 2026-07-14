@@ -13,6 +13,6 @@ More sections may be added later (e.g. post-Common Core).
 
 ## AI Usage
 
-I did not use generative AI for my Common Core or Piscine projects (0 AI during the Piscine).
+AI usage was limited to asking questions about the code during a few of my latest Common Core projects. No project code was generated using AI, and no AI was used during the Piscine.
 
-AI was used only for this repository itself: organizing the monorepo and drafting some README files.
+AI-generated content in this repository is limited to parts of a few README files and the overall organization of this monorepo.
