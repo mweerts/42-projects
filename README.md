@@ -43,6 +43,10 @@ Projects completed during and around the 42 Common Core.
 - [module 08](./common-core/cpp-modules/module-08)
 - [module 09](./common-core/cpp-modules/module-09)
 
+## ft_transcendence
+
+- [transcendence](./transcendence) — group project with [lulebugl](https://github.com/lulebugl)
+
 ## Exams and exercises
 
 ## Resources
