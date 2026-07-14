@@ -14,7 +14,7 @@ Projects completed during and around the 42 Common Core.
 - [ft_printf](./common-core/ft_printf)
 - [minitalk](./common-core/minitalk)
 - [philosophers](./common-core/philosophers)
-- [minishell](./common-core/minishell)
+- [minishell](./common-core/minishell) — group project with [lulebugl](https://github.com/lulebugl)
 
 ## Algorithms
 
@@ -28,7 +28,7 @@ Projects completed during and around the 42 Common Core.
 ## Networking
 
 - [netpractice](./common-core/netpractice)
-- [webserv](./common-core/webserv)
+- [webserv](./common-core/webserv) — group project with [lulebugl](https://github.com/lulebugl)
 
 ## C++ modules
 
