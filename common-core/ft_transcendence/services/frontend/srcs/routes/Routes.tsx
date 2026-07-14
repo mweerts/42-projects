@@ -1,0 +1,95 @@
+/* eslint-disable react-refresh/only-export-components */
+import { lazy, Suspense } from "react";
+import { Outlet } from "react-router";
+import { Loading } from "@/components/Loading";
+import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
+import { PongErrorFallback } from "@/components/errors/ErrorFallback";
+import { Home } from "@/routes/home";
+import { Login, Signup } from "@/routes/auth";
+import { Settings } from "@/routes/settings";
+import { PlayerProfile, MatchHistory, Achievements } from "@/routes/profiles/";
+import { Lobby } from "@/routes/lobby";
+import { NotFound } from "@/routes/ErrorPages";
+import { Tournaments } from "@/routes/tournaments";
+import { Leaderboard } from "@/routes/leaderboard";
+import { TermsOfService, PrivacyPolicy } from "@/routes/legal";
+import { SimulateGame } from "./dev/simulateGame";
+
+interface RouteConfig {
+  path: string;
+  element: React.ReactNode;
+}
+
+const PongGame = lazy(() =>
+  import("@/routes/pong/Pong").then((m) => ({
+    default: m.Pong,
+  }))
+);
+
+export const publicRoutes: RouteConfig[] = [
+  { path: "/", element: <Home /> },
+  { path: "/lobby", element: <Lobby /> },
+//   { path: "/lobby-test", element: <PongLobby /> },
+  { path: "/leaderboard", element: <Leaderboard /> },
+  { path: "/profile/:username", element: <PlayerProfile /> },
+  { path: "/tournaments", element: <Tournaments /> },
+  { path: "/profile/:username/achievements", element: <Achievements /> },
+  { path: "/profile/:playerId/match-history", element: <MatchHistory /> },
+  { path: "/terms-of-service", element: <TermsOfService /> },
+  { path: "/privacy-policy", element: <PrivacyPolicy /> },
+  {
+	path: "/pong",
+    element: (
+      <ErrorBoundary fallback={<PongErrorFallback />}>
+        <Suspense fallback={<Loading />}>
+          <PongGame />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+  },
+  { path: "/auth/login", element: <Login /> },
+  { path: "/auth/signup", element: <Signup /> },
+  { path: "*", element: <NotFound /> },
+];
+
+// redirects to login if not authenticated
+export const protectedRoutes: RouteConfig[] = [
+  { path: "/settings", element: <Settings /> },
+  { path: "/profile", element: <PlayerProfile /> },
+  { path: "/profile/achievements", element: <Achievements /> },
+  { path: "/profile/match-history", element: <MatchHistory /> },
+];
+
+// ============================================================================
+// Dev Routes
+// ============================================================================
+
+// Lazy loading dev routes - enables tree-shaking in production
+const DevHub = lazy(() =>
+  import("@/routes/dev").then((m) => ({ default: m.DevHub }))
+);
+const PrimitivesPlayground = lazy(() =>
+  import("@/routes/dev").then((m) => ({
+    default: m.PrimitivesPlayground,
+  }))
+);
+const ComponentsPlayground = lazy(() =>
+  import("@/routes/dev").then((m) => ({
+    default: m.ComponentsPlayground,
+  }))
+);
+
+export const DevLayout = () => (
+  <Suspense fallback={<Loading />}>
+    <Outlet />
+  </Suspense>
+);
+
+export const devRoutes: RouteConfig[] = import.meta.env.DEV
+  ? [
+      { path: "", element: <DevHub /> },
+      { path: "playground/ui", element: <PrimitivesPlayground /> },
+      { path: "playground/components", element: <ComponentsPlayground /> },
+	  { path: "simulate-game", element: <SimulateGame /> },
+    ]
+  : [];

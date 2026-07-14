@@ -1,0 +1,33 @@
+import userRoutes from "./users";
+import healthRoutes from "./health";
+import pingRoutes from "./ping";
+import authRoutes from "./auth";
+import matchMakingRoutes from "./matchMaking";
+import playersRoutes from "./players";
+import twoFactorRoutes from "./2fa/2fa";
+import achievementsRoutes from "./achievements/achievements";
+import apiKeyRoutes from "./apiKeys";
+import publicApi from "./publicApi";
+import friendsRoute from "./friends";
+import { simulateGameRoutes } from "./tests";
+
+//types
+import { FastifyInstance } from "fastify";
+
+export default async function routes(fastify: FastifyInstance) {
+  fastify.register(userRoutes);
+  fastify.register(healthRoutes);
+  fastify.register(pingRoutes);
+  fastify.register(authRoutes);
+  fastify.register(friendsRoute);
+  fastify.register(matchMakingRoutes);
+  fastify.register(playersRoutes);
+  fastify.register(twoFactorRoutes);
+  fastify.register(achievementsRoutes);
+  fastify.register(apiKeyRoutes);
+  fastify.register(publicApi);
+
+  if (process.env.NODE_ENV === "development") {
+    fastify.register(simulateGameRoutes);
+  }
+}

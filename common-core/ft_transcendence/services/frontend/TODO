@@ -1,0 +1,23 @@
+# HIGH priority
+
+- add the real matches
+- Finish the implementation of the match history page
+ (still reviewing and understand how infinite scroll works, need to dig more on MatchHistory.tsx)
+- Also need to connect the matches to be able to see the matches of other players
+
+## GAME
+
+- separate the logic of the game from babylonjs
+- regarder comment preload les assets et le jeu pendant le matchmaking
+
+- ameliorer les handler des match-making ( regarder example in 2fa.ts si besoin)
+
+## Friends (in progress)
+
+* this is the one i'm the least confident about 
+* but it would need a major refactor to be done properly so...
+
+# LOW priority
+
+# BONUS
+

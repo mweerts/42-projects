@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "outDir": "dist",
+    "rootDir": "srcs",
+    "strict": false,
+    // "strict": true, it should be true but.. for now let's keep it that way
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+	"typeRoots": ["./src/types", "./node_modules/@types"]
+  },
+  "baseUrl": ".",
+  "paths": {
+	"@/*": ["./srcs/*"]
+  },
+  "include": ["srcs"]
+}
+

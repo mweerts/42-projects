@@ -1,0 +1,85 @@
+services:
+  cert-generator:
+    container_name: cert-generator
+    image: alpine:latest
+    networks:
+      - trans
+    volumes:
+      - ./nginx/certs:/certs:rw
+      - ./nginx/generate-certs.sh:/generate-certs.sh:ro
+    command: sh /generate-certs.sh
+    restart: "no"
+
+  nginx:
+    container_name: nginx
+    networks:
+      - trans
+    image: nginx:1.27-alpine
+    restart: always
+    ports:
+      - "8080:80"
+      - "8443:443"
+    entrypoint: >
+      sh -c "
+        while [ ! -f /etc/nginx/certs/fullchain.pem ]; do sleep 1; done;
+        exec nginx -g 'daemon off;'
+      "
+    volumes:
+      - ./nginx/nginx.${DOCKER_ENV:-development}.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - backend
+      - frontend
+      - cert-generator
+
+  backend:
+    container_name: backend
+    networks:
+      - trans
+    build:
+      context: ../services/backend
+      dockerfile: Dockerfile
+      target: ${DOCKER_ENV:-development}
+    restart: always
+    ports:
+      - "4983:4983"
+      - "9000:9000"
+    expose:
+      - "9000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - PORT=3000
+      - DB_FILE_NAME=${DB_FILE_NAME:-file:./database/app.db}
+      - MASTER_KEY_TOTP=${MASTER_KEY_TOTP}
+      - RPC_URL=${RPC_URL}
+      - PRIVATE_KEY_WALLET=${PRIVATE_KEY_WALLET}
+      - CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
+    volumes:
+      - ../services/backend/srcs:/app/services/backend/srcs
+      - ../services/backend/database:/app/services/backend/database
+      - ../services/backend/drizzle:/app/services/backend/drizzle
+      - /app/services/backend/node_modules # Anonymous volume to preserve node_modules
+
+  frontend:
+    container_name: frontend
+    networks:
+      - trans
+    build:
+      context: ../services/frontend
+      dockerfile: Dockerfile
+      target: ${DOCKER_ENV:-development}
+    restart: always
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+    expose:
+      - "5173" # Vite dev server
+    volumes:
+      - ../services/frontend/srcs:/app/services/frontend/srcs
+      - ../services/frontend/public:/app/services/frontend/public
+      - ../services/frontend/index.html:/app/services/frontend/index.html:ro
+      - ../services/frontend/vite.config.ts:/app/services/frontend/vite.config.ts:ro
+      - /app/services/frontend/node_modules # Anonymous volume to preserve node_modules
+
+networks:
+  trans:
+    driver: bridge
