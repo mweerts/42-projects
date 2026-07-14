@@ -1,13 +1,17 @@
-# 42 Projects
+# 42 Cursus
 
-Projects completed during and around the 42 Common Core.
+Personal archive of 42 school projects.
 
-## System administration
+## Common Core
+
+All Common Core projects live in [`common-core/`](./common-core).
+
+### System administration
 
 - [born2beroot](./common-core/born2beroot)
 - [inception](./common-core/inception)
 
-## System programming
+### System programming
 
 - [libft](./common-core/libft)
 - [get_next_line](./common-core/get_next_line)
@@ -16,21 +20,21 @@ Projects completed during and around the 42 Common Core.
 - [philosophers](./common-core/philosophers)
 - [minishell](./common-core/minishell) — group project with [lulebugl](https://github.com/lulebugl)
 
-## Algorithms
+### Algorithms
 
 - [push_swap](./common-core/push_swap)
 
-## Graphics
+### Graphics
 
 - [fdf](./common-core/fdf)
 - [cub3d](./common-core/cub3d) — group project with [lulebugl](https://github.com/lulebugl)
 
-## Networking
+### Networking
 
 - [netpractice](./common-core/netpractice)
 - [webserv](./common-core/webserv) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe)
 
-## C++ modules
+### C++ modules
 
 - [module 00](./common-core/cpp-modules/module-00)
 - [module 01](./common-core/cpp-modules/module-01)
@@ -42,13 +46,3 @@ Projects completed during and around the 42 Common Core.
 - [module 07](./common-core/cpp-modules/module-07)
 - [module 08](./common-core/cpp-modules/module-08)
 - [module 09](./common-core/cpp-modules/module-09)
-
-## ft_transcendence
-
-- [ft_transcendence](./common-core/ft_transcendence) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe), [Tayra-dev](https://github.com/Tayra-dev), [mawattier](https://github.com/mawattier)
-
-## Exams and exercises
-
-## Resources
-
-Shared notes, references, and utilities live in [resources](./resources).
