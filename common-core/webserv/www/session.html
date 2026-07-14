@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Session Management | WebServ</title>
+	<script src="js/tailwind.js"></script>
+</head>
+
+<body class="bg-black min-h-screen text-white overflow-x-hidden">
+	<!-- background image -->
+	<div class="fixed inset-0 z-0" loading="lazy">
+		<div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+			style="background-image: url('/cyberpunk-bg.avif');"></div>
+		<!-- Dark overlay for better text readability -->
+		<div class="absolute inset-0 bg-black/40"></div>
+	</div>
+
+	<div class="relative z-10">
+		<!-- Header Section -->
+		<header class="text-center pt-16 pb-8 px-6 relative">
+			<div class="mb-8">
+				<div class="mb-8">
+					<h1
+						class="relative text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-cyan-400 animate-pulse mb-4">
+						WEBSERV
+					</h1>
+
+					<p class="text-xl md:text-2xl font-mono text-cyan-300 tracking-wider">
+					<p class="text-xl md:text-2xl font-mono text-cyan-300 tracking-wider">
+						<span class="text-green-400">[</span> AUTHENTICATION SYSTEM
+						<span class="text-green-400">]</span>
+					</p>
+					<p class="text-lg font-mono text-green-400 mt-2">
+						&gt; Status: <span id="auth-status" class="animate-pulse text-green-300">CHECKING...</span>
+					</p>
+				</div>
+				<a href="https://github.com/lulebugl/webserv" target="_blank" rel="noopener noreferrer"
+					class="absolute group top-22 right-20 inline-flex items-center justify-center px-6 py-3 text-white"
+					title="View Source Code on GitHub">
+					<svg class="w-10 h-10" fill="white" viewBox="0 0 24 24">
+						<path
+							d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+					</svg>
+				</a>
+				<!-- Navigation -->
+				<nav class="mt-12 mb-8 max-w-4xl mx-auto">
+					<div class="flex justify-center space-x-10 relative">
+						<a href="/index.html"
+							class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-cyan-400 text-cyan-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-xl hover:shadow-cyan-400/30">
+							<span class="relative z-10">[ HOME ]</span>
+						</a>
+						<a href="/upload.html"
+							class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-pink-400 text-pink-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-pink-400 hover:text-black hover:shadow-xl hover:shadow-pink-400/30">
+							<span class="relative z-10">[ UPLOAD ]</span>
+						</a>
+						<a href="/session.html"
+							class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-green-400 text-green-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-green-400 hover:text-black hover:shadow-xl hover:shadow-green-400/30">
+							<span class="relative z-10">[ SESSION ]</span>
+						</a>
+						<a href="/log-viewer.html"
+							class="group relative inline-flex items-center justify-center px-6 py-3 bg-black border-2 border-yellow-400 text-yellow-400 font-mono font-bold uppercase tracking-wider transition-all duration-300 hover:bg-yellow-400 hover:text-black hover:shadow-xl hover:shadow-yellow-400/30">
+							<span class="relative z-10">[ LOGS ]</span>
+						</a>
+					</div>
+				</nav>
+		</header>
+
+		<!-- Main Content -->
+		<main class="max-w-6xl mx-auto px-6 pb-16">
+			<!-- Login Section (shown when not logged in) -->
+			<div id="login-section" class="max-w-md mx-auto p-8 rounded-lg">
+				<div class="space-y-6">
+					<div class="space-y-2">
+						<label for="username"
+							class="block text-xs uppercase tracking-wider text-white/60">Username</label>
+						<input type="text" id="username" placeholder="Username"
+							class="w-full px-4 py-3 rounded-md bg-white/5 text-white placeholder-white/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-green-400" />
+					</div>
+					<div class="space-y-2">
+						<label for="password"
+							class="block text-xs uppercase tracking-wider text-white/60">Password</label>
+						<input type="password" id="password" placeholder="••••••••"
+							class="w-full px-4 py-3 rounded-md bg-white/5 text-white placeholder-white/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-green-400" />
+					</div>
+					<button id="login-button" onclick="login()"
+						class="w-full inline-flex items-center justify-center px-5 py-3 rounded-md bg-green-400 text-black font-mono font-bold tracking-wide transition hover:bg-green-300 active:bg-green-500">
+						Sign in
+					</button>
+					<div id="login-error"
+						class="mt-2 p-4 rounded hidden text-sm border border-red-400 bg-red-900/20 text-red-400"></div>
+					<div class="text-xs text-white/60">
+						<label for="test-users" class="block text-xs tracking-wider text-white/60">Test users</label>
+						<div class="mt-2 p-3 rounded border border-white/10 bg-white/5">
+							<div class="space-y-1 font-mono">
+								<div><span class="text-cyan-300">admin</span> / <span
+										class="text-pink-300">password123</span></div>
+								<div><span class="text-cyan-300">user</span> / <span
+										class="text-pink-300">user123</span></div>
+								<div><span class="text-cyan-300">test</span> / <span class="text-pink-300">test</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Session Management Section (shown when logged in) -->
+			<div id="session-section" class="hidden relative max-w-[40rem] mx-auto p-8 rounded-lg">
+				<!-- User Info Card -->
+				<div
+					class="border border-cyan-400/50 bg-black/40 p-6 relative group hover:border-cyan-400 transition-all duration-300">
+					<div class="absolute top-0 left-0 bg-cyan-400 text-black px-3 py-1 font-mono font-bold text-xs">
+						USER_INFO.EXE
+					</div>
+					<div class="mt-6">
+						<div class="flex items-center mb-4">
+							<span class="text-cyan-500 mr-2">webserv@localhost:~$</span>
+							<span class="text-cyan-300 font-mono text-sm">whoami</span>
+						</div>
+
+						<div id="user-info-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<div class="space-y-2">
+								<div class="text-sm text-white/60">Username</div>
+								<div id="ui-username" class="text-lg font-mono text-white">—</div>
+							</div>
+							<div class="space-y-2">
+								<div class="text-sm text-white/60">Status</div>
+								<div id="ui-status" class="text-lg font-mono text-green-400">—</div>
+							</div>
+						</div>
+						<div class="absolute right-6 top-6">
+							<button onclick="logout()"
+								class="group relative inline-flex items-center justify-center px-5 py-2 bg-black border-2 border-cyan-400 text-cyan-400 font-mono font-bold tracking-wider transition-all duration-300 hover:bg-cyan-400 hover:text-black hover:shadow-xl hover:shadow-cyan-400/30">
+								<span class="relative z-10">Sign out</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Session Details Card -->
+				<div
+					class="border border-pink-400/50 bg-black/40 p-6 mt-8 relative group hover:border-pink-400 transition-all duration-300">
+					<div class="absolute top-0 left-0 bg-pink-400 text-black px-3 py-1 font-mono font-bold text-xs">
+						SESSION_DETAILS.EXE
+					</div>
+					<div class="mt-6">
+						<div class="flex items-center mb-4">
+							<span class="text-pink-500 mr-2">webserv@localhost:~$</span>
+							<span class="text-pink-300 font-mono text-sm">ps aux | grep session</span>
+						</div>
+
+						<div id="session-details-container" class="space-y-4">
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">Session ID</div>
+									<div id="ui-session-id" class="font-mono">—</div>
+								</div>
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">IP</div>
+									<div id="ui-ip" class="font-mono">—</div>
+								</div>
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">Created</div>
+									<div id="ui-created" class="font-mono">—</div>
+								</div>
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">Last access</div>
+									<div id="ui-last-access" class="font-mono">—</div>
+								</div>
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">Duration</div>
+									<div id="ui-duration" class="font-mono">—</div>
+								</div>
+								<div class="space-y-1">
+									<div class="text-sm text-white/60">Total Active sessions</div>
+									<div id="ui-total" class="font-mono">—</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- Bottom-right logout button -->
+				</div>
+
+
+
+			</div>
+		</main>
+	</div>
+
+	<script src="js/auth.js"></script>
+</body>
+
+</html>

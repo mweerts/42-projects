@@ -1,0 +1,45 @@
+webserv
+objs
+*.log
+build
+.cache
+www/uploads/*
+www/tmp
+www/req_tmp
+config/lucas.conf
+
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Cursor
+.cursor
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE
+*.vscode
+.DS_Store
