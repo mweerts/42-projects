@@ -38,7 +38,7 @@ Group projects (3 people).
 | [rush01](./rush01) | 100% | No |
 | [rush02](./rush02) | 100% | No |
 
-## Final Project (Optionnal)
+## Final Project (Optional)
 
 Group project (2 people).
 
