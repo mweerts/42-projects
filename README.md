@@ -45,7 +45,7 @@ Projects completed during and around the 42 Common Core.
 
 ## ft_transcendence
 
-- [transcendence](./transcendence) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe), [Tayra-dev](https://github.com/Tayra-dev), [mawattier](https://github.com/mawattier)
+- [ft_transcendence](./common-core/ft_transcendence) — group project with [lulebugl](https://github.com/lulebugl), [jujulie-exe](https://github.com/jujulie-exe), [Tayra-dev](https://github.com/Tayra-dev), [mawattier](https://github.com/mawattier)
 
 ## Exams and exercises
 
