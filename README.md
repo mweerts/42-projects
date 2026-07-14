@@ -11,17 +11,22 @@ Projects completed during and around the 42 Common Core.
 - [libft](./common-core/libft)
 - [get_next_line](./common-core/get_next_line)
 - [ft_printf](./common-core/ft_printf)
+- [minitalk](./common-core/minitalk)
 - [minishell](./common-core/minishell)
+
+## Algorithms
+
+- [push_swap](./common-core/push_swap)
+
+## Graphics
+
+- [fdf](./common-core/fdf)
 
 ## Networking
 
 - [webserv](./common-core/webserv)
 
 ## Exams and exercises
-
-- [vbc](./exams/vbc)
-- [picoshell](./exams/picoshell)
-- [sandbox](./exams/sandbox)
 
 ## Resources
 
