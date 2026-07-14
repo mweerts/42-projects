@@ -1,0 +1,25 @@
+# Build artifacts
+*.o
+*.a
+*.so
+*.out
+a.out
+*.dSYM/
+
+# Executables
+minishell
+webserv
+libft.a
+libft.so
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# 42 / C tooling
+*.log
+*.tmp
+valgrind-out.*
