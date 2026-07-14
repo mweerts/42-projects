@@ -22,6 +22,7 @@ Projects completed during and around the 42 Common Core.
 ## Graphics
 
 - [fdf](./common-core/fdf)
+- [cub3d](./common-core/cub3d) — group project with [lulebugl](https://github.com/lulebugl)
 
 ## Networking
 
