@@ -12,6 +12,7 @@ Projects completed during and around the 42 Common Core.
 - [get_next_line](./common-core/get_next_line)
 - [ft_printf](./common-core/ft_printf)
 - [minitalk](./common-core/minitalk)
+- [philosophers](./common-core/philosophers)
 - [minishell](./common-core/minishell)
 
 ## Algorithms
