@@ -2,6 +2,10 @@
 
 Projects completed during and around the 42 Common Core.
 
+## System administration
+
+- [born2beroot](./common-core/born2beroot)
+
 ## System programming
 
 - [libft](./common-core/libft)
